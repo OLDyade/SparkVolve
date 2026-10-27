@@ -1,0 +1,286 @@
+{
+  "registeredAt": "2026-10-27T17:03:26.973Z",
+  "implementationCommit": "31cd6041beb1396e05bf061d26a3f3335a770b7f",
+  "question": "Does access to native optimizer-authored behavioral experiments change autonomous plugin search, defect discovery and full-denominator development outcomes?",
+  "type": "paired exploratory search control; one independent search per arm, two task repetitions per candidate",
+  "exposure": "All four public synthetic development families previously observed; identical original workbook and evaluator bytes reused. No held-out, official benchmark or customer data.",
+  "seedDigest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+  "pairedDifference": "Only probes authorization: disabled null versus enabled six 60-second experiments. Runtime image, method bundle, tools schema, model, tasks, seed, repetitions and other budgets identical. No probe use required.",
+  "budget": "Each arm: at most four candidates including baseline, 1800 optimizer seconds, four concurrent tasks, eight task samples per candidate, 300 seconds each. Enabled arm has an additional bounded probe execution budget; this is not a total-compute-matched study. All cost is reported.",
+  "execution": "Start both arms concurrently in independent directories/controllers/ports; shared 12-core Docker host, 32 GiB memory. Shared contention and provider scheduling remain confounders.",
+  "preregisteredObservations": [
+    "Every candidate full-denominator score and baseline-relative change; build/QA/execution/service failures retained.",
+    "Actual native probes, independently checked assertions, code/config/topology diffs and observed service/tool use.",
+    "Best development candidate in each search under strict quality selection; separately flag prohibited heuristic repair or task-specific code, without rewriting official recorded scores.",
+    "Optimizer/executor adapter stream started/result/failed/unfinished, tokens and elapsed times, probe build/execution overhead."
+  ],
+  "stop": "No unchanged candidate resampling, task retry, supplemental tasks or extending budgets after results. Service failures retained. Finish when both registered arms terminate or exhaust fixed budget.",
+  "boundary": "One pair cannot establish stable improvement or component causality. Native probe integration was verified separately. No forced topology outcome or claim of generalization.",
+  "arms": [
+    {
+      "name": "disabled",
+      "specificationDigest": "adb1cc61ceb841a23f6407d57d5fd238f70a56acf3ba1f92582ad9902fcea245",
+      "specification": {
+        "name": "native-probe-spreadsheet-disabled-20261028",
+        "objective": "Study general spreadsheet harness evolution using all fixed development tasks and independent feedback. Investigate capability boundaries, repeated work and failure mechanisms before choosing changes. You may jointly change plugin implementation, service configuration and assembly topology, including creating and recombining plugins when evidence supports it; all six mutation actions are available. Choose your mechanism rather than following a prescribed answer or target architecture. Produce genuine implementation experiments within the four-candidate budget, retain failures and negative results, and never resample unchanged bytes. Do not embed task coordinates, task identifiers or computed answers as special cases. Keep native DSH execution and fixed model weights. Correctness selects candidates; source preservation, time and cost are reported separately. A score tie or ceiling is a valid conclusion. This is development research, not independent held-out validation. The probe authorization is explicit in the contract. When enabled, use it at your discretion to test a mechanism with independently derived assertions. It is not a requirement, correctness certificate or promotion gate. Do not fabricate topology changes to satisfy an architectural demonstration. No task-derived guessing, automatic repair, hidden fallback or heuristic output reconstruction is allowed.",
+        "purpose": "search",
+        "isolation": {
+          "runtime": "runc",
+          "user": {
+            "uid": 501,
+            "gid": 20
+          },
+          "memoryMiB": 4096,
+          "cpus": 2,
+          "pids": 256,
+          "tmpMiB": 512,
+          "homeMiB": 128,
+          "network": {
+            "optimizer": "bridge",
+            "executor": "bridge",
+            "build": "bridge",
+            "qa": "none",
+            "evaluator": "none"
+          }
+        },
+        "runtime": {
+          "image": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+          "dshVersion": "0.2.1-rc.4",
+          "profile": "sdk",
+          "environment": {
+            "directory": "runtime",
+            "digest": "e8b8bd9dc56ebab84a5f7ec8a57a66e5106adb39986d7d5d3fa3115ec1c95442",
+            "patch": "cordis.patch.yml"
+          }
+        },
+        "executor": {
+          "provider": "venus",
+          "model": "deepseek/deepseek-v4.1-flash-1017",
+          "reasoningEffort": "off",
+          "maxTokens": 32768,
+          "credentialEnv": [
+            "VENUS_API_KEY"
+          ]
+        },
+        "optimizer": {
+          "provider": "venus",
+          "model": "deepseek/deepseek-v4.1-flash-1017",
+          "reasoningEffort": "off",
+          "maxTokens": 32768,
+          "credentialEnv": [
+            "VENUS_API_KEY"
+          ]
+        },
+        "optimizerHarness": {
+          "directory": "optimizer-bundle",
+          "digest": "0306e8bd61d1951e6823289f664437897661b4c5d3f8115527a169213037eca6",
+          "composition": "plugins.yml"
+        },
+        "researchLibrary": null,
+        "evaluator": {
+          "image": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+          "command": [
+            "python3",
+            "/evaluation/grade.py"
+          ],
+          "timeoutSeconds": 120
+        },
+        "candidate": {
+          "patch": "cordis.patch.yml",
+          "build": {
+            "image": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+            "timeoutSeconds": 300
+          },
+          "qa": null
+        },
+        "tasks": [
+          {
+            "id": "normalization",
+            "prompt": "Complete /input/source.xlsx using Excel formulas. For every displayed year, normalize reported results by removing non-recurring expenses and gains. Begin with reported tax expense; each adjustment tax rate applies only to its own adjustment. Fill all four normalized metric rows for all years. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+            "input": "inputs/normalization",
+            "inputDigest": "56952c962337b26576a2e34112c07048e416254eff4e8a28846c7e1cc95a13a6",
+            "evaluation": "evaluation/normalization",
+            "evaluationDigest": "f8ffd6cfaced3d845e506c92d3b885c4a5f3a96caa855046612e80975133096a"
+          },
+          {
+            "id": "weighted-portfolio",
+            "prompt": "Complete /input/source.xlsx using Excel formulas. Fill each segment revenue, gross profit and margin. Fill total units, revenue, gross profit and the portfolio margin. Total price and total cost per unit cells are intentionally blank; do not fill them. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+            "input": "inputs/weighted-portfolio",
+            "inputDigest": "b589f98ee10f1dab73d3c2912364c4e60f46b9434150c832da6558ec617d96bf",
+            "evaluation": "evaluation/weighted-portfolio",
+            "evaluationDigest": "73e0c0ba41b276b07560c9bd3854f48f02cf82513062f3595383fb96dc8cf489"
+          },
+          {
+            "id": "debt-rollforward",
+            "prompt": "Complete /input/source.xlsx using Excel formulas. Build the four-year debt schedule. Repay equal principal installments each year, based on original principal. Interest uses the same-year opening balance and rate. Fill all five schedule rows for every year. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+            "input": "inputs/debt-rollforward",
+            "inputDigest": "0e5f2225a34eaa856e11c49452e5be9d5427b235d893aafee87854a70308e00f",
+            "evaluation": "evaluation/debt-rollforward",
+            "evaluationDigest": "f24d53e64e24558ba763986438d07ac70361ba158bbc3f139b7ad21cd4da6ff7"
+          },
+          {
+            "id": "scenario-valuation",
+            "prompt": "Complete /input/source.xlsx using Excel formulas. Use the requested case to fill all forecast revenues and EBITDA. Then calculate exit enterprise and equity value in the final year only. Earlier-year exit value cells are intentionally blank. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+            "input": "inputs/scenario-valuation",
+            "inputDigest": "56d2ee2a4178ede239e6aaad3040e9c9e67f696ca328015a0391afb66dc09dc3",
+            "evaluation": "evaluation/scenario-valuation",
+            "evaluationDigest": "b72cac8b824b2639218db40e00b3a4056243de9bfc89e1a5d7d56d1377d871f3"
+          }
+        ],
+        "repetitions": 2,
+        "concurrency": 4,
+        "timeoutSeconds": 300,
+        "failureLimit": 1,
+        "budget": {
+          "candidates": 4,
+          "optimizerSeconds": 1800
+        },
+        "probes": null,
+        "metric": {
+          "name": "formula_value_accuracy",
+          "direction": "maximize",
+          "minimum": 0,
+          "maximum": 1,
+          "failure": 0
+        },
+        "constraints": []
+      },
+      "root": ".evolution/probe-controlled-spreadsheet-20261028/disabled"
+    },
+    {
+      "name": "enabled",
+      "specificationDigest": "8d469007859e5da1b4b30553176b053f463f42486633a4c4d3072b9219298d62",
+      "specification": {
+        "name": "native-probe-spreadsheet-enabled-20261028",
+        "objective": "Study general spreadsheet harness evolution using all fixed development tasks and independent feedback. Investigate capability boundaries, repeated work and failure mechanisms before choosing changes. You may jointly change plugin implementation, service configuration and assembly topology, including creating and recombining plugins when evidence supports it; all six mutation actions are available. Choose your mechanism rather than following a prescribed answer or target architecture. Produce genuine implementation experiments within the four-candidate budget, retain failures and negative results, and never resample unchanged bytes. Do not embed task coordinates, task identifiers or computed answers as special cases. Keep native DSH execution and fixed model weights. Correctness selects candidates; source preservation, time and cost are reported separately. A score tie or ceiling is a valid conclusion. This is development research, not independent held-out validation. The probe authorization is explicit in the contract. When enabled, use it at your discretion to test a mechanism with independently derived assertions. It is not a requirement, correctness certificate or promotion gate. Do not fabricate topology changes to satisfy an architectural demonstration. No task-derived guessing, automatic repair, hidden fallback or heuristic output reconstruction is allowed.",
+        "purpose": "search",
+        "isolation": {
+          "runtime": "runc",
+          "user": {
+            "uid": 501,
+            "gid": 20
+          },
+          "memoryMiB": 4096,
+          "cpus": 2,
+          "pids": 256,
+          "tmpMiB": 512,
+          "homeMiB": 128,
+          "network": {
+            "optimizer": "bridge",
+            "executor": "bridge",
+            "build": "bridge",
+            "qa": "none",
+            "evaluator": "none"
+          }
+        },
+        "runtime": {
+          "image": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+          "dshVersion": "0.2.1-rc.4",
+          "profile": "sdk",
+          "environment": {
+            "directory": "runtime",
+            "digest": "e8b8bd9dc56ebab84a5f7ec8a57a66e5106adb39986d7d5d3fa3115ec1c95442",
+            "patch": "cordis.patch.yml"
+          }
+        },
+        "executor": {
+          "provider": "venus",
+          "model": "deepseek/deepseek-v4.1-flash-1017",
+          "reasoningEffort": "off",
+          "maxTokens": 32768,
+          "credentialEnv": [
+            "VENUS_API_KEY"
+          ]
+        },
+        "optimizer": {
+          "provider": "venus",
+          "model": "deepseek/deepseek-v4.1-flash-1017",
+          "reasoningEffort": "off",
+          "maxTokens": 32768,
+          "credentialEnv": [
+            "VENUS_API_KEY"
+          ]
+        },
+        "optimizerHarness": {
+          "directory": "optimizer-bundle",
+          "digest": "0306e8bd61d1951e6823289f664437897661b4c5d3f8115527a169213037eca6",
+          "composition": "plugins.yml"
+        },
+        "researchLibrary": null,
+        "evaluator": {
+          "image": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+          "command": [
+            "python3",
+            "/evaluation/grade.py"
+          ],
+          "timeoutSeconds": 120
+        },
+        "candidate": {
+          "patch": "cordis.patch.yml",
+          "build": {
+            "image": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+            "timeoutSeconds": 300
+          },
+          "qa": null
+        },
+        "tasks": [
+          {
+            "id": "normalization",
+            "prompt": "Complete /input/source.xlsx using Excel formulas. For every displayed year, normalize reported results by removing non-recurring expenses and gains. Begin with reported tax expense; each adjustment tax rate applies only to its own adjustment. Fill all four normalized metric rows for all years. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+            "input": "inputs/normalization",
+            "inputDigest": "56952c962337b26576a2e34112c07048e416254eff4e8a28846c7e1cc95a13a6",
+            "evaluation": "evaluation/normalization",
+            "evaluationDigest": "f8ffd6cfaced3d845e506c92d3b885c4a5f3a96caa855046612e80975133096a"
+          },
+          {
+            "id": "weighted-portfolio",
+            "prompt": "Complete /input/source.xlsx using Excel formulas. Fill each segment revenue, gross profit and margin. Fill total units, revenue, gross profit and the portfolio margin. Total price and total cost per unit cells are intentionally blank; do not fill them. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+            "input": "inputs/weighted-portfolio",
+            "inputDigest": "b589f98ee10f1dab73d3c2912364c4e60f46b9434150c832da6558ec617d96bf",
+            "evaluation": "evaluation/weighted-portfolio",
+            "evaluationDigest": "73e0c0ba41b276b07560c9bd3854f48f02cf82513062f3595383fb96dc8cf489"
+          },
+          {
+            "id": "debt-rollforward",
+            "prompt": "Complete /input/source.xlsx using Excel formulas. Build the four-year debt schedule. Repay equal principal installments each year, based on original principal. Interest uses the same-year opening balance and rate. Fill all five schedule rows for every year. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+            "input": "inputs/debt-rollforward",
+            "inputDigest": "0e5f2225a34eaa856e11c49452e5be9d5427b235d893aafee87854a70308e00f",
+            "evaluation": "evaluation/debt-rollforward",
+            "evaluationDigest": "f24d53e64e24558ba763986438d07ac70361ba158bbc3f139b7ad21cd4da6ff7"
+          },
+          {
+            "id": "scenario-valuation",
+            "prompt": "Complete /input/source.xlsx using Excel formulas. Use the requested case to fill all forecast revenues and EBITDA. Then calculate exit enterprise and equity value in the final year only. Earlier-year exit value cells are intentionally blank. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+            "input": "inputs/scenario-valuation",
+            "inputDigest": "56d2ee2a4178ede239e6aaad3040e9c9e67f696ca328015a0391afb66dc09dc3",
+            "evaluation": "evaluation/scenario-valuation",
+            "evaluationDigest": "b72cac8b824b2639218db40e00b3a4056243de9bfc89e1a5d7d56d1377d871f3"
+          }
+        ],
+        "repetitions": 2,
+        "concurrency": 4,
+        "timeoutSeconds": 300,
+        "failureLimit": 1,
+        "budget": {
+          "candidates": 4,
+          "optimizerSeconds": 1800
+        },
+        "probes": {
+          "limit": 6,
+          "timeoutSeconds": 60
+        },
+        "metric": {
+          "name": "formula_value_accuracy",
+          "direction": "maximize",
+          "minimum": 0,
+          "maximum": 1,
+          "failure": 0
+        },
+        "constraints": []
+      },
+      "root": ".evolution/probe-controlled-spreadsheet-20261028/enabled"
+    }
+  ],
+  "supersedesInfrastructureAttempt": "2026-10-28-native-probe-control.json; original setup failure retained in docs/evidence/2026-10-28-probe-study-setup-failure.json",
+  "correction": "Same registered search design and task/evaluator bytes. Use the required verified spreadsheet image in all three image fields, with no source model or scoring-rule changes. Fresh attempts only in this separately registered pair; no further infrastructure retry preauthorized."
+}

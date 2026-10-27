@@ -48,6 +48,16 @@ jobs:
         if: matrix.runtime == 'he-runsc-20261019'
         run: bash scripts/install-runsc.sh
       - run: docker build -t harness-evolution:test .
+      - name: Verify spreadsheet runtime before model tasks
+        run: |
+          set -euo pipefail
+          docker build --build-arg HARNESS_IMAGE=harness-evolution:test \
+            -f examples/spreadsheet/Dockerfile -t harness-evolution-spreadsheet:test .
+          npm run build
+          node examples/isolation.mjs "$HE_TEST_RUNTIME" > "$TMPDIR/spreadsheet-isolation.json"
+          node examples/spreadsheet/verify-image.mjs \
+            "$(docker image inspect harness-evolution-spreadsheet:test --format '{{.Id}}')" \
+            "$TMPDIR/spreadsheet-isolation.json" "$TMPDIR/spreadsheet-image"
       - name: Exercise declared runtime end to end
         run: |
           set -euo pipefail
@@ -61,5 +71,7 @@ jobs:
           path: |
             ${{ runner.temp }}/harness-evolution/acceptance.log
             ${{ runner.temp }}/harness-evolution/**/isolation*.json
+            ${{ runner.temp }}/harness-evolution/spreadsheet-image/work/*.json
+            ${{ runner.temp }}/harness-evolution/spreadsheet-image/logs/*.log
           if-no-files-found: warn
           retention-days: 14

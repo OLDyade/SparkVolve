@@ -48,6 +48,9 @@ docker build --build-arg HARNESS_IMAGE=harness-evolution:local \
 
 mkdir -p .evolution/business
 node examples/isolation.mjs runc > .evolution/business/isolation.json
+node examples/spreadsheet/verify-image.mjs \
+  "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')" \
+  .evolution/business/isolation.json .evolution/business/image-check
 docker run --rm \
   --user "$(id -u):$(id -g)" \
   --mount type=bind,src="$PWD/examples/spreadsheet",dst=/example,readonly \

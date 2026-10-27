@@ -1,0 +1,318 @@
+{
+  "recordedAt": "2026-10-27T17:03:26.960Z",
+  "status": "invalid infrastructure setup; stopped before optimizer search",
+  "reason": "Operator selected the generic image rather than the spreadsheet extension; original evaluators failed importing openpyxl. No scored comparison exists.",
+  "action": "Original specifications, deliveries, logs and task states retained. Two remaining task containers stopped. No original task resumed, rescored or copied into the new study.",
+  "preflight": {
+    "rejectedBaseImage": "sha256:3d5ffa2ee99494661fd1b7588a311bb08bf4d2ce8b4f53e4d1ebde55e37bcc38",
+    "passedSpreadsheetImage": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+    "observation": {
+      "passed": true,
+      "python": "3.11.2",
+      "openpyxl": "3.1.5",
+      "libreoffice": "LibreOffice 7.4.7.2 40(Build:2)",
+      "grade": {
+        "score": 1,
+        "metrics": {
+          "preserved": 1
+        },
+        "feedback": "[{\"sheet\": \"Calculation\", \"cell\": \"A2\", \"passed\": true, \"actual\": 12}]"
+      },
+      "boundary": "Synthetic dependency and independent recalculation verification, no model calls or benchmark score."
+    }
+  },
+  "arms": [
+    {
+      "name": "disabled",
+      "optimizer": {
+        "episodes": [],
+        "accounting": null,
+        "usage": {
+          "ledgers": 0,
+          "availableLedgers": 0,
+          "unavailableLedgers": 0,
+          "reportedTotals": null,
+          "complete": true
+        }
+      },
+      "totalUsage": {
+        "ledgers": 8,
+        "availableLedgers": 4,
+        "unavailableLedgers": 4,
+        "reportedTotals": {
+          "started": 66,
+          "results": 65,
+          "failed": 0,
+          "unfinished": 1,
+          "inputTokensReported": 66230,
+          "outputTokensReported": 13641,
+          "missingUsage": 0,
+          "requestDurationMsSum": 133534
+        },
+        "complete": false
+      },
+      "containers": [
+        {
+          "run": "6ac696b23978e9652c740a259118c28323fc5fdfcd751e8d1511c194d07817a9",
+          "recordedPhase": "executing",
+          "container": "he-run-6ac696b23978e9652c740a259118c28323fc5fdf",
+          "state": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-10-27T16:58:50.135151289Z",
+            "FinishedAt": "2026-10-27T16:59:18.688539366Z"
+          }
+        },
+        {
+          "run": "003ed6d73802f9bb3ce0ab1c1f1f0e5519878b6cab355cd7d04f55d4750bcd5c",
+          "recordedPhase": "executing",
+          "container": "he-run-003ed6d73802f9bb3ce0ab1c1f1f0e5519878b6c",
+          "state": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-10-27T16:58:50.161925492Z",
+            "FinishedAt": "2026-10-27T16:59:19.437239509Z"
+          }
+        },
+        {
+          "run": "9a005b922f1a5eb76ae924361fb5a2b0510fbf0a0d172e6d002575b4e25e8421",
+          "recordedPhase": "scoring_failed",
+          "container": "he-run-9a005b922f1a5eb76ae924361fb5a2b0510fbf0a",
+          "state": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-10-27T16:58:50.166549672Z",
+            "FinishedAt": "2026-10-27T16:59:12.465378663Z"
+          }
+        },
+        {
+          "run": "216619f1f264832fc7ab50868e72bcd1ffebd4b69d3e367e5a2924ae051a7fcd",
+          "recordedPhase": "executing",
+          "container": "he-run-216619f1f264832fc7ab50868e72bcd1ffebd4b6",
+          "state": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 143,
+            "Error": "",
+            "StartedAt": "2026-10-27T16:58:50.17029585Z",
+            "FinishedAt": "2026-10-27T16:59:52.046905673Z"
+          }
+        },
+        {
+          "run": "0066f51123ef655ae944ea20dd6e9ba319738513b6dbc9190db4bab3493e6ff9",
+          "recordedPhase": "executing",
+          "container": "he-run-0066f51123ef655ae944ea20dd6e9ba319738513",
+          "state": {
+            "Status": "created",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "0001-01-01T00:00:00Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        {
+          "run": "af9fc729110b1b9f697fd97a09dee9f76b8ae4c2720d1bd87acc5c4244e510f1",
+          "recordedPhase": "queued",
+          "container": "he-run-af9fc729110b1b9f697fd97a09dee9f76b8ae4c2",
+          "state": null
+        },
+        {
+          "run": "4dafcd32424310941d6e2bdc0ced3a5bcca4e739a20b5f4457b22f2879c7b977",
+          "recordedPhase": "queued",
+          "container": "he-run-4dafcd32424310941d6e2bdc0ced3a5bcca4e739",
+          "state": null
+        },
+        {
+          "run": "4cf9b0da8084d3f6b301bfc96b8478351779a6cfc9e19d04dac52b28ea72072e",
+          "recordedPhase": "queued",
+          "container": "he-run-4cf9b0da8084d3f6b301bfc96b8478351779a6cf",
+          "state": null
+        }
+      ],
+      "scoringFailures": [
+        {
+          "id": "9a005b922f1a5eb76ae924361fb5a2b0510fbf0a0d172e6d002575b4e25e8421",
+          "error": "Error: Evaluator exited 1"
+        }
+      ]
+    },
+    {
+      "name": "enabled",
+      "optimizer": {
+        "episodes": [],
+        "accounting": null,
+        "usage": {
+          "ledgers": 0,
+          "availableLedgers": 0,
+          "unavailableLedgers": 0,
+          "reportedTotals": null,
+          "complete": true
+        }
+      },
+      "totalUsage": {
+        "ledgers": 8,
+        "availableLedgers": 4,
+        "unavailableLedgers": 4,
+        "reportedTotals": {
+          "started": 49,
+          "results": 48,
+          "failed": 0,
+          "unfinished": 1,
+          "inputTokensReported": 104836,
+          "outputTokensReported": 10831,
+          "missingUsage": 0,
+          "requestDurationMsSum": 105234
+        },
+        "complete": false
+      },
+      "containers": [
+        {
+          "run": "f933cc3b3cdd4d971f91e2b9cbaad478afd5d8a2c057eb0d03025e880b73aa97",
+          "recordedPhase": "executing",
+          "container": "he-run-f933cc3b3cdd4d971f91e2b9cbaad478afd5d8a2",
+          "state": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-10-27T16:58:49.971264977Z",
+            "FinishedAt": "2026-10-27T16:59:14.493933833Z"
+          }
+        },
+        {
+          "run": "64640c8983516f312273711e5525831457f5ada3fe51c4a0f52887306657b0b2",
+          "recordedPhase": "executing",
+          "container": "he-run-64640c8983516f312273711e5525831457f5ada3",
+          "state": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-10-27T16:58:50.151288378Z",
+            "FinishedAt": "2026-10-27T16:59:14.164838164Z"
+          }
+        },
+        {
+          "run": "7d194e0873ad2cfd678e116528422bd1ba50f800e8e555b5d7c3fd8b63e444ec",
+          "recordedPhase": "executing",
+          "container": "he-run-7d194e0873ad2cfd678e116528422bd1ba50f800",
+          "state": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 143,
+            "Error": "",
+            "StartedAt": "2026-10-27T16:58:50.0617727Z",
+            "FinishedAt": "2026-10-27T16:59:52.046328171Z"
+          }
+        },
+        {
+          "run": "26ef577b393718cdd3019647a7e6b1a49a29cbb7846583b540e41e1aa0ebb59c",
+          "recordedPhase": "scoring_failed",
+          "container": "he-run-26ef577b393718cdd3019647a7e6b1a49a29cbb7",
+          "state": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-10-27T16:58:50.031928279Z",
+            "FinishedAt": "2026-10-27T16:59:12.500448849Z"
+          }
+        },
+        {
+          "run": "c9738d7032dd75bc1f66aa21d979fdf98390e736f55e18f1fe64cc6ac47f5428",
+          "recordedPhase": "executing",
+          "container": "he-run-c9738d7032dd75bc1f66aa21d979fdf98390e736",
+          "state": {
+            "Status": "created",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "0001-01-01T00:00:00Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          }
+        },
+        {
+          "run": "db3cc00af63bc4bf0617830f3d640da012974abd727e8e1258f3ca8e4cd45ff8",
+          "recordedPhase": "queued",
+          "container": "he-run-db3cc00af63bc4bf0617830f3d640da012974abd",
+          "state": null
+        },
+        {
+          "run": "3b66319336059c5cadee8f1354a5ac6b2cc5a3600ff10fef0151d850c3ead85e",
+          "recordedPhase": "queued",
+          "container": "he-run-3b66319336059c5cadee8f1354a5ac6b2cc5a360",
+          "state": null
+        },
+        {
+          "run": "15fcf62f4baaeb05ca67037aa36d464714ee54693fa456e3bcca7f885a64de15",
+          "recordedPhase": "queued",
+          "container": "he-run-15fcf62f4baaeb05ca67037aa36d464714ee5469",
+          "state": null
+        }
+      ],
+      "scoringFailures": [
+        {
+          "id": "26ef577b393718cdd3019647a7e6b1a49a29cbb7846583b540e41e1aa0ebb59c",
+          "error": "Error: Evaluator exited 1"
+        }
+      ]
+    }
+  ]
+}
