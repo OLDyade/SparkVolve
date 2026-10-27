@@ -48,6 +48,7 @@
     "test:container": "npm run build && node --import tsx --test tests/container/*.test.ts",
     "check": "npm run format:check && npm run typecheck && npm test && npm run test:native",
     "prepack": "npm run build",
+    "package:artifacts": "node scripts/package-artifacts.mjs",
     "test:install": "npm run build && node --test tests/install.test.mjs"
   },
   "dependencies": {

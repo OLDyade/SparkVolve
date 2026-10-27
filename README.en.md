@@ -133,6 +133,7 @@ The evolution machinery is also a native Bundle. Run `npm pack`, install it into
 | Reuse research | [Authorized assets and provenance](docs/research-assets.md) |
 | Resume experiments | [Events and replay](docs/events.md) |
 | Check supported versions | [Compatibility](docs/compatibility.md) |
+| Inspect distributable artifacts | [Package, SBOM, checksums and exact-package installation](docs/releasing.md) |
 | Contribute or report a vulnerability | [Contributing](CONTRIBUTING.md), [security](SECURITY.md) |
 
 ```bash

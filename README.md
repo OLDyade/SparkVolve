@@ -188,6 +188,8 @@ npm audit --audit-level=moderate
 
 当前能力和未验证边界明确记录于[架构](docs/architecture.md)与[安全说明](SECURITY.md)。参与开发见 [CONTRIBUTING.md](CONTRIBUTING.md)，接入新任务见[领域适配](docs/domain-adapters.md)，运行版本见[兼容性](docs/compatibility.md)。
 
+分发包附依赖 SBOM、锁快照与字节摘要，CI 对同一 tarball 做原生安装验收；具体命令和公开发布边界见[分发与发布](docs/releasing.md)。
+
 采用 [Apache-2.0](LICENSE)，引用信息见 [CITATION.cff](CITATION.cff)，第三方归属见 [NOTICE](NOTICE)。仓库当前保持私有；许可证选择不代表已经公开发布。
 
 通用框架优先，商业 Excel 是首个场景。架构承接 DeepSeek Harness / Cordis 原生插件生态，研究归属与引用见调研文档。

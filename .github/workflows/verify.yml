@@ -23,7 +23,20 @@ jobs:
       - run: npm audit --audit-level=moderate
       - run: npm run check
       - run: npm pack --dry-run
-      - run: npm run test:install
+      - name: Prepare reviewable package and dependency inventory
+        run: npm run package:artifacts -- "$RUNNER_TEMP/harness-package"
+      - name: Install and exercise the exact distributable
+        run: |
+          set -euo pipefail
+          PACKAGE_FILE=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).archive.file)' "$RUNNER_TEMP/harness-package/artifact.json")
+          HE_INSTALL_PACKAGE="$RUNNER_TEMP/harness-package/$PACKAGE_FILE" npm run test:install
+      - name: Retain unpublished package artifacts
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: package-${{ matrix.os }}-${{ github.sha }}
+          path: ${{ runner.temp }}/harness-package
+          if-no-files-found: error
+          retention-days: 14
   containers:
     strategy:
       fail-fast: false

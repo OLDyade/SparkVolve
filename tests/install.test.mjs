@@ -5,6 +5,7 @@ import { mkdtemp, writeFile, readFile, rm } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import path from 'node:path';
 import os from 'node:os';
+import { createHash } from 'node:crypto';
 import { parse, stringify } from 'yaml';
 import { DeepSeekHarness } from '@deepseek-ai/dsh-sdk-client';
 import { command } from '../dist/docker.js';
@@ -45,26 +46,35 @@ test(
         'protobufjs@7.6.6': true,
       };
       await writeFile(workspace, stringify(configuration));
-      const packed = JSON.parse(
-        await command('npm', ['pack', '--ignore-scripts', '--pack-destination', root, '--json'], {
-          timeoutMs: 60000,
-        }),
-      );
+      let archive;
+      if (process.env.HE_INSTALL_PACKAGE) archive = path.resolve(process.env.HE_INSTALL_PACKAGE);
+      else {
+        const packed = JSON.parse(
+          await command('npm', ['pack', '--ignore-scripts', '--pack-destination', root, '--json'], {
+            timeoutMs: 60000,
+          }),
+        );
+        archive = path.join(root, packed['@harness-evolution/dsh-bundle'].filename);
+      }
+      const originalArchive = createHash('sha256')
+        .update(await readFile(archive))
+        .digest('hex');
       await command(
         path.resolve('node_modules/.bin/dsh'),
-        [
-          'plugin',
-          '--profile',
-          'sdk-minimal',
-          'add',
-          path.join(root, packed['@harness-evolution/dsh-bundle'].filename),
-        ],
+        ['plugin', '--profile', 'sdk-minimal', 'add', archive],
         { env, timeoutMs: 180000 },
       );
       const profile = JSON.parse(
         await readFile(path.join(env.DSH_HOME, 'profiles/sdk-minimal/package.json'), 'utf8'),
       );
       assert.ok(profile.dsh.profile.bundles.includes('@harness-evolution/dsh-bundle'));
+      assert.equal(
+        createHash('sha256')
+          .update(await readFile(archive))
+          .digest('hex'),
+        originalArchive,
+      );
+      console.log(`Installed exact package SHA256: ${originalArchive}`);
       const methodPack = JSON.parse(
         await command('npm', [
           'pack',
