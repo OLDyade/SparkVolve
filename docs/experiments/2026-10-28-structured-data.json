@@ -3,7 +3,7 @@
   "purpose": "public-synthetic-cross-domain-engineering-acceptance",
   "source": "examples/structured-data",
   "seedDigest": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
-  "adapterDigest": "8c2146e2852fc01f63f2b21d299a097d5582f1e9c85f2218b964ad962828a89c",
+  "adapterDigest": "445b1f7aff5e3970bf99b816d7315f4166cad7fb95825c071781e28d2b652785",
   "implementationBase": "586b10efe32a08b582e945e26a03c8733548b668",
   "contract": {
     "name": "structured-data-native-evolution",
@@ -126,5 +126,6 @@
     "No service retry, supplementary task or unchanged candidate resampling.",
     "Record ties and negative outcomes; this public fixture study does not establish generalization.",
     "Inspect original input, frozen candidate code, actual deliveries, costs and installation identity before acceptance."
-  ]
+  ],
+  "registrationNote": "Before the first model invocation, excluded reviewer-created Python bytecode from the source tree; tasks, grader, seed and frozen contract unchanged."
 }
