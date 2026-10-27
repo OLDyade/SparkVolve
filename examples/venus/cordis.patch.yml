@@ -1,0 +1,25 @@
+# User-selected gateway snapshot. Credential is resolved from the runtime environment only.
+# Gateway-side provider routing is outside this repository's control.
+- id: llm-pi-ai
+  config:
+    providers:
+      venus:
+        api: openai-completions
+        baseURL: https://venus.xfinfr.com/v1
+        apiKeyEnv: VENUS_API_KEY
+        retryPolicy:
+          mode: normal
+          maxRetries: 0
+        models:
+          - id: deepseek/deepseek-v4.1-flash-1017
+            contextWindow: 1000000
+            maxTokens: 32768
+            input: [text, image]
+            reasoningEfforts: { off: null, high: high }
+            compat:
+              maxTokensField: max_tokens
+              supportsDeveloperRole: false
+              supportsStore: false
+              supportsUsageInStreaming: true
+              supportsReasoningEffort: false
+              thinkingFormat: qwen

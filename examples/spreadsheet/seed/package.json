@@ -1,0 +1,18 @@
+{
+  "name": "@harness-evolution/spreadsheet",
+  "version": "0.1.0",
+  "type": "module",
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.4"
+  },
+  "files": [
+    "index.mjs",
+    "workbook.py",
+    "cordis.patch.yml"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
