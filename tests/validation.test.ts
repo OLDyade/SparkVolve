@@ -14,6 +14,15 @@ test('paired validation freezes all arms, preserves repetitions and resumes with
     ...specification(),
     purpose: 'validation' as const,
     repetitions: 2,
+    constraints: [
+      {
+        id: 'preserve',
+        metric: 'preserved',
+        aggregation: 'each' as const,
+        operator: 'gte' as const,
+        threshold: 1,
+      },
+    ],
     budget: { candidates: 1, optimizerSeconds: 60 },
   };
   const dataset = path.join(root, 'dataset');
@@ -98,7 +107,9 @@ test('paired validation freezes all arms, preserves repetitions and resumes with
         path.join(work, 'result.json'),
         JSON.stringify({
           score: Number(await readFile(path.join(delivery, 'score.txt'), 'utf8')),
-          metrics: {},
+          metrics: {
+            preserved: Number(await readFile(path.join(delivery, 'score.txt'), 'utf8')) < 0.5 ? 1 : 0.9,
+          },
           feedback: 'independent fixture',
         }),
       );
@@ -115,6 +126,9 @@ test('paired validation freezes all arms, preserves repetitions and resumes with
     assert.equal(report.comparisons[0].meanDelta, 0.5);
     assert.equal(report.comparisons[0].pairs.length, 4);
     assert.equal(report.comparisons[0].perTask.length, 2);
+    assert.equal(report.comparisons[0].strictImprovement, false);
+    assert.equal(report.results[0].constraints[0].status, 'passed');
+    assert.equal(report.results[1].constraints[0].status, 'violated');
     await assert.rejects(
       validateStudy(study, { ...spec, repetitions: 3 }, dataset, arms, driver),
       /registration changed/,

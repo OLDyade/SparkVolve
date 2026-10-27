@@ -54,6 +54,7 @@ export function specification(): ExperimentSpec {
     failureLimit: 1,
     budget: { candidates: 4, optimizerSeconds: 60 },
     metric: { name: 'accuracy', direction: 'maximize', minimum: 0, maximum: 1, failure: 0 },
+    constraints: [],
   };
 }
 export function candidate(id = hash, ordinal = 0): Candidate {

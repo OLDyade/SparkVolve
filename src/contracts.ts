@@ -53,6 +53,14 @@ export const Isolation = z.strictObject({
   }),
 });
 export type IsolationSpec = z.infer<typeof Isolation>;
+export const OutcomeConstraint = z.strictObject({
+  id: Id,
+  metric: Id,
+  aggregation: z.enum(['each', 'mean']),
+  operator: z.enum(['gte', 'lte']),
+  threshold: z.number().finite(),
+});
+export type OutcomeConstraintSpec = z.infer<typeof OutcomeConstraint>;
 export const Experiment = z
   .strictObject({
     name: Id,
@@ -100,10 +108,13 @@ export const Experiment = z
       maximum: z.number(),
       failure: z.number(),
     }),
+    constraints: z.array(OutcomeConstraint),
   })
   .superRefine((spec, ctx) => {
     if (new Set(spec.tasks.map((t) => t.id)).size !== spec.tasks.length)
       ctx.addIssue({ code: 'custom', message: 'Duplicate task IDs' });
+    if (new Set(spec.constraints.map((c) => c.id)).size !== spec.constraints.length)
+      ctx.addIssue({ code: 'custom', message: 'Duplicate constraint IDs' });
     if (
       spec.metric.minimum >= spec.metric.maximum ||
       spec.metric.failure < spec.metric.minimum ||

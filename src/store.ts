@@ -5,6 +5,7 @@ import type { Candidate, ExperimentSpec, RunPhase, TaskRun } from './contracts.j
 import { Grade } from './contracts.js';
 import { EventCursor } from './events.js';
 import type { EventPage } from './events.js';
+import { assessConstraints } from './constraints.js';
 
 const edges: Record<RunPhase, readonly RunPhase[]> = {
   queued: ['executing', 'cancelled'],
@@ -297,7 +298,9 @@ export class Store {
       const better =
         champion?.mean === undefined ||
         (this.spec.metric.direction === 'maximize' ? mean > champion.mean : mean < champion.mean);
-      const promoted = failures <= this.spec.failureLimit && better;
+      const constraints = assessConstraints(this.spec.constraints, runs);
+      const constraintsSatisfied = constraints.every((result) => result.status === 'passed');
+      const promoted = failures <= this.spec.failureLimit && better && constraintsSatisfied;
       this.updateCandidate({ ...candidate, mean, phase: promoted ? 'champion' : 'rejected' });
       if (promoted) this.setMeta('champion', candidateId);
       this.event('candidate.decision', {
@@ -307,6 +310,10 @@ export class Store {
         mean,
         failures,
         denominator: runs.length,
+        qualityImproved: better,
+        failureBudgetSatisfied: failures <= this.spec.failureLimit,
+        constraintsSatisfied,
+        constraints,
       });
       return { promoted, mean, failures };
     });

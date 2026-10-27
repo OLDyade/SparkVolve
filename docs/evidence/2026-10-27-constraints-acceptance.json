@@ -1,0 +1,188 @@
+{
+  "date": "2026-10-27",
+  "image": "sha256:a243843e95200668159fc1844004882b25a6fe0bac8f79286a87fd725dcc007c",
+  "tests": {
+    "unit": 30,
+    "native": 8,
+    "containerPerRuntime": 5,
+    "runtimes": [
+      "runc",
+      "he-runsc-20261019"
+    ]
+  },
+  "runc": {
+    "passed": true,
+    "initial": {
+      "candidate": "df1bb71a457d4721455061b018d65d8432a0b6e2c98a069616bb23dd6157873c",
+      "constraints": [
+        {
+          "aggregate": null,
+          "constraint": {
+            "aggregation": "each",
+            "id": "text-format",
+            "metric": "newline",
+            "operator": "gte",
+            "threshold": 1
+          },
+          "denominator": 1,
+          "observed": 1,
+          "samples": [
+            {
+              "reason": null,
+              "repetition": 0,
+              "run": "b8b42bd469904bebfcb75a8116a18d36f637d2812487b6e5374d4b796bd7c255",
+              "status": "violated",
+              "task": "text",
+              "value": 0
+            }
+          ],
+          "status": "violated"
+        }
+      ],
+      "constraintsSatisfied": false,
+      "denominator": 1,
+      "failureBudgetSatisfied": true,
+      "failures": 0,
+      "mean": 1,
+      "previousChampion": null,
+      "promoted": false,
+      "qualityImproved": true
+    },
+    "changed": {
+      "candidate": "f59a1869912a8c4e6620c6ec908194a0d870354cc68778d1bcaa202e10ac1ff1",
+      "constraints": [
+        {
+          "aggregate": null,
+          "constraint": {
+            "aggregation": "each",
+            "id": "text-format",
+            "metric": "newline",
+            "operator": "gte",
+            "threshold": 1
+          },
+          "denominator": 1,
+          "observed": 1,
+          "samples": [
+            {
+              "reason": null,
+              "repetition": 0,
+              "run": "95f8a2f92de3d1ea948539971aee0b683caa834b49da97c4f812046bae572c9a",
+              "status": "passed",
+              "task": "text",
+              "value": 1
+            }
+          ],
+          "status": "passed"
+        }
+      ],
+      "constraintsSatisfied": true,
+      "denominator": 1,
+      "failureBudgetSatisfied": true,
+      "failures": 0,
+      "mean": 1,
+      "previousChampion": null,
+      "promoted": true,
+      "qualityImproved": true
+    },
+    "boundary": "Deterministic native DSH protocol acceptance; not autonomous optimization or model quality evidence."
+  },
+  "gvisor": {
+    "passed": true,
+    "initial": {
+      "candidate": "df1bb71a457d4721455061b018d65d8432a0b6e2c98a069616bb23dd6157873c",
+      "constraints": [
+        {
+          "aggregate": null,
+          "constraint": {
+            "aggregation": "each",
+            "id": "text-format",
+            "metric": "newline",
+            "operator": "gte",
+            "threshold": 1
+          },
+          "denominator": 1,
+          "observed": 1,
+          "samples": [
+            {
+              "reason": null,
+              "repetition": 0,
+              "run": "d44cb293112c16c80c58ffad16d06691939297c6a20fed178a6de428351024b5",
+              "status": "violated",
+              "task": "text",
+              "value": 0
+            }
+          ],
+          "status": "violated"
+        }
+      ],
+      "constraintsSatisfied": false,
+      "denominator": 1,
+      "failureBudgetSatisfied": true,
+      "failures": 0,
+      "mean": 1,
+      "previousChampion": null,
+      "promoted": false,
+      "qualityImproved": true
+    },
+    "changed": {
+      "candidate": "f59a1869912a8c4e6620c6ec908194a0d870354cc68778d1bcaa202e10ac1ff1",
+      "constraints": [
+        {
+          "aggregate": null,
+          "constraint": {
+            "aggregation": "each",
+            "id": "text-format",
+            "metric": "newline",
+            "operator": "gte",
+            "threshold": 1
+          },
+          "denominator": 1,
+          "observed": 1,
+          "samples": [
+            {
+              "reason": null,
+              "repetition": 0,
+              "run": "fb786276b3ac9b37dc811c674c3cd6161eed7bafff1b85c3e0a25749cfeef84f",
+              "status": "passed",
+              "task": "text",
+              "value": 1
+            }
+          ],
+          "status": "passed"
+        }
+      ],
+      "constraintsSatisfied": true,
+      "denominator": 1,
+      "failureBudgetSatisfied": true,
+      "failures": 0,
+      "mean": 1,
+      "previousChampion": null,
+      "promoted": true,
+      "qualityImproved": true
+    },
+    "boundary": "Deterministic native DSH protocol acceptance; not autonomous optimization or model quality evidence."
+  },
+  "sourceSha256": {
+    "src/contracts.ts": "42da9103d0e15c7dc381096e6d6119aeff6ccef093f1cb2e3b3043ef943fb8cb",
+    "src/constraints.ts": "7b9a9b80af6e4e669873b36505b0b846ba1c6cea2060e37a958e96bcf5dcd27d",
+    "src/store.ts": "9034dc4fa05abf65cf50f4b46348ed89a72f9971031fcf702010f5f4ef66821c",
+    "src/validation.ts": "de039a18211ca3f2c3b046652827f8012a3622c730df7076f5c4c21075b9c10b",
+    "tests/container/constraints.test.ts": "33d31a9dfff70be9040bb83c4eb3bcb860596072a9e2336eabb26dbf28342835"
+  },
+  "boundary": "Deterministic protocol acceptance through native DSH and independent grader containers. Not autonomous optimization or a model quality result.",
+  "gvisorController": {
+    "id": "649f823dea05e7ff74fa9820653d1b4b8857cdf7aa46af8d63ac03b61e4ac590",
+    "exitCode": 0,
+    "startedAt": "2026-10-27T15:41:02.585373542Z",
+    "finishedAt": "2026-10-27T15:41:34.14696845Z"
+  },
+  "review": {
+    "result": "Passed after exact decimal mean correction",
+    "initialFinding": "Per-value division drifted below equality thresholds; no epsilon was added. Final means compare exact rational canonical decimal values.",
+    "previousContainerEvidence": {
+      "image": "sha256:966d962c5eae4e8331605d46b9a11f506ab99ce3b56a3b729070eac89b67cf3e",
+      "runc": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-constraints-iYEbRv",
+      "gvisor": "/home/apple/harness-evolution/.tmp/he-constraints-8v6Ukt"
+    }
+  }
+}

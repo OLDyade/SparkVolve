@@ -8,6 +8,7 @@ import { Controller } from './controller.js';
 import { Store } from './store.js';
 import { Docker } from './docker.js';
 import { verifyArtifact, verifyBuild } from './build.js';
+import { assessConstraints } from './constraints.js';
 
 export const Arms = z
   .array(
@@ -117,6 +118,7 @@ export async function writeStudyReport(root: string): Promise<void> {
         failures: runs.filter((r) => r.phase !== 'scored').length,
         mean: samples ? samples.reduce((sum, r) => sum + r.score, 0) / samples.length : null,
         samples,
+        constraints: assessConstraints(spec.constraints, runs),
       };
     } finally {
       store.close();
@@ -156,6 +158,7 @@ export async function writeStudyReport(root: string): Promise<void> {
       strictImprovement:
         arm.failures <= spec.failureLimit &&
         baseline.failures <= spec.failureLimit &&
+        arm.constraints.every((result) => result.status === 'passed') &&
         (spec.metric.direction === 'maximize' ? meanDelta > 0 : meanDelta < 0),
     };
   });

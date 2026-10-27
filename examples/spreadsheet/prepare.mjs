@@ -64,5 +64,6 @@ const spec = Experiment.parse({
   failureLimit: 0,
   budget: { candidates: 4, optimizerSeconds: 1800 },
   metric: { name: 'formula_value_accuracy', direction: 'maximize', minimum: 0, maximum: 1, failure: 0 },
+  constraints: [],
 });
 await writeFile(output, JSON.stringify(spec, null, 2));
