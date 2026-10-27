@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "92917fee72d4185c1e12cd4297551a5a7540aa0e",
+  "workingTreeDirty": false,
+  "package": "@harness-evolution/dsh-bundle@0.0.0-development",
+  "archiveSha256": "56dc74fb57b16dc1d0818b323143376fee12a7ac188eb55ab50898e4f61fbf87",
+  "archiveFiles": 180,
+  "sbomComponents": 627,
+  "sbomFormat": "npm 12.2.0 native CycloneDX, repository lock pre-build inventory, dev-only dependencies omitted",
+  "localEvidence": ".evolution/package-clean-20261028",
+  "checks": {
+    "sha256Sums": { "checked": 4, "passed": 4 },
+    "exactTarballNativeInstall": "passed; native DSH capability executed, archive identity unchanged",
+    "npmAuditVulnerabilities": 0,
+    "workflowActionlint": "passed",
+    "readonlySubagentReview": "passed"
+  },
+  "boundary": "Local artifact and installation acceptance. No registry publish, Release creation, signature, model quality claim or consumer dependency-resolution guarantee. Cloud CI remains a separate acceptance."
+}
