@@ -97,7 +97,7 @@ export async function buildCandidate(
       throw new Error('Interrupted build snapshot mismatch');
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-    await freeze(output, destination);
+    await freeze(output, destination, path.join(root, 'publications'));
   }
   const identity = {
     artifactDigest,

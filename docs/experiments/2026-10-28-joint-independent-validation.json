@@ -1,0 +1,234 @@
+{
+  "registeredAt": "2026-10-27T19:08:59.840Z",
+  "implementationCommit": "326af5c73a403ba253df73e0860416c1ff09e7c2",
+  "question": "Does the already-selected autonomous cross-plugin candidate retain its development gain in a separate full paired task run?",
+  "executionRoot": ".evolution/joint-independent-20261028/study",
+  "selection": "Fixed prior search champion from disabled arm, selected before this run. No rescoring-based arm choice.",
+  "exposure": "Four public synthetic validation numeric variants; task families and this public split were previously used in development elsewhere. This is a separate execution, not an unseen held-out set or official SpreadsheetBench.",
+  "knownDefects": [
+    "Frozen workbook inspection removes range operands when deriving relative formula uniformity.",
+    "Frozen recalculation classifies any # prefixed string as an error; native counterexample validation is recorded separately."
+  ],
+  "execution": "Baseline then candidate; four tasks x three repetitions each, 24 planned task samples. Sequential arm scheduling may confound time/provider variation. Each arm has failureLimit=2; cancelled/failed slots remain full-denominator. No automatic resampling.",
+  "runtimeChange": "Same frozen original build artifacts; current common DSH runner image and controlled model egress for both arms. No rebuild or source modification; exact original build identities retained.",
+  "acceptance": "Research comparison only. Higher scores cannot authorize distribution while known tool semantic defects remain. Domain QA is frozen before tasks; failures remain terminal. No optimizer runs and no automatic release.",
+  "specificationDigest": "6a38fd617ce01efe71e8f7782130314e55bc676f66ebdbca3041329b0a936bde",
+  "specification": {
+    "name": "joint-candidate-independent-validation-20261028",
+    "objective": "Paired re-evaluation of the preregistered original baseline and frozen autonomous code-plus-assembly candidate. No optimizer, no new mutations, no task retries or automatic release. Retain full denominator and known tool defects.",
+    "purpose": "validation",
+    "isolation": {
+      "runtime": "runc",
+      "user": {
+        "uid": 501,
+        "gid": 20
+      },
+      "memoryMiB": 4096,
+      "cpus": 2,
+      "pids": 256,
+      "tmpMiB": 512,
+      "homeMiB": 128,
+      "network": {
+        "egressPool": "10.230.0.0/16",
+        "egressDns": [
+          "0.250.250.200"
+        ],
+        "optimizer": "controlled",
+        "executor": "controlled",
+        "build": "none",
+        "qa": "none",
+        "evaluator": "none"
+      }
+    },
+    "egress": {
+      "optimizer": [
+        {
+          "id": "venus",
+          "path": "/v1/chat/completions",
+          "method": "POST",
+          "upstream": "https://venus.xfinfr.com/v1/chat/completions",
+          "addresses": {
+            "kind": "public"
+          },
+          "credential": {
+            "env": "VENUS_API_KEY",
+            "header": "authorization",
+            "prefix": "Bearer "
+          },
+          "body": {
+            "kind": "json",
+            "equals": {
+              "model": "deepseek/deepseek-v4.1-flash-1017"
+            },
+            "maximum": {
+              "max_tokens": 32768
+            }
+          },
+          "maxRequestBytes": 8388608,
+          "timeoutSeconds": 300
+        }
+      ],
+      "executor": [
+        {
+          "id": "venus",
+          "path": "/v1/chat/completions",
+          "method": "POST",
+          "upstream": "https://venus.xfinfr.com/v1/chat/completions",
+          "addresses": {
+            "kind": "public"
+          },
+          "credential": {
+            "env": "VENUS_API_KEY",
+            "header": "authorization",
+            "prefix": "Bearer "
+          },
+          "body": {
+            "kind": "json",
+            "equals": {
+              "model": "deepseek/deepseek-v4.1-flash-1017"
+            },
+            "maximum": {
+              "max_tokens": 32768
+            }
+          },
+          "maxRequestBytes": 8388608,
+          "timeoutSeconds": 300
+        }
+      ]
+    },
+    "runtime": {
+      "image": "sha256:a11e6d9310bf5a78e6009521cbd1fd5f4d86e839d6af61fed1ae0fa4cf2e2b45",
+      "dshVersion": "0.2.1-rc.4",
+      "profile": "sdk",
+      "environment": {
+        "directory": "runtime",
+        "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+        "patch": "cordis.patch.yml"
+      }
+    },
+    "executor": {
+      "provider": "venus",
+      "model": "deepseek/deepseek-v4.1-flash-1017",
+      "reasoningEffort": "off",
+      "maxTokens": 32768,
+      "credentialEnv": [
+        "VENUS_API_KEY"
+      ]
+    },
+    "optimizer": {
+      "provider": "venus",
+      "model": "deepseek/deepseek-v4.1-flash-1017",
+      "reasoningEffort": "off",
+      "maxTokens": 32768,
+      "credentialEnv": [
+        "VENUS_API_KEY"
+      ]
+    },
+    "optimizerHarness": {
+      "directory": "optimizer-bundle",
+      "digest": "0d4c2c7bce43f893250cac42a438f68fc37bcae774c0bba48444aff3f17d2365",
+      "composition": "plugins.yml"
+    },
+    "researchLibrary": null,
+    "evaluator": {
+      "image": "sha256:a11e6d9310bf5a78e6009521cbd1fd5f4d86e839d6af61fed1ae0fa4cf2e2b45",
+      "command": [
+        "python3",
+        "/evaluation/grade.py"
+      ],
+      "timeoutSeconds": 120
+    },
+    "candidate": {
+      "patch": "cordis.patch.yml",
+      "build": {
+        "image": "sha256:a11e6d9310bf5a78e6009521cbd1fd5f4d86e839d6af61fed1ae0fa4cf2e2b45",
+        "timeoutSeconds": 300
+      },
+      "qa": {
+        "directory": "verification",
+        "digest": "914bec72c2cc83736db2d4d257c8f7be64d6362a038fcfbea97b6c35145c8a8f",
+        "entry": "check.mjs"
+      }
+    },
+    "tasks": [
+      {
+        "id": "normalization",
+        "prompt": "Complete /input/source.xlsx using Excel formulas. For every displayed year, normalize reported results by removing non-recurring expenses and gains. Begin with reported tax expense; each adjustment tax rate applies only to its own adjustment. Fill all four normalized metric rows for all years. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+        "input": "inputs/normalization",
+        "inputDigest": "eeeccdbbc761a9c7f414608e59ee1592d1be5c9bde701e31dca83830c2aa9470",
+        "evaluation": "evaluation/normalization",
+        "evaluationDigest": "8516824bcd2d6ab4dc0e9817365047957787c7ac63bb21caa0cafb2015d47817"
+      },
+      {
+        "id": "weighted-portfolio",
+        "prompt": "Complete /input/source.xlsx using Excel formulas. Fill each segment revenue, gross profit and margin. Fill total units, revenue, gross profit and the portfolio margin. Total price and total cost per unit cells are intentionally blank; do not fill them. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+        "input": "inputs/weighted-portfolio",
+        "inputDigest": "4e2fa4a3fb971120c6d00f32234e70e8810ad59eb20d9af2a0131639d101a85e",
+        "evaluation": "evaluation/weighted-portfolio",
+        "evaluationDigest": "577cea14079c73d17ba74bd12f4037cc0f6bee84bf65ba99724c394f1d46c5ec"
+      },
+      {
+        "id": "debt-rollforward",
+        "prompt": "Complete /input/source.xlsx using Excel formulas. Build the four-year debt schedule. Repay equal principal installments each year, based on original principal. Interest uses the same-year opening balance and rate. Fill all five schedule rows for every year. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+        "input": "inputs/debt-rollforward",
+        "inputDigest": "3501e2314394b2601a288560e3f39fb0868e305831ca97275a77fd014f709db4",
+        "evaluation": "evaluation/debt-rollforward",
+        "evaluationDigest": "488841ff305bc629a5938311943c0d9227e9004eabae1c4d56855fa3ad2d5b7a"
+      },
+      {
+        "id": "scenario-valuation",
+        "prompt": "Complete /input/source.xlsx using Excel formulas. Use the requested case to fill all forecast revenues and EBITDA. Then calculate exit enterprise and equity value in the final year only. Earlier-year exit value cells are intentionally blank. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+        "input": "inputs/scenario-valuation",
+        "inputDigest": "b7f07a97f4636d63650abc3faed16c1c3397ef3d611a8b0f72efdbc11978b95d",
+        "evaluation": "evaluation/scenario-valuation",
+        "evaluationDigest": "f7e2b2caed7bb9f56e2e3846c7c02bc5ac9104401ed62ec039d0d9db528ec714"
+      }
+    ],
+    "repetitions": 3,
+    "concurrency": 3,
+    "timeoutSeconds": 300,
+    "failureLimit": 2,
+    "budget": {
+      "candidates": 1,
+      "optimizerSeconds": 60
+    },
+    "probes": null,
+    "metric": {
+      "name": "formula_value_accuracy",
+      "direction": "maximize",
+      "minimum": 0,
+      "maximum": 1,
+      "failure": 0
+    },
+    "constraints": []
+  },
+  "arms": [
+    {
+      "id": "baseline",
+      "source": "/Users/apple/code/spark-harness-evolution/.evolution/probe-controlled-spreadsheet-20261028/disabled/candidates/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+      "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+      "artifact": "/Users/apple/code/spark-harness-evolution/.evolution/probe-controlled-spreadsheet-20261028/disabled/artifacts/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+      "build": {
+        "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+        "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+        "image": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+        "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+        "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+      }
+    },
+    {
+      "id": "joint-candidate",
+      "source": "/Users/apple/code/spark-harness-evolution/.evolution/probe-controlled-spreadsheet-20261028/disabled/candidates/4a60fb2b2a7d96772a7a827fce84687a47798ca646b3218fab349aa90bc2bb88",
+      "digest": "4a60fb2b2a7d96772a7a827fce84687a47798ca646b3218fab349aa90bc2bb88",
+      "artifact": "/Users/apple/code/spark-harness-evolution/.evolution/probe-controlled-spreadsheet-20261028/disabled/artifacts/4a60fb2b2a7d96772a7a827fce84687a47798ca646b3218fab349aa90bc2bb88",
+      "build": {
+        "artifactDigest": "85d708de6d0389d7a418d8cd0ff374cb0b6f19695abb09f3a3c8aaf3dd488c71",
+        "bundleDigest": "233a813ccda89d17bcf35e96be85d76cbe45ad09b2bc0c1a903ce0a58559625e",
+        "image": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+        "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+        "tarballDigest": "6d050cb2e2e7f77ca2d01b78c04abc3c32df3fa9e2ce5323738080b1a7a78e18"
+      }
+    }
+  ],
+  "datasetDigest": "63812e5a09c2d7ac91a8c9e57d5c9fe4ab60fe0fd58909b13776fc8ade059223"
+}

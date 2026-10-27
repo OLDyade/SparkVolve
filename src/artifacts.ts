@@ -1,6 +1,10 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { readdir, lstat, readFile, mkdir, writeFile, rename, rm, chmod } from 'node:fs/promises';
+import { readdir, lstat, readFile, mkdir, writeFile, rename, rm, chmod, realpath } from 'node:fs/promises';
+import { DatabaseSync } from 'node:sqlite';
+import { channel } from 'node:diagnostics_channel';
 import path from 'node:path';
+
+const publications = channel('harness-evolution:publication');
 
 export function canonical(value: unknown): string {
   if (value === null || typeof value === 'string' || typeof value === 'boolean') return JSON.stringify(value);
@@ -63,38 +67,93 @@ export async function fileDigest(file: string): Promise<string> {
     .update(await readFile(file))
     .digest('hex');
 }
-export async function freeze(source: string, destination: string): Promise<string> {
+/** Publication state belongs to the trusted experiment, never inside a snapshot or candidate mount. */
+export async function freeze(source: string, destination: string, publicationRoot: string): Promise<string> {
   const before = await inventory(source);
-  const staging = `${destination}.${randomUUID()}.staging`;
+  const identity = digest(before);
   await mkdir(path.dirname(destination), { recursive: true });
-  const reservation = `${destination}.freeze-lock`;
-  await mkdir(reservation);
-  await mkdir(staging, { recursive: true });
+  destination = path.join(await realpath(path.dirname(destination)), path.basename(destination));
+  await mkdir(publicationRoot, { recursive: true });
+  publicationRoot = await realpath(publicationRoot);
+  for (const directory of [await realpath(source), destination]) {
+    const relative = path.relative(directory, publicationRoot);
+    if (
+      !relative ||
+      (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative))
+    )
+      throw new Error('Publication control state must be outside snapshot content');
+  }
+  const db = new DatabaseSync(path.join(publicationRoot, `${digest(destination)}.sqlite`), { timeout: 0 });
   try {
+    db.exec(`PRAGMA synchronous=FULL;
+      CREATE TABLE IF NOT EXISTS publication (
+        id INTEGER PRIMARY KEY CHECK(id=1), destination TEXT NOT NULL,
+        digest TEXT NOT NULL, staging TEXT NOT NULL, state TEXT NOT NULL CHECK(state IN ('pending','published'))
+      ) STRICT;
+      BEGIN IMMEDIATE;`);
+    db.prepare('INSERT OR IGNORE INTO publication VALUES (1,?,?,?,?)').run(
+      destination,
+      identity,
+      `${destination}.${randomUUID()}.staging`,
+      'pending',
+    );
+    db.exec('COMMIT; BEGIN IMMEDIATE;');
+    // Re-read after acquiring the writer lock: a competing publisher may have completed between transactions.
+    const intent = db.prepare('SELECT * FROM publication WHERE id=1').get() as {
+      destination: string;
+      digest: string;
+      staging: string;
+      state: 'pending' | 'published';
+    };
+    if (intent.destination !== destination || intent.digest !== identity)
+      throw new Error('Frozen publication identity changed');
+    const observed = (phase: string) => publications.publish({ destination, identity, phase });
+    observed('reserved');
+    let present = false;
     try {
       await lstat(destination);
-      throw new Error('Frozen destination already exists');
+      present = true;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
     }
-    for (const entry of before) {
-      const bytes = await readFile(confined(source, entry.path));
-      if (createHash('sha256').update(bytes).digest('hex') !== entry.hash)
-        throw new Error('Source changed while freezing');
-      const target = confined(staging, entry.path);
-      await mkdir(path.dirname(target), { recursive: true });
-      await writeFile(target, bytes, { flag: 'wx', mode: entry.executable ? 0o555 : 0o444 });
+    if (present) {
+      if ((await treeDigest(destination)) !== identity)
+        throw new Error('Frozen publication content mismatch');
+    } else {
+      if (intent.state === 'published') throw new Error('Published snapshot is missing');
+      const staging = intent.staging;
+      // Only the exact persisted staging path is ours. The OS writer lock excludes a live publisher.
+      try {
+        const stat = await lstat(staging);
+        if (!stat.isDirectory() || stat.isSymbolicLink())
+          throw new Error('Invalid publication staging directory');
+        await chmod(staging, 0o755);
+        await rm(staging, { recursive: true });
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+      }
+      await mkdir(staging);
+      for (const entry of before) {
+        const bytes = await readFile(confined(source, entry.path));
+        if (createHash('sha256').update(bytes).digest('hex') !== entry.hash)
+          throw new Error('Source changed while freezing');
+        const target = confined(staging, entry.path);
+        await mkdir(path.dirname(target), { recursive: true });
+        await writeFile(target, bytes, { flag: 'wx', mode: entry.executable ? 0o555 : 0o444 });
+        observed('copying');
+      }
+      if ((await treeDigest(source)) !== identity) throw new Error('Source changed while freezing');
+      await chmod(staging, 0o555);
+      observed('ready');
+      await rename(staging, destination);
+      observed('published');
     }
-    if (digest(await inventory(source)) !== digest(before)) throw new Error('Source changed while freezing');
-    await mkdir(path.dirname(destination), { recursive: true });
-    await rename(staging, destination);
-    await chmod(destination, 0o555);
-    return digest(before);
-  } catch (error) {
-    await rm(staging, { recursive: true, force: true });
-    throw error;
+    db.exec("UPDATE publication SET state='published' WHERE id=1; COMMIT;");
+    observed('committed');
+    return identity;
   } finally {
-    await rm(reservation, { recursive: true });
+    if (db.isTransaction) db.exec('ROLLBACK');
+    db.close();
   }
 }
 export async function atomicJSON(file: string, value: unknown): Promise<void> {

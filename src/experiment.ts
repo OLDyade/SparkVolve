@@ -16,7 +16,7 @@ export async function initialize(
 ): Promise<void> {
   await mkdir(root);
   await atomicJSON(path.join(root, 'experiment.json'), spec);
-  await freeze(await realpath(dataset), path.join(root, 'dataset'));
+  await freeze(await realpath(dataset), path.join(root, 'dataset'), path.join(root, 'publications'));
   const store = new Store(path.join(root, 'experiment.sqlite'), spec);
   const controller = new Controller(root, path.join(root, 'dataset'), spec, store);
   try {

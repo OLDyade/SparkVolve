@@ -21,10 +21,14 @@ export async function exportCandidate(
   const source = path.join(root, 'candidates', id);
   if ((await treeDigest(source)) !== id) throw new Error('Candidate integrity mismatch');
   await mkdir(destination);
-  await freeze(source, path.join(destination, 'source'));
+  await freeze(source, path.join(destination, 'source'), path.join(root, 'publications'));
   if (candidate.build) {
     await verifyBuild(root, candidate);
-    await freeze(path.join(root, 'artifacts', id), path.join(destination, 'artifact'));
+    await freeze(
+      path.join(root, 'artifacts', id),
+      path.join(destination, 'artifact'),
+      path.join(root, 'publications'),
+    );
     await copyFile(path.join(root, 'artifacts', id, 'bundle.tgz'), path.join(destination, 'bundle.tgz'));
   }
   const ancestors = new Set<string>();

@@ -18,7 +18,7 @@ test(
     console.log(`Compiled build evidence retained: ${root}`);
     const source = path.join(import.meta.dirname, 'build-fixture');
     const hash = await treeDigest(source);
-    await freeze(source, path.join(root, 'candidates', hash));
+    await freeze(source, path.join(root, 'candidates', hash), path.join(root, 'publications'));
     const spec = specification();
     spec.candidate.build = { image, timeoutSeconds: 120 };
     spec.isolation.network.build = 'bridge';

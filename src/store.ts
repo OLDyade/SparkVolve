@@ -33,6 +33,7 @@ export class Store {
     this.db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;
       CREATE TABLE IF NOT EXISTS metadata(key TEXT PRIMARY KEY, value TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS candidates(id TEXT PRIMARY KEY, body TEXT NOT NULL);
+      CREATE TABLE IF NOT EXISTS submissions(id TEXT PRIMARY KEY, body TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS runs(id TEXT PRIMARY KEY, body TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS probes(id TEXT PRIMARY KEY, body TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, type TEXT NOT NULL, body TEXT NOT NULL);
@@ -209,6 +210,46 @@ export class Store {
       .all()
       .map((row) => JSON.parse(row.body as string) as Candidate);
   }
+  pendingSubmissions(): Candidate[] {
+    return this.db
+      .prepare('SELECT body FROM submissions ORDER BY rowid')
+      .all()
+      .map((row) => JSON.parse(String(row.body)) as Candidate);
+  }
+  reserveSubmission(input: Omit<Candidate, 'ordinal'>): Candidate {
+    return this.transaction(() => {
+      const pending = this.pendingSubmissions();
+      const existing = [...this.candidates(), ...pending].find(
+        (candidate) => candidate.digest === input.digest,
+      );
+      if (existing) {
+        if (
+          digest(existing.proposal) !== digest(input.proposal) ||
+          digest(existing.origin ?? null) !== digest(input.origin ?? null)
+        )
+          throw new Error('Pending candidate submission identity changed');
+        return existing;
+      }
+      if (this.getMeta('searchConclusion')) throw new Error('Search has concluded');
+      const ordinal = this.candidates().length + pending.length;
+      if (ordinal >= this.spec.budget.candidates) throw new Error('Candidate budget exhausted');
+      for (const parent of input.proposal.parents) this.candidate(parent);
+      const candidate = { ...input, ordinal };
+      this.db.prepare('INSERT INTO submissions VALUES (?,?)').run(candidate.digest, canonical(candidate));
+      this.event('candidate.submission_started', candidate);
+      return candidate;
+    });
+  }
+  commitSubmission(id: string): Candidate {
+    return this.transaction(() => {
+      const candidate = this.pendingSubmissions().find((item) => item.digest === id);
+      if (!candidate) throw new Error('Candidate submission is not pending');
+      this.db.prepare('INSERT INTO candidates VALUES (?,?)').run(id, canonical(candidate));
+      this.db.prepare('DELETE FROM submissions WHERE id=?').run(id);
+      this.event('candidate.frozen', candidate);
+      return candidate;
+    });
+  }
   probes(): Probe[] {
     return this.db
       .prepare('SELECT body FROM probes ORDER BY rowid')
@@ -239,7 +280,7 @@ export class Store {
   }
   addCandidate(candidate: Candidate): void {
     this.transaction(() => {
-      if (this.candidates().length >= this.spec.budget.candidates)
+      if (this.candidates().length + this.pendingSubmissions().length >= this.spec.budget.candidates)
         throw new Error('Candidate budget exhausted');
       for (const parent of candidate.proposal.parents) this.candidate(parent);
       this.db.prepare('INSERT INTO candidates VALUES (?,?)').run(candidate.digest, canonical(candidate));

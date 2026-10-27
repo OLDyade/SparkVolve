@@ -20,6 +20,7 @@ export class Controller {
   private activeSignal: AbortSignal | undefined;
   private heartbeat?: ReturnType<typeof setInterval>;
   private leaseError?: Error;
+  private readonly submitting = new Map<string, Promise<Candidate>>();
   constructor(
     readonly root: string,
     readonly dataset: string,
@@ -52,6 +53,12 @@ export class Controller {
         this.leaseError = error as Error;
       }
     }, 5_000);
+    try {
+      for (const candidate of this.store.pendingSubmissions()) await this.publishSubmission(candidate);
+    } catch (error) {
+      await this.close();
+      throw error;
+    }
   }
   async close(): Promise<void> {
     if (this.heartbeat) clearInterval(this.heartbeat);
@@ -67,6 +74,7 @@ export class Controller {
       specification: this.spec,
       champion: this.store.getMeta('champion') ?? null,
       candidates: this.store.candidates(),
+      pendingSubmissions: this.store.pendingSubmissions(),
       runs: this.store.runs(),
       probes: this.store.probes(),
       importedDrafts: this.store.events().filter((event) => event.type === 'draft.imported'),
@@ -122,15 +130,19 @@ export class Controller {
   }
   async submit(raw: unknown): Promise<Candidate> {
     this.assertOwner();
-    if (this.store.getMeta('searchConclusion')) throw new Error('Search has concluded');
     const proposal = Proposal.parse(raw);
     const origin = draftOrigin(this.store, proposal.draft);
     const source = confined(path.join(this.root, 'drafts'), proposal.draft);
     const hash = await treeDigest(source);
-    if (this.store.candidates().some((c) => c.digest === hash))
-      throw new Error('Identical candidate already exists; no resampling');
-    if (this.store.candidates().length >= this.spec.budget.candidates)
-      throw new Error('Candidate budget exhausted');
+    const existing = this.store.candidates().find((candidate) => candidate.digest === hash);
+    if (existing) {
+      if (
+        digest(existing.proposal) !== digest(proposal) ||
+        digest(existing.origin ?? null) !== digest(origin ?? null)
+      )
+        throw new Error('Identical candidate already exists with a different submission; no resampling');
+      return existing;
+    }
     for (const parent of proposal.parents) this.store.candidate(parent);
     await stat(confined(source, this.spec.candidate.patch));
     const pkg = JSON.parse(await readFile(path.join(source, 'package.json'), 'utf8')) as {
@@ -139,16 +151,41 @@ export class Controller {
     if (pkg.dsh?.bundle?.patch?.replace(/^\.\//, '') !== this.spec.candidate.patch)
       throw new Error('Candidate must be a native DSH Bundle with the contracted patch');
     await stat(path.join(source, 'package-lock.json'));
-    await freeze(source, path.join(this.root, 'candidates', hash));
-    const candidate: Candidate = {
+    const candidate = this.store.reserveSubmission({
       digest: hash,
       proposal,
       phase: 'frozen',
-      ordinal: this.store.candidates().length,
       ...(origin ? { origin } : {}),
-    };
-    this.store.addCandidate(candidate);
-    return candidate;
+    });
+    return await this.publishSubmission(candidate);
+  }
+  private async publishSubmission(candidate: Candidate): Promise<Candidate> {
+    const active = this.submitting.get(candidate.digest);
+    if (active) return await active;
+    const operation = this.freezeSubmission(candidate).finally(() =>
+      this.submitting.delete(candidate.digest),
+    );
+    this.submitting.set(candidate.digest, operation);
+    return await operation;
+  }
+  private async freezeSubmission(candidate: Candidate): Promise<Candidate> {
+    if (!this.store.pendingSubmissions().some((item) => item.digest === candidate.digest))
+      return this.store.candidate(candidate.digest);
+    const destination = path.join(this.root, 'candidates', candidate.digest);
+    try {
+      await lstat(destination);
+      if ((await treeDigest(destination)) !== candidate.digest)
+        throw new Error('Frozen candidate content mismatch');
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+      const source = confined(path.join(this.root, 'drafts'), candidate.proposal.draft);
+      if ((await treeDigest(source)) !== candidate.digest)
+        throw new Error('Pending candidate source changed');
+      if ((await freeze(source, destination, path.join(this.root, 'publications'))) !== candidate.digest)
+        throw new Error('Candidate changed before publication');
+    }
+    this.assertOwner();
+    return this.store.commitSubmission(candidate.digest);
   }
   async probe(raw: unknown) {
     this.assertOwner();
@@ -156,6 +193,7 @@ export class Controller {
   }
   finish(reason: string): void {
     this.assertOwner();
+    if (this.store.pendingSubmissions().length) throw new Error('Wait for pending candidate publications');
     if (this.store.probes().some((probe) => probe.phase === 'queued'))
       throw new Error('Wait for pending probes before concluding');
     if (this.store.candidates().some((c) => c.phase === 'frozen' || c.phase === 'running'))
@@ -512,7 +550,11 @@ export class Controller {
           throw new Error('Interrupted delivery snapshot mismatch');
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-        deliveryDigest = await freeze(path.join(this.root, 'runs', run.id, 'work'), delivery);
+        deliveryDigest = await freeze(
+          path.join(this.root, 'runs', run.id, 'work'),
+          delivery,
+          path.join(this.root, 'publications'),
+        );
       }
       this.store.transition(run.id, 'executing', 'delivered', {
         deliveryDigest,

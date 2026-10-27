@@ -57,7 +57,7 @@ export async function queueProbe(root: string, store: Store, raw: unknown): Prom
       await stat(destination);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-      if ((await freeze(input, destination)) !== expected)
+      if ((await freeze(input, destination, path.join(root, 'publications'))) !== expected)
         throw new Error('Probe input changed before freezing');
       return;
     }

@@ -44,8 +44,8 @@ export async function validateStudy(
     for (const arm of arms) {
       if ((await treeDigest(arm.source)) !== arm.digest) throw new Error(`Arm digest mismatch: ${arm.id}`);
       await verifyArtifact(arm.artifact, arm.digest, arm.build);
-      await freeze(arm.source, path.join(root, 'sources', arm.id));
-      await freeze(arm.artifact, path.join(root, 'artifacts', arm.id));
+      await freeze(arm.source, path.join(root, 'sources', arm.id), path.join(root, 'publications'));
+      await freeze(arm.artifact, path.join(root, 'artifacts', arm.id), path.join(root, 'publications'));
     }
     await atomicJSON(path.join(root, 'registration.json'), registration);
   }
@@ -69,7 +69,7 @@ export async function validateStudy(
           await readFile(path.join(artifact, 'receipt.json'));
         } catch (error) {
           if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-          await freeze(path.join(root, 'artifacts', arm.id), artifact);
+          await freeze(path.join(root, 'artifacts', arm.id), artifact, path.join(armRoot, 'publications'));
         }
         await verifyBuild(armRoot, { ...candidate, build: arm.build });
         store.transaction(() => {

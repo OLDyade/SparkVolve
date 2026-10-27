@@ -93,7 +93,9 @@ The example creates public synthetic XLSX tasks and grades actual files through 
 
 **A second domain runs on the same engine:** [structured events and logs](docs/structured-data.md) reuse the controller, optimizer, contract and build pipeline without Excel dependencies. Real model mutation, independent grading, rejection and native installed-tool invocation are verified. [Six task attempts and the negative result](docs/acceptance-structured-data.md) are retained; this is engineering acceptance, not evidence of stable cross-domain gain.
 
-The latest [preregistered development study](docs/acceptance-joint-development.md) improved the mean from 65.625% to 81.25%, with 24 scored executions, one retained native QA failure and 326 adapter calls. Its selected candidate introduced heuristic source restoration and is **not accepted for capability distribution**. This development result does not establish stable gains.
+An earlier [preregistered development study](docs/acceptance-joint-development.md) improved the mean from 65.625% to 81.25%, with 24 scored executions, one retained native QA failure and 326 adapter calls. Its selected candidate introduced heuristic source restoration and is **not accepted for capability distribution**. This development result does not establish stable gains.
+
+The latest [independent joint-candidate validation](docs/experiments/2026-10-28-joint-independent-results.md) completed 24/24 scored executions: baseline 93.75%, candidate 77.08%, promotion rejected. Three repetitions per task, frozen source/build identities, complete usage and native tool counterexamples are retained. These public synthetic task families were previously used during development; this is not an unseen holdout claim.
 
 Use `node dist/cli.js report --root <experiment> --output <new-report.json>` to aggregate scores, failures, executor usage and optimizer expenditure without rerunning tasks.
 
@@ -108,6 +110,7 @@ Read the [full experiment report](docs/acceptance-continuous.md) for individual 
 | Native composition | Profile + environment + candidate patch; service dependencies, Presets and tool schemas |
 | Build identity | Locked installation, compilation, bundled dependencies; identical artifact for QA, execution, validation and export |
 | Recovery | Persistent event cursors and single-writer lease; collect original containers after coordinator interruption |
+| Publication recovery | [SIGKILL during source, build and delivery publication](docs/research/2026-10-28-publication-recovery.md); resume original attempts and replay submission responses without consuming new candidate slots |
 | Independent grading | Private evaluator mounts, complete denominators, declared outcome constraints and preserved failures |
 | Isolation | Explicit non-root/resource/network contracts; runc and pinned gVisor acceptance |
 | Asset reuse | Authorized library search, exact source inspection and import provenance; previous scores never transfer |

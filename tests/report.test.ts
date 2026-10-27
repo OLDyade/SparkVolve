@@ -25,6 +25,7 @@ test('report retains failed samples, QA budget, absent ledgers and optimizer exp
   const rejected = candidate('b'.repeat(64), 1);
   store.addCandidate(rejected);
   store.updateCandidate({ ...rejected, phase: 'qa_failed', qaError: 'invalid tool schema' });
+  store.reserveSubmission({ digest: 'c'.repeat(64), proposal: candidate().proposal, phase: 'frozen' });
   const executorTrace = path.join(root, 'runs', first!.id, 'trace');
   const optimizerTrace = path.join(root, 'optimizer/0/trace');
   await mkdir(executorTrace, { recursive: true });
@@ -44,7 +45,9 @@ test('report retains failed samples, QA budget, absent ledgers and optimizer exp
   await writeFile(path.join(optimizerTrace, 'metrics.json'), '{"started":0}');
   try {
     const report = await experimentReport(root, store);
-    assert.equal(report.candidatesConsumed, 2);
+    assert.equal(report.candidatesConsumed, 3);
+    assert.equal(report.pendingSubmissions.length, 1);
+    assert.equal(report.pendingSubmissions[0]!.digest, 'c'.repeat(64));
     assert.equal(report.candidates[0]!.mean, 0.5);
     assert.equal(report.candidates[0]!.failedRuns, 1);
     assert.equal(report.candidates[0]!.executionElapsedMsReported, 2000);

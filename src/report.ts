@@ -104,7 +104,8 @@ export async function experimentReport(root: string, store: Store) {
     taskOrder: store.spec.tasks.map((task) => task.id),
     repetitions: store.spec.repetitions,
     candidateBudget: store.spec.budget.candidates,
-    candidatesConsumed: candidates.length,
+    candidatesConsumed: candidates.length + store.pendingSubmissions().length,
+    pendingSubmissions: store.pendingSubmissions(),
     probes: {
       budget: store.spec.probes,
       consumed: store.probes().length,

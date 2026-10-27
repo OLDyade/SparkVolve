@@ -184,7 +184,12 @@ test('controller restarts, rescores preserved deliveries, and never reruns compl
     assert.equal(store.getMeta('champion'), initial.digest);
     assert.equal(driver.executions, 2);
     assert.ok(store.runs().every((r) => r.gradeAttempt === 1 && r.attempt === 0));
-    await assert.rejects(controller.submit(initial.proposal), /Identical candidate/);
+    assert.equal((await controller.submit(initial.proposal)).digest, initial.digest);
+    assert.equal(driver.executions, 2, 'Replayed submission must not resample the candidate');
+    await assert.rejects(
+      controller.submit({ ...initial.proposal, hypothesis: 'different request' }),
+      /Identical candidate/,
+    );
     const abort = new AbortController();
     const stopped = new Error('watch acceptance completed');
     const watching = controller.watch(abort.signal);

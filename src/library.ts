@@ -166,7 +166,7 @@ async function copyImport(
     await mkdir(directory, { recursive: true });
     // Private staging is never mounted into the optimizer; interrupted copies remain inspectable.
     const staging = await mkdtemp(path.join(directory, 'copy-'));
-    await freeze(source, path.join(staging, 'source'));
+    await freeze(source, path.join(staging, 'source'), path.join(root, 'publications'));
     await chmod(path.join(staging, 'source'), 0o755);
     await rename(path.join(staging, 'source'), target);
   }

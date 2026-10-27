@@ -137,7 +137,9 @@ node dist/cli.js status --root .evolution/business/search
 
 **第二领域已接入：**[结构化事件与日志](docs/structured-data.md)复用同一进化引擎，无需 Excel。已完成自主工具变异、独立评分、拒绝退步及原生安装后的真实工具调用。[六次任务与负结果](docs/acceptance-structured-data.md)完整记录；领域适配没有修改控制器。
 
-最新[预注册开发集实验](docs/acceptance-joint-development.md)：65.625% → 81.25%，24 次完整评分、一次原生 QA 失败、326 次模型适配器调用。最终候选含不接受的启发式自动恢复，暂不作为接受能力分发；这次开发集提高不构成稳定收益证明。
+此前[预注册开发集实验](docs/acceptance-joint-development.md)：65.625% → 81.25%，24 次完整评分、一次原生 QA 失败、326 次模型适配器调用。最终候选含不接受的启发式自动恢复，暂不作为接受能力分发；这次开发集提高不构成稳定收益证明。
+
+最新[联合候选独立复验](docs/experiments/2026-10-28-joint-independent-results.md)完成 24/24 次评分：基线 93.75%，候选 77.08%，拒绝晋级。每题三次、原冻结源码与构建产物、全部调用账本和工具反例均保留；该公开合成任务集此前已被开发使用，不宣称未知留出集收益。
 
 `node dist/cli.js report --root <实验目录> --output <新文件.json>` 可统一导出逐题分数、失败、用量与优化器账本，无需重跑任务。
 
@@ -172,6 +174,7 @@ dsh plugin --profile sdk add /absolute/new-export-directory/bundle.tgz
 ## 可靠性与证据
 
 - 状态机与单写租约，唯一任务身份，断点接回原容器。
+- [发布与登记恢复](docs/research/2026-10-28-publication-recovery.md)：源码、构建和交付复制中 SIGKILL 后接续原 attempt；响应重放不重复消耗候选预算。
 - 候选 lock 与构建镜像固定；QA、执行、复验和分发使用同一冻结构建产物，源码单独保留供继续变异。
 - 固定题集、完整分母、独立评分；同分拒绝，失败与负结果保留。
 - 评分故障可以对同一冻结交付 `rescore`；不会重做任务刷分。

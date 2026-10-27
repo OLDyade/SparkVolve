@@ -146,7 +146,11 @@ test('probe preparation resumes partial snapshots and an interrupted database re
   const sourceDigest = await treeDigest(source),
     suiteDigest = await treeDigest(suite);
   const id = digest({ sourceDigest, suiteDigest, entry: 'check.mjs' });
-  await freeze(source, path.join(root, 'probes', id, 'candidates', sourceDigest));
+  await freeze(
+    source,
+    path.join(root, 'probes', id, 'candidates', sourceDigest),
+    path.join(root, 'publications'),
+  );
   const add = store.addProbe.bind(store);
   store.addProbe = () => {
     throw new Error('injected commit failure');

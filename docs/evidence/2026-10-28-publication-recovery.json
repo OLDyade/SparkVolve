@@ -1,0 +1,557 @@
+{
+  "recordedAt": "2026-10-27T19:24:39.421Z",
+  "claim": "Process-crash publication and candidate registration recovery; no quality or power-loss claim",
+  "runtime": {
+    "image": "sha256:19e538d08c8b69c454804a1f2ea5fdde6eef970c6dee0e3d79adc304bf223692",
+    "engine": "runc",
+    "dns": [
+      "0.250.250.200"
+    ]
+  },
+  "checks": {
+    "unit": {
+      "passed": 67,
+      "failed": 0
+    },
+    "native": {
+      "passed": 10,
+      "failed": 0
+    },
+    "container": {
+      "passed": 16,
+      "failed": 0
+    },
+    "distribution": {
+      "passed": 1,
+      "failed": 0,
+      "installedArchiveSha256": "f9f485ae20a354d5518ab1af1162ec20bd3c335b1c885329ed321c0c2477ab75"
+    }
+  },
+  "sources": {
+    "src/artifacts.ts": "307756bee20f765edc0eac7b88d46a537e82dfa21757a8fe517be09e47e06805",
+    "src/controller.ts": "d2c88e2efe69a9bc897c83d14fcbb76425e0918799b5489c9ed46cf68481848e",
+    "src/store.ts": "ce241ddbcc98e3c029fd14dcd4bfb9ebfca92c4bb8e1e2c66744ad0dd66d962f",
+    "src/report.ts": "cf5e8162cc5c3f69a38c3f72a56287f81840507f1cf4ee862878785a517fd259",
+    "tests/publication.test.ts": "afb096b3a5266f743ce2189fafa01a74afc0f7ae14d2fa7be4285a06d6c8716c",
+    "tests/submission.test.ts": "992db8058e7ad4ea877869886a4a8fffe00dfa8fe903951d019d7f8b60c8ef8e",
+    "tests/container/publication.test.ts": "40b6c6b0b5b801ab9623665409c4d7c8ec2893cb308dbf100740ab44afe59d81",
+    "tests/fixtures/publication-child.mjs": "9d31e6a6a11879ce76b0971210d6ca4200131b88f2f517f73b4636411fa07004",
+    "tests/fixtures/controller-publication-child.mjs": "e9d386ef72a01a2087fc3301aa45d3339e17726c2d8cb7f5a62ec9dc2177cf0e"
+  },
+  "cases": [
+    {
+      "area": "candidates",
+      "root": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-publication-candidates-CsApwA",
+      "records": {
+        "acceptance.json": {
+          "sha256": "3a06d89ad926706b6e30d93c82825e4b9b444255c8a77941efc6b83711cafb6b",
+          "record": {
+            "area": "candidates",
+            "buildAfter": "7734d32bdaba2663ccd0f75cdeb755ad704add7a7e9f40e5c68018e77b07b45e",
+            "buildBefore": null,
+            "candidates": 1,
+            "pendingSubmissions": 0,
+            "run": {
+              "attempt": 0,
+              "candidate": "85b4ac35b6d6dea0b2a27e0feedc56c69dd35d93aa9eaa93aff75e6c53eb5059",
+              "completedAt": "2026-10-27T19:24:10.519Z",
+              "container": "he-run-ec11aa98351890098a5351daa945cb174b6c1fd8",
+              "deliveryDigest": "c5f7fd189a8772dada99fd50e7ea567a629b2f22ca1ba4d62a7d4245620dee32",
+              "grade": {
+                "feedback": "Independent literal fixture",
+                "metrics": {},
+                "score": 1
+              },
+              "gradeAttempt": 0,
+              "gradeContainer": "he-grade-ec11aa98351890098a5351daa945cb174b6c1fd8-0",
+              "id": "ec11aa98351890098a5351daa945cb174b6c1fd8ad3954c8314bd54d566587cc",
+              "phase": "scored",
+              "repetition": 0,
+              "startedAt": "2026-10-27T19:24:06.607Z",
+              "task": "task"
+            },
+            "taskAfter": "0e1160d12cdd9aa705a0fc11a72a9e1d023761138e64829027247dee5b8c2961",
+            "taskBefore": null,
+            "usage": {
+              "failed": 0,
+              "inputTokensReported": 25,
+              "missingUsage": 0,
+              "outputTokensReported": 6,
+              "requestDurationMsSum": 2,
+              "results": 2,
+              "started": 2,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          }
+        },
+        "crash.json": {
+          "sha256": "73a08ff3e46695cebb1eb0196da3bd3a33b8466006c37ffe796f58979cb03f2b",
+          "record": {
+            "area": "candidates",
+            "marker": {
+              "destination": "/private/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-publication-candidates-CsApwA/candidates/85b4ac35b6d6dea0b2a27e0feedc56c69dd35d93aa9eaa93aff75e6c53eb5059",
+              "identity": "85b4ac35b6d6dea0b2a27e0feedc56c69dd35d93aa9eaa93aff75e6c53eb5059",
+              "phase": "copying"
+            },
+            "signal": "SIGKILL",
+            "stderr": ""
+          }
+        },
+        "experiment.json": {
+          "sha256": "e7ee5a16a03082610e1359dd9167727a1cbd7be70330c977d8f2289c78b4575a",
+          "record": {
+            "budget": {
+              "candidates": 1,
+              "optimizerSeconds": 60
+            },
+            "candidate": {
+              "build": {
+                "image": "sha256:19e538d08c8b69c454804a1f2ea5fdde6eef970c6dee0e3d79adc304bf223692",
+                "timeoutSeconds": 60
+              },
+              "patch": "cordis.patch.yml",
+              "qa": null
+            },
+            "concurrency": 1,
+            "constraints": [],
+            "egress": {
+              "executor": [],
+              "optimizer": []
+            },
+            "evaluator": {
+              "command": [
+                "node",
+                "/evaluation/grade.mjs"
+              ],
+              "image": "sha256:19e538d08c8b69c454804a1f2ea5fdde6eef970c6dee0e3d79adc304bf223692",
+              "timeoutSeconds": 30
+            },
+            "executor": {
+              "credentialEnv": [],
+              "maxTokens": 1024,
+              "model": "fixture",
+              "provider": "container-fixture",
+              "reasoningEffort": "off"
+            },
+            "failureLimit": 0,
+            "isolation": {
+              "cpus": 2,
+              "homeMiB": 128,
+              "memoryMiB": 4096,
+              "network": {
+                "build": "none",
+                "egressDns": [
+                  "0.250.250.200"
+                ],
+                "egressPool": "10.230.0.0/16",
+                "evaluator": "none",
+                "executor": "none",
+                "optimizer": "controlled",
+                "qa": "none"
+              },
+              "pids": 256,
+              "runtime": "runc",
+              "tmpMiB": 512,
+              "user": {
+                "gid": 20,
+                "uid": 501
+              }
+            },
+            "metric": {
+              "direction": "maximize",
+              "failure": 0,
+              "maximum": 1,
+              "minimum": 0,
+              "name": "accuracy"
+            },
+            "name": "invariants",
+            "objective": "Verify experiment invariants",
+            "optimizer": {
+              "credentialEnv": [],
+              "maxTokens": 1024,
+              "model": "test",
+              "provider": "test",
+              "reasoningEffort": "off"
+            },
+            "optimizerHarness": {
+              "composition": "plugins.yml",
+              "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "directory": "optimizer-bundle"
+            },
+            "probes": null,
+            "purpose": "search",
+            "repetitions": 1,
+            "researchLibrary": null,
+            "runtime": {
+              "dshVersion": "0.2.1-rc.4",
+              "environment": null,
+              "image": "sha256:19e538d08c8b69c454804a1f2ea5fdde6eef970c6dee0e3d79adc304bf223692",
+              "profile": "sdk-minimal"
+            },
+            "tasks": [
+              {
+                "evaluation": "evaluation/task",
+                "evaluationDigest": "c7448f95831d4a3ca7526d2ccd227748380c2ca2bbbc06732630fd16e2af47e7",
+                "id": "task",
+                "input": "inputs/task",
+                "inputDigest": "a66a5c2c591aa19480c2fe80735d9289e670a766d48889938401ac32c6f9d139",
+                "prompt": "Use fixture_deliver to process the public input."
+              }
+            ],
+            "timeoutSeconds": 60
+          }
+        }
+      }
+    },
+    {
+      "area": "artifacts",
+      "root": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-publication-artifacts-Nnbg7W",
+      "records": {
+        "acceptance.json": {
+          "sha256": "a7e8c50e9467b4c8c3eb214a2481b37d5da71c65654ed2880e7c375515f66d3c",
+          "record": {
+            "area": "artifacts",
+            "buildAfter": "f80e995856ae036dbfdc459a3adc430159cfddac5072ccdb7acad66d0516048a",
+            "buildBefore": "f80e995856ae036dbfdc459a3adc430159cfddac5072ccdb7acad66d0516048a",
+            "candidates": 1,
+            "pendingSubmissions": 0,
+            "run": {
+              "attempt": 0,
+              "candidate": "85b4ac35b6d6dea0b2a27e0feedc56c69dd35d93aa9eaa93aff75e6c53eb5059",
+              "completedAt": "2026-10-27T19:24:09.885Z",
+              "container": "he-run-a65391dc73ea9d171d51c6cd730631b9041d13fe",
+              "deliveryDigest": "c5f7fd189a8772dada99fd50e7ea567a629b2f22ca1ba4d62a7d4245620dee32",
+              "grade": {
+                "feedback": "Independent literal fixture",
+                "metrics": {},
+                "score": 1
+              },
+              "gradeAttempt": 0,
+              "gradeContainer": "he-grade-a65391dc73ea9d171d51c6cd730631b9041d13fe-0",
+              "id": "a65391dc73ea9d171d51c6cd730631b9041d13fe3c915c9cc012d3aa5c1412ea",
+              "phase": "scored",
+              "repetition": 0,
+              "startedAt": "2026-10-27T19:24:06.032Z",
+              "task": "task"
+            },
+            "taskAfter": "495a8c31e1f30ce90522af5531c278667b5bb8016c7de0a2cb3c983c27c012ce",
+            "taskBefore": null,
+            "usage": {
+              "failed": 0,
+              "inputTokensReported": 25,
+              "missingUsage": 0,
+              "outputTokensReported": 6,
+              "requestDurationMsSum": 2,
+              "results": 2,
+              "started": 2,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          }
+        },
+        "crash.json": {
+          "sha256": "ada1f22c64e9aa6c32525eea3cd020183332f3c64cc827f6c6f14b236ba23c15",
+          "record": {
+            "area": "artifacts",
+            "marker": {
+              "destination": "/private/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-publication-artifacts-Nnbg7W/artifacts/85b4ac35b6d6dea0b2a27e0feedc56c69dd35d93aa9eaa93aff75e6c53eb5059",
+              "identity": "cbf8f6c5d832b02f7d6245284e6d1f52bcb1f872946d08074660007af2a69f63",
+              "phase": "copying"
+            },
+            "signal": "SIGKILL",
+            "stderr": ""
+          }
+        },
+        "experiment.json": {
+          "sha256": "e7ee5a16a03082610e1359dd9167727a1cbd7be70330c977d8f2289c78b4575a",
+          "record": {
+            "budget": {
+              "candidates": 1,
+              "optimizerSeconds": 60
+            },
+            "candidate": {
+              "build": {
+                "image": "sha256:19e538d08c8b69c454804a1f2ea5fdde6eef970c6dee0e3d79adc304bf223692",
+                "timeoutSeconds": 60
+              },
+              "patch": "cordis.patch.yml",
+              "qa": null
+            },
+            "concurrency": 1,
+            "constraints": [],
+            "egress": {
+              "executor": [],
+              "optimizer": []
+            },
+            "evaluator": {
+              "command": [
+                "node",
+                "/evaluation/grade.mjs"
+              ],
+              "image": "sha256:19e538d08c8b69c454804a1f2ea5fdde6eef970c6dee0e3d79adc304bf223692",
+              "timeoutSeconds": 30
+            },
+            "executor": {
+              "credentialEnv": [],
+              "maxTokens": 1024,
+              "model": "fixture",
+              "provider": "container-fixture",
+              "reasoningEffort": "off"
+            },
+            "failureLimit": 0,
+            "isolation": {
+              "cpus": 2,
+              "homeMiB": 128,
+              "memoryMiB": 4096,
+              "network": {
+                "build": "none",
+                "egressDns": [
+                  "0.250.250.200"
+                ],
+                "egressPool": "10.230.0.0/16",
+                "evaluator": "none",
+                "executor": "none",
+                "optimizer": "controlled",
+                "qa": "none"
+              },
+              "pids": 256,
+              "runtime": "runc",
+              "tmpMiB": 512,
+              "user": {
+                "gid": 20,
+                "uid": 501
+              }
+            },
+            "metric": {
+              "direction": "maximize",
+              "failure": 0,
+              "maximum": 1,
+              "minimum": 0,
+              "name": "accuracy"
+            },
+            "name": "invariants",
+            "objective": "Verify experiment invariants",
+            "optimizer": {
+              "credentialEnv": [],
+              "maxTokens": 1024,
+              "model": "test",
+              "provider": "test",
+              "reasoningEffort": "off"
+            },
+            "optimizerHarness": {
+              "composition": "plugins.yml",
+              "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "directory": "optimizer-bundle"
+            },
+            "probes": null,
+            "purpose": "search",
+            "repetitions": 1,
+            "researchLibrary": null,
+            "runtime": {
+              "dshVersion": "0.2.1-rc.4",
+              "environment": null,
+              "image": "sha256:19e538d08c8b69c454804a1f2ea5fdde6eef970c6dee0e3d79adc304bf223692",
+              "profile": "sdk-minimal"
+            },
+            "tasks": [
+              {
+                "evaluation": "evaluation/task",
+                "evaluationDigest": "c7448f95831d4a3ca7526d2ccd227748380c2ca2bbbc06732630fd16e2af47e7",
+                "id": "task",
+                "input": "inputs/task",
+                "inputDigest": "a66a5c2c591aa19480c2fe80735d9289e670a766d48889938401ac32c6f9d139",
+                "prompt": "Use fixture_deliver to process the public input."
+              }
+            ],
+            "timeoutSeconds": 60
+          }
+        }
+      }
+    },
+    {
+      "area": "delivery",
+      "root": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-publication-delivery-NGxN1w",
+      "records": {
+        "acceptance.json": {
+          "sha256": "da658604343fe91c3d4e23033375515453dfe895b8c625dd8063724c2d9b88f3",
+          "record": {
+            "area": "delivery",
+            "buildAfter": "aaf7fb053a4617185a2979c4ddae7b035f2a55692775fdcd9d2c0a56b9ff2a28",
+            "buildBefore": "aaf7fb053a4617185a2979c4ddae7b035f2a55692775fdcd9d2c0a56b9ff2a28",
+            "candidates": 1,
+            "pendingSubmissions": 0,
+            "run": {
+              "attempt": 0,
+              "candidate": "85b4ac35b6d6dea0b2a27e0feedc56c69dd35d93aa9eaa93aff75e6c53eb5059",
+              "completedAt": "2026-10-27T19:24:10.051Z",
+              "container": "he-run-04a51f132b1f4064cf554c43a9ea4b8f3692fdfc",
+              "deliveryDigest": "c5f7fd189a8772dada99fd50e7ea567a629b2f22ca1ba4d62a7d4245620dee32",
+              "grade": {
+                "feedback": "Independent literal fixture",
+                "metrics": {},
+                "score": 1
+              },
+              "gradeAttempt": 0,
+              "gradeContainer": "he-grade-04a51f132b1f4064cf554c43a9ea4b8f3692fdfc-0",
+              "id": "04a51f132b1f4064cf554c43a9ea4b8f3692fdfcb9f2f78d4d40da5bc7fb5454",
+              "phase": "scored",
+              "repetition": 0,
+              "startedAt": "2026-10-27T19:23:38.237Z",
+              "task": "task"
+            },
+            "taskAfter": "d9734e6c262df675abef658f0f2cc5f7a935f8beff451d61dcef57317f8eb201",
+            "taskBefore": "d9734e6c262df675abef658f0f2cc5f7a935f8beff451d61dcef57317f8eb201",
+            "usage": {
+              "failed": 0,
+              "inputTokensReported": 25,
+              "missingUsage": 0,
+              "outputTokensReported": 6,
+              "requestDurationMsSum": 3,
+              "results": 2,
+              "started": 2,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          }
+        },
+        "crash.json": {
+          "sha256": "c772945cd4fb077e5214e4615be247e79bc88b5d6cb4d8a9168abb56fa5a4072",
+          "record": {
+            "area": "delivery",
+            "marker": {
+              "destination": "/private/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-publication-delivery-NGxN1w/runs/04a51f132b1f4064cf554c43a9ea4b8f3692fdfcb9f2f78d4d40da5bc7fb5454/delivery",
+              "identity": "c5f7fd189a8772dada99fd50e7ea567a629b2f22ca1ba4d62a7d4245620dee32",
+              "phase": "copying"
+            },
+            "signal": "SIGKILL",
+            "stderr": ""
+          }
+        },
+        "experiment.json": {
+          "sha256": "e7ee5a16a03082610e1359dd9167727a1cbd7be70330c977d8f2289c78b4575a",
+          "record": {
+            "budget": {
+              "candidates": 1,
+              "optimizerSeconds": 60
+            },
+            "candidate": {
+              "build": {
+                "image": "sha256:19e538d08c8b69c454804a1f2ea5fdde6eef970c6dee0e3d79adc304bf223692",
+                "timeoutSeconds": 60
+              },
+              "patch": "cordis.patch.yml",
+              "qa": null
+            },
+            "concurrency": 1,
+            "constraints": [],
+            "egress": {
+              "executor": [],
+              "optimizer": []
+            },
+            "evaluator": {
+              "command": [
+                "node",
+                "/evaluation/grade.mjs"
+              ],
+              "image": "sha256:19e538d08c8b69c454804a1f2ea5fdde6eef970c6dee0e3d79adc304bf223692",
+              "timeoutSeconds": 30
+            },
+            "executor": {
+              "credentialEnv": [],
+              "maxTokens": 1024,
+              "model": "fixture",
+              "provider": "container-fixture",
+              "reasoningEffort": "off"
+            },
+            "failureLimit": 0,
+            "isolation": {
+              "cpus": 2,
+              "homeMiB": 128,
+              "memoryMiB": 4096,
+              "network": {
+                "build": "none",
+                "egressDns": [
+                  "0.250.250.200"
+                ],
+                "egressPool": "10.230.0.0/16",
+                "evaluator": "none",
+                "executor": "none",
+                "optimizer": "controlled",
+                "qa": "none"
+              },
+              "pids": 256,
+              "runtime": "runc",
+              "tmpMiB": 512,
+              "user": {
+                "gid": 20,
+                "uid": 501
+              }
+            },
+            "metric": {
+              "direction": "maximize",
+              "failure": 0,
+              "maximum": 1,
+              "minimum": 0,
+              "name": "accuracy"
+            },
+            "name": "invariants",
+            "objective": "Verify experiment invariants",
+            "optimizer": {
+              "credentialEnv": [],
+              "maxTokens": 1024,
+              "model": "test",
+              "provider": "test",
+              "reasoningEffort": "off"
+            },
+            "optimizerHarness": {
+              "composition": "plugins.yml",
+              "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "directory": "optimizer-bundle"
+            },
+            "probes": null,
+            "purpose": "search",
+            "repetitions": 1,
+            "researchLibrary": null,
+            "runtime": {
+              "dshVersion": "0.2.1-rc.4",
+              "environment": null,
+              "image": "sha256:19e538d08c8b69c454804a1f2ea5fdde6eef970c6dee0e3d79adc304bf223692",
+              "profile": "sdk-minimal"
+            },
+            "tasks": [
+              {
+                "evaluation": "evaluation/task",
+                "evaluationDigest": "c7448f95831d4a3ca7526d2ccd227748380c2ca2bbbc06732630fd16e2af47e7",
+                "id": "task",
+                "input": "inputs/task",
+                "inputDigest": "a66a5c2c591aa19480c2fe80735d9289e670a766d48889938401ac32c6f9d139",
+                "prompt": "Use fixture_deliver to process the public input."
+              }
+            ],
+            "timeoutSeconds": 60
+          }
+        }
+      }
+    }
+  ],
+  "boundary": "Real DSH and Docker with protocol fixture models. Original build/task containers and attempt identities checked. Independent real-model results are recorded separately.",
+  "initialFixtureFailures": [
+    {
+      "reason": "Single-task failureLimit inherited invalid two-task value; rejected before containers",
+      "roots": [
+        "he-publication-candidates-LkJsA3",
+        "he-publication-artifacts-e412Mi",
+        "he-publication-delivery-mHNjnq"
+      ]
+    },
+    {
+      "reason": "Fixture omitted required scripts.build; macOS path alias prevented phase observer match; build failed without model tasks",
+      "roots": [
+        "he-publication-candidates-0vp5iP",
+        "he-publication-artifacts-wJm8kt",
+        "he-publication-delivery-0fWdIw"
+      ]
+    }
+  ]
+}

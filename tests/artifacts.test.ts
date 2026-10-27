@@ -16,7 +16,11 @@ test('candidate snapshot has stable content identity and independent bytes', asy
   try {
     await mkdir(path.join(root, 'source'));
     await writeFile(path.join(root, 'source', 'code.js'), 'export const 能力 = 1;');
-    const identity = await freeze(path.join(root, 'source'), path.join(root, 'frozen'));
+    const identity = await freeze(
+      path.join(root, 'source'),
+      path.join(root, 'frozen'),
+      path.join(root, 'publications'),
+    );
     assert.equal(identity, await treeDigest(path.join(root, 'frozen')));
     await writeFile(path.join(root, 'source', 'code.js'), 'changed');
     assert.notEqual(identity, await treeDigest(path.join(root, 'source')));
