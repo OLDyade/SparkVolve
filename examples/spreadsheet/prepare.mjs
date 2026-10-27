@@ -36,7 +36,10 @@ const spec = Experiment.parse({
   executor: model,
   optimizer: model,
   evaluator: { image, command: ['python3', '/evaluation/grade.py'], timeoutSeconds: 120 },
-  candidate: { patch: 'cordis.patch.yml', qa: ['node', '--check', '/candidate/index.mjs'] },
+  candidate: {
+    patch: 'cordis.patch.yml',
+    qa: ['node', '/app/spreadsheet-qa.mjs', '/candidate/index.mjs'],
+  },
   tasks,
   repetitions: 1,
   concurrency: 3,

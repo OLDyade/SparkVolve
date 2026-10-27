@@ -50,6 +50,7 @@ GitHub HEAD 与 npm 发布物存在 API 差异。例如源码中的拆分工具�
 - [插件扩展传播案例](https://x.com/GithubProjects/status/2106678219412038141)：解释生态关注方向，不作为方法新颖性或效果证据。
 
 研究结论必须继续区分：原生接线通过、真实模型完成闭环、固定任务质量变化、独立复验与迁移。四者不能互相替代。
+
 ## 运行中补充核验：预算、安装与依赖
 
 - 原生 `SystemPrompt.context()` 会在 assembly / admission refresh 更新动态事实；本框架用它呈现执行预算，不新增 Agent Loop、强制续轮或保存门。
@@ -59,4 +60,14 @@ GitHub HEAD 与 npm 发布物存在 API 差异。例如源码中的拆分工具�
 - 宿主自行安装 Bundle 时，宿主的 lockfile 与安装脚本授权仍由宿主管理；本项目的 npm overrides 不会传递成所有消费者的全局策略。
 
 来源：[DSH Profile 与插件管理](https://github.com/deepseek-ai/deepseek-harness/tree/22ddee3792402c3e70ec5f86a63c3e3e895a2f60)、实际安装的 `dsh-system-prompt@0.2.1-rc.4` 类型、`dsh-plugin-manager@0.2.1-rc.4` 的 `reconcile()` / `setBundleEnabled()`、`pnpm@12.15.0/install.js`、[pnpm 安装脚本授权](https://pnpm.io/cli/approve-builds)与[配置说明](https://pnpm.io/settings)。
+
+## 安装验收发现的参数 DSL 问题
+
+真实模型安装验收发现，早期 Excel 示例将 `parameters.edits.items` 写成了原始 JSON Schema。DSH rc.4 的作者接口要求统一 ValueSchemaSpec：嵌套对象显式声明 `additionalProperties`，必填标在每个属性的 `required: true` 上，任意 JSON 值使用 `type: 'json'`。错误接口会让整个插件初始化失败，早先已经注册的工具也随 Fiber 释放。
+
+DSH 对非必要插件的初始化失败默认输出警告，SDK 仍可以完成 Agent 任务。因此早期实验虽然真实模型完成了工作簿，且独立评分为满分，实际请求未包含表格插件工具，不能据此认定插件生效或变异有效。旧实验与原报告完整保留，另开实验验证修复后的基线。
+
+当前示例 QA 直接通过原生 Cordis、SystemPrompt、ToolRuntime 激活候选入口，替代仅执行 `node --check`。回归测试同时验证正确工具可注册、原始错误 schema 明确失败；真实任务再核查模型实际收到的 schema 与工具调用。通用实验合同仍允许领域提供自己的 QA 命令，不向所有任务硬编码表格工具名单。
+
+依据：[官方工具 DSL](https://github.com/deepseek-ai/deepseek-harness/blob/22ddee3792402c3e70ec5f86a63c3e3e895a2f60/docs/subsystems/tools.md)，实际 `dsh-tools@0.2.1-rc.4` 的 `runSchemaCompiler()`，以及 `dsh-app-boot@0.2.1-rc.4` 的 `auditStartupEntries()`。
 

@@ -45,8 +45,12 @@ export function apply(ctx) {
           required: true,
           items: {
             type: 'object',
-            properties: { sheet: { type: 'string' }, cell: { type: 'string' }, value: {} },
-            required: ['sheet', 'cell', 'value'],
+            additionalProperties: false,
+            properties: {
+              sheet: { type: 'string', required: true },
+              cell: { type: 'string', required: true },
+              value: { type: 'json', required: true },
+            },
           },
         },
       },
