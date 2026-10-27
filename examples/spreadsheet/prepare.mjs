@@ -44,6 +44,7 @@ const spec = Experiment.parse({
   },
   executor: model,
   optimizer: model,
+  researchLibrary: null,
   optimizerHarness: {
     directory: 'optimizer-bundle',
     digest: await treeDigest(path.join(dataset, 'optimizer-bundle')),

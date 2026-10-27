@@ -52,6 +52,7 @@ export const Experiment = z
     executor: Model,
     optimizer: Model,
     optimizerHarness: z.strictObject({ directory: RelativePath, digest: Digest, composition: RelativePath }),
+    researchLibrary: z.strictObject({ directory: RelativePath, digest: Digest }).nullable(),
     evaluator: z.strictObject({
       image: Image,
       command: z.array(z.string()).min(1),
@@ -102,6 +103,7 @@ export const Experiment = z
     const publicRoots = [
       ...spec.tasks.map((t) => t.input),
       spec.optimizerHarness.directory,
+      ...(spec.researchLibrary ? [spec.researchLibrary.directory] : []),
       ...(spec.runtime.environment ? [spec.runtime.environment.directory] : []),
     ];
     if (
@@ -171,4 +173,5 @@ export interface Candidate {
   buildError?: string;
   qaError?: string;
   mean?: number;
+  origin?: { archiveId: string; recordDigest: string; sourceCandidate: string };
 }

@@ -5,7 +5,8 @@ import { Store } from './store.js';
 import { atomicJSON, confined, digest, freeze, treeDigest } from './artifacts.js';
 import { Docker, readJSON } from './docker.js';
 import type { ContainerSpec } from './docker.js';
-import { Grade, Proposal } from './contracts.js';
+import { Grade, Proposal, Digest } from './contracts.js';
+import { catalog, inspectAsset, importArchive, draftOrigin } from './library.js';
 import { collectRequestMetrics } from './metrics.js';
 import { buildCandidate, bundlePath, verifyBuild } from './build.js';
 import type { Candidate, CandidateProposal, ExperimentSpec, TaskRun } from './contracts.js';
@@ -24,6 +25,7 @@ export class Controller {
     readonly docker = new Docker(),
   ) {}
   async start(): Promise<void> {
+    if (this.spec.researchLibrary) await this.libraryRoot();
     const environment = this.spec.runtime.environment;
     if (
       environment &&
@@ -89,10 +91,34 @@ export class Controller {
     for (const entry of await inventory(target))
       await chmod(confined(target, entry.path), entry.executable ? 0o755 : 0o644);
   }
+  private async libraryRoot(): Promise<string> {
+    const library = this.spec.researchLibrary;
+    if (!library) throw new Error('No research library authorized by the experiment contract');
+    const directory = confined(this.dataset, library.directory);
+    if ((await treeDigest(directory)) !== library.digest)
+      throw new Error('Research library snapshot changed');
+    return directory;
+  }
+  async library(query = '') {
+    return await catalog(await this.libraryRoot(), query);
+  }
+  async asset(archive: string, file?: string) {
+    return await inspectAsset(await this.libraryRoot(), archive, file);
+  }
+  async importAsset(archive: string, draft: string): Promise<void> {
+    this.assertOwner();
+    if (this.spec.purpose !== 'search' || this.store.getMeta('searchConclusion'))
+      throw new Error('Only an open search can import research assets');
+    const library = await this.libraryRoot();
+    Digest.parse(archive);
+    await inspectAsset(library, archive);
+    await importArchive(this.root, this.store, confined(library, archive), draft);
+  }
   async submit(raw: unknown): Promise<Candidate> {
     this.assertOwner();
     if (this.store.getMeta('searchConclusion')) throw new Error('Search has concluded');
     const proposal = Proposal.parse(raw);
+    const origin = draftOrigin(this.store, proposal.draft);
     const source = confined(path.join(this.root, 'drafts'), proposal.draft);
     const hash = await treeDigest(source);
     if (this.store.candidates().some((c) => c.digest === hash))
@@ -113,6 +139,7 @@ export class Controller {
       proposal,
       phase: 'frozen',
       ordinal: this.store.candidates().length,
+      ...(origin ? { origin } : {}),
     };
     this.store.addCandidate(candidate);
     return candidate;

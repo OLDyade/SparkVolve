@@ -33,10 +33,13 @@ test('native Cordis registers, executes and disposes evolution capabilities', as
         .map((s) => s.name)
         .sort(),
       [
+        'evolution_asset',
         'evolution_branch',
         'evolution_candidate',
         'evolution_evidence',
         'evolution_finish',
+        'evolution_import',
+        'evolution_library',
         'evolution_status',
         'evolution_submit',
         'evolution_wait',

@@ -8,6 +8,7 @@ import { Controller } from './controller.js';
 import { Digest, Id, RelativePath } from './contracts.js';
 import { confined, inventory } from './artifacts.js';
 import { EventCursor } from './events.js';
+import { draftOrigin } from './library.js';
 
 export async function serve(
   controller: Controller,
@@ -46,6 +47,25 @@ export async function serve(
       const body: unknown = JSON.parse(Buffer.concat(chunks).toString());
       let result: unknown;
       switch (req.url) {
+        case '/library': {
+          const args = z.strictObject({ query: z.string().default('') }).parse(body);
+          result = await controller.library(args.query);
+          break;
+        }
+        case '/asset': {
+          const args = z.strictObject({ archive: Digest, file: RelativePath.optional() }).parse(body);
+          result = await controller.asset(args.archive, args.file);
+          break;
+        }
+        case '/import': {
+          const args = z.strictObject({ archive: Digest, draft: Id }).parse(body);
+          await controller.importAsset(args.archive, args.draft);
+          result = {
+            path: `/workspace/${args.draft}`,
+            origin: draftOrigin(controller.store, args.draft),
+          };
+          break;
+        }
         case '/events': {
           const args = z
             .strictObject({

@@ -16,6 +16,7 @@ export function specification(): ExperimentSpec {
     executor: model,
     optimizer: model,
     optimizerHarness: { directory: 'optimizer-bundle', digest: hash, composition: 'plugins.yml' },
+    researchLibrary: null,
     evaluator: { image: `sha256:${hash}`, command: ['node', '/grader.js'], timeoutSeconds: 10 },
     candidate: {
       patch: 'cordis.patch.yml',
