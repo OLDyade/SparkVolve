@@ -62,6 +62,11 @@ export interface StudyJob {
   error?: string;
   cleanupDigest?: string;
 }
+export interface FixedDispatchPlan {
+  protocol: 'paired-blocks-1';
+  registrationDigest: string;
+  blocks: Array<{ caseId: string; repetition: number; jobs: string[] }>;
+}
 export interface StudyMetaEpisode {
   ordinal: number;
   seconds: number;
@@ -452,6 +457,50 @@ export class OptimizerStudyStore {
     for (const job of this.jobs())
       for (const key of Object.keys(total) as Array<keyof StudyAllocation>) total[key] += job.allocation[key];
     return total;
+  }
+  /** Freeze the complete dispatch denominator before execution; never retrofit an already-started study. */
+  freezeFixedDispatchPlan(owner: string): FixedDispatchPlan {
+    const spec = this.spec;
+    if (!isFixedComparison(spec)) throw Error('Paired dispatch requires a fixed comparison');
+    const jobs = this.jobs();
+    const blocks = spec.cases.flatMap((item) =>
+      Array.from({ length: spec.repetitions }, (_, repetition) => {
+        const offset = repetition % spec.arms.length;
+        const arms = [...spec.arms.slice(offset), ...spec.arms.slice(0, offset)];
+        return {
+          caseId: item.id,
+          repetition,
+          jobs: arms.map((arm) => {
+            const job = jobs.find(
+              (entry) =>
+                entry.stage === 'validation' &&
+                entry.caseId === item.id &&
+                entry.repetition === repetition &&
+                entry.comparisonArm === studyArmIdentity(arm),
+            );
+            if (!job) throw Error('Paired dispatch requires the complete reserved denominator');
+            return job.id;
+          }),
+        };
+      }),
+    );
+    const plan: FixedDispatchPlan = {
+      protocol: 'paired-blocks-1',
+      registrationDigest: this.registrationDigest,
+      blocks,
+    };
+    return this.write(owner, () => {
+      const saved = this.meta('fixedDispatchPlan');
+      if (saved !== undefined) {
+        if (canonical(JSON.parse(saved)) !== canonical(plan)) throw Error('Fixed dispatch plan changed');
+        return plan;
+      }
+      if (this.state().phase !== 'validating' || jobs.some((job) => job.phase !== 'reserved'))
+        throw Error('Cannot install a dispatch plan after execution has started');
+      this.setMeta('fixedDispatchPlan', canonical(plan));
+      this.event('study.dispatch_planned', plan);
+      return plan;
+    });
   }
   startJob(owner: string, id: string, childSpecDigest: string): StudyJob {
     Digest.parse(childSpecDigest);

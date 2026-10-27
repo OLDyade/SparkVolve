@@ -711,7 +711,7 @@ export class OptimizerStudyCoordinator {
       await removeStaging(staging);
     }
   }
-  private async runJob(initial: StudyJob, transport: StudyTransport, signal: AbortSignal): Promise<void> {
+  protected async runJob(initial: StudyJob, transport: StudyTransport, signal: AbortSignal): Promise<void> {
     const item = studyCases(this.spec).find((item) => item.id === initial.caseId)!;
     const childRoot = confined(this.root, initial.childRoot);
     try {
@@ -818,6 +818,49 @@ export class OptimizerStudyCoordinator {
   beginValidation() {
     return this.store.beginValidation(this.owner);
   }
+  private async runPairedComparison(transport: StudyTransport, externalSignal?: AbortSignal) {
+    const signal = this.signal(externalSignal);
+    const plan = this.store.freezeFixedDispatchPlan(this.owner);
+    for (const [index, block] of plan.blocks.entries()) {
+      signal.throwIfAborted();
+      const jobs = block.jobs.map((id) => this.store.job(id));
+      if (jobs.every((job) => done.has(job.phase))) continue;
+      if (
+        plan.blocks
+          .slice(index + 1)
+          .some((later) => later.jobs.some((id) => this.store.job(id).phase !== 'reserved'))
+      )
+        throw Error('Paired dispatch block barrier was violated');
+      // Reattach already-running jobs first without changing the frozen order of unstarted arms.
+      const queue = jobs
+        .filter((job) => !done.has(job.phase))
+        .sort((a, b) => Number(b.phase !== 'reserved') - Number(a.phase !== 'reserved'));
+      const worker = async () => {
+        for (;;) {
+          signal.throwIfAborted();
+          const job = queue.shift();
+          if (!job) return;
+          this.ready(job.method);
+          await this.runJob(job, transport, signal);
+        }
+      };
+      const results = await Promise.allSettled(
+        Array.from({ length: this.spec.budget.concurrentSearches }, worker),
+      );
+      signal.throwIfAborted();
+      await this.report();
+      const errors = results.filter(
+        (result): result is PromiseRejectedResult => result.status === 'rejected',
+      );
+      if (errors.length)
+        throw new AggregateError(
+          errors.map((error) => error.reason),
+          'Paired study block failed',
+        );
+      if (block.jobs.some((id) => !done.has(this.store.job(id).phase)))
+        throw Error('Paired study block has unfinished jobs');
+    }
+  }
   runValidation(transport: StudyTransport, externalSignal?: AbortSignal) {
     const operation = this.evaluation.then(async () => {
       const state = this.store.state();
@@ -834,7 +877,8 @@ export class OptimizerStudyCoordinator {
               caseId: item.id,
               repetition,
             });
-      for (const target of targets) await this.evaluate(target, 'validation', transport, externalSignal);
+      if (isFixedComparison(this.spec)) await this.runPairedComparison(transport, externalSignal);
+      else for (const target of targets) await this.evaluate(target, 'validation', transport, externalSignal);
       const result = this.store.finish(
         this.owner,
         'Registered independent validation completed; results retained without automatic release',
