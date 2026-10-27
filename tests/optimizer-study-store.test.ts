@@ -9,6 +9,7 @@ import {
   OptimizerStudy,
   studyAllocationCeiling,
   studyMethodIdentity,
+  studyBaselineMethod,
   type FrozenStudyMethodRef,
   type OptimizerStudySpec,
 } from '../src/optimizer-study-contracts.js';
@@ -82,7 +83,7 @@ function admit(store: OptimizerStudyStore, name: string) {
   const reserved = store.reserveMethod(owner, {
     source: value.source,
     composition: value.composition,
-    proposal: proposal(store.spec.baseline.source.digest, name),
+    proposal: proposal(studyBaselineMethod(store.spec).source.digest, name),
   });
   return store.publishMethod(owner, reserved.id, value);
 }
@@ -310,7 +311,7 @@ test('selection compares exact equal-denominator decimal sums and seals validati
       baseline,
       '0.1 + 0.2 must not exceed or fall below an exactly equal 0.3',
     );
-    assert.throws(() => reserve(store, changed, 0, 'validation'), /only baseline and selected/);
+    assert.throws(() => reserve(store, changed, 0, 'validation'), /outside the frozen protocol/);
     assert.equal(reserve(store, baseline, 0, 'development').phase, 'complete');
     assert.throws(
       () => reserve(store, studyMethodIdentity(method('unregistered')), 0),

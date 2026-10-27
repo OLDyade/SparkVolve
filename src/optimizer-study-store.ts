@@ -6,7 +6,11 @@ import { EventCursor, type EventPage } from './events.js';
 import {
   FrozenStudyBundle,
   FrozenStudyMethod,
-  OptimizerStudy,
+  RegisteredOptimizerStudy,
+  developmentStudy,
+  isFixedComparison,
+  studyCases,
+  studyBaselineMethod,
   StudyStage,
   studyAllocationCeiling,
   studyJobAllocation,
@@ -14,7 +18,7 @@ import {
   studyMethodIdentity,
   type FrozenStudyBundleRef,
   type FrozenStudyMethodRef,
-  type OptimizerStudySpec,
+  type RegisteredOptimizerStudySpec,
   type StudyAllocation,
   type StudyStageName,
 } from './optimizer-study-contracts.js';
@@ -102,14 +106,14 @@ function compareScores(left: number[], right: number[]): number {
 /** Trusted parent ledger. Child task records and private assessment material remain in child experiments. */
 export class OptimizerStudyStore {
   readonly db: DatabaseSync;
-  readonly spec: OptimizerStudySpec;
+  readonly spec: RegisteredOptimizerStudySpec;
   readonly registrationDigest: string;
   constructor(
     file: string,
     raw: unknown,
     private readonly access: 'read' | 'write' = 'write',
   ) {
-    this.spec = OptimizerStudy.parse(raw);
+    this.spec = RegisteredOptimizerStudy.parse(raw);
     this.registrationDigest = digest(this.spec);
     this.db = new DatabaseSync(file, { readOnly: access === 'read', timeout: 5000 });
     try {
@@ -128,21 +132,25 @@ export class OptimizerStudyStore {
           if (saved === undefined) {
             this.setMeta('registration', this.registrationDigest);
             this.setMeta('studyId', randomUUID());
-            this.setState({ phase: 'developing' });
-            const method = this.spec.baseline;
-            this.putMethod({
-              id: studyMethodCandidateIdentity(method.source.digest, method.composition),
-              ordinal: 0,
-              source: method.source,
-              composition: method.composition,
-              proposal: null,
-              phase: 'ready',
-              method,
-              methodIdentity: studyMethodIdentity(method),
-            });
+            const fixed = isFixedComparison(this.spec);
+            this.setState({ phase: fixed ? 'validating' : 'developing' });
+            const methods = fixed ? this.spec.arms.map((arm) => arm.method) : [this.spec.baseline];
+            methods.forEach((method, ordinal) =>
+              this.putMethod({
+                id: studyMethodCandidateIdentity(method.source.digest, method.composition),
+                ordinal,
+                source: method.source,
+                composition: method.composition,
+                proposal: null,
+                phase: 'ready',
+                method,
+                methodIdentity: studyMethodIdentity(method),
+              }),
+            );
             this.event('study.registered', {
               registrationDigest: this.registrationDigest,
-              baseline: studyMethodIdentity(method),
+              baseline: studyMethodIdentity(studyBaselineMethod(this.spec)),
+              ...(fixed ? { protocol: 'fixed-comparison', arms: this.spec.arms } : {}),
               allocation: studyAllocationCeiling(this.spec),
             });
           }
@@ -291,7 +299,7 @@ export class OptimizerStudyStore {
       }
       if (this.state().phase !== 'developing') throw new Error('Study is not accepting methods');
       const methods = this.methods();
-      if (methods.length >= this.spec.budget.methodCandidates)
+      if (methods.length >= developmentStudy(this.spec).budget.methodCandidates)
         throw new Error('Method candidate budget exhausted');
       if (
         proposal.parents.some(
@@ -322,7 +330,7 @@ export class OptimizerStudyStore {
       if (
         canonical(candidate.source) !== canonical(method.source) ||
         candidate.composition !== method.composition ||
-        method.artifact.identity.image !== this.spec.methodBuild.image
+        method.artifact.identity.image !== developmentStudy(this.spec).methodBuild.image
       )
         throw new Error('Prepared method identity does not match its reservation');
       const result: StudyMethodCandidate = {
@@ -362,9 +370,7 @@ export class OptimizerStudyStore {
       .run(job.id, canonical(job));
   }
   private case(stage: StudyStageName, id: string) {
-    const item = (stage === 'development' ? this.spec.developmentCases : this.spec.validationCases).find(
-      (item) => item.id === id,
-    );
+    const item = studyCases(this.spec, stage).find((item) => item.id === id);
     if (!item) throw new Error('Unknown case in study stage');
     return item;
   }
@@ -396,12 +402,8 @@ export class OptimizerStudyStore {
         !this.methods().some((method) => method.phase === 'ready' && method.methodIdentity === input.method)
       )
         throw new Error('Job method is not a frozen registered artifact');
-      if (
-        input.stage === 'validation' &&
-        input.method !== studyMethodIdentity(this.spec.baseline) &&
-        input.method !== state.selectedMethod
-      )
-        throw new Error('Validation admits only baseline and selected method');
+      if (input.stage === 'validation' && !this.validationMethods().includes(input.method))
+        throw new Error('Validation method is outside the frozen protocol');
       const job: StudyJob = {
         id,
         ...input,
@@ -520,7 +522,7 @@ export class OptimizerStudyStore {
     });
   }
   methodReport(method: string, stage: StudyStageName) {
-    const cases = stage === 'development' ? this.spec.developmentCases : this.spec.validationCases;
+    const cases = studyCases(this.spec, stage);
     const samples = cases.flatMap((item) =>
       Array.from({ length: this.spec.repetitions }, (_, repetition) => {
         const job = this.jobs().find(
@@ -530,7 +532,8 @@ export class OptimizerStudyStore {
             job.caseId === item.id &&
             job.repetition === repetition,
         );
-        const complete = job !== undefined && terminalJobs.has(job.phase);
+        const cancelledSlot = !job && isFixedComparison(this.spec) && this.state().phase === 'cancelled';
+        const complete = cancelledSlot || (job !== undefined && terminalJobs.has(job.phase));
         const successful =
           job?.phase === 'complete' &&
           job.result!.failures <= item.assessment.specification.failureLimit &&
@@ -539,10 +542,14 @@ export class OptimizerStudyStore {
           caseId: item.id,
           repetition,
           job: job?.id ?? null,
-          phase: job?.phase ?? 'unreserved',
+          phase: job?.phase ?? (cancelledSlot ? 'cancelled' : 'unreserved'),
           complete,
           successful,
-          score: job?.phase === 'complete' ? job.result!.score : item.assessment.specification.metric.failure,
+          score: !complete
+            ? null
+            : job?.phase === 'complete'
+              ? job.result!.score
+              : item.assessment.specification.metric.failure,
         };
       }),
     );
@@ -551,14 +558,57 @@ export class OptimizerStudyStore {
       stage,
       denominator: samples.length,
       complete: samples.every((sample) => sample.complete),
-      failures: samples.filter((sample) => !sample.successful).length,
+      failures: samples.filter((sample) => sample.complete && !sample.successful).length,
+      pending: samples.filter((sample) => !sample.complete).length,
       mean: samples.every((sample) => sample.complete)
-        ? samples.reduce((sum, sample) => sum + sample.score, 0) / samples.length
+        ? samples.reduce((sum, sample) => sum + sample.score!, 0) / samples.length
         : null,
       samples,
     };
   }
+  validationMethods(): string[] {
+    if (isFixedComparison(this.spec)) return this.spec.arms.map((arm) => studyMethodIdentity(arm.method));
+    const selected = this.state().selectedMethod;
+    return [...new Set([studyMethodIdentity(this.spec.baseline), ...(selected ? [selected] : [])])];
+  }
+  comparisonReport() {
+    if (!isFixedComparison(this.spec)) return null;
+    const spec = this.spec;
+    const baselineMethod = studyMethodIdentity(studyBaselineMethod(spec));
+    const baseline = this.methodReport(baselineMethod, 'validation');
+    const direction = spec.cases[0]!.assessment.specification.metric.direction;
+    return {
+      baseline: spec.baseline,
+      direction,
+      arms: spec.arms.map((arm) => {
+        const report = this.methodReport(studyMethodIdentity(arm.method), 'validation');
+        const pairs = report.samples.map((sample, index) => {
+          const reference = baseline.samples[index]!;
+          const complete = sample.complete && reference.complete;
+          return {
+            caseId: sample.caseId,
+            repetition: sample.repetition,
+            baseline: reference,
+            arm: sample,
+            complete,
+            scoreDelta: complete ? sample.score! - reference.score! : null,
+          };
+        });
+        return {
+          id: arm.id,
+          ...report,
+          pairedMeanDelta: pairs.every((pair) => pair.complete)
+            ? pairs.reduce((sum, pair) => sum + pair.scoreDelta!, 0) / pairs.length
+            : null,
+          pairs,
+        };
+      }),
+      boundary:
+        'All registered methods are evaluated independently. Deltas are arm minus baseline over case × search repetition, including terminal failure values; no method selection or automatic promotion.',
+    };
+  }
   beginValidation(owner: string): StudyState {
+    const spec = developmentStudy(this.spec);
     return this.write(owner, () => {
       const state = this.state();
       if (state.phase === 'validating') return state;
@@ -572,16 +622,16 @@ export class OptimizerStudyStore {
       const reports = ready.map((method) => this.methodReport(method.methodIdentity!, 'development'));
       if (reports.some((report) => !report.complete))
         throw new Error('Development search-instance denominator is incomplete');
-      const baseline = reports.find((report) => report.method === studyMethodIdentity(this.spec.baseline))!;
-      if (baseline.failures > this.spec.selection.failureLimit)
+      const baseline = reports.find((report) => report.method === studyMethodIdentity(spec.baseline))!;
+      if (baseline.failures > spec.selection.failureLimit)
         throw new Error('Baseline search-instance failures exceed registration');
-      const direction = this.spec.developmentCases[0]!.assessment.specification.metric.direction;
+      const direction = spec.developmentCases[0]!.assessment.specification.metric.direction;
       let best = baseline;
       for (const report of reports) {
-        if (report.failures > this.spec.selection.failureLimit) continue;
+        if (report.failures > spec.selection.failureLimit) continue;
         const comparison = compareScores(
-          report.samples.map((sample) => sample.score),
-          best.samples.map((sample) => sample.score),
+          report.samples.map((sample) => sample.score!),
+          best.samples.map((sample) => sample.score!),
         );
         if (direction === 'maximize' ? comparison > 0 : comparison < 0) best = report;
       }
@@ -594,10 +644,9 @@ export class OptimizerStudyStore {
   finish(owner: string, reason: string): StudyState {
     return this.write(owner, () => {
       const state = this.state();
-      if (state.phase !== 'validating' || !state.selectedMethod || !reason)
+      if (state.phase !== 'validating' || (!isFixedComparison(this.spec) && !state.selectedMethod) || !reason)
         throw new Error('Study is not awaiting a final report');
-      const methods = new Set([studyMethodIdentity(this.spec.baseline), state.selectedMethod]);
-      const reports = [...methods].map((method) => this.methodReport(method, 'validation'));
+      const reports = this.validationMethods().map((method) => this.methodReport(method, 'validation'));
       if (reports.some((report) => !report.complete))
         throw new Error('Validation search-instance denominator is incomplete');
       const next: StudyState = {
@@ -622,6 +671,7 @@ export class OptimizerStudyStore {
       .run(episode.ordinal, canonical(episode));
   }
   reserveMetaEpisode(owner: string, ordinal: number, seconds: number): StudyMetaEpisode {
+    const spec = developmentStudy(this.spec);
     if (!Number.isSafeInteger(ordinal) || ordinal < 0 || !Number.isFinite(seconds) || seconds <= 0)
       throw new Error('Invalid meta optimizer reservation');
     return this.write(owner, () => {
@@ -638,7 +688,7 @@ export class OptimizerStudyStore {
       )
         throw new Error('Meta optimizer is not accepting another episode');
       const consumed = episodes.reduce((sum, episode) => sum + episode.actualSeconds!, 0);
-      if (seconds > this.spec.budget.metaOptimizerSeconds - consumed)
+      if (seconds > spec.budget.metaOptimizerSeconds - consumed)
         throw new Error('Meta optimizer time allocation exhausted');
       const episode: StudyMetaEpisode = { ordinal, seconds, phase: 'reserved' };
       this.putMeta(episode);

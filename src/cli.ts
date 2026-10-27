@@ -18,8 +18,8 @@ import { experimentReport } from './report.js';
 import { EventCursor } from './events.js';
 import { prepareOptimizerStudy, OptimizerStudyCoordinator } from './optimizer-study.js';
 import { OptimizerStudyStore } from './optimizer-study-store.js';
-import { OptimizerStudy } from './optimizer-study-contracts.js';
-import { evolveOptimizerStudy } from './optimizer-study-runner.js';
+import { RegisteredOptimizerStudy, isFixedComparison } from './optimizer-study-contracts.js';
+import { evolveOptimizerStudy, runFixedOptimizerComparison } from './optimizer-study-runner.js';
 import { optimizerStudyReport } from './optimizer-study-report.js';
 import { cancelOptimizerStudy } from './optimizer-study-cancel.js';
 import { cancelExperiment } from './cancellation.js';
@@ -72,7 +72,8 @@ import    --root <directory> --archive <research-archive> --draft <new-name>
 digest    <artifact-directory>
 doctor
 study-init   --root <new-study> --spec <study.json> --dataset <trusted-input-root>
-study-run    --root <study> --endpoint <container-reachable-url> --child-endpoint <literal-ip-origin:0> [--host 127.0.0.1] [--port 8787] [--child-host <bind-address>]
+study-run    --root <study> --child-endpoint <literal-ip-origin:0> [--endpoint <meta-container-reachable-url>] [--host 127.0.0.1] [--port 8787] [--child-host <bind-address>]
+             --endpoint is required for development selection; fixed-comparison starts no meta service.
 study-status --root <study>
 study-report --root <study> [--output <new-file>]
 study-cancel --root <study>
@@ -106,11 +107,13 @@ run reconciles original tasks; rescore reuses the original delivery; export does
     );
   } else if (action === 'study-init') {
     if (!values.spec || !values.dataset) throw new Error('study-init requires --spec and --dataset');
-    const spec = OptimizerStudy.parse(JSON.parse(await readFile(values.spec, 'utf8')));
+    const spec = RegisteredOptimizerStudy.parse(JSON.parse(await readFile(values.spec, 'utf8')));
     await prepareOptimizerStudy(root, spec, path.resolve(values.dataset));
-    console.log(JSON.stringify({ root, status: 'registered', methods: 1 }));
+    console.log(
+      JSON.stringify({ root, status: 'registered', methods: isFixedComparison(spec) ? spec.arms.length : 1 }),
+    );
   } else if (['study-run', 'study-status', 'study-report'].includes(action!)) {
-    const spec = OptimizerStudy.parse(
+    const spec = RegisteredOptimizerStudy.parse(
       JSON.parse(await readFile(path.join(root, 'registration.json'), 'utf8')),
     );
     const store = new OptimizerStudyStore(
@@ -121,8 +124,10 @@ run reconciles original tasks; rescore reuses the original delivery; export does
     const coordinator = new OptimizerStudyCoordinator(root, store);
     try {
       if (action === 'study-run') {
-        if (!values.endpoint || !values['child-endpoint'])
-          throw new Error('study-run requires --endpoint and --child-endpoint');
+        if (!values['child-endpoint'] || (!isFixedComparison(spec) && !values.endpoint))
+          throw new Error(
+            'study-run requires --child-endpoint; development selection also requires --endpoint',
+          );
         if (new URL(values['child-endpoint']).port !== '0')
           throw new Error(
             '--child-endpoint requires explicit port 0 for separately persisted child transports',
@@ -133,17 +138,22 @@ run reconciles original tasks; rescore reuses the original delivery; export does
         process.once('SIGINT', interrupt);
         process.once('SIGTERM', interrupt);
         try {
-          await evolveOptimizerStudy(coordinator, {
-            host: values.host!,
-            port: Number(values.port),
-            endpoint: values.endpoint,
+          const common = {
             childTransport: {
               host: values['child-host'] ?? values.host!,
               port: 0,
               endpoint: values['child-endpoint'],
             },
             signal: abort.signal,
-          });
+          };
+          if (isFixedComparison(spec)) await runFixedOptimizerComparison(coordinator, common);
+          else
+            await evolveOptimizerStudy(coordinator, {
+              ...common,
+              host: values.host!,
+              port: Number(values.port),
+              endpoint: values.endpoint!,
+            });
         } finally {
           process.removeListener('SIGINT', interrupt);
           process.removeListener('SIGTERM', interrupt);

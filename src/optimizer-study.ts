@@ -16,11 +16,15 @@ import { collectExecution, prepareExecution, ReclamationError, settleExecutionFa
 import { Store } from './store.js';
 import { validateFrozenArm } from './validation.js';
 import {
-  OptimizerStudy,
+  RegisteredOptimizerStudy,
+  developmentStudy,
+  isFixedComparison,
+  studyCases,
+  registeredStudyMethods,
   studyMethodIdentity,
   type FrozenStudyBundleRef,
   type FrozenStudyMethodRef,
-  type OptimizerStudySpec,
+  type RegisteredOptimizerStudySpec,
   type StudyStageName,
 } from './optimizer-study-contracts.js';
 import { OptimizerStudyStore, type StudyJob, type StudyMethodCandidate } from './optimizer-study-store.js';
@@ -67,8 +71,8 @@ export async function prepareOptimizerStudy(
   root: string,
   raw: unknown,
   inputs: string,
-): Promise<OptimizerStudySpec> {
-  const spec = OptimizerStudy.parse(raw);
+): Promise<RegisteredOptimizerStudySpec> {
+  const spec = RegisteredOptimizerStudy.parse(raw);
   inputs = await realpath(inputs);
   await mkdir(root, { recursive: true });
   const entries = await readdir(root);
@@ -93,17 +97,17 @@ export async function prepareOptimizerStudy(
       const published = await freeze(inputs, frozen, path.join(root, 'publications'));
       await atomicJSON(path.join(root, 'inputs-digest.json'), published);
     }
-    await verifyBundle(frozen, spec.baseline);
-    await verifyBundle(frozen, spec.metaOptimizer);
-    const environment = spec.metaRuntime.runtime.environment;
+    for (const method of registeredStudyMethods(spec)) await verifyBundle(frozen, method);
+    const environment = isFixedComparison(spec) ? null : spec.metaRuntime.runtime.environment;
     if (environment && (await treeDigest(confined(frozen, environment.directory))) !== environment.digest)
       throw Error('Study meta runtime environment digest mismatch');
     if (
+      !isFixedComparison(spec) &&
       spec.methodQA &&
       (await treeDigest(confined(frozen, spec.methodQA.directory))) !== spec.methodQA.digest
     )
       throw Error('Study method QA digest mismatch');
-    for (const item of [...spec.developmentCases, ...spec.validationCases]) {
+    for (const item of studyCases(spec)) {
       await verifyBundle(frozen, item.seed);
       for (const registration of [item.search, item.assessment])
         if (
@@ -132,7 +136,7 @@ export class OptimizerStudyCoordinator {
     readonly store: OptimizerStudyStore,
     readonly docker = new Docker(),
   ) {}
-  get spec(): OptimizerStudySpec {
+  get spec(): RegisteredOptimizerStudySpec {
     return this.store.spec;
   }
   get inputs(): string {
@@ -174,23 +178,23 @@ export class OptimizerStudyCoordinator {
   }
   private methodRoot(method: FrozenStudyMethodRef): string {
     const id = studyMethodIdentity(method);
-    return id === studyMethodIdentity(this.spec.baseline) ||
-      id === studyMethodIdentity(this.spec.metaOptimizer)
+    return registeredStudyMethods(this.spec).some((registered) => id === studyMethodIdentity(registered))
       ? this.inputs
       : this.root;
   }
   private preparation(method: ExperimentSpec['optimizerHarness']): OptimizerPreparationSpec {
+    const spec = developmentStudy(this.spec);
     return {
       optimizerHarness: method,
       runtime: {
-        ...this.spec.metaRuntime.runtime,
-        environment: this.spec.metaRuntime.runtime.environment
-          ? { ...this.spec.metaRuntime.runtime.environment, directory: 'runtime-environment' }
+        ...spec.metaRuntime.runtime,
+        environment: spec.metaRuntime.runtime.environment
+          ? { ...spec.metaRuntime.runtime.environment, directory: 'runtime-environment' }
           : null,
       },
-      optimizer: this.spec.metaRuntime.model,
-      isolation: this.spec.metaRuntime.isolation,
-      timeoutSeconds: this.spec.methodBuild.timeoutSeconds,
+      optimizer: spec.metaRuntime.model,
+      isolation: spec.metaRuntime.isolation,
+      timeoutSeconds: spec.methodBuild.timeoutSeconds,
     };
   }
   async submitMethod(
@@ -243,6 +247,7 @@ export class OptimizerStudyCoordinator {
     reservation: StudyMethodCandidate,
     signal: AbortSignal,
   ): Promise<StudyMethodCandidate> {
+    const spec = developmentStudy(this.spec);
     const home = path.join(this.root, 'methods', reservation.id);
     try {
       const source = confined(this.root, reservation.source.directory);
@@ -263,7 +268,7 @@ export class OptimizerStudyCoordinator {
         await cp(confined(this.root, reservation.source.directory), path.join(staging, 'source'), {
           recursive: true,
         });
-        const environment = this.spec.metaRuntime.runtime.environment;
+        const environment = spec.metaRuntime.runtime.environment;
         if (environment) {
           await cp(confined(this.inputs, environment.directory), path.join(staging, 'runtime-environment'), {
             recursive: true,
@@ -282,7 +287,7 @@ export class OptimizerStudyCoordinator {
           kind: 'source',
           source: { directory: 'source', digest: reservation.source.digest },
           composition: reservation.composition,
-          build: this.spec.methodBuild,
+          build: spec.methodBuild,
         }),
         this.docker,
         signal,
@@ -307,14 +312,15 @@ export class OptimizerStudyCoordinator {
     }
   }
   private async methodQA(home: string, sourceDigest: string, signal: AbortSignal): Promise<void> {
-    if (!this.spec.methodQA) return;
+    const spec = developmentStudy(this.spec);
+    if (!spec.methodQA) return;
     const qa = path.join(home, 'method-qa');
     await mkdir(path.join(qa, 'work'), { recursive: true });
     const native = path.join(home, 'optimizer-harness/qa');
     const launch = (await readJSON(path.join(native, 'launch.json'))) as Record<string, unknown>;
     await atomicJSON(path.join(qa, 'launch.json'), {
       ...launch,
-      behaviorModule: `/verification/${this.spec.methodQA.entry}`,
+      behaviorModule: `/verification/${spec.methodQA.entry}`,
     });
     const original = (await readJSON(path.join(native, 'execution-spec.json'))) as ContainerSpec;
     const container: ContainerSpec = {
@@ -325,7 +331,7 @@ export class OptimizerStudyCoordinator {
         { source: path.join(qa, 'work'), target: '/workspace', writable: true },
         { source: path.join(qa, 'launch.json'), target: '/launch.json', writable: false },
         {
-          source: confined(this.inputs, this.spec.methodQA.directory),
+          source: confined(this.inputs, spec.methodQA.directory),
           target: '/verification',
           writable: false,
         },
@@ -526,10 +532,11 @@ export class OptimizerStudyCoordinator {
   }
   publicStatus() {
     if (this.store.state().phase !== 'developing') throw Error('Development access is closed');
+    const spec = developmentStudy(this.spec);
     return {
       registrationDigest: this.store.registrationDigest,
       objective: this.spec.objective,
-      cases: this.spec.developmentCases.map((item) => ({
+      cases: spec.developmentCases.map((item) => ({
         id: item.id,
         objective: item.search.specification.objective,
         metric: item.assessment.specification.metric,
@@ -630,7 +637,7 @@ export class OptimizerStudyCoordinator {
     const signal = this.signal(externalSignal);
     signal.throwIfAborted();
     this.ready(method);
-    const cases = stage === 'development' ? this.spec.developmentCases : this.spec.validationCases;
+    const cases = studyCases(this.spec, stage);
     const jobs = cases.flatMap((item) =>
       Array.from({ length: this.spec.repetitions }, (_, repetition) =>
         this.store.reserveJob(this.owner, { stage, method, caseId: item.id, repetition }),
@@ -662,9 +669,7 @@ export class OptimizerStudyCoordinator {
     job: StudyJob,
     method: FrozenStudyMethodRef,
   ): Promise<{ directory: string; spec: ExperimentSpec }> {
-    const item = [...this.spec.developmentCases, ...this.spec.validationCases].find(
-      (item) => item.id === job.caseId,
-    )!;
+    const item = studyCases(this.spec).find((item) => item.id === job.caseId)!;
     const directory = path.join(this.root, 'job-inputs', job.id);
     const staging = await mkdtemp(path.join(this.root, '.search-input-'));
     try {
@@ -700,9 +705,7 @@ export class OptimizerStudyCoordinator {
     }
   }
   private async runJob(initial: StudyJob, transport: StudyTransport, signal: AbortSignal): Promise<void> {
-    const item = [...this.spec.developmentCases, ...this.spec.validationCases].find(
-      (item) => item.id === initial.caseId,
-    )!;
+    const item = studyCases(this.spec).find((item) => item.id === initial.caseId)!;
     const childRoot = confined(this.root, initial.childRoot);
     try {
       let job = this.store.job(initial.id);
@@ -811,10 +814,15 @@ export class OptimizerStudyCoordinator {
   runValidation(transport: StudyTransport, externalSignal?: AbortSignal) {
     const operation = this.evaluation.then(async () => {
       const state = this.store.state();
-      if (state.phase !== 'validating' || !state.selectedMethod)
+      if (state.phase !== 'validating' || (!isFixedComparison(this.spec) && !state.selectedMethod))
         throw Error('Validation selection is not frozen');
-      for (const method of new Set([studyMethodIdentity(this.spec.baseline), state.selectedMethod]))
-        await this.evaluate(method, 'validation', transport, externalSignal);
+      const methods = this.store.validationMethods();
+      // Register the entire final denominator before any method starts executing.
+      for (const method of methods)
+        for (const item of studyCases(this.spec, 'validation'))
+          for (let repetition = 0; repetition < this.spec.repetitions; repetition++)
+            this.store.reserveJob(this.owner, { stage: 'validation', method, caseId: item.id, repetition });
+      for (const method of methods) await this.evaluate(method, 'validation', transport, externalSignal);
       const result = this.store.finish(
         this.owner,
         'Registered independent validation completed; results retained without automatic release',
@@ -838,18 +846,21 @@ export class OptimizerStudyCoordinator {
   }
   reportSnapshot() {
     const methods = this.store.methods().filter((method) => method.phase === 'ready');
+    const fixed = isFixedComparison(this.spec);
+    const validation = this.store.validationMethods();
     return {
       ...this.status(),
-      development: methods.map((method) => this.store.methodReport(method.methodIdentity!, 'development')),
+      protocol: fixed ? 'fixed-comparison' : 'development-selection',
+      development: fixed
+        ? []
+        : methods.map((method) => this.store.methodReport(method.methodIdentity!, 'development')),
       validation: methods
-        .filter((method) =>
-          [studyMethodIdentity(this.spec.baseline), this.store.state().selectedMethod].includes(
-            method.methodIdentity!,
-          ),
-        )
+        .filter((method) => validation.includes(method.methodIdentity!))
         .map((method) => this.store.methodReport(method.methodIdentity!, 'validation')),
-      boundary:
-        'Development selects methods. Sealed validation reports the frozen selection with complete denominators; no automatic release.',
+      comparison: this.store.comparisonReport(),
+      boundary: fixed
+        ? 'All preregistered comparison methods receive independent search and assessment. No development selector, meta optimizer or automatic release.'
+        : 'Development selects methods. Sealed validation reports the frozen selection with complete denominators; no automatic release.',
     };
   }
   async report(): Promise<void> {

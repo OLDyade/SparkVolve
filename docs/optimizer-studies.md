@@ -1,5 +1,14 @@
 # 让优化器也参与进化
 
+研究入口支持两种明确的实验合同。**优化器自进化**让元优化器生成 G，再从开发结果中选择 G*；**固定方法比较**提前冻结全部 G，逐个运行完整搜索与独立评估。两者复用原生 DSH、候选构建、执行恢复和记账，研究目的分别记录。
+
+| 要回答的问题 | 合同 | 最终评估对象 |
+|---|---|---|
+| 优化器能否改进自身，并提升后续搜索 | `OptimizerStudy` | 开发阶段选择的 G* 与 G0 |
+| 预注册的不同方法如何影响搜索结果 | `FixedOptimizerComparison`，`kind: fixed-comparison` | 所有注册方法，不按中间得分删臂 |
+
+## 优化器自进化
+
 普通实验让优化器 G 改写任务 Harness H。Optimizer Study 把 G 的插件实现、配置和装配也放入研究空间：原生 DSH 元优化器读取实际搜索证据，自主提交新的 G；可信宿主用共同 H0 和相同预算上限比较它们。
 
 当前状态：真实元优化器已生成并运行 G1，开发选择和最终独立评分均已完成。G0/G1 开发评分同为 1.0，按规则保留 G0；最终验证为 1.0。G1 的原生工具虽已注册，实际没有调用，源码审查还发现角色与观察作用域错误；它保留为研究记录。原冻结 G1/G0/H0 已独立安装并原生装配通过；完整分母、325 次请求与先前收尾错误见[实际研究报告](experiments/2026-10-28-optimizer-study-results.md)，不据此宣称 G 自进化收益。
@@ -72,6 +81,58 @@ node dist/cli.js study-cancel --root /absolute/new-study
 ```
 
 取消持有研究租约，关闭新工作准入，只处理账本注册的方法、搜索、评分和元优化器资源。实际停止、日志取证和移除完成后记录回收摘要；回收中断后再次执行同一命令沿原身份继续。已经完成的研究记录保持，原容器的同名替代物不会被当作旧资源移除。普通实验使用 `cancel --root <experiment>`。
+
+## 固定方法比较
+
+把希望比较的方法在运行前全部登记，适用于不同优化器、插件配置或研究机制的对照。每个方法使用同一 case 的 H0、任务、模型、候选和时间上限；各自完成搜索，按共同子合同选择 H*，再用冻结产物做独立评估。
+
+```text
+注册全部方法 + 显式基线 + case × 完整搜索重复
+                         │
+        ┌────────────────┼────────────────┐
+        ▼                ▼                ▼
+       G-A              G-B              G-C
+   共同 H0 搜索      共同 H0 搜索      共同 H0 搜索
+        │                │                │
+   冻结 H-A*        冻结 H-B*        冻结 H-C*
+        │                │                │
+   独立评估          独立评估          独立评估
+        └────────────────┼────────────────┘
+                         ▼
+        全部臂结果 · 实例配对差 · 失败/取消 · 实际成本
+```
+
+| 字段 | 内容 |
+|---|---|
+| `kind` | 固定为 `fixed-comparison`，显式选择研究协议 |
+| `name` / `objective` | 实验身份和研究问题 |
+| `arms` | 至少两个 `{ id, method }`；method 是实际冻结的源码、构建产物和装配入口 |
+| `baseline` | 注册臂的 id，决定配对报告的参照；不依据分数重新选择 |
+| `cases` | 每项含 `id`、共同 `seed`、`search` 和 `assessment`；结构与上面的研究实例相同 |
+| `repetitions` | 每个 case 的完整搜索重复数；同一方法的重复使用此字段 |
+| `budget.concurrentSearches` | 宿主并行搜索上限；实际每实例预算由共同子合同决定 |
+
+该合同没有元优化器、开发方法选择或新的 G 构建配置；方法已经冻结，不能在运行中分叉、替换或提交 G。注册检查拒绝重复臂、重复方法身份、未注册的 baseline，以及公共方法/种子目录和封存数据目录的交叉。注册身份不通过添加默认字段改写历史合同。
+
+初始化和报告仍使用 `study-init` / `study-report`。运行只需子实验连接地址：
+
+```bash
+node dist/cli.js study-init --root /absolute/new-comparison \
+  --spec /absolute/fixed-comparison.json --dataset /absolute/trusted-inputs
+
+node --env-file=/absolute/private/model.env dist/cli.js study-run \
+  --root /absolute/new-comparison \
+  --child-host 0.0.0.0 --child-endpoint http://CONTAINER_REACHABLE_IP:0
+
+node dist/cli.js study-report --root /absolute/new-comparison \
+  --output /absolute/new-comparison-report.json
+```
+
+全部 case × repetition × arm 工作在执行前登记。运行失败、主动取消和未完成状态各自保留；终态失败按预注册失败值进入完整分母，尚在途的配对结果不当作已完成均值。重入同一合同收集原工作，不补抽。无元优化器的成本明确为不适用；搜索和独立评估的缺失用量仍保持未知。
+
+固定方法比较只提供可执行的实验协议，**不自动证明被比较方法的收益或因果效果**。若比较完整反馈与盲变异，仍需宿主实际限制反馈入口；仅更换提示词不能宣称完成盲实验。相关研究设计与尚未准入的规模见[反馈因果协议](research/2026-10-28-feedback-causal-protocol.md)。
+
+实际 Docker + DSH 夹具已通过三方法验收：两方法完成搜索与独立评分，故意失败的方法保留分母及失败值；16 次请求中 15 次返回、1 次失败。终态重入前后 35 份执行/请求证据及清单不变，未打开元优化器接口。镜像内列明的 6 个运行文件与本地构建一致；[机器记录](evidence/2026-10-28-fixed-comparison.json)限定了这一验收范围。失败臂缺独立评分账本，用量完整性继续为 false；没有把它解释成零成本成功。
 
 ## 元优化器获得什么能力
 

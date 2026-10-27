@@ -14,6 +14,7 @@ import { collectExecution, prepareExecution, ReclamationError, settleExecutionFa
 import { readAuthorizedFile } from './file-reader.js';
 import { collectRequestMetrics } from './metrics.js';
 import type { OptimizerStudyCoordinator, StudyTransport } from './optimizer-study.js';
+import { developmentStudy, isFixedComparison } from './optimizer-study-contracts.js';
 import { evolutionPreset, sdkPreset } from './preset.js';
 import { serveStudy } from './study-api.js';
 import { studyControlRoutes } from './study-control.js';
@@ -22,6 +23,25 @@ import { materializeStudyEvidence, readStudyEvidence, readStudySearch } from './
 export interface OptimizerStudyRunnerOptions extends StudyTransport {
   childTransport: StudyTransport;
   signal?: AbortSignal;
+}
+
+/** Fixed comparisons need child transports only; no meta HTTP service or worker is opened. */
+export async function runFixedOptimizerComparison(
+  coordinator: OptimizerStudyCoordinator,
+  options: Pick<OptimizerStudyRunnerOptions, 'childTransport' | 'signal'>,
+): Promise<unknown> {
+  if (!isFixedComparison(coordinator.spec)) throw Error('Fixed comparison registration required');
+  options.signal?.throwIfAborted();
+  assertNotCancelled(coordinator.root);
+  await coordinator.start();
+  try {
+    if (coordinator.store.state().phase !== 'complete')
+      await coordinator.runValidation(options.childTransport, options.signal);
+    await coordinator.report();
+    return coordinator.reportSnapshot();
+  } finally {
+    await coordinator.close();
+  }
 }
 const Conclusion = z.strictObject({
   reason: z.string().min(1),
@@ -50,7 +70,7 @@ export async function evolveOptimizerStudy(
   options: OptimizerStudyRunnerOptions,
   egress: EgressFactory = createEgressSession,
 ): Promise<unknown> {
-  const { root, store, docker, spec, owner } = coordinator;
+  const { root, store, docker, owner } = coordinator;
   const observation = new AbortController();
   const signal = options.signal ? AbortSignal.any([options.signal, observation.signal]) : observation.signal;
   signal.throwIfAborted();
@@ -77,6 +97,7 @@ export async function evolveOptimizerStudy(
       return coordinator.reportSnapshot();
     }
     if (phase !== 'developing') throw Error(`Study cannot evolve while ${phase}`);
+    const spec = developmentStudy(coordinator.spec);
     const home = path.join(root, 'meta-optimizer');
     await mkdir(home, { recursive: true });
     await mkdir(path.join(root, 'drafts'), { recursive: true });

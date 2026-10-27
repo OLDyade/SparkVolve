@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-28",
+  "kind": "fixed-method-comparison-engineering-acceptance",
+  "passed": true,
+  "sourceFiles": [
+    {
+      "file": "src/cli.ts",
+      "sha256": "6ce2de22606808d91af46784fa2995fd2feb3cccf37ac03f5d83d9ca1f30e486"
+    },
+    {
+      "file": "src/optimizer-study-contracts.ts",
+      "sha256": "7e08d4d49419fcd1c8807bebea8fe6735d496276a74ec0d3460b7043767080dd"
+    },
+    {
+      "file": "src/optimizer-study-store.ts",
+      "sha256": "2dea374b77167b7e94a2d84ae84e653346883cc577a96b9c60cb7d53a19cfe16"
+    },
+    {
+      "file": "src/optimizer-study.ts",
+      "sha256": "7c59096e18ec908bd6934be473c775814b09ae712ba2820ebfc47392e417e263"
+    },
+    {
+      "file": "src/optimizer-study-runner.ts",
+      "sha256": "1d6d1ba10e2cbcb8445aafcd20315b4a6c03531f328c3b920e69eb82ae90464d"
+    },
+    {
+      "file": "src/optimizer-study-report.ts",
+      "sha256": "f7457be791287f886386bee4cc09358a578c5254f016cbcfdce8a43e7809f11f"
+    },
+    {
+      "file": "tests/container/fixed-optimizer-comparison.test.ts",
+      "sha256": "4c6e3c95d6e1fc8648a53ce40791cb51f340337cced2748559e28161d234366e"
+    },
+    {
+      "file": "tests/container/fixed-comparison-provider.mjs",
+      "sha256": "7e405fef5cbf00c8d195ed1941ee1dcb457e0588669a8333200a38be7915c255"
+    }
+  ],
+  "native": {
+    "root": ".evolution/fixed-comparison-native-xzwElQ",
+    "acceptanceSha256": "10a486e39ba72e739507732431c1ec34b16a6c7d4a666dbf85a83b0073afbdad",
+    "reportSha256": "f9dd93606bca86e48a6fb9fa57a198ef7a0c7e45b9cc674dcd0fcfa57c73a22d",
+    "image": "sha256:5b534af73c85a8d8af05fa293e5b8e217a21143072dae67595322b727e0de8a6",
+    "isolationRuntime": "runc",
+    "registeredMethods": 3,
+    "completedSearches": 2,
+    "failedSearches": 1,
+    "metaEpisodes": 0,
+    "requestAttempts": { "started": 16, "results": 15, "failed": 1, "unfinished": 0 },
+    "accountingComplete": false,
+    "accountingBoundary": "The failed method has no assessment ledger and no reported token usage; neither is interpreted as zero cost.",
+    "arms": [
+      { "id": "direct", "denominator": 1, "failures": 0, "mean": 1 },
+      { "id": "inspect", "denominator": 1, "failures": 0, "mean": 1 },
+      { "id": "failure", "denominator": 1, "failures": 1, "mean": 0 }
+    ],
+    "methodCallCounts": {
+      "direct": 2,
+      "failure": 1,
+      "inspect": 3
+    },
+    "verifiedRuntime": [
+      {
+        "file": "dist/runtime/worker.js",
+        "sha256": "9206ee208390010f2a0207db2d103ca28446fd7b9d7bf5085ecfa414102febfc"
+      },
+      {
+        "file": "dist/runtime/build.js",
+        "sha256": "f2015b4fb9b3d58ac59ee31fdc3a237e2c45b4d67433e931221c1bc8e0a13b5b"
+      },
+      {
+        "file": "dist/runtime/qa.js",
+        "sha256": "6c39829ba17c67c9da4af06ede05ea169d82b1ee6459a3f13e3aedaf0b738981"
+      },
+      {
+        "file": "dist/plugin.js",
+        "sha256": "93717bb6939b0abec478a07c8d8350243badb4325eb141b4ae84d0e7740dc94c"
+      },
+      {
+        "file": "dist/preset.js",
+        "sha256": "a805f0d8fb409eb7006d994b7a94f3a947fa83d34ccb6710ca3696047a5c610a"
+      },
+      {
+        "file": "dist/composition.js",
+        "sha256": "94848159a68b273d1cc2ecbba8d001dcef056cc19cf032242c693149dddec32c"
+      }
+    ],
+    "terminalReentryEvidenceFiles": 35,
+    "terminalReentryUnchanged": true
+  },
+  "checks": {
+    "unit": 171,
+    "nativeLocal": 17,
+    "newContainerTest": 1
+  },
+  "historicalReport": {
+    "output": ".evolution/fixed-protocol-legacy-check-20261028/report.json",
+    "sha256": "cd4b1f74ca5968f000b2207f2a8bf06cff014eafdf9eaee484e16c1a87b84582",
+    "originalRegistrationSha256": "37a02bd4f7e3f04a58b57621469792478fc76fef1621042813fa467b0cf4c4aa",
+    "originalAuthoritativeReportSha256": "d4c3c094266f2c09260a28002666236efb63a1c76f18c4e249562e579a4f653b",
+    "originalHashesUnchanged": true
+  },
+  "blueprintSha256": "46ecb1cf793756ceae7e9c881f51fa56cc3a960ddd2906a12c16808db84b1a44",
+  "boundary": "Deterministic native DSH adapters in actual Docker. Tests prove the fixed-method protocol, terminal reentry and the six listed runtime files, not autonomous optimization quality, in-flight recovery, feedback causal efficacy, whole-image source equivalence or cloud CI. Host code was tested from an uncommitted working tree. Complete feedback versus mechanical-only feedback for the same G is not implemented by this protocol."
+}

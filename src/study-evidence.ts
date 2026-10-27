@@ -10,6 +10,7 @@ import { EvidenceReference, publishEvidenceBytes, readEvidence } from './evidenc
 import { readAuthorizedFile } from './file-reader.js';
 import { controlRoutes } from './control-routes.js';
 import type { OptimizerStudyCoordinator } from './optimizer-study.js';
+import { developmentStudy } from './optimizer-study-contracts.js';
 
 export const StudySearchRequest = z.strictObject({ jobID: Digest });
 // A search reference delegates to the same experiment-level capability as its own optimizer.
@@ -55,7 +56,7 @@ async function assertDevelopment(coordinator: OptimizerStudyCoordinator): Promis
 function openSearch(coordinator: OptimizerStudyCoordinator, jobID: string): Controller {
   const job = coordinator.store.job(Digest.parse(jobID));
   if (job.stage !== 'development') throw Error('Validation job evidence is sealed');
-  const item = coordinator.spec.developmentCases.find((item) => item.id === job.caseId);
+  const item = developmentStudy(coordinator.spec).developmentCases.find((item) => item.id === job.caseId);
   if (!item) throw Error('Unknown development case');
   const method = coordinator.store.methods().find((entry) => entry.methodIdentity === job.method)?.method;
   if (!method) throw Error('Unknown frozen optimizer method');

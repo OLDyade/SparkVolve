@@ -6,6 +6,7 @@ import { Store } from './store.js';
 import { experimentReport, sumUsage, usageAt } from './report.js';
 import { OptimizerStudyCoordinator } from './optimizer-study.js';
 import type { OptimizerStudyStore } from './optimizer-study-store.js';
+import { isFixedComparison } from './optimizer-study-contracts.js';
 
 type Usage = Awaited<ReturnType<typeof usageAt>>;
 type ChildReport = Awaited<ReturnType<typeof experimentReport>>;
@@ -86,6 +87,7 @@ function combined(groups: Array<{ rows: Usage[]; coverage: Coverage }>) {
 /** Host-only, read-only accounting; never supplied to the active meta optimizer after development. */
 export async function optimizerStudyReport(root: string, store: OptimizerStudyStore) {
   const snapshot = new OptimizerStudyCoordinator(root, store).reportSnapshot();
+  const fixed = isFixedComparison(store.spec);
   const childReport = async (directory: string, expected: string | undefined) => {
     const home = confined(root, directory);
     if (!expected) return { report: null, availability: 'not-registered' as const };
@@ -143,28 +145,48 @@ export async function optimizerStudyReport(root: string, store: OptimizerStudySt
   const metaUsage = {
     rows: meta.map((episode) => episode.usage),
     coverage: {
-      unavailableSources: meta.length === 0 ? 1 : 0,
+      unavailableSources: !fixed && meta.length === 0 ? 1 : 0,
       unobservedTaskRuns: 0,
       activeSources: meta.filter((episode) => ['reserved', 'running'].includes(episode.phase)).length,
     },
   };
   const measuredMeta = meta.filter((episode) => episode.actualSeconds !== null);
+  const unreservedSearchInstances = fixed
+    ? snapshot.validation.reduce(
+        (sum, report) => sum + report.samples.filter((sample) => sample.job === null).length,
+        0,
+      )
+    : 0;
+  const unreserved = {
+    rows: [] as Usage[],
+    coverage: { unavailableSources: unreservedSearchInstances, unobservedTaskRuns: 0, activeSources: 0 },
+  };
   return {
     ...snapshot,
     accounting: {
       meta,
       jobs,
       metaElapsed: {
-        reportedSeconds: measuredMeta.length
-          ? measuredMeta.reduce((sum, episode) => sum + episode.actualSeconds!, 0)
-          : null,
+        applicable: !fixed,
+        reportedSeconds: fixed
+          ? 0
+          : measuredMeta.length
+            ? measuredMeta.reduce((sum, episode) => sum + episode.actualSeconds!, 0)
+            : null,
         measuredEpisodes: measuredMeta.length,
         unmeasuredEpisodes: meta.length - measuredMeta.length,
       },
-      metaUsage: combined([metaUsage]),
-      searchUsage: combined(search),
-      assessmentUsage: combined(assessment),
-      totalUsage: combined([metaUsage, ...search, ...assessment]),
+      metaUsage: {
+        ...combined([metaUsage]),
+        applicable: !fixed,
+        ...(fixed
+          ? { complete: true, status: 'not-applicable' as const }
+          : { status: 'applicable' as const }),
+      },
+      unreservedSearchInstances,
+      searchUsage: combined([...search, unreserved]),
+      assessmentUsage: combined([...assessment, unreserved]),
+      totalUsage: combined([...(fixed ? [] : [metaUsage]), ...search, ...assessment, unreserved, unreserved]),
       monetaryCost: null,
       boundary:
         'Measured DSH request ledgers only. Complete means closed accounting coverage, not successful execution or quality. Missing child experiments, unobserved task slots, absent optimizer episodes and unavailable token usage remain explicit; aggregated token totals are null when no provider usage was reported. Raw child/meta counters retain explicit missingUsage. Empty ledgers do not certify zero-cost success. Meta research, child search and independent assessment costs are separated. Stream durations are sums, not elapsed wall time; provider-internal retries and prices are unknown. Registered allocation is an upper bound, not measured consumption. Build, QA and evaluator resources are not model-token costs.',

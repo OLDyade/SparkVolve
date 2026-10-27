@@ -7,7 +7,12 @@ import { atomicJSON, digest, treeDigest } from '../src/artifacts.js';
 import { Docker, type ContainerSpec } from '../src/docker.js';
 import type { EgressFactory } from '../src/egress-session.js';
 import { containerIdentity } from '../src/isolation.js';
-import { OptimizerStudy, type FrozenStudyMethodRef } from '../src/optimizer-study-contracts.js';
+import {
+  OptimizerStudy,
+  studyCases,
+  studyBaselineMethod,
+  type FrozenStudyMethodRef,
+} from '../src/optimizer-study-contracts.js';
 import { OptimizerStudyStore } from '../src/optimizer-study-store.js';
 import { evolveOptimizerStudy } from '../src/optimizer-study-runner.js';
 import {
@@ -97,7 +102,7 @@ class Coordinator extends OptimizerStudyCoordinator {
     });
   }
   private complete(method: string, stage: 'development' | 'validation') {
-    const cases = stage === 'development' ? this.spec.developmentCases : this.spec.validationCases;
+    const cases = studyCases(this.spec, stage);
     for (const item of cases)
       for (let repetition = 0; repetition < this.spec.repetitions; repetition++) {
         const job = this.store.reserveJob(this.owner, { stage, method, caseId: item.id, repetition });
@@ -326,7 +331,7 @@ test('submitted method triggers an independent pump while the native session awa
         composition: 'plugins.yml',
         proposal: {
           draft: 'candidate',
-          parents: [f.store.spec.baseline.source.digest],
+          parents: [studyBaselineMethod(f.store.spec).source.digest],
           actions: ['author'],
           evidence: ['development fixture'],
           hypothesis: 'Synthetic lifecycle action',

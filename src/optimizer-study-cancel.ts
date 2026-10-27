@@ -5,7 +5,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { atomicJSON, confined, digest, fileDigest } from './artifacts.js';
 import { cancelExecutionTree, cancelExperiment, type ExecutionRegistration } from './cancellation.js';
 import { Docker } from './docker.js';
-import { OptimizerStudy } from './optimizer-study-contracts.js';
+import { RegisteredOptimizerStudy } from './optimizer-study-contracts.js';
 import { OptimizerStudyStore } from './optimizer-study-store.js';
 
 async function optional(file: string): Promise<unknown | undefined> {
@@ -83,7 +83,7 @@ async function cancelChild(
 /** Call only after the original observer has stopped and released its lease. Recover cleanup, never tasks. */
 export async function cancelOptimizerStudy(root: string, docker = new Docker()) {
   root = await realpath(root);
-  const spec = OptimizerStudy.parse(await optional(path.join(root, 'registration.json')));
+  const spec = RegisteredOptimizerStudy.parse(await optional(path.join(root, 'registration.json')));
   if (!(await present(path.join(root, 'study.sqlite'))))
     throw Error('Optimizer study registration ledger is missing');
   const store = new OptimizerStudyStore(path.join(root, 'study.sqlite'), spec),

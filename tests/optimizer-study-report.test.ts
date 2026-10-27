@@ -171,6 +171,7 @@ test('study aggregates each meta, child search and independent assessment ledger
     assert.equal(report.accounting.totalUsage.reportedTotals!.requestDurationMsSum, 1200);
     assert.equal(report.accounting.totalUsage.complete, true);
     assert.deepEqual(report.accounting.metaElapsed, {
+      applicable: true,
       reportedSeconds: 1.5,
       measuredEpisodes: 1,
       unmeasuredEpisodes: 0,
