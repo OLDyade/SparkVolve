@@ -99,7 +99,6 @@ parameters:{a:{type:'number',required:true},b:{type:'number',required:true}},out
           spec,
           {
             endpoint: liveControllerEndpoint(address.port),
-            controlEndpoint: `http://127.0.0.1:${address.port}`,
           },
           controller.docker,
           stop.signal,

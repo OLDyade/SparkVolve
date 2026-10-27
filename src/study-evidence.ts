@@ -6,7 +6,14 @@ import { Digest, Experiment, PreparedOptimizer, RelativePath } from './contracts
 import { confined, digest, inventory } from './artifacts.js';
 import { Controller } from './controller.js';
 import { Store } from './store.js';
-import { EvidenceReference, publishEvidenceBytes, readEvidence } from './evidence.js';
+import {
+  TaskEvidenceReference,
+  RunEvidenceReference,
+  CandidateEvidenceReference,
+  ProbeEvidenceReference,
+  publishEvidenceBytes,
+  readEvidence,
+} from './evidence.js';
 import { readAuthorizedFile } from './file-reader.js';
 import { controlRoutes } from './control-routes.js';
 import type { OptimizerStudyCoordinator } from './optimizer-study.js';
@@ -32,9 +39,10 @@ export const StudyEvidenceReference = z.discriminatedUnion('kind', [
     kind: z.literal('search'),
     jobID: Digest,
     reference: z.discriminatedUnion('kind', [
-      EvidenceReference.options[0],
-      EvidenceReference.options[1],
-      EvidenceReference.options[2],
+      TaskEvidenceReference,
+      RunEvidenceReference,
+      CandidateEvidenceReference,
+      ProbeEvidenceReference,
     ]),
   }),
 ]);

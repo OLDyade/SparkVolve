@@ -127,7 +127,8 @@ test('HTTP long poll wakes on commit, reconnect replays and shutdown cancels an 
     const active = post('/events', { cursor: replay.cursor });
     store.event('next', {});
     assert.equal(((await (await active).json()) as EventPage).events[0]!.type, 'next');
-    const idle = post('/events', { cursor: store.cursor() });
+    const latest = (await (await post('/status', {})).json()) as { cursor: unknown };
+    const idle = post('/events', { cursor: latest.cursor });
     stop.abort(new Error('server stopping'));
     assert.equal((await idle).status, 400);
   } finally {

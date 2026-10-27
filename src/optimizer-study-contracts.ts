@@ -1,5 +1,14 @@
 import { z } from 'zod';
-import { BuildIdentity, Digest, Experiment, Id, Isolation, Model, RelativePath } from './contracts.js';
+import {
+  BuildIdentity,
+  Digest,
+  Experiment,
+  HostSearchProtocol,
+  Id,
+  Isolation,
+  Model,
+  RelativePath,
+} from './contracts.js';
 import { canonical, digest } from './artifacts.js';
 import { EgressRoute } from './egress.js';
 import { controlPaths } from './control-routes.js';
@@ -23,6 +32,18 @@ export function studyMethodIdentity(method: FrozenStudyMethodRef): string {
 }
 export function studyMethodCandidateIdentity(sourceDigest: string, composition: string): string {
   return digest({ sourceDigest: Digest.parse(sourceDigest), composition: RelativePath.parse(composition) });
+}
+export const FixedComparisonArm = z.strictObject({
+  id: Id,
+  method: FrozenStudyMethod,
+  hostSearchProtocol: HostSearchProtocol,
+});
+export type FixedComparisonArmSpec = z.infer<typeof FixedComparisonArm>;
+export function studyArmIdentity(arm: FixedComparisonArmSpec): string {
+  return digest({
+    methodIdentity: studyMethodIdentity(arm.method),
+    hostSearchProtocol: arm.hostSearchProtocol,
+  });
 }
 
 const FrozenExperiment = z.strictObject({
@@ -159,7 +180,7 @@ export const FixedOptimizerComparison = z
     name: Id,
     objective: z.string().min(1),
     baseline: Id,
-    arms: z.array(z.strictObject({ id: Id, method: FrozenStudyMethod })).min(2),
+    arms: z.array(FixedComparisonArm).min(2),
     cases: z.array(OptimizerSearchCase).min(1),
     repetitions: z.number().int().positive(),
     budget: z.strictObject({ concurrentSearches: z.number().int().positive() }),
@@ -170,16 +191,18 @@ export const FixedOptimizerComparison = z
       issue('Comparison arm IDs must be unique');
     if (!spec.arms.some((arm) => arm.id === spec.baseline))
       issue('Comparison baseline must name a registered arm');
-    if (
-      new Set(
-        spec.arms.map((arm) =>
-          studyMethodCandidateIdentity(arm.method.source.digest, arm.method.composition),
-        ),
-      ).size !== spec.arms.length
-    )
+    if (new Set(spec.arms.map(studyArmIdentity)).size !== spec.arms.length)
       issue(
-        'Comparison methods must have unique source and composition identities; use repetitions for repeated methods',
+        'Comparison arms must have unique method and host protocol identities; use repetitions for repeated arms',
       );
+    const methodBuilds = new Map<string, string>();
+    for (const arm of spec.arms) {
+      const candidate = studyMethodCandidateIdentity(arm.method.source.digest, arm.method.composition);
+      const method = studyMethodIdentity(arm.method);
+      if (methodBuilds.has(candidate) && methodBuilds.get(candidate) !== method)
+        issue('The same method source and composition cannot name different frozen builds');
+      methodBuilds.set(candidate, method);
+    }
     if (new Set(spec.cases.map((item) => item.id)).size !== spec.cases.length)
       issue('Comparison case IDs must be unique');
     const overlaps = (a: string, b: string) => a === b || a.startsWith(b + '/') || b.startsWith(a + '/');
@@ -199,6 +222,14 @@ export const FixedOptimizerComparison = z
       issue('Comparison search and assessment datasets must be disjoint across every case');
     const metric = canonical(spec.cases[0]!.assessment.specification.metric);
     for (const item of spec.cases) {
+      for (const arm of spec.arms) {
+        const child = Experiment.safeParse({
+          ...item.search.specification,
+          hostSearchProtocol: arm.hostSearchProtocol,
+        });
+        if (!child.success)
+          issue(`Arm ${arm.id} case ${item.id} search protocol is invalid: ${child.error.message}`);
+      }
       if (
         item.search.specification.purpose !== 'search' ||
         item.assessment.specification.purpose !== 'validation'
@@ -238,7 +269,14 @@ export function studyCases(
       : [...spec.developmentCases, ...spec.validationCases];
 }
 export function registeredStudyMethods(spec: RegisteredOptimizerStudySpec): FrozenStudyMethodRef[] {
-  return isFixedComparison(spec) ? spec.arms.map((arm) => arm.method) : [spec.baseline, spec.metaOptimizer];
+  return [
+    ...new Map(
+      (isFixedComparison(spec)
+        ? spec.arms.map((arm) => arm.method)
+        : [spec.baseline, spec.metaOptimizer]
+      ).map((method) => [studyMethodIdentity(method), method]),
+    ).values(),
+  ];
 }
 export function studyBaselineMethod(spec: RegisteredOptimizerStudySpec): FrozenStudyMethodRef {
   return isFixedComparison(spec) ? spec.arms.find((arm) => arm.id === spec.baseline)!.method : spec.baseline;

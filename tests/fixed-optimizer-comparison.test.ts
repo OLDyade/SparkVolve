@@ -10,6 +10,7 @@ import {
   RegisteredOptimizerStudy,
   studyAllocationCeiling,
   studyMethodIdentity,
+  studyArmIdentity,
   type FixedOptimizerComparisonSpec,
   type FrozenStudyMethodRef,
 } from '../src/optimizer-study-contracts.js';
@@ -42,7 +43,11 @@ function registration(): FixedOptimizerComparisonSpec {
     name: 'fixed-methods',
     objective: 'Compare frozen native optimizer methods independently',
     baseline: 'reference',
-    arms: ['reference', 'alternative', 'failed'].map((id) => ({ id, method: method(id) })),
+    arms: ['reference', 'alternative', 'failed'].map((id) => ({
+      id,
+      method: method(id),
+      hostSearchProtocol: search.hostSearchProtocol,
+    })),
     cases: ['first', 'second'].map((id) => ({
       id,
       seed: { source: method('h0').source, artifact: method('h0').artifact },
@@ -64,10 +69,9 @@ function registration(): FixedOptimizerComparisonSpec {
     budget: { concurrentSearches: 1 },
   });
 }
-async function fixture() {
+async function fixture(spec = registration()) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'he-fixed-comparison-'));
-  const spec = registration(),
-    file = path.join(root, 'study.sqlite');
+  const file = path.join(root, 'study.sqlite');
   const store = new OptimizerStudyStore(file, spec);
   store.acquire(owner, Date.now(), 60_000);
   return {
@@ -81,6 +85,24 @@ async function fixture() {
     },
   };
 }
+function feedbackRegistration(): FixedOptimizerComparisonSpec {
+  const spec = registration();
+  const frozen = method('shared-g');
+  spec.arms = [
+    { id: 'reference', method: frozen, hostSearchProtocol: { ancestry: 'seed-only', feedback: 'full' } },
+    {
+      id: 'mechanical',
+      method: frozen,
+      hostSearchProtocol: { ancestry: 'seed-only', feedback: 'mechanical' },
+    },
+  ];
+  for (const item of spec.cases) {
+    item.search.specification.probes = null;
+    item.search.specification.researchLibrary = null;
+    item.search.specification.candidate.qa = null;
+  }
+  return FixedOptimizerComparison.parse(spec);
+}
 function jobs(f: Awaited<ReturnType<typeof fixture>>) {
   return f.spec.arms.flatMap((arm) =>
     f.spec.cases.flatMap((item) =>
@@ -88,6 +110,7 @@ function jobs(f: Awaited<ReturnType<typeof fixture>>) {
         f.store.reserveJob(owner, {
           stage: 'validation',
           method: studyMethodIdentity(arm.method),
+          comparisonArm: studyArmIdentity(arm),
           caseId: item.id,
           repetition,
         }),
@@ -161,6 +184,90 @@ test('development registrations retain their original identity and do not become
   assert.throws(() => RegisteredOptimizerStudy.parse({ ...raw, kind: 'fixed-comparison' }));
 });
 
+test('same frozen G admits different host protocols and rejects duplicate arms, inconsistent G builds and invalid child policies before execution', () => {
+  const spec = feedbackRegistration();
+  assert.equal(studyMethodIdentity(spec.arms[0]!.method), studyMethodIdentity(spec.arms[1]!.method));
+  assert.notEqual(studyArmIdentity(spec.arms[0]!), studyArmIdentity(spec.arms[1]!));
+  const renamed = { ...spec.arms[0]!, id: 'renamed' };
+  assert.equal(studyArmIdentity(renamed), studyArmIdentity(spec.arms[0]!));
+  assert.throws(
+    () => FixedOptimizerComparison.parse({ ...spec, arms: [spec.arms[0], renamed] }),
+    /use repetitions/,
+  );
+  const changed = structuredClone(spec);
+  changed.arms[1]!.method.artifact.identity.bundleDigest = digest('different build');
+  assert.throws(() => FixedOptimizerComparison.parse(changed), /different frozen builds/);
+  const invalid = structuredClone(spec);
+  invalid.cases[0]!.search.specification.probes = { limit: 1, timeoutSeconds: 10 };
+  assert.throws(
+    () => FixedOptimizerComparison.parse(invalid),
+    /Arm reference case first search protocol is invalid/,
+  );
+  const missing = structuredClone(spec) as unknown as { arms: Array<Record<string, unknown>> };
+  delete missing.arms[0]!.hostSearchProtocol;
+  assert.throws(() => FixedOptimizerComparison.parse(missing), /hostSearchProtocol/);
+});
+
+test('same G arms own separate immutable jobs, reports and paired failure denominators without duplicating a method candidate', async () => {
+  const f = await fixture(feedbackRegistration());
+  try {
+    assert.equal(f.store.methods().length, 1);
+    assert.equal(f.store.validationMethods().length, 1);
+    assert.equal(f.store.validationTargets().length, 2);
+    const reserved = jobs(f);
+    assert.equal(reserved.length, 8);
+    assert.equal(new Set(reserved.map((job) => job.method)).size, 1);
+    assert.equal(new Set(reserved.map((job) => job.id)).size, 8);
+    assert.equal(new Set(reserved.map((job) => job.childRoot)).size, 8);
+    assert.equal(new Set(reserved.map((job) => job.assessmentRoot)).size, 8);
+    assert.throws(() => f.store.methodReport(reserved[0]!.method, 'validation'), /arm identity/);
+    assert.throws(
+      () => f.store.reserveJob(owner, { ...reserved[0]!, comparisonArm: null }),
+      /comparison arm/,
+    );
+    assert.throws(
+      () => f.store.reserveJob(owner, { ...reserved[0]!, method: digest('foreign G') }),
+      /comparison arm/,
+    );
+    for (const job of reserved) {
+      if (job.comparisonArm === studyArmIdentity(f.spec.arms[0]!)) complete(f, job, 0.7);
+      else if (job.repetition === 0) complete(f, job, 0.4);
+      else f.store.failJob(owner, job.id, 'Original independent blind-arm failure');
+    }
+    f.store.finish(owner, 'Both feedback protocols completed');
+    const report = new OptimizerStudyCoordinator(f.root, f.store).reportSnapshot();
+    assert.equal(report.methods.length, 1);
+    assert.equal(report.validation.length, 2);
+    const arms = report.comparison!.arms;
+    assert.deepEqual(
+      arms.map((arm) => [arm.id, arm.mean, arm.denominator, arm.failures]),
+      [
+        ['reference', 0.7, 4, 0],
+        ['mechanical', 0.2, 4, 2],
+      ],
+    );
+    assert.ok(Math.abs(arms[1]!.pairedMeanDelta! + 0.5) < 1e-12);
+    assert.equal(arms[0]!.method, arms[1]!.method);
+    assert.notEqual(arms[0]!.armDigest, arms[1]!.armDigest);
+    assert.equal(arms[1]!.hostSearchProtocol.feedback, 'mechanical');
+    assert.deepEqual(
+      jobs(f),
+      reserved.map((job) => f.store.job(job.id)),
+    );
+    const reopened = new OptimizerStudyStore(f.file, f.spec, 'read');
+    try {
+      assert.deepEqual(new OptimizerStudyCoordinator(f.root, reopened).reportSnapshot(), report);
+    } finally {
+      reopened.close();
+    }
+    const modified = structuredClone(f.spec);
+    modified.arms[1]!.hostSearchProtocol = { ancestry: 'unrestricted', feedback: 'full' };
+    assert.throws(() => new OptimizerStudyStore(f.file, modified), /registration changed/);
+  } finally {
+    await f.cleanup();
+  }
+});
+
 test('all frozen arms survive losing and failed outcomes; paired instances and full denominator survive readonly recovery', async () => {
   const f = await fixture();
   try {
@@ -171,7 +278,7 @@ test('all frozen arms survive losing and failed outcomes; paired instances and f
     const expected = jobs(f);
     assert.equal(expected.length, 12);
     assert.deepEqual(f.store.reservedAllocation(), studyAllocationCeiling(f.spec));
-    assert.equal(f.store.methodReport(expected[0]!.method, 'validation').samples[0]!.score, null);
+    assert.equal(f.store.armReport(expected[0]!.comparisonArm!).samples[0]!.score, null);
     assert.throws(() => f.store.finish(owner, 'Too early'), /denominator is incomplete/);
     for (const job of expected) {
       if (job.method === studyMethodIdentity(f.spec.arms[2]!.method))

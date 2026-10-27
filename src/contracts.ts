@@ -118,11 +118,18 @@ export const OutcomeConstraint = z.strictObject({
   threshold: z.number().finite(),
 });
 export type OutcomeConstraintSpec = z.infer<typeof OutcomeConstraint>;
+/** Frozen host authority; the optimizer cannot alter its own feedback permissions. */
+export const HostSearchProtocol = z.strictObject({
+  ancestry: z.enum(['unrestricted', 'seed-only']),
+  feedback: z.enum(['full', 'mechanical']),
+});
+export type HostSearchProtocolSpec = z.infer<typeof HostSearchProtocol>;
 export const Experiment = z
   .strictObject({
     name: Id,
     objective: z.string().min(1),
     purpose: z.enum(['search', 'validation']),
+    hostSearchProtocol: HostSearchProtocol,
     isolation: Isolation,
     egress: z.strictObject({ optimizer: z.array(EgressRoute), executor: z.array(EgressRoute) }),
     runtime: z.strictObject({
@@ -169,6 +176,16 @@ export const Experiment = z
     constraints: z.array(OutcomeConstraint),
   })
   .superRefine((spec, ctx) => {
+    if (spec.hostSearchProtocol.feedback === 'mechanical' && spec.hostSearchProtocol.ancestry !== 'seed-only')
+      ctx.addIssue({ code: 'custom', message: 'Mechanical feedback requires seed-only ancestry' });
+    if (
+      spec.hostSearchProtocol.ancestry === 'seed-only' &&
+      (spec.probes !== null || spec.researchLibrary !== null || spec.candidate.qa !== null)
+    )
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Seed-only protocol requires probes, researchLibrary and domain QA to be null',
+      });
     const slots = 2 * (1 + (spec.isolation.network.executor === 'controlled' ? spec.concurrency : 0));
     if (poolCapacity(spec.isolation.network.egressPool) < slots)
       ctx.addIssue({

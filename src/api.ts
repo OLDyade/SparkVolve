@@ -4,7 +4,7 @@ import { timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
 import { Controller } from './controller.js';
 import { Digest, Id, RelativePath } from './contracts.js';
-import { EventCursor } from './events.js';
+import { OptimizerAccess, OptimizerCursor } from './optimizer-access.js';
 import { draftOrigin } from './library.js';
 import { controlPaths } from './control-routes.js';
 import { readEvidence, materializeEvidence } from './evidence.js';
@@ -18,6 +18,7 @@ export async function serve(
 ): Promise<Server> {
   if (controller.spec.purpose !== 'search') throw new Error('Validation experiments have no optimizer API');
   if (token.length < 32) throw new Error('Controller capability must have at least 32 characters');
+  const access = new OptimizerAccess(controller);
   const server = createServer(async (req, res) => {
     const disconnect = new AbortController();
     const closed = () => disconnect.abort(new Error('Event client disconnected'));
@@ -50,6 +51,16 @@ export async function serve(
       const body: unknown = JSON.parse(Buffer.concat(chunks).toString());
       let result: unknown;
       switch (req.url) {
+        case '/input': {
+          const args = z.strictObject({ task: Id, file: RelativePath.optional() }).parse(body);
+          result = await readEvidence(controller, {
+            kind: 'task',
+            id: args.task,
+            area: 'input',
+            file: args.file,
+          });
+          break;
+        }
         case '/probe':
           result = await controller.probe(body);
           break;
@@ -99,12 +110,12 @@ export async function serve(
         case '/events': {
           const args = z
             .strictObject({
-              cursor: EventCursor,
+              cursor: OptimizerCursor,
               timeoutMs: z.number().int().min(0).max(30_000).default(30_000),
               limit: z.number().int().min(1).max(100).default(100),
             })
             .parse(body);
-          result = await controller.store.wait(args.cursor, {
+          result = await access.wait(args.cursor, {
             ...args,
             signal: AbortSignal.any([disconnect.signal, ...(signal ? [signal] : [])]),
           });
@@ -113,7 +124,7 @@ export async function serve(
         case '/finish': {
           const args = z.strictObject({ reason: z.string().min(1) }).parse(body);
           controller.finish(args.reason);
-          result = controller.status();
+          result = access.status();
           break;
         }
         case '/candidate': {
@@ -133,7 +144,7 @@ export async function serve(
           break;
         }
         case '/status':
-          result = controller.status();
+          result = access.status();
           break;
         case '/branch': {
           const args = z.strictObject({ parent: Digest, draft: Id }).parse(body);
@@ -142,7 +153,7 @@ export async function serve(
           break;
         }
         case '/submit':
-          result = await controller.submit(body);
+          result = access.submission(await controller.submit(body));
           break;
         case '/evidence': {
           const args = z

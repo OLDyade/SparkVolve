@@ -4,44 +4,64 @@ import { channel } from 'node:diagnostics_channel';
 import path from 'node:path';
 import { z } from 'zod';
 import type { Controller } from './controller.js';
-import { Digest, RelativePath } from './contracts.js';
+import { Digest, Id, RelativePath } from './contracts.js';
+import { authorizeOptimizerEvidence } from './optimizer-access.js';
 import { confined, digest, inventory, treeDigest } from './artifacts.js';
 import { readAuthorizedFile } from './file-reader.js';
 
 const publications = channel('harness-evolution:materialization');
 
+export const TaskEvidenceReference = z.strictObject({
+  kind: z.literal('task'),
+  id: Id,
+  area: z.literal('input'),
+  file: RelativePath.optional(),
+});
+export const RunEvidenceReference = z.strictObject({
+  kind: z.literal('run'),
+  id: Digest,
+  area: z.enum(['input', 'delivery', 'trace']),
+  file: RelativePath.optional(),
+});
+export const CandidateEvidenceReference = z.strictObject({
+  kind: z.literal('candidate'),
+  id: Digest,
+  area: z.enum(['source', 'build', 'artifact', 'qa']),
+  file: RelativePath.optional(),
+});
+export const ProbeEvidenceReference = z.strictObject({
+  kind: z.literal('probe'),
+  id: Digest,
+  area: z.enum(['source', 'suite', 'build', 'artifact', 'logs', 'observations']),
+  file: RelativePath.optional(),
+});
+export const AssetEvidenceReference = z.strictObject({
+  kind: z.literal('asset'),
+  id: Digest,
+  area: z.literal('source'),
+  file: RelativePath.optional(),
+});
 export const EvidenceReference = z.discriminatedUnion('kind', [
-  z.strictObject({
-    kind: z.literal('run'),
-    id: Digest,
-    area: z.enum(['input', 'delivery', 'trace']),
-    file: RelativePath.optional(),
-  }),
-  z.strictObject({
-    kind: z.literal('candidate'),
-    id: Digest,
-    area: z.enum(['source', 'build', 'artifact', 'qa']),
-    file: RelativePath.optional(),
-  }),
-  z.strictObject({
-    kind: z.literal('probe'),
-    id: Digest,
-    area: z.enum(['source', 'suite', 'build', 'artifact', 'logs', 'observations']),
-    file: RelativePath.optional(),
-  }),
-  z.strictObject({
-    kind: z.literal('asset'),
-    id: Digest,
-    area: z.literal('source'),
-    file: RelativePath.optional(),
-  }),
+  TaskEvidenceReference,
+  RunEvidenceReference,
+  CandidateEvidenceReference,
+  ProbeEvidenceReference,
+  AssetEvidenceReference,
 ]);
+export type EvidenceReferenceSpec = z.infer<typeof EvidenceReference>;
 
 /** All inventory, byte reads and materialization use the same experiment authorization. */
 export async function readEvidence(controller: Controller, raw: unknown): Promise<unknown> {
   const reference = EvidenceReference.parse(raw);
+  authorizeOptimizerEvidence(controller, reference);
   let root: string;
   switch (reference.kind) {
+    case 'task': {
+      const task = controller.spec.tasks.find((item) => item.id === reference.id);
+      if (!task) throw new Error('Unknown task');
+      root = confined(controller.dataset, task.input);
+      break;
+    }
     case 'asset':
       return await controller.asset(reference.id, reference.file);
     case 'run': {

@@ -39,6 +39,7 @@ test('native Cordis registers, executes and disposes evolution capabilities', as
         'evolution_evidence',
         'evolution_finish',
         'evolution_import',
+        'evolution_input',
         'evolution_library',
         'evolution_materialize',
         'evolution_probe',

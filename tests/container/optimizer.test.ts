@@ -93,7 +93,6 @@ test(
       ).split(/\s+/)[0]!;
       await optimize(root, spec, {
         endpoint: `http://${hostIP}:${address.port}`,
-        controlEndpoint: `http://127.0.0.1:${address.port}`,
       });
       assert.match(store.getMeta('searchConclusion')!, /Protocol lifecycle acceptance completed/);
       const summary = JSON.parse(await readFile(path.join(root, 'optimizer/summary.json'), 'utf8'));

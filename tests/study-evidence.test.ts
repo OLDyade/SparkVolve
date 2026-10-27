@@ -73,6 +73,7 @@ async function fixture() {
   ledger.acquire(owner, Date.now(), 60_000);
   const coordinator = new OptimizerStudyCoordinator(root, ledger);
   const job = ledger.reserveJob(owner, {
+    comparisonArm: null,
     stage: 'development',
     method: studyMethodIdentity(spec.baseline),
     caseId: 'development',

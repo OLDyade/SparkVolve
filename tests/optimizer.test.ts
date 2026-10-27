@@ -35,7 +35,6 @@ test('normal session completion continues with durable feedback; restart never r
   assert.ok(address && typeof address !== 'string');
   const endpoints = {
     endpoint: 'http://192.0.2.1:8787',
-    controlEndpoint: `http://127.0.0.1:${address.port}`,
   };
   class Driver extends Docker {
     override async executionReference(spec: ContainerSpec) {

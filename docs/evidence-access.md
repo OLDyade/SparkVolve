@@ -36,12 +36,15 @@
 
 | kind | 可选 area |
 |---|---|
+| `task` | `input`：以注册 task id 获取公开输入，无需 run id |
 | `run` | `input`、`delivery`、`trace` |
 | `candidate` | `source`、`build`、`artifact`、`qa` |
 | `probe` | `source`、`suite`、`build`、`artifact`、`logs`、`observations` |
 | `asset` | `source`：合同授权的研究资产源码文件 |
 
 文件必须明确指定，目录清单仍通过原有证据工具读取。引用只在当前实验内解析，不接受宿主绝对路径、任意下载 URL 或调用者指定的写入目标；私有评分区域没有读取入口。相同来源和内容返回同一快照，内容变化产生新的身份，不覆盖已有证据。
+
+上述区域还受冻结的[宿主反馈协议](feedback-views.md)限制。`mechanical` 拒绝全部 `run` 引用，公开输入统一走 `task`；关闭的 probe/library 不可读取。证据清单、文件读取和物化使用同一授权函数，不能通过改用 base64、原字节挂载或另一工具绕过。原始宿主账本仍保留完整运行结果。
 
 ## 读取与发布边界
 

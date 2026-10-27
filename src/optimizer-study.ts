@@ -22,6 +22,7 @@ import {
   studyCases,
   registeredStudyMethods,
   studyMethodIdentity,
+  studyArmIdentity,
   type FrozenStudyBundleRef,
   type FrozenStudyMethodRef,
   type RegisteredOptimizerStudySpec,
@@ -623,24 +624,25 @@ export class OptimizerStudyCoordinator {
   /** Serializes method batches, while each batch runs at the registered search-instance concurrency. */
   evaluateMethod(method: string, transport: StudyTransport, externalSignal?: AbortSignal) {
     const operation = this.evaluation.then(() =>
-      this.evaluate(method, 'development', transport, externalSignal),
+      this.evaluate({ method, comparisonArm: null }, 'development', transport, externalSignal),
     );
     this.evaluation = operation.catch(() => {});
     return operation;
   }
   private async evaluate(
-    method: string,
+    target: { method: string; comparisonArm: string | null },
     stage: StudyStageName,
     transport: StudyTransport,
     externalSignal?: AbortSignal,
   ) {
+    const { method, comparisonArm } = target;
     const signal = this.signal(externalSignal);
     signal.throwIfAborted();
     this.ready(method);
     const cases = studyCases(this.spec, stage);
     const jobs = cases.flatMap((item) =>
       Array.from({ length: this.spec.repetitions }, (_, repetition) =>
-        this.store.reserveJob(this.owner, { stage, method, caseId: item.id, repetition }),
+        this.store.reserveJob(this.owner, { stage, method, comparisonArm, caseId: item.id, repetition }),
       ),
     );
     jobs.sort((a, b) => Number(b.phase !== 'reserved') - Number(a.phase !== 'reserved'));
@@ -663,7 +665,9 @@ export class OptimizerStudyCoordinator {
         errors.map((error) => error.reason),
         'Study worker failed',
       );
-    return this.store.methodReport(method, stage);
+    return comparisonArm === null
+      ? this.store.methodReport(method, stage)
+      : this.store.armReport(comparisonArm);
   }
   private async dataset(
     job: StudyJob,
@@ -692,6 +696,9 @@ export class OptimizerStudyCoordinator {
       await freeze(staging, directory, path.join(this.root, 'publications'));
       const spec = Experiment.parse({
         ...item.search.specification,
+        hostSearchProtocol: isFixedComparison(this.spec)
+          ? this.spec.arms.find((arm) => studyArmIdentity(arm) === job.comparisonArm)!.hostSearchProtocol
+          : item.search.specification.hostSearchProtocol,
         optimizerHarness: {
           kind: 'artifact',
           source: { directory: `${namespace}/source`, digest: method.source.digest },
@@ -816,13 +823,18 @@ export class OptimizerStudyCoordinator {
       const state = this.store.state();
       if (state.phase !== 'validating' || (!isFixedComparison(this.spec) && !state.selectedMethod))
         throw Error('Validation selection is not frozen');
-      const methods = this.store.validationMethods();
+      const targets = this.store.validationTargets();
       // Register the entire final denominator before any method starts executing.
-      for (const method of methods)
+      for (const target of targets)
         for (const item of studyCases(this.spec, 'validation'))
           for (let repetition = 0; repetition < this.spec.repetitions; repetition++)
-            this.store.reserveJob(this.owner, { stage: 'validation', method, caseId: item.id, repetition });
-      for (const method of methods) await this.evaluate(method, 'validation', transport, externalSignal);
+            this.store.reserveJob(this.owner, {
+              stage: 'validation',
+              ...target,
+              caseId: item.id,
+              repetition,
+            });
+      for (const target of targets) await this.evaluate(target, 'validation', transport, externalSignal);
       const result = this.store.finish(
         this.owner,
         'Registered independent validation completed; results retained without automatic release',
@@ -847,16 +859,13 @@ export class OptimizerStudyCoordinator {
   reportSnapshot() {
     const methods = this.store.methods().filter((method) => method.phase === 'ready');
     const fixed = isFixedComparison(this.spec);
-    const validation = this.store.validationMethods();
     return {
       ...this.status(),
       protocol: fixed ? 'fixed-comparison' : 'development-selection',
       development: fixed
         ? []
         : methods.map((method) => this.store.methodReport(method.methodIdentity!, 'development')),
-      validation: methods
-        .filter((method) => validation.includes(method.methodIdentity!))
-        .map((method) => this.store.methodReport(method.methodIdentity!, 'validation')),
+      validation: this.store.validationReports(),
       comparison: this.store.comparisonReport(),
       boundary: fixed
         ? 'All preregistered comparison methods receive independent search and assessment. No development selector, meta optimizer or automatic release.'

@@ -39,9 +39,9 @@ export function apply(ctx: Context, config: Config): void {
     defineTool({
       name: 'evolution_materialize',
       description:
-        'Materialize an authorized evidence file as exact bytes at a read-only /evidence path. Use native file, shell or format tools on that path; do not transcribe base64. Supply kind, its recorded id, area and exact inventory file. run areas: input/delivery/trace; candidate: source/build/artifact/qa; probe: source/suite/build/artifact/logs/observations; asset: source. Returns path, byte count, SHA-256 and a provenance file. Captures the observed bytes; a live trace may have later contents. No evaluator-private material, workspace writes, execution, or automatic repair.',
+        'Materialize an authorized evidence file as exact bytes at a read-only /evidence path. Use native file, shell or format tools on that path; do not transcribe base64. Supply kind, its recorded id, area and exact inventory file. task: input by registered task ID; run: input/delivery/trace when feedback permits; candidate: source/build/artifact/qa; probe: source/suite/build/artifact/logs/observations; asset: source. Returns path, byte count, SHA-256 and a provenance file. Captures the observed bytes; a live trace may have later contents. No evaluator-private material, workspace writes, execution, or automatic repair.',
       parameters: {
-        kind: { type: 'string', enum: ['run', 'candidate', 'probe', 'asset'], required: true },
+        kind: { type: 'string', enum: ['task', 'run', 'candidate', 'probe', 'asset'], required: true },
         id: { type: 'string', required: true },
         area: {
           type: 'string',
@@ -145,6 +145,7 @@ export function apply(ctx: Context, config: Config): void {
         'Wait for committed experiment events, without repeatedly reading status. Start with the cursor from evolution_status; continue with the returned cursor. Reuse that cursor after reconnecting. A timeout returns an empty page and does not stop or retry any task. Drain hasMore pages before waiting again; read status after a decision for the current state.',
       parameters: {
         experimentId: { type: 'string', required: true },
+        viewDigest: { type: 'string', required: true },
         sequence: { type: 'integer', required: true },
       },
       output,
@@ -179,7 +180,7 @@ export function apply(ctx: Context, config: Config): void {
     defineTool({
       name: 'evolution_status',
       description:
-        'Read the frozen experiment contract, candidate lineage, complete task results and champion. Quality claims require independent evaluation.',
+        'Read the frozen experiment contract and authorized feedback view. Mechanical feedback exposes source, build and assembly state without execution results or champion selection. Use its exact view cursor for events.',
       parameters: {},
       output,
       execute: async (_args, exec) => request('/status', {}, exec.signal),
@@ -189,7 +190,7 @@ export function apply(ctx: Context, config: Config): void {
     defineTool({
       name: 'evolution_branch',
       description:
-        'Create an editable draft from any recorded parent. Use ordinary DSH file and coding tools in /workspace/<draft> to enable, disable, tune, replace, compose or author plugins. The optimizer runtime stays unchanged.',
+        'Create an editable draft from a parent authorized by the frozen ancestry contract. Seed-only permits the initial harness alone. Use ordinary DSH file and coding tools in /workspace/<draft> to enable, disable, tune, replace, compose or author plugins.',
       parameters: { parent: { type: 'string', required: true }, draft: { type: 'string', required: true } },
       output,
       execute: async (args, exec) => request('/branch', args, exec.signal),
@@ -214,6 +215,16 @@ export function apply(ctx: Context, config: Config): void {
       },
       output,
       execute: async (args, exec) => request('/submit', args, exec.signal),
+    }),
+  );
+  ctx.tools.register(
+    defineTool({
+      name: 'evolution_input',
+      description:
+        'Read public task input by its registered task ID, independently of execution feedback. Omit file for the inventory; files return exact bytes as base64. Materialize with kind task and area input for native file tools.',
+      parameters: { task: { type: 'string', required: true }, file: { type: 'string' } },
+      output,
+      execute: async (args, exec) => request('/input', args, exec.signal),
     }),
   );
   ctx.tools.register(

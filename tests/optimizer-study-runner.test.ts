@@ -105,7 +105,13 @@ class Coordinator extends OptimizerStudyCoordinator {
     const cases = studyCases(this.spec, stage);
     for (const item of cases)
       for (let repetition = 0; repetition < this.spec.repetitions; repetition++) {
-        const job = this.store.reserveJob(this.owner, { stage, method, caseId: item.id, repetition });
+        const job = this.store.reserveJob(this.owner, {
+          stage,
+          method,
+          comparisonArm: null,
+          caseId: item.id,
+          repetition,
+        });
         if (job.phase === 'complete') continue;
         this.store.startJob(this.owner, job.id, digest(['search', job.id]));
         this.store.startAssessment(this.owner, job.id, item.seed, digest(['assessment', job.id]));

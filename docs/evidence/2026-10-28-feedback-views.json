@@ -1,0 +1,377 @@
+{
+  "date": "2026-10-28",
+  "kind": "host-feedback-and-capability-delivery-engineering-acceptance",
+  "sourceFiles": [
+    {
+      "file": "src/optimizer-access.ts",
+      "sha256": "7e2ea9fb5719e6a7c9050544f02543aeeb890bc0de3d1572ab6fd07db4e91a4a"
+    },
+    {
+      "file": "src/contracts.ts",
+      "sha256": "5340a84f003853bcd3f24715396115877b8541e63d4312e7d4009b42f2e8d262"
+    },
+    {
+      "file": "src/api.ts",
+      "sha256": "e71f2bee9bde31f16aec1f684a22a0791324ab75986bb1e1586c608e7e2a90c6"
+    },
+    {
+      "file": "src/control-routes.ts",
+      "sha256": "4bcda4402576cad582a41b76392b05cc45f9d74a467a04f5a9cf342d94025968"
+    },
+    {
+      "file": "src/controller.ts",
+      "sha256": "bde98e4b1f4e01e7ffbf2d7af37c1e3c28646634413790f6df59c89a44089a41"
+    },
+    {
+      "file": "src/evidence.ts",
+      "sha256": "3dcf651ad068c5020a55c760952809b2ad8d606cdfb20aeaceb2ccfde02c3a60"
+    },
+    {
+      "file": "src/optimizer.ts",
+      "sha256": "9c4c3a5e91457fba6928a3fad81f6c62ed61a562affa39823d969f3ff4d0fcdc"
+    },
+    {
+      "file": "src/plugin.ts",
+      "sha256": "c8823dd8a00c732fb636f674501d233594b8faf13d0b2b839cdcce1c253fa8da"
+    },
+    {
+      "file": "src/cli.ts",
+      "sha256": "7dd13a891b74fb009ac427507650d54fe53937e19d4ac4e1cdc27d8819d6732f"
+    },
+    {
+      "file": "src/optimizer-study-contracts.ts",
+      "sha256": "665d9dfdb831c2d4adc43f2f6f5513bf5ac2ec3083bc98febcc6264757ebf1b3"
+    },
+    {
+      "file": "src/optimizer-study-store.ts",
+      "sha256": "9851bb9ed1a38fceea90b47b08cfea8c5009ac9898fd20c3e702300df00a690e"
+    },
+    {
+      "file": "src/optimizer-study.ts",
+      "sha256": "226cf273a13447c35dcdc103a563e17c8a4913a8a6aa3e08b1bacf39c85c11dc"
+    },
+    {
+      "file": "src/capability-card.ts",
+      "sha256": "3d201637a1a5f241b0cc2d7a1e8dfe02ea8d1776ba7028684a402315858f4ae0"
+    },
+    {
+      "file": "src/export.ts",
+      "sha256": "420d472ae31089518fcf26845fce4e4652103849050da5154a572709971c975d"
+    },
+    {
+      "file": "tests/capability-card.test.ts",
+      "sha256": "3dbf792f7998e5ded30942333c299c8c7ecaf79f947fcd82d2f307a7651f37e1"
+    },
+    {
+      "file": "tests/container/host-feedback.test.ts",
+      "sha256": "e84cb2ee38d92654ae45e8ce401397e2d4cca646d8dc4d284d56d5b923a6c403"
+    },
+    {
+      "file": "tests/container/host-feedback-provider.mjs",
+      "sha256": "27a307dc4fc8452225d2355f14da7d083cb085a4d60bde62a1a3ee0eb2f806cd"
+    }
+  ],
+  "hostFeedback": {
+    "root": ".evolution/host-feedback-native-3gObYP",
+    "acceptanceSha256": "8b25e9cd78320af9b97a4be7a371ec7e3f56d05291c251238826ac1a6399d5e7",
+    "reportSha256": "bd47aee9ef893d6fa64305039bae8591b00fd8993d94a14b76d907f68d9edafe",
+    "registrationDigest": "aea3b8a7187a0b6aa0c76c50ab06d7c5f904873530670d1c42054b7573bcda43",
+    "image": "sha256:c80b3724ef5dfd7e78720bbfd36bc7458cdfd9742558bf3a3e945e93c161eb70",
+    "runtime": "runc",
+    "passed": true,
+    "sameFrozenMethod": true,
+    "terminalReentryUnchanged": true,
+    "verifiedRuntime": [
+      {
+        "file": "dist/runtime/worker.js",
+        "sha256": "9206ee208390010f2a0207db2d103ca28446fd7b9d7bf5085ecfa414102febfc"
+      },
+      {
+        "file": "dist/runtime/build.js",
+        "sha256": "f2015b4fb9b3d58ac59ee31fdc3a237e2c45b4d67433e931221c1bc8e0a13b5b"
+      },
+      {
+        "file": "dist/runtime/qa.js",
+        "sha256": "6c39829ba17c67c9da4af06ede05ea169d82b1ee6459a3f13e3aedaf0b738981"
+      },
+      {
+        "file": "dist/plugin.js",
+        "sha256": "5758065926888f6a4f2e563bc5113fc1e5f2d8bdef642821a10371a2539fe832"
+      },
+      {
+        "file": "dist/preset.js",
+        "sha256": "a805f0d8fb409eb7006d994b7a94f3a947fa83d34ccb6710ca3696047a5c610a"
+      },
+      {
+        "file": "dist/composition.js",
+        "sha256": "94848159a68b273d1cc2ecbba8d001dcef056cc19cf032242c693149dddec32c"
+      },
+      {
+        "file": "dist/api.js",
+        "sha256": "9be1c0d99aea9d707003cf96f09291df65150d30b97c949a1910dc2ca52c474b"
+      },
+      {
+        "file": "dist/optimizer-access.js",
+        "sha256": "892e2fc7af333a7d416fd214dcfa8b5a7d497394fb4928531adeda55feac678a"
+      },
+      {
+        "file": "dist/optimizer.js",
+        "sha256": "5eddc0ba24151ef87cd0ce0e8147d98c7a03f1197fba65f02390d11f24588ee5"
+      },
+      {
+        "file": "dist/optimizer-study.js",
+        "sha256": "e951925ae7bc8be80dad0823fb86b5b6be229a37e14b01ff4a88809342852baf"
+      },
+      {
+        "file": "dist/optimizer-study-contracts.js",
+        "sha256": "d6ba5d6411d47ca44e0ddcb315207bd7574a30d2f69fdec4ba1beb1c5667f740"
+      },
+      {
+        "file": "dist/optimizer-study-store.js",
+        "sha256": "78fa5dd68a97a76fb03781bf2329a37f233f3307cd2249aa4b31dbf664288613"
+      },
+      {
+        "file": "dist/optimizer-study-runner.js",
+        "sha256": "5cea19583d6a9b0493b5f7af4a0be26f101e9848c5f362151acdda86f98f9847"
+      },
+      {
+        "file": "dist/optimizer-study-report.js",
+        "sha256": "22a63334ca0b55ee1064fe0809533e725cc132797456011b855dcd8924ceac45"
+      },
+      {
+        "file": "dist/evidence.js",
+        "sha256": "325319d3a7ff7cb15c221b10bc99d44bd9b93fd7d7fb85e434c935b5a985fa7e"
+      },
+      {
+        "file": "dist/contracts.js",
+        "sha256": "e539e79e12524f0435b5824c5465f699cb047e0393e29fc7bd702a638b012a54"
+      },
+      {
+        "file": "dist/control-routes.js",
+        "sha256": "0a3b481eb8558614770433f6690649778c196c2e96ac50ef03cc2248fb4e66ae"
+      },
+      {
+        "file": "dist/controller.js",
+        "sha256": "cf5058d97512ecce32f9096008989d127d56fb753b84372d8ed9c1cd9fb0b108"
+      },
+      {
+        "file": "dist/experiment.js",
+        "sha256": "9333994cf916d34731fc24d02551c02b7ce94f7c27c6ac839082d7710ee27268"
+      }
+    ],
+    "observations": [
+      {
+        "arm": "c81fb2969c86c03d7ee0efe10e9c68f9b0b3a6cb23b806fe8d3e68dd79f3aa82",
+        "canaryCount": 6,
+        "isolationSha256": "e4c1038734eacdf252d40f66b1ee9ee2504bcd67b852010ebfec11f8bf2cf95d",
+        "job": "a25c33ef7c4fdf3cee8c5e1bb8f0bd09b094c10764ed2ee6f1dc284148aefe60",
+        "materializedTaskBytes": 6,
+        "method": "620904cee8583752d137db8ecea59f5383b1b5a922a4533fad93f1872b08a091",
+        "mode": "full",
+        "nativeKnownRunProbes": 21,
+        "nativeModelRequests": 41,
+        "nativeToolResponses": 40,
+        "rawRuns": 2,
+        "requestSha256": "d6556bfaf7c853ed1af347633f1bc4c458e36ccd07ba8c97711726a66f337967"
+      },
+      {
+        "arm": "3d3d092aa37e2ba651baffc4944de015598525c43abb7a95c1c1fa5d0a5a16fb",
+        "canaryCount": 6,
+        "isolationSha256": "2437274003cdb5b08ffab72b2f2a4d1d4a8470e4781dab9e354c9abde7ce7ad0",
+        "job": "a3e48a0950d4b00268845097b2ed8b1a19201622d8ba7b6cc4b43dd2e7ca66aa",
+        "materializedTaskBytes": 6,
+        "method": "620904cee8583752d137db8ecea59f5383b1b5a922a4533fad93f1872b08a091",
+        "mode": "mechanical",
+        "nativeKnownRunProbes": 21,
+        "nativeModelRequests": 37,
+        "nativeToolResponses": 36,
+        "rawRuns": 2,
+        "requestSha256": "e466df1b9337e752ec81e9a5271f27b5cc0274039c7885dfbccb3a8e7595f8f4"
+      }
+    ],
+    "evidenceFileCount": 36,
+    "arms": [
+      {
+        "id": "full",
+        "armDigest": "c81fb2969c86c03d7ee0efe10e9c68f9b0b3a6cb23b806fe8d3e68dd79f3aa82",
+        "method": "620904cee8583752d137db8ecea59f5383b1b5a922a4533fad93f1872b08a091",
+        "hostSearchProtocol": {
+          "ancestry": "seed-only",
+          "feedback": "full"
+        },
+        "denominator": 1,
+        "failures": 0,
+        "mean": 1
+      },
+      {
+        "id": "mechanical",
+        "armDigest": "3d3d092aa37e2ba651baffc4944de015598525c43abb7a95c1c1fa5d0a5a16fb",
+        "method": "620904cee8583752d137db8ecea59f5383b1b5a922a4533fad93f1872b08a091",
+        "hostSearchProtocol": {
+          "ancestry": "seed-only",
+          "feedback": "mechanical"
+        },
+        "denominator": 1,
+        "failures": 0,
+        "mean": 1
+      }
+    ],
+    "accounting": {
+      "ledgers": 8,
+      "availableLedgers": 8,
+      "unavailableLedgers": 0,
+      "reportedTotals": {
+        "started": 90,
+        "results": 90,
+        "failed": 0,
+        "unfinished": 0,
+        "inputTokensReported": 692,
+        "outputTokensReported": 268,
+        "missingUsage": 0,
+        "requestDurationMsSum": 463
+      },
+      "complete": true,
+      "unavailableSources": 0,
+      "unobservedTaskRuns": 0,
+      "activeSources": 0,
+      "emptyLedgers": 0
+    },
+    "boundary": "Actual Docker/DSH search and independent assessment with deterministic model fixture; separate native Tools probes use real run IDs. No paid model, efficacy claim, or live-crash recovery claim."
+  },
+  "fixedComparisonRegression": {
+    "root": ".evolution/fixed-comparison-native-cQm0qb",
+    "acceptanceSha256": "eb3bc2c9388f4f139b9e46959ec630723ddab7d8122d2780b8cd04771b79bac6",
+    "reportSha256": "8f082a87d1a3bfd7928d029d5f2a2bcc79e2c407473633b5993d9eea58d3ca79",
+    "registrationDigest": "30eb709de77e227723ee85f7cc9a436ac4d570f6e4d8e449e77d746b46c0c421",
+    "image": "sha256:c80b3724ef5dfd7e78720bbfd36bc7458cdfd9742558bf3a3e945e93c161eb70",
+    "runtime": "runc",
+    "passed": true,
+    "sameFrozenMethod": null,
+    "terminalReentryUnchanged": true,
+    "verifiedRuntime": [
+      {
+        "file": "dist/runtime/worker.js",
+        "sha256": "9206ee208390010f2a0207db2d103ca28446fd7b9d7bf5085ecfa414102febfc"
+      },
+      {
+        "file": "dist/runtime/build.js",
+        "sha256": "f2015b4fb9b3d58ac59ee31fdc3a237e2c45b4d67433e931221c1bc8e0a13b5b"
+      },
+      {
+        "file": "dist/runtime/qa.js",
+        "sha256": "6c39829ba17c67c9da4af06ede05ea169d82b1ee6459a3f13e3aedaf0b738981"
+      },
+      {
+        "file": "dist/plugin.js",
+        "sha256": "5758065926888f6a4f2e563bc5113fc1e5f2d8bdef642821a10371a2539fe832"
+      },
+      {
+        "file": "dist/preset.js",
+        "sha256": "a805f0d8fb409eb7006d994b7a94f3a947fa83d34ccb6710ca3696047a5c610a"
+      },
+      {
+        "file": "dist/composition.js",
+        "sha256": "94848159a68b273d1cc2ecbba8d001dcef056cc19cf032242c693149dddec32c"
+      }
+    ],
+    "observations": null,
+    "evidenceFileCount": 35,
+    "arms": [
+      {
+        "id": "direct",
+        "armDigest": "6d434a6c1b5d10e65e2f81318e426e624fc70ebd0876d0e5cee2fc1292f4bd71",
+        "method": "33e4fac0d30ccba6380a1f3149ec7ba0140406d513a0298123ac3488e64de244",
+        "hostSearchProtocol": {
+          "ancestry": "unrestricted",
+          "feedback": "full"
+        },
+        "denominator": 1,
+        "failures": 0,
+        "mean": 1
+      },
+      {
+        "id": "inspect",
+        "armDigest": "b96fd4c891b7b67348893d26bb523f136c0682eed93bba30b01bca814ce498f6",
+        "method": "144aaac5854a33ea5d73dff8e3169d4dc75a5bc256bfa0f78440646cb5752ebc",
+        "hostSearchProtocol": {
+          "ancestry": "unrestricted",
+          "feedback": "full"
+        },
+        "denominator": 1,
+        "failures": 0,
+        "mean": 1
+      },
+      {
+        "id": "failure",
+        "armDigest": "6a14cc738c7f8fd33b468e21fff09667d02151d839b5de527052625b27ef3fa8",
+        "method": "2f21f3d9d01ce952127a9744a7dfd8c7b0e570cdc2aef961a4950d73dcf282f0",
+        "hostSearchProtocol": {
+          "ancestry": "unrestricted",
+          "feedback": "full"
+        },
+        "denominator": 1,
+        "failures": 1,
+        "mean": 0
+      }
+    ],
+    "accounting": {
+      "ledgers": 8,
+      "availableLedgers": 8,
+      "unavailableLedgers": 0,
+      "reportedTotals": {
+        "started": 16,
+        "results": 15,
+        "failed": 1,
+        "unfinished": 0,
+        "inputTokensReported": 184,
+        "outputTokensReported": 43,
+        "missingUsage": 1,
+        "requestDurationMsSum": 61
+      },
+      "complete": false,
+      "unavailableSources": 1,
+      "unobservedTaskRuns": 0,
+      "activeSources": 0,
+      "emptyLedgers": 0
+    },
+    "boundary": "Actual Docker and DSH Agent Loop/tools, CLI registration and final assessment. Deterministic adapters, no paid model or scientific efficacy claim."
+  },
+  "preservedFailure": {
+    "root": ".evolution/host-feedback-native-tZMdKK",
+    "reportSha256": "512946dfdc42e1e89f20d2b642df8af3219da93f0a176de44877b61e5d8e21a8",
+    "reason": "Deterministic fixture omitted the installed DSH Bash tool required description field; mutation was never written and the unchanged submission was rejected.",
+    "resolution": "Corrected test driver only; a separate directory ran the new acceptance. Original artifacts were not overwritten."
+  },
+  "checks": {
+    "unit": 181,
+    "nativeLocal": 17,
+    "containerTests": 2,
+    "packageInstall": 1,
+    "capabilityExportTestsIncludedInUnit": 3
+  },
+  "distribution": {
+    "root": ".evolution/feedback-delivery-20261028",
+    "receiptSha256": "dfc46f400b6c8c4bf3e7efcc8f916fcf5202adddcb1cfe301411a3c4f615313b",
+    "commitBase": "c6d82e15e5a6ea354e27376bcfd3925c6ba945f0",
+    "workingTreeDirty": true,
+    "archive": {
+      "file": "harness-evolution-dsh-bundle-0.0.0-development.tgz",
+      "sha256": "a26b900352ad7ba5b55f7c7e6f5a053df8c7010d0c21278d7863d9489689e2c6",
+      "files": 318
+    },
+    "sbom": {
+      "file": "dependencies.cdx.json",
+      "sha256": "4ed657dc4585b4e062850350830e951ce6e464b14e5495bfb66878677c128cff",
+      "components": 627
+    },
+    "lock": {
+      "file": "package-lock.json",
+      "sha256": "eac4e1cda219784a5db5c751686f6e9075ef6c9e0f5ecccd8eef30acd268d423"
+    },
+    "installedSameArchive": true,
+    "boundary": "Unpublished local artifact. Native installation and capability invocation passed. Later documentation-only edits are not represented as part of this archive."
+  },
+  "blueprintSha256": "46ecb1cf793756ceae7e9c881f51fa56cc3a960ddd2906a12c16808db84b1a44",
+  "review": "Bounded independent implementation and direction reviews passed; no core positioning edits.",
+  "boundary": "Actual Docker/native DSH and deterministic model fixtures only. Host-feedback totals include separate post-study native probes using known real run IDs; those IDs were not supplied to the formal blind method. This is not a paid-model quality result, live-crash recovery claim, MicroVM acceptance or cloud CI result. No historical registration was migrated."
+}

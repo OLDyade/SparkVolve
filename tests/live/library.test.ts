@@ -72,7 +72,6 @@ test(
         spec,
         {
           endpoint: liveControllerEndpoint(address.port),
-          controlEndpoint: `http://127.0.0.1:${address.port}`,
         },
         controller.docker,
         stop.signal,

@@ -319,6 +319,7 @@ shutil.copyfile(p.with_name('grade.py'),r/'evaluation'/'grade.py')
     const spec = Experiment.parse({
       name,
       purpose,
+      hostSearchProtocol: { ancestry: 'unrestricted', feedback: 'full' },
       objective,
       isolation,
       egress,

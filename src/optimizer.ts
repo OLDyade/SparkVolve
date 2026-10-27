@@ -5,7 +5,7 @@ import { atomicJSON, digest, confined, treeDigest } from './artifacts.js';
 import { Docker, type ContainerSpec } from './docker.js';
 import type { ExperimentSpec } from './contracts.js';
 import { collectRequestMetrics } from './metrics.js';
-import type { Controller } from './controller.js';
+import { Store } from './store.js';
 import { evolutionPreset, sdkPreset } from './preset.js';
 import { createEgressSession, type EgressFactory, type EgressLifecycle } from './egress-session.js';
 import { controlRoutes } from './control-routes.js';
@@ -24,7 +24,7 @@ interface Episode {
 export async function optimize(
   root: string,
   spec: ExperimentSpec,
-  endpoints: { endpoint: string; controlEndpoint: string },
+  endpoints: { endpoint: string },
   docker = new Docker(),
   signal = new AbortController().signal,
   egress: EgressFactory = createEgressSession,
@@ -32,7 +32,27 @@ export async function optimize(
   signal.throwIfAborted();
   assertNotCancelled(root);
   if (spec.purpose !== 'search') throw new Error('Validation experiments cannot launch an optimizer');
-  const { endpoint, controlEndpoint } = endpoints;
+  const store = new Store(path.join(root, 'experiment.sqlite'), spec, 'read');
+  try {
+    await runOptimizer(root, spec, endpoints, docker, signal, egress, store);
+  } finally {
+    store.close();
+  }
+}
+
+async function runOptimizer(
+  root: string,
+  spec: ExperimentSpec,
+  endpoints: { endpoint: string },
+  docker: Docker,
+  signal: AbortSignal,
+  egress: EgressFactory,
+  store: Store,
+): Promise<void> {
+  signal.throwIfAborted();
+  assertNotCancelled(root);
+  if (spec.purpose !== 'search') throw new Error('Validation experiments cannot launch an optimizer');
+  const { endpoint } = endpoints;
   const prepared = await prepareOptimizer(root, path.join(root, 'dataset'), spec, docker, signal);
   const bundle = optimizerBundlePath(root, prepared);
   const qa = spec.candidate.qa;
@@ -44,15 +64,14 @@ export async function optimize(
   await mkdir(path.join(root, 'materialized'), { recursive: true });
   const identity = digest({ root: path.resolve(root), spec, endpoint, optimizer: prepared });
   const token = await readFile(path.join(root, 'controller-token'), 'utf8');
-  async function control(route: string, body: unknown): Promise<unknown> {
-    const response = await fetch(new URL(route, controlEndpoint), {
-      method: 'POST',
-      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-      body: JSON.stringify(body),
-      signal,
-    });
-    if (!response.ok) throw new Error(`Controller ${response.status}: ${await response.text()}`);
-    return await response.json();
+  function schedulingState() {
+    return {
+      cursor: store.cursor(),
+      candidates: store.candidates(),
+      probes: store.probes(),
+      runs: store.runs(),
+      conclusion: store.getMeta('searchConclusion'),
+    };
   }
   let consumed = 0;
   let ordinal = 0;
@@ -69,17 +88,17 @@ export async function optimize(
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
     }
     if (!episode) {
-      let state = (await control('/status', {})) as ReturnType<Controller['status']>;
-      if (digest(state.specification) !== digest(spec))
-        throw new Error('Controller experiment contract mismatch');
+      let state = schedulingState();
       while (
         state.candidates.some((c) => c.phase === 'frozen' || c.phase === 'running') ||
         state.probes.some((probe) => probe.phase === 'queued')
       ) {
         if (state.runs.some((r) => r.phase === 'scoring_failed'))
           throw new Error('Scoring failed; resolve original deliveries before continuing search');
-        await control('/events', { cursor: state.cursor });
-        state = (await control('/status', {})) as ReturnType<Controller['status']>;
+        // This read-only host connection never crosses the optimizer capability boundary.
+        // Poll the committed ledger because its notifications belong to the writer connection.
+        await store.wait(state.cursor, { timeoutMs: 100, signal });
+        state = schedulingState();
       }
       const reason = state.conclusion
         ? 'optimizer_concluded'

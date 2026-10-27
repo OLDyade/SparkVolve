@@ -27,6 +27,7 @@ const spec = Experiment.parse({
   egress: await configureEgress(path.join(dataset, 'runtime'), model),
   name: 'structured-data-native-evolution',
   purpose: 'search',
+  hostSearchProtocol: { ancestry: 'unrestricted', feedback: 'full' },
   isolation: JSON.parse(await readFile(isolationFile, 'utf8')),
   objective:
     'Evolve the general structured-data capability bundle using observed task evidence. Perform a substantive plugin implementation or composition experiment, then evaluate the frozen candidate. You may introduce general data operations, replace tools, or compose services; choose the mechanism from actual evidence. Do not encode task IDs, fixture values or expected answers, repair outputs heuristically, or change the evaluator. Retain exact input evidence and explicit caller intent. A tie or negative result is valid; do not resample. This is a public synthetic development acceptance, not a claim of unseen-data gain.',

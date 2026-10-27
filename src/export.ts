@@ -1,9 +1,11 @@
-import { mkdir, readFile, copyFile } from 'node:fs/promises';
+import { mkdir, readFile, copyFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { atomicJSON, treeDigest, inventory, freeze, digest } from './artifacts.js';
+import { atomicJSON, treeDigest, inventory, freeze, digest, fileDigest } from './artifacts.js';
 import { bundlePath, verifyBuild } from './build.js';
 import type { Store } from './store.js';
 import { optimizerLedger } from './optimizer.js';
+import { experimentReport } from './report.js';
+import { capabilityCard } from './capability-card.js';
 
 export function archiveIdentity(store: Store, candidate: string): string {
   return digest({ experiment: store.getMeta('experimentId'), specification: digest(store.spec), candidate });
@@ -81,4 +83,18 @@ export async function exportCandidate(
     claim:
       'Search outcome only. Independent replication, leakage review and transfer evaluation are required before a generalization claim.',
   });
+  const report = await experimentReport(root, store);
+  await atomicJSON(path.join(destination, 'experiment-report.json'), report);
+  await writeFile(
+    path.join(destination, 'CAPABILITY.md'),
+    capabilityCard({
+      archiveId: archiveIdentity(store, id),
+      specification: store.spec,
+      candidate,
+      report,
+      researchRecordSha256: await fileDigest(path.join(destination, 'research-record.json')),
+      experimentReportSha256: await fileDigest(path.join(destination, 'experiment-report.json')),
+    }),
+    { flag: 'wx' },
+  );
 }

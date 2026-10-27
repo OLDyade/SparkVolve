@@ -36,7 +36,6 @@ const { positionals, values } = parseArgs({
     host: { type: 'string', default: '127.0.0.1' },
     run: { type: 'string' },
     endpoint: { type: 'string' },
-    'control-endpoint': { type: 'string' },
     'child-endpoint': { type: 'string' },
     'child-host': { type: 'string' },
     candidate: { type: 'string' },
@@ -58,7 +57,7 @@ init      --root <new-directory> --spec <json> --dataset <directory> --seed <bun
 serve     --root <directory> [--host 127.0.0.1] [--port 8787]
 evolve    --root <directory> --endpoint <container-reachable-url> [--host 127.0.0.1] [--port 8787]
 validate  --root <study-directory> --spec <validation.json> --dataset <directory> --arms <arms.json>
-optimize  --root <directory> --endpoint <container-reachable-url> --control-endpoint <host-reachable-url>
+optimize  --root <directory> --endpoint <container-reachable-url>
 run       --root <directory>
 status    --root <directory>
 cancel    --root <directory>
@@ -244,12 +243,10 @@ run reconciles original tasks; rescore reuses the original delivery; export does
         store.close();
       }
     } else if (action === 'optimize') {
-      if (!values.endpoint || !values['control-endpoint'])
-        throw new Error('optimize requires container --endpoint and host --control-endpoint');
+      if (!values.endpoint) throw new Error('optimize requires container --endpoint');
       try {
         await optimize(root, spec, {
           endpoint: values.endpoint,
-          controlEndpoint: values['control-endpoint'],
         });
       } finally {
         store.close();

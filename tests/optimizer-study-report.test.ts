@@ -73,6 +73,7 @@ async function fixture() {
   store.acquire(owner, Date.now(), 60000);
   const job = (repetition = 0) =>
     store.reserveJob(owner, {
+      comparisonArm: null,
       stage: 'development',
       method: studyMethodIdentity(spec.baseline),
       caseId: 'development',

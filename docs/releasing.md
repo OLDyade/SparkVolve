@@ -2,6 +2,8 @@
 
 能力 Bundle 和自进化设施都沿用 DSH 原生安装。发布前先交付可审查的实际包、依赖清单和验证记录；目前仓库保持私有，流程不会自动公开仓库、创建 Release 或发布 npm 包。
 
+候选 `export` 同时生成[能力卡](capability-cards.md)、原研究档案和导出时用量报告。它们描述实际冻结包及实验边界，不改 tarball；下方 `package:artifacts` 则用于分发自进化设施本身。
+
 ```text
 固定源码与锁文件 → 检查 / 原生集成 → 干净安装 → npm pack
                                                │

@@ -22,6 +22,7 @@ export function specification(): ExperimentSpec {
     name: 'invariants',
     objective: 'Verify experiment invariants',
     purpose: 'search',
+    hostSearchProtocol: { ancestry: 'unrestricted', feedback: 'full' },
     isolation: {
       runtime: 'runc',
       user: { uid: process.getuid!(), gid: process.getgid!() },

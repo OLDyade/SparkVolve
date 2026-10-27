@@ -260,6 +260,7 @@ test('frozen assessment recovery uses actual validation tasks and never duplicat
     const method = studyMethodIdentity(f.spec.baseline),
       item = f.spec.developmentCases[0]!;
     const job = f.store.reserveJob(f.coordinator.owner, {
+      comparisonArm: null,
       stage: 'development',
       method,
       caseId: item.id,

@@ -106,14 +106,22 @@ test(
       'index.mjs': await readFile(new URL('./fixture.mjs', import.meta.url), 'utf8'),
       'cordis.patch.yml': '- insert:\n    - name: ./index.mjs\n',
     });
-    const arms: Array<{ id: string; method: FrozenStudyMethodRef }> = [];
+    const arms: Array<{
+      id: string;
+      method: FrozenStudyMethodRef;
+      hostSearchProtocol: typeof base.hostSearchProtocol;
+    }> = [];
     for (const mode of ['direct', 'inspect', 'failure']) {
       const bundle = await createBundle(mode, {
         'index.mjs': `export const inject = ['systemPrompt'];\nexport function apply(ctx) { ctx.systemPrompt.section({name:'fixed-method',order:501,text:'fixed-comparison-fixture:${mode}'}); }\n`,
         'plugins.yml': '- id: fixed-method\n  name: ./index.mjs\n',
         'cordis.patch.yml': '- insert:\n    - id: fixed-method\n      name: ./index.mjs\n',
       });
-      arms.push({ id: mode, method: { ...bundle, composition: 'plugins.yml' } });
+      arms.push({
+        id: mode,
+        method: { ...bundle, composition: 'plugins.yml' },
+        hostSearchProtocol: base.hostSearchProtocol,
+      });
     }
     const caseContract = async (role: 'search' | 'assessment') => {
       const directory = `case/${role}`,

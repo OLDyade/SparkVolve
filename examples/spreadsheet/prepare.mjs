@@ -37,6 +37,7 @@ const spec = Experiment.parse({
   egress: await configureEgress(path.join(dataset, 'runtime'), model),
   name: 'spreadsheet-business-search',
   purpose: 'search',
+  hostSearchProtocol: { ancestry: 'unrestricted', feedback: 'full' },
   isolation: JSON.parse(await readFile(isolationFile, 'utf8')),
   objective:
     'Improve the general spreadsheet capability bundle from actual task evidence. Conduct at least one substantive, evidence-backed plugin experiment, including implementation or composition changes; test the resulting candidate under the fixed task contract. Do not insert case-specific answers. Correctness is primary; report preservation and cost separately. A tie is a legitimate negative result, never a reason to modify the evaluator.',

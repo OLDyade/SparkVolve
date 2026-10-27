@@ -100,6 +100,7 @@ try {
   const spec = Experiment.parse({
     name: 'materialized-evidence-native-acceptance',
     purpose: 'search',
+    hostSearchProtocol: { ancestry: 'unrestricted', feedback: 'full' },
     objective: 'Verify native materialization transport; do not submit mutations or schedule tasks.',
     isolation,
     runtime: {

@@ -96,6 +96,7 @@ export class Controller {
   }
   async draft(parent: string, name: string): Promise<void> {
     this.assertOwner();
+    this.assertParents([parent]);
     this.store.candidate(parent);
     const target = confined(path.join(this.root, 'drafts'), name);
     try {
@@ -140,8 +141,12 @@ export class Controller {
     await importArchive(this.root, this.store, confined(library, archive), draft);
   }
   async submit(raw: unknown): Promise<Candidate> {
+    return await this.submitProposal(raw, false);
+  }
+  private async submitProposal(raw: unknown, initial: boolean): Promise<Candidate> {
     this.assertOwner();
     const proposal = Proposal.parse(raw);
+    if (!initial) this.assertParents(proposal.parents);
     const origin = draftOrigin(this.store, proposal.draft);
     const source = confined(path.join(this.root, 'drafts'), proposal.draft);
     const hash = await treeDigest(source);
@@ -169,6 +174,15 @@ export class Controller {
       ...(origin ? { origin } : {}),
     });
     return await this.publishSubmission(candidate);
+  }
+  private assertParents(parents: string[]): void {
+    if (this.spec.hostSearchProtocol.ancestry !== 'seed-only') return;
+    const seed = this.store.candidates()[0] ?? this.store.pendingSubmissions()[0];
+    if (!seed) {
+      throw new Error('Seed-only search requires the registered initial harness');
+    }
+    if (parents.length !== 1 || parents[0] !== seed.digest)
+      throw new Error('Seed-only protocol requires exactly the initial harness as parent');
   }
   private async publishSubmission(candidate: Candidate): Promise<Candidate> {
     const active = this.submitting.get(candidate.digest);
@@ -256,7 +270,7 @@ export class Controller {
       )) !== sourceDigest
     )
       throw new Error('Initial harness changed before registration');
-    return await this.submit(proposal);
+    return await this.submitProposal(proposal, true);
   }
   pump(signal?: AbortSignal): Promise<void> {
     if (this.active) return this.active;

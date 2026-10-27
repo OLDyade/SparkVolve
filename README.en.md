@@ -147,6 +147,8 @@ node dist/cli.js export --root .evolution/business/search \
 # It uses the locked DSH and native dependency build permissions; no global dsh is required.
 ```
 
+Each export includes a [capability card](docs/capability-cards.md), a machine-readable research archive and a request-accounting report. They identify the exact package, declared intent, measured outcomes and failures. The card accompanies the frozen Bundle without changing its bytes.
+
 Independent validation uses the same frozen build artifacts under a preregistered comparison contract. Validation exposes no optimizer API; a search champion is not automatically published. See [research protocol](docs/research-protocol.md).
 
 The evolution machinery is also a native Bundle. Run `npm pack`, install it into the target DSH Profile, configure `EVOLUTION_ENDPOINT` and `EVOLUTION_TOKEN`, and select **Harness Evolution**. The coordinator command handles this assembly automatically; explicit SDK embedding follows the [Preset integration guide](docs/presets.md). Research methods are independently versioned Bundles.
@@ -159,6 +161,7 @@ The evolution machinery is also a native Bundle. Run `npm pack`, install it into
 | Add a domain | [Task, delivery and evaluator contract](docs/domain-adapters.md) |
 | Choose outcome constraints | [Independent observations and exact threshold comparison](docs/constraints.md) |
 | Reuse research | [Authorized assets and provenance](docs/research-assets.md) |
+| Compare feedback conditions | [One frozen optimizer, separate host feedback views](docs/feedback-views.md) |
 | Resume experiments | [Events and replay](docs/events.md) |
 | Check supported versions | [Compatibility](docs/compatibility.md) |
 | Inspect distributable artifacts | [Package, SBOM, checksums and exact-package installation](docs/releasing.md) |

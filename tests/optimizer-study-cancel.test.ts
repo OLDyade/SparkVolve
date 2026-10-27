@@ -138,6 +138,7 @@ test('study cancellation refuses a live owner and records truly unstarted jobs w
   const f = await fixture();
   try {
     const job = f.store.reserveJob(f.owner, {
+      comparisonArm: null,
       stage: 'development',
       method: studyMethodIdentity(f.spec.baseline),
       caseId: 'development',
@@ -169,6 +170,7 @@ test('study recovers child, successful method and completed meta cleanup without
   const f = await fixture();
   try {
     const job = f.store.reserveJob(f.owner, {
+      comparisonArm: null,
       stage: 'development',
       method: studyMethodIdentity(f.spec.baseline),
       caseId: 'development',
@@ -257,6 +259,7 @@ test('orphaned child execution evidence cannot be relabelled as unstarted', asyn
   const f = await fixture();
   try {
     const job = f.store.reserveJob(f.owner, {
+      comparisonArm: null,
       stage: 'development',
       method: studyMethodIdentity(f.spec.baseline),
       caseId: 'development',

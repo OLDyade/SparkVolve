@@ -20,7 +20,7 @@ test('persisted cancellation intent stops admission even before the JSON cleanup
     await assert.rejects(controller.start(), /cancellation has started/);
     await assert.rejects(controller.submit({}), /cancellation has started/);
     await assert.rejects(
-      optimize(root, spec, { endpoint: 'http://127.0.0.1:1234', controlEndpoint: 'http://127.0.0.1:1234' }),
+      optimize(root, spec, { endpoint: 'http://127.0.0.1:1234' }),
       /cancellation has started/,
     );
     assert.deepEqual(store.candidates(), []);

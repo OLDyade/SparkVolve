@@ -5,7 +5,7 @@
 | 要回答的问题 | 合同 | 最终评估对象 |
 |---|---|---|
 | 优化器能否改进自身，并提升后续搜索 | `OptimizerStudy` | 开发阶段选择的 G* 与 G0 |
-| 预注册的不同方法如何影响搜索结果 | `FixedOptimizerComparison`，`kind: fixed-comparison` | 所有注册方法，不按中间得分删臂 |
+| 冻结方法或同 G 的宿主反馈条件如何影响搜索结果 | `FixedOptimizerComparison`，`kind: fixed-comparison` | 所有注册臂，不按中间得分删臂 |
 
 ## 优化器自进化
 
@@ -106,13 +106,17 @@ node dist/cli.js study-cancel --root /absolute/new-study
 |---|---|
 | `kind` | 固定为 `fixed-comparison`，显式选择研究协议 |
 | `name` / `objective` | 实验身份和研究问题 |
-| `arms` | 至少两个 `{ id, method }`；method 是实际冻结的源码、构建产物和装配入口 |
+| `arms` | 至少两个 `{ id, method, hostSearchProtocol }`；method 是实际冻结的源码、构建产物和装配入口，协议控制该臂的宿主反馈与父版本范围 |
 | `baseline` | 注册臂的 id，决定配对报告的参照；不依据分数重新选择 |
 | `cases` | 每项含 `id`、共同 `seed`、`search` 和 `assessment`；结构与上面的研究实例相同 |
 | `repetitions` | 每个 case 的完整搜索重复数；同一方法的重复使用此字段 |
 | `budget.concurrentSearches` | 宿主并行搜索上限；实际每实例预算由共同子合同决定 |
 
-该合同没有元优化器、开发方法选择或新的 G 构建配置；方法已经冻结，不能在运行中分叉、替换或提交 G。注册检查拒绝重复臂、重复方法身份、未注册的 baseline，以及公共方法/种子目录和封存数据目录的交叉。注册身份不通过添加默认字段改写历史合同。
+该合同没有元优化器、开发方法选择或新的 G 构建配置；方法已经冻结，不能在运行中分叉、替换或提交 G。相同 G 配不同宿主协议可以成为两个臂，宿主仍只登记一份真实 G；相同 G、相同协议的重复使用 `repetitions`。注册检查拒绝重复臂、重复方法与协议组合、未注册的 baseline，以及公共方法/种子目录和封存数据目录的交叉。
+
+`comparisonArm` 单独标识固定比较臂，`method` 保持 G 的内容身份。宿主在注册时验证每臂应用协议后的完整子搜索合同；报告按注册 baseline 臂配对，保留方法与协议，避免把两个同 G 条件合并。开发选择研究的 `comparisonArm` 为 `null`。
+
+每份新子 Experiment 必填 `hostSearchProtocol`；每个固定 arm 同样必须声明。不会为旧注册补默认字段或静默迁移；旧研究保留原文件和对应代码版本，不能修改其 JSON 后继续沿用旧身份。
 
 初始化和报告仍使用 `study-init` / `study-report`。运行只需子实验连接地址：
 
@@ -130,7 +134,7 @@ node dist/cli.js study-report --root /absolute/new-comparison \
 
 全部 case × repetition × arm 工作在执行前登记。运行失败、主动取消和未完成状态各自保留；终态失败按预注册失败值进入完整分母，尚在途的配对结果不当作已完成均值。重入同一合同收集原工作，不补抽。无元优化器的成本明确为不适用；搜索和独立评估的缺失用量仍保持未知。
 
-固定方法比较只提供可执行的实验协议，**不自动证明被比较方法的收益或因果效果**。若比较完整反馈与盲变异，仍需宿主实际限制反馈入口；仅更换提示词不能宣称完成盲实验。相关研究设计与尚未准入的规模见[反馈因果协议](research/2026-10-28-feedback-causal-protocol.md)。
+固定方法比较只提供可执行的实验协议，**不自动证明被比较方法的收益或因果效果**。同 G 的反馈对照由[宿主反馈视图](feedback-views.md)约束状态、事件、提交重放与证据入口；源码和公开输入仍可用于自主测试。相关研究设计与尚未准入的规模见[反馈因果协议](research/2026-10-28-feedback-causal-protocol.md)。
 
 实际 Docker + DSH 夹具已通过三方法验收：两方法完成搜索与独立评分，故意失败的方法保留分母及失败值；16 次请求中 15 次返回、1 次失败。终态重入前后 35 份执行/请求证据及清单不变，未打开元优化器接口。镜像内列明的 6 个运行文件与本地构建一致；[机器记录](evidence/2026-10-28-fixed-comparison.json)限定了这一验收范围。失败臂缺独立评分账本，用量完整性继续为 false；没有把它解释成零成本成功。
 

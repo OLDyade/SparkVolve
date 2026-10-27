@@ -139,7 +139,7 @@ export async function evolve(
     const optimizer = optimize(
       controller.root,
       controller.spec,
-      { endpoint: transport.record.endpoint, controlEndpoint: transport.record.controlEndpoint },
+      { endpoint: transport.record.endpoint },
       controller.docker,
       signal,
     ).then(

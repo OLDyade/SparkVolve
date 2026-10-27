@@ -16,6 +16,8 @@ import {
   studyJobAllocation,
   studyMethodCandidateIdentity,
   studyMethodIdentity,
+  studyArmIdentity,
+  registeredStudyMethods,
   type FrozenStudyBundleRef,
   type FrozenStudyMethodRef,
   type RegisteredOptimizerStudySpec,
@@ -46,6 +48,7 @@ export interface StudyJob {
   id: string;
   stage: StudyStageName;
   method: string;
+  comparisonArm: string | null;
   caseId: string;
   repetition: number;
   phase: 'reserved' | 'searching' | 'assessing' | 'complete' | 'failed' | 'cancelling' | 'cancelled';
@@ -134,7 +137,7 @@ export class OptimizerStudyStore {
             this.setMeta('studyId', randomUUID());
             const fixed = isFixedComparison(this.spec);
             this.setState({ phase: fixed ? 'validating' : 'developing' });
-            const methods = fixed ? this.spec.arms.map((arm) => arm.method) : [this.spec.baseline];
+            const methods = fixed ? registeredStudyMethods(this.spec) : [this.spec.baseline];
             methods.forEach((method, ordinal) =>
               this.putMethod({
                 id: studyMethodCandidateIdentity(method.source.digest, method.composition),
@@ -376,11 +379,18 @@ export class OptimizerStudyStore {
   }
   reserveJob(
     owner: string,
-    raw: { stage: StudyStageName; method: string; caseId: string; repetition: number },
+    raw: {
+      stage: StudyStageName;
+      method: string;
+      comparisonArm: string | null;
+      caseId: string;
+      repetition: number;
+    },
   ): StudyJob {
     const input = {
       stage: StudyStage.parse(raw.stage),
       method: Digest.parse(raw.method),
+      comparisonArm: raw.comparisonArm === null ? null : Digest.parse(raw.comparisonArm),
       caseId: Id.parse(raw.caseId),
       repetition: raw.repetition,
     };
@@ -391,6 +401,12 @@ export class OptimizerStudyStore {
     )
       throw new Error('Search repetition outside registration');
     const item = this.case(input.stage, input.caseId);
+    if (isFixedComparison(this.spec)) {
+      const arm = this.spec.arms.find((arm) => studyArmIdentity(arm) === input.comparisonArm);
+      if (!arm || studyMethodIdentity(arm.method) !== input.method)
+        throw Error('Job comparison arm does not match its frozen method');
+    } else if (input.comparisonArm !== null)
+      throw Error('Development study jobs cannot name a comparison arm');
     const id = digest({ registration: this.registrationDigest, ...input });
     return this.write(owner, () => {
       const saved = this.jobs().find((job) => job.id === id);
@@ -522,6 +538,21 @@ export class OptimizerStudyStore {
     });
   }
   methodReport(method: string, stage: StudyStageName) {
+    if (isFixedComparison(this.spec)) throw Error('Fixed comparison reports require an arm identity');
+    return this.searchReport(method, stage, null);
+  }
+  armReport(armIdentity: string) {
+    if (!isFixedComparison(this.spec)) throw Error('Comparison arm report requires a fixed comparison');
+    const arm = this.spec.arms.find((arm) => studyArmIdentity(arm) === armIdentity);
+    if (!arm) throw Error('Unknown comparison arm');
+    return {
+      id: arm.id,
+      armDigest: armIdentity,
+      hostSearchProtocol: arm.hostSearchProtocol,
+      ...this.searchReport(studyMethodIdentity(arm.method), 'validation', armIdentity),
+    };
+  }
+  private searchReport(method: string, stage: StudyStageName, comparisonArm: string | null) {
     const cases = studyCases(this.spec, stage);
     const samples = cases.flatMap((item) =>
       Array.from({ length: this.spec.repetitions }, (_, repetition) => {
@@ -529,6 +560,7 @@ export class OptimizerStudyStore {
           (job) =>
             job.stage === stage &&
             job.method === method &&
+            job.comparisonArm === comparisonArm &&
             job.caseId === item.id &&
             job.repetition === repetition,
         );
@@ -555,6 +587,7 @@ export class OptimizerStudyStore {
     );
     return {
       method,
+      comparisonArm,
       stage,
       denominator: samples.length,
       complete: samples.every((sample) => sample.complete),
@@ -567,21 +600,34 @@ export class OptimizerStudyStore {
     };
   }
   validationMethods(): string[] {
-    if (isFixedComparison(this.spec)) return this.spec.arms.map((arm) => studyMethodIdentity(arm.method));
+    if (isFixedComparison(this.spec))
+      return [...new Set(this.spec.arms.map((arm) => studyMethodIdentity(arm.method)))];
     const selected = this.state().selectedMethod;
     return [...new Set([studyMethodIdentity(this.spec.baseline), ...(selected ? [selected] : [])])];
+  }
+  validationTargets(): Array<{ method: string; comparisonArm: string | null }> {
+    return isFixedComparison(this.spec)
+      ? this.spec.arms.map((arm) => ({
+          method: studyMethodIdentity(arm.method),
+          comparisonArm: studyArmIdentity(arm),
+        }))
+      : this.validationMethods().map((method) => ({ method, comparisonArm: null }));
+  }
+  validationReports() {
+    return this.validationTargets().map(({ method, comparisonArm }) =>
+      comparisonArm === null ? this.methodReport(method, 'validation') : this.armReport(comparisonArm),
+    );
   }
   comparisonReport() {
     if (!isFixedComparison(this.spec)) return null;
     const spec = this.spec;
-    const baselineMethod = studyMethodIdentity(studyBaselineMethod(spec));
-    const baseline = this.methodReport(baselineMethod, 'validation');
+    const baseline = this.armReport(studyArmIdentity(spec.arms.find((arm) => arm.id === spec.baseline)!));
     const direction = spec.cases[0]!.assessment.specification.metric.direction;
     return {
       baseline: spec.baseline,
       direction,
       arms: spec.arms.map((arm) => {
-        const report = this.methodReport(studyMethodIdentity(arm.method), 'validation');
+        const report = this.armReport(studyArmIdentity(arm));
         const pairs = report.samples.map((sample, index) => {
           const reference = baseline.samples[index]!;
           const complete = sample.complete && reference.complete;
@@ -595,7 +641,6 @@ export class OptimizerStudyStore {
           };
         });
         return {
-          id: arm.id,
           ...report,
           pairedMeanDelta: pairs.every((pair) => pair.complete)
             ? pairs.reduce((sum, pair) => sum + pair.scoreDelta!, 0) / pairs.length
@@ -646,7 +691,7 @@ export class OptimizerStudyStore {
       const state = this.state();
       if (state.phase !== 'validating' || (!isFixedComparison(this.spec) && !state.selectedMethod) || !reason)
         throw new Error('Study is not awaiting a final report');
-      const reports = this.validationMethods().map((method) => this.methodReport(method, 'validation'));
+      const reports = this.validationReports();
       if (reports.some((report) => !report.complete))
         throw new Error('Validation search-instance denominator is incomplete');
       const next: StudyState = {

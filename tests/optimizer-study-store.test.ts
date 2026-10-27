@@ -110,6 +110,7 @@ function reserve(
   stage: 'development' | 'validation' = 'development',
 ) {
   return store.reserveJob(owner, {
+    comparisonArm: null,
     stage,
     method: methodId,
     caseId: stage === 'development' ? 'development' : 'sealed',

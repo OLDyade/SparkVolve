@@ -162,6 +162,8 @@ node dist/cli.js export --root .evolution/business/search \
 # 入口使用镜像内锁定的 DSH 和原生依赖构建授权，无需宿主全局 dsh。
 ```
 
+每份导出附带[能力卡 `CAPABILITY.md`](docs/capability-cards.md)、机器研究档案与逐次用量报告，直接展示原包身份、用途声明、实际评分及失败。卡片放在已冻结 Bundle 旁，原包字节保持不变；安装者可以从证据进入能力。
+
 进化设施自身同样可安装：`npm pack` 后通过原生命令装入目标 Profile，设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，再选择 **Harness Evolution** Preset。进化工具和研究方法只对选择该组合的会话可见。`evolve` 自动完成装配；独立使用 `sdk/sdk-minimal` 时，需加载[原生注册表与选择桥配置](docs/presets.md#sdk-的明确接入)。方法 Bundle 可单独替换，内容哈希写入实验合同。
 
 提交候选后，优化器通过 `evolution_wait` 等待已提交事件。持久游标支持断线补读，控制器恢复时收集原容器；无须反复空查，也不会因等待超时重跑任务。[事件与恢复协议](docs/events.md)
@@ -183,6 +185,8 @@ node dist/cli.js export --root .evolution/business/search \
 | [真实模型端到端验收](docs/acceptance.md) | 自主代码变异、真实评分、失败裁决和原生安装后的实际任务 |
 | [冷启动用户旅程](docs/research/2026-10-28-user-journey.md) | 干净检出、13 条公开命令、自主搜索、原包复验与安装前审查；正负结果完整保留 |
 | [原字节证据交付](docs/evidence-access.md) | 授权文件直接进入只读工具挂载，真实模型读取与复制，独立竞态复核 |
+| [宿主反馈对照](docs/feedback-views.md) | 同一冻结优化器、不同反馈条件、独立臂身份及完整原账本 |
+| [能力卡与证据交付](docs/capability-cards.md) | 原包旁展示用途、身份、实际成绩、失败与未知成本 |
 | [优化器自身进化](docs/optimizer-studies.md) | 真实元优化器生成并运行 G1；G/H 独立版本、同起点与预算、开发选择和封闭最终验证，保留同分与机制缺陷 |
 | [连续进化与独立复验](docs/acceptance-continuous.md) | 三次真实变异、双会话接续、负结果与研究资产复用 |
 | [全景方案落实状态](docs/completion.md) | 已验证能力、尚缺的完整交付环节与研究边界 |
