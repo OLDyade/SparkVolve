@@ -4,9 +4,9 @@ import path from 'node:path';
 import { treeDigest } from '../../dist/artifacts.js';
 import { Experiment } from '../../dist/contracts.js';
 
-const [dataset, image, modelFile, output] = process.argv.slice(2);
-if (!dataset || !image || !modelFile || !output)
-  throw new Error('Usage: prepare.mjs <dataset> <image-digest> <model.json> <spec-output>');
+const [dataset, image, modelFile, output, isolationFile] = process.argv.slice(2);
+if (!dataset || !image || !modelFile || !output || !isolationFile)
+  throw new Error('Usage: prepare.mjs <dataset> <image-digest> <model.json> <spec-output> <isolation.json>');
 const model = JSON.parse(await readFile(modelFile, 'utf8'));
 await cp(new URL('../venus/', import.meta.url), path.join(dataset, 'runtime'), {
   recursive: true,
@@ -30,6 +30,7 @@ for (const task of tasks) {
 const spec = Experiment.parse({
   name: 'spreadsheet-business-search',
   purpose: 'search',
+  isolation: JSON.parse(await readFile(isolationFile, 'utf8')),
   objective:
     'Improve the general spreadsheet capability bundle from actual task evidence. Conduct at least one substantive, evidence-backed plugin experiment, including implementation or composition changes; test the resulting candidate under the fixed task contract. Do not insert case-specific answers. Correctness is primary; report preservation and cost separately. A tie is a legitimate negative result, never a reason to modify the evaluator.',
   runtime: {
@@ -53,7 +54,7 @@ const spec = Experiment.parse({
   evaluator: { image, command: ['python3', '/evaluation/grade.py'], timeoutSeconds: 120 },
   candidate: {
     patch: 'cordis.patch.yml',
-    build: { image, network: 'bridge', timeoutSeconds: 300 },
+    build: { image, timeoutSeconds: 300 },
     qa: ['node', '/app/spreadsheet-qa.mjs', '/candidate/index.mjs'],
   },
   tasks,

@@ -20,7 +20,8 @@ test(
     const hash = await treeDigest(source);
     await freeze(source, path.join(root, 'candidates', hash));
     const spec = specification();
-    spec.candidate.build = { image, network: 'bridge', timeoutSeconds: 120 };
+    spec.candidate.build = { image, timeoutSeconds: 120 };
+    spec.isolation.network.build = 'bridge';
     const record = candidate(hash),
       docker = new Docker();
     record.build = await buildCandidate(root, root, spec, record, docker);
@@ -44,6 +45,7 @@ test(
     const result = await docker.run(
       {
         name: `he-consume-${hash.slice(0, 24)}-${Date.now()}`,
+        isolation: spec.isolation,
         image,
         command: [
           'node',
@@ -71,6 +73,7 @@ test(
     const install = await docker.run(
       {
         name: `he-install-built-${hash.slice(0, 24)}-${Date.now()}`,
+        isolation: spec.isolation,
         image,
         command: [
           'npm',
@@ -103,6 +106,7 @@ test(
     const installedRun = await docker.run(
       {
         name: `he-run-installed-${hash.slice(0, 24)}-${Date.now()}`,
+        isolation: spec.isolation,
         image,
         command: [
           'node',

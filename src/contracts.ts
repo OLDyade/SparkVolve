@@ -36,11 +36,29 @@ export const Task = z.strictObject({
   evaluationDigest: Digest,
 });
 export const BundleRef = z.strictObject({ directory: RelativePath, digest: Digest, patch: RelativePath });
+export const Isolation = z.strictObject({
+  runtime: Id,
+  user: z.strictObject({ uid: z.number().int().positive(), gid: z.number().int().nonnegative() }),
+  memoryMiB: z.number().int().positive().max(1_048_576),
+  cpus: z.number().positive().max(1024).multipleOf(0.001),
+  pids: z.number().int().positive().max(1_048_576),
+  tmpMiB: z.number().int().positive().max(1_048_576),
+  homeMiB: z.number().int().positive().max(1_048_576),
+  network: z.strictObject({
+    optimizer: z.enum(['bridge', 'none']),
+    executor: z.enum(['bridge', 'none']),
+    build: z.enum(['bridge', 'none']),
+    qa: z.literal('none'),
+    evaluator: z.literal('none'),
+  }),
+});
+export type IsolationSpec = z.infer<typeof Isolation>;
 export const Experiment = z
   .strictObject({
     name: Id,
     objective: z.string().min(1),
     purpose: z.enum(['search', 'validation']),
+    isolation: Isolation,
     runtime: z.strictObject({
       image: Image,
       dshVersion: z.literal('0.2.1-rc.4'),
@@ -62,7 +80,6 @@ export const Experiment = z
       patch: RelativePath,
       build: z.strictObject({
         image: Image,
-        network: z.enum(['none', 'bridge']),
         timeoutSeconds: z.number().int().positive(),
       }),
       qa: z.array(z.string()).min(1),

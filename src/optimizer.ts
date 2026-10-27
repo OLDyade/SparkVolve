@@ -154,7 +154,8 @@ export async function optimize(
       name: episode.name,
       image: spec.runtime.image,
       command: ['node', '/app/dist/runtime/worker.js', '/launch.json'],
-      network: 'bridge',
+      isolation: spec.isolation,
+      network: spec.isolation.network.optimizer,
       env,
       timeoutSeconds: episode.seconds,
       mounts: [

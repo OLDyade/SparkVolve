@@ -12,6 +12,16 @@ export function specification(): ExperimentSpec {
     name: 'invariants',
     objective: 'Verify experiment invariants',
     purpose: 'search',
+    isolation: {
+      runtime: 'runc',
+      user: { uid: process.getuid!(), gid: process.getgid!() },
+      memoryMiB: 4096,
+      cpus: 2,
+      pids: 256,
+      tmpMiB: 512,
+      homeMiB: 128,
+      network: { optimizer: 'bridge', executor: 'bridge', build: 'none', qa: 'none', evaluator: 'none' },
+    },
     runtime: { image: `sha256:${hash}`, dshVersion: '0.2.1-rc.4', profile: 'sdk', environment: null },
     executor: model,
     optimizer: model,
@@ -20,7 +30,7 @@ export function specification(): ExperimentSpec {
     evaluator: { image: `sha256:${hash}`, command: ['node', '/grader.js'], timeoutSeconds: 10 },
     candidate: {
       patch: 'cordis.patch.yml',
-      build: { image: `sha256:${hash}`, network: 'none', timeoutSeconds: 10 },
+      build: { image: `sha256:${hash}`, timeoutSeconds: 10 },
       qa: ['node', '/candidate/qa.js'],
     },
     tasks: ['one', 'two'].map((id) => ({

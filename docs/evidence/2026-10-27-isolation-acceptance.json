@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-27",
+  "image": "sha256:2eff5055a8006398c279766e8145a4638608a331f025e3e62f00cd5336a586b9",
+  "tests": {
+    "unit": 25,
+    "native": 8,
+    "realContainers": 4,
+    "realModelLifecycle": 1
+  },
+  "realModel": {
+    "acceptance": {
+      "evidenceBoundary": "Real model lifecycle only; no task score or quality gain.",
+      "nonce": "97c892f6a3e5cdeb",
+      "passed": true,
+      "summary": {
+        "consumedSeconds": 7.313,
+        "episodes": 1,
+        "optimizerHarness": "4702cae12dc9b90ede598a21b70090792b9e95fcb975704f2772ae115171ea2a",
+        "reason": "optimizer_concluded"
+      },
+      "waits": 1
+    },
+    "metrics": {
+      "failed": 0,
+      "inputTokensReported": 5022,
+      "missingUsage": 0,
+      "outputTokensReported": 587,
+      "requestDurationMsSum": 6620,
+      "results": 4,
+      "started": 4,
+      "unfinished": 0,
+      "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+    },
+    "containerId": "7e3517966dcf89ce6d37f39b9091da02fe145fad783c6ebdfd136561548864fc",
+    "isolation": {
+      "cpus": 2,
+      "homeMiB": 128,
+      "memoryMiB": 4096,
+      "network": {
+        "build": "none",
+        "evaluator": "none",
+        "executor": "bridge",
+        "optimizer": "bridge",
+        "qa": "none"
+      },
+      "pids": 256,
+      "runtime": "runc",
+      "tmpMiB": 512,
+      "user": {
+        "gid": 20,
+        "uid": 501
+      }
+    },
+    "host": {
+      "version": "29.8.2",
+      "kernel": "7.2.9-orbstack-00391-g2b298d05fbd4",
+      "architecture": "aarch64",
+      "operatingSystem": "OrbStack",
+      "runtime": "runc"
+    }
+  },
+  "boundaries": [
+    "runc on shared OrbStack Linux kernel; not gVisor or microVM acceptance",
+    "Guest non-root, CapEff=0, NoNewPrivs=1, loopback-only network verified by container probe",
+    "Read-only source/root; writable authorized work/tmp/home verified",
+    "Changed PID limit rejected on recovery; unavailable runtime rejected before creation",
+    "Complete native lifecycle is engineering evidence, not a measured quality gain"
+  ]
+}

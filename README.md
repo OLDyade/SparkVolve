@@ -50,6 +50,8 @@ DSH 优化器 ── 真实证据 ──► 改写插件配置 / 实现 / 组合
 
 ## Quick start：真实 Excel 闭环
 
+运行前显式生成[隔离合同](docs/isolation.md)：五类角色使用声明的运行时、非 root 身份和资源预算。原容器恢复时重新核验权限，运行时缺失直接报错。
+
 需要 Node **24.16.0**、npm **12.2.0**、pnpm **12.15.0** 和运行中的 Docker。示例采用用户指定的 Venus 模型快照；其他模型通过原生 DSH Provider 配置接入。没有自动模型降级。
 
 ```bash
@@ -60,14 +62,16 @@ docker build --build-arg HARNESS_IMAGE=harness-evolution:local \
   -f examples/spreadsheet/Dockerfile -t harness-evolution-spreadsheet:local .
 
 mkdir -p .evolution/business
+node examples/isolation.mjs runc > .evolution/business/isolation.json
 docker run --rm \
+  --user "$(id -u):$(id -g)" \
   --mount type=bind,src="$PWD/examples/spreadsheet",dst=/example,readonly \
   --mount type=bind,src="$PWD/.evolution/business",dst=/workspace \
   harness-evolution-spreadsheet:local python3 /example/generate.py /workspace/dataset
 
 node examples/spreadsheet/prepare.mjs .evolution/business/dataset \
   "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')" \
-  examples/venus/model.json .evolution/business/spec.json
+  examples/venus/model.json .evolution/business/spec.json .evolution/business/isolation.json
 
 node dist/cli.js init --root .evolution/business/search \
   --spec .evolution/business/spec.json --dataset .evolution/business/dataset \

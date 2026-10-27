@@ -1,6 +1,15 @@
 import { spawn } from 'node:child_process';
 import { open, mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { Isolation, type IsolationSpec } from './contracts.js';
+import { atomicJSON } from './artifacts.js';
+import {
+  containerIdentity,
+  isolationReceipt,
+  temporaryFilesystems,
+  verifyIsolation,
+  type InspectedContainer,
+} from './isolation.js';
 
 export async function command(
   program: string,
@@ -44,6 +53,7 @@ export interface ContainerSpec {
   network: 'bridge' | 'none';
   env: Record<string, string>;
   timeoutSeconds: number;
+  isolation: IsolationSpec;
 }
 interface ContainerState {
   Status: string;
@@ -55,6 +65,35 @@ interface ContainerState {
 
 /** Containers remain after completion so recovery can distinguish absent, created, running and exited. */
 export class Docker {
+  async host(runtime: string): Promise<unknown> {
+    const info = JSON.parse(await command('docker', ['info', '--format', '{{json .}}'])) as {
+      ID: string;
+      ServerVersion: string;
+      KernelVersion: string;
+      OSType: string;
+      Architecture: string;
+      OperatingSystem: string;
+      SecurityOptions: string[];
+      Runtimes: Record<string, unknown>;
+    };
+    if (info.OSType !== 'linux' || !Object.hasOwn(info.Runtimes, runtime))
+      throw new Error(`Required Linux Docker runtime is unavailable: ${runtime}`);
+    return {
+      daemonId: info.ID,
+      version: info.ServerVersion,
+      kernel: info.KernelVersion,
+      architecture: info.Architecture,
+      operatingSystem: info.OperatingSystem,
+      securityOptions: info.SecurityOptions,
+      runtime,
+      registration: info.Runtimes[runtime],
+    };
+  }
+  private async configuration(name: string): Promise<InspectedContainer> {
+    const [actual] = JSON.parse(await command('docker', ['inspect', name])) as InspectedContainer[];
+    if (!actual) throw new Error(`Container missing: ${name}`);
+    return actual;
+  }
   async inspect(name: string): Promise<ContainerState | undefined> {
     const ids = (await command('docker', ['ps', '-aq', '--filter', `name=^/${name}$`]))
       .split('\n')
@@ -66,29 +105,37 @@ export class Docker {
     ) as ContainerState;
   }
   async create(spec: ContainerSpec): Promise<void> {
+    Isolation.parse(spec.isolation);
+    await this.host(spec.isolation.runtime);
     const args = [
       'create',
       '--name',
       spec.name,
       '--label',
       'org.harness-evolution.managed=true',
+      '--label',
+      `org.harness-evolution.intent=${containerIdentity(spec)}`,
+      '--runtime',
+      spec.isolation.runtime,
+      '--user',
+      `${spec.isolation.user.uid}:${spec.isolation.user.gid}`,
+      '--entrypoint=',
       '--init',
       '--read-only',
       '--cap-drop=ALL',
       '--security-opt=no-new-privileges',
-      '--pids-limit=256',
-      '--memory=4g',
-      '--cpus=2',
+      `--pids-limit=${spec.isolation.pids}`,
+      `--memory=${spec.isolation.memoryMiB}m`,
+      `--memory-swap=${spec.isolation.memoryMiB}m`,
+      `--cpus=${spec.isolation.cpus}`,
+      '--ipc=private',
       '--network',
       spec.network,
-      // DSH's native loader maps shared objects from its temporary cache.
-      '--tmpfs',
-      '/tmp:rw,exec,nosuid,nodev,size=512m',
-      '--tmpfs',
-      '/home/node:rw,nosuid,nodev,size=128m',
       '--workdir',
       '/workspace',
     ];
+    for (const [target, options] of Object.entries(temporaryFilesystems(spec)))
+      args.push('--tmpfs', `${target}:${options}`);
     if (spec.network === 'bridge') args.push('--add-host', 'host.docker.internal:host-gateway');
     for (const mount of spec.mounts) {
       if (mount.source.includes(',') || mount.target.includes(','))
@@ -102,11 +149,17 @@ export class Docker {
     for (const name of Object.keys(spec.env)) args.push('--env', name);
     args.push(spec.image, ...spec.command);
     await command('docker', args, { env: { ...process.env, ...spec.env } });
+    verifyIsolation(spec, await this.configuration(spec.name));
   }
   async collect(spec: ContainerSpec, logDir: string, signal?: AbortSignal): Promise<ContainerState> {
     signal?.throwIfAborted();
     let state = await this.inspect(spec.name);
     if (!state) throw new Error(`Execution intent has no container: ${spec.name}; no automatic task retry`);
+    const host = await this.host(spec.isolation.runtime);
+    await atomicJSON(
+      path.join(logDir, 'isolation.json'),
+      isolationReceipt(spec, await this.configuration(spec.name), host),
+    );
     if (state.Status === 'created') {
       await command('docker', ['start', spec.name]);
       state = await this.inspect(spec.name);
@@ -152,6 +205,10 @@ export class Docker {
     }
     const final = await this.inspect(spec.name);
     if (!final || final.Running) throw new Error('Container termination is unconfirmed');
+    await atomicJSON(
+      path.join(logDir, 'isolation-final.json'),
+      isolationReceipt(spec, await this.configuration(spec.name), host),
+    );
     return final;
   }
   async run(spec: ContainerSpec, logDir: string, signal?: AbortSignal): Promise<ContainerState> {

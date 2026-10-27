@@ -89,7 +89,7 @@ await writeFile('/workspace/result.json', JSON.stringify({ score: Number(actual 
       evaluator: { image, command: ['node', '/evaluation/grade.mjs'], timeoutSeconds: 30 },
       candidate: {
         patch: 'cordis.patch.yml',
-        build: { image, network: 'none', timeoutSeconds: 60 },
+        build: { image, timeoutSeconds: 60 },
         qa: ['node', '--check', '/candidate/fixture.mjs'],
       },
     });
