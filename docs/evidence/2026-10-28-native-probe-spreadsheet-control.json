@@ -1,0 +1,896 @@
+{
+  "registration": "docs/experiments/2026-10-28-native-probe-spreadsheet-control.json",
+  "arms": {
+    "disabled": {
+      "report": ".evolution/probe-controlled-spreadsheet-20261028/disabled/final-report.json",
+      "sha256": "47015fbc7094b9b9fc675d6b3ea45f3d451322b402b37d196b696f1805ffb3b0",
+      "experimentId": "36a20c1a-7207-4260-bb90-75ec05cd0e73",
+      "specificationDigest": "adb1cc61ceb841a23f6407d57d5fd238f70a56acf3ba1f92582ad9902fcea245",
+      "currentChampion": "4a60fb2b2a7d96772a7a827fce84687a47798ca646b3218fab349aa90bc2bb88",
+      "candidates": [
+        {
+          "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+          "ordinal": 0,
+          "mean": 0.78125,
+          "expectedRuns": 8,
+          "scoredRuns": 8,
+          "failedRuns": 0,
+          "decision": {
+            "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "constraints": [],
+            "constraintsSatisfied": true,
+            "denominator": 8,
+            "failureBudgetSatisfied": true,
+            "failures": 0,
+            "mean": 0.78125,
+            "previousChampion": null,
+            "promoted": true,
+            "qualityImproved": true
+          },
+          "samples": [
+            {
+              "id": "298c6325945fe573e115a85bda0d1a60887867b8aab6096be58da94efd4d4bee",
+              "task": "normalization",
+              "repetition": 0,
+              "score": 0.25,
+              "deliveryDigest": "09192802183e7c9e3a192eb47d8f74f944589a7317c3dd88b0eda83bea96ee65"
+            },
+            {
+              "id": "ca2adcb5f01279c904279f47de7a4a0e705336f5f54ede01f48e637a2b59a873",
+              "task": "normalization",
+              "repetition": 1,
+              "score": 0,
+              "deliveryDigest": "8fc2effca2e58e7b278f7a94dcc90898de79069e56722ae14fda846cae9cd3ac"
+            },
+            {
+              "id": "8ddb414af534b2c1feb8c05d6e4e918efe22f35d5988080e52ca45817a8c37a4",
+              "task": "weighted-portfolio",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "9ee9f9975f9b56df122f71cb10c87629821c31fbfdc9c3b0406ff5b12d47bf40"
+            },
+            {
+              "id": "fd807843b9fa641ff4e2a0eee9e49cfdb49dc1808d0ba67854261e7e59317deb",
+              "task": "weighted-portfolio",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "cb0f471b80a8df7fe50af4530ff2cde8d4d7b0edd27e1910c26c3d5d83869118"
+            },
+            {
+              "id": "885bba5c8518185015b66d06adfe030737fe21c099365bcb89ee8009b4037b34",
+              "task": "debt-rollforward",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "705e16020b44d02bb5d4820cab423238661ad696580d8613877d9c939cc7be4f"
+            },
+            {
+              "id": "2bda7eed6bbc7f812643f09f1a2c6f7d9a567d9b3fbc7f2ee62882159feb780c",
+              "task": "debt-rollforward",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "9f54b9778c58d86d613dee5141f19f53a051adb251bd5c8f8171defc164ff3a9"
+            },
+            {
+              "id": "2984298162d86f337a47dff58968ff68c55c80c520ef9f3451de46f1feb0b0e9",
+              "task": "scenario-valuation",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "074fc213a39eb107fbf3d0bef170f316f7fe220410a63d93d1361c40d6f73817"
+            },
+            {
+              "id": "8660e03ffc33fc5e07c4b5e4b254eb7a5b3123d10d89b738432fc3813e796c17",
+              "task": "scenario-valuation",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "c5196c2daf9d0e0cfc14d52b02da9fdd615669227c8c7a326ff43e9c92d7dcee"
+            }
+          ]
+        },
+        {
+          "digest": "ac1a1b2b9d8329f2cde8ab6b09ea41419d82ab3a2cb85d7409ecdf8fd6469a97",
+          "ordinal": 1,
+          "mean": 0.6875,
+          "expectedRuns": 8,
+          "scoredRuns": 8,
+          "failedRuns": 0,
+          "decision": {
+            "candidate": "ac1a1b2b9d8329f2cde8ab6b09ea41419d82ab3a2cb85d7409ecdf8fd6469a97",
+            "constraints": [],
+            "constraintsSatisfied": true,
+            "denominator": 8,
+            "failureBudgetSatisfied": true,
+            "failures": 0,
+            "mean": 0.6875,
+            "previousChampion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "promoted": false,
+            "qualityImproved": false
+          },
+          "samples": [
+            {
+              "id": "b678f9bc51c38dff9df24cc5fa898ef865b44199dd5a4298c78dfe78d014d749",
+              "task": "normalization",
+              "repetition": 0,
+              "score": 0.25,
+              "deliveryDigest": "3a47dc1845508d70127bdf985f893f2f8ed84bd1d171ae213705c2b0953bd796"
+            },
+            {
+              "id": "ffc823cee0ff0cef65d0dd6aa78d0f9e798e89ba7db18b6965a07b26159a3a9e",
+              "task": "normalization",
+              "repetition": 1,
+              "score": 0.25,
+              "deliveryDigest": "e5814b677368773aa000b81dbcc1b0cc9baf46d7605af567aa8d9c7d000a123c"
+            },
+            {
+              "id": "9b0ac966785f44cd3101c95a5a5c40e44d81e8ee61a4fb8e132c34776124cfa2",
+              "task": "weighted-portfolio",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "b1eaf6051221928b21ed8b140f5dc51874a30ba8107591044ac6b3a431ed96aa"
+            },
+            {
+              "id": "3e5a35175dd76544bad6212f7f45d6608d7529bfdd5850efd8bbe1f099eb0652",
+              "task": "weighted-portfolio",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "3d3b05d6582996c53f736839755b0f4d591e6b5a23176426e8351fea1b5a570d"
+            },
+            {
+              "id": "5cc60c4ff414c646bc12ff0e97bec935093f31bf6851aadc6ac692f6b7acf0ea",
+              "task": "debt-rollforward",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "5fe037366ab9d4d217e29d54a4a9009f0e42903804fb6fb262cfac4a2406579d"
+            },
+            {
+              "id": "dc284695a8d8de9648869ea77aed1f038212e8103fc4f4df1ce684d31c64bcdd",
+              "task": "debt-rollforward",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "52d1b513a2e8c3c200524646c06a6b4a3c0a0ab7e74a23b1728ba7c264c3ba54"
+            },
+            {
+              "id": "0e8255e99d33fa4493b9e65ae7dd1baa7ff4acda5897f7b52b95f3d07b625931",
+              "task": "scenario-valuation",
+              "repetition": 0,
+              "score": 0,
+              "deliveryDigest": "ba8934737d0aedfa013a10aa25d094e17bb1d34f4e23ff9cfaf5c70316169d35"
+            },
+            {
+              "id": "a8ac7aba0e7c9cf8aa2501f01f46582d31d84be76072f22ddfccbd212468b2b7",
+              "task": "scenario-valuation",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "4aa1edf5148349e7c0c2b2c4571173b201dfaec3cc93708ecd4570d3d719e800"
+            }
+          ]
+        },
+        {
+          "digest": "c51aca2f9925ab44cfea3f8ad2f6cb8beef1fd64837a2420b056ef67af1e75d3",
+          "ordinal": 2,
+          "mean": 0.51875,
+          "expectedRuns": 8,
+          "scoredRuns": 8,
+          "failedRuns": 0,
+          "decision": {
+            "candidate": "c51aca2f9925ab44cfea3f8ad2f6cb8beef1fd64837a2420b056ef67af1e75d3",
+            "constraints": [],
+            "constraintsSatisfied": true,
+            "denominator": 8,
+            "failureBudgetSatisfied": true,
+            "failures": 0,
+            "mean": 0.51875,
+            "previousChampion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "promoted": false,
+            "qualityImproved": false
+          },
+          "samples": [
+            {
+              "id": "5de650073c58115ec4dabb9cca5c3bfc914056ea1988edd50d60aa2dbdc3443d",
+              "task": "normalization",
+              "repetition": 0,
+              "score": 0.25,
+              "deliveryDigest": "58e55382bcc6ada5fd5b399bd39ad391b506ded25e57e8994747ebe1385fd885"
+            },
+            {
+              "id": "a28030a4ef5c4b59afc43293f6b4b9a33e8b2be9ee1a7f89a04562567098c77f",
+              "task": "normalization",
+              "repetition": 1,
+              "score": 0.25,
+              "deliveryDigest": "b5cfb2f57e31a9958b6e16bbc7529626a8637e53f2ea1b5ce8819a839ebfcc11"
+            },
+            {
+              "id": "c41f45a48fb3b61f9c8fc3b98c780a3ec41e4ceb88e705042b549459ef2396b2",
+              "task": "weighted-portfolio",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "822e6df6fc65e6e1454bd59a3a0b37493394c3ee2f567cd6d6141ce2977873a2"
+            },
+            {
+              "id": "fe08fb5e7dd0fdf2c1f95f79eccc0a6388d3424f2d5a45c05071015c973954d8",
+              "task": "weighted-portfolio",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "ddb4cc3b4607055232f00c310a0a69d8e15568710445a3fd3744e6569e725dbc"
+            },
+            {
+              "id": "7aad8e85a697bbe820d1deda3f88e8551f827ae73f830564d86aa4081942e940",
+              "task": "debt-rollforward",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "99afcf9bb2ecfd36201906b240a17f5600f1c9d47117268976e8028dc49b4321"
+            },
+            {
+              "id": "a4da690b56acb34f16ab059419e1ac621ddf857579c49bc7c51827b7020c30c7",
+              "task": "debt-rollforward",
+              "repetition": 1,
+              "score": 0.4,
+              "deliveryDigest": "f46d86f815a5098ad2471f7befff7f74f6598b9dcafe59ff02208242092d3ce8"
+            },
+            {
+              "id": "d2eaba323f480b2eb72c9ffbec659e20a0653c2b29df69eab0eb7415ea43889b",
+              "task": "scenario-valuation",
+              "repetition": 0,
+              "score": 0.25,
+              "deliveryDigest": "6b9c1f092feccf06dcd7f8069638fbcee453d54161ee9dce5b4349f373170198"
+            },
+            {
+              "id": "66624b486feb777f645c8a87ea05a841b35bdb26abe099aa699dbb9332fb5747",
+              "task": "scenario-valuation",
+              "repetition": 1,
+              "score": 0,
+              "deliveryDigest": "c9b00a38ac263daf2b11f271b3d3d9f3d204dafc59e09990652d2a3d1ee8ba8f"
+            }
+          ]
+        },
+        {
+          "digest": "4a60fb2b2a7d96772a7a827fce84687a47798ca646b3218fab349aa90bc2bb88",
+          "ordinal": 3,
+          "mean": 0.8125,
+          "expectedRuns": 8,
+          "scoredRuns": 8,
+          "failedRuns": 0,
+          "decision": {
+            "candidate": "4a60fb2b2a7d96772a7a827fce84687a47798ca646b3218fab349aa90bc2bb88",
+            "constraints": [],
+            "constraintsSatisfied": true,
+            "denominator": 8,
+            "failureBudgetSatisfied": true,
+            "failures": 0,
+            "mean": 0.8125,
+            "previousChampion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "promoted": true,
+            "qualityImproved": true
+          },
+          "samples": [
+            {
+              "id": "9365249fff9d498dbcebb6bdc16f24445c1f8401b01409a19ab31e79bf0a166a",
+              "task": "normalization",
+              "repetition": 0,
+              "score": 0.25,
+              "deliveryDigest": "a2298250f96f7dd9f7fcf6b910a180d02af104d18ae3b93cb91f5575923b4a2d"
+            },
+            {
+              "id": "af737f0e98d1e0777a2187b3cdac28eee9d8b8ba026767c87d74a0b8bbf3bfa3",
+              "task": "normalization",
+              "repetition": 1,
+              "score": 0.25,
+              "deliveryDigest": "d34e9744bf0b217384be3d8a0a78fd8310463e0978a8e3cb895503603de09fc9"
+            },
+            {
+              "id": "0f25b9d26549a4274168d97a82a329bd475f40400ade1efc783ab4779bb545b9",
+              "task": "weighted-portfolio",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "bb95888a3ec5b350d4301533e5b9481f8f5a6d6dadfdba7aa52ba21f97c03c45"
+            },
+            {
+              "id": "5615408755c06764f32e3c299ec484d216918f78c19a73df28f7037deecaa335",
+              "task": "weighted-portfolio",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "ff6f79789fc4161c11d095e0a52e0d447825c3d98fa799038dde6436448d40aa"
+            },
+            {
+              "id": "b2b68cee9a9323587c36a5ca4228f2f60f510a5c355edb89afe81237e953016e",
+              "task": "debt-rollforward",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "9bb15f172dea260b8c18362ab1c0dbd09c7e6bf550930085883c4c5c0c791d7b"
+            },
+            {
+              "id": "d08884b5cdde1dafb7908966e72cf8df13f00c97b2392f8cc3d5d5cc834f0f8f",
+              "task": "debt-rollforward",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "6c6678757e3b0ae291a36ed26620fab8ae4118553853573ddca722a2651fb6c8"
+            },
+            {
+              "id": "6ba1d1ad6117c6e032ba324afca881bc5cc468e1e2f5038919ed690d593226e8",
+              "task": "scenario-valuation",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "a846f6096e8921c8a20e334a027de4f26fd9f3dd35e41da5a0ffad81248ea893"
+            },
+            {
+              "id": "50ee481f308969503b0fa4533f7de59a9c182b0e0a07c95e1be883131b2c91e7",
+              "task": "scenario-valuation",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "a9218b351f886ded63056332d7dca6e7b08744e85a9fc7be1dc19dbe334f199d"
+            }
+          ]
+        }
+      ],
+      "optimizer": {
+        "episodes": [
+          {
+            "episode": 0,
+            "usage": {
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+              "started": 154,
+              "results": 154,
+              "failed": 0,
+              "unfinished": 0,
+              "inputTokensReported": 347639,
+              "outputTokensReported": 76683,
+              "missingUsage": 0,
+              "requestDurationMsSum": 726885
+            }
+          }
+        ],
+        "accounting": {
+          "consumedSeconds": 903.468,
+          "episodes": 1,
+          "optimizerHarness": "0306e8bd61d1951e6823289f664437897661b4c5d3f8115527a169213037eca6",
+          "reason": "optimizer_concluded"
+        },
+        "usage": {
+          "ledgers": 1,
+          "availableLedgers": 1,
+          "unavailableLedgers": 0,
+          "reportedTotals": {
+            "started": 154,
+            "results": 154,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 347639,
+            "outputTokensReported": 76683,
+            "missingUsage": 0,
+            "requestDurationMsSum": 726885
+          },
+          "complete": true
+        }
+      },
+      "totalUsage": {
+        "ledgers": 33,
+        "availableLedgers": 33,
+        "unavailableLedgers": 0,
+        "reportedTotals": {
+          "started": 451,
+          "results": 451,
+          "failed": 0,
+          "unfinished": 0,
+          "inputTokensReported": 656970,
+          "outputTokensReported": 140552,
+          "missingUsage": 0,
+          "requestDurationMsSum": 1348112
+        },
+        "complete": true
+      },
+      "probes": []
+    },
+    "enabled": {
+      "report": ".evolution/probe-controlled-spreadsheet-20261028/enabled/final-report.json",
+      "sha256": "227ffddab1141f36f1bb8c84171d5e66447836b0ab197af72d24c01f328472b0",
+      "experimentId": "527ba5d4-9247-4b31-8212-bf9039bea3cf",
+      "specificationDigest": "8d469007859e5da1b4b30553176b053f463f42486633a4c4d3072b9219298d62",
+      "currentChampion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+      "candidates": [
+        {
+          "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+          "ordinal": 0,
+          "mean": 0.90625,
+          "expectedRuns": 8,
+          "scoredRuns": 8,
+          "failedRuns": 0,
+          "decision": {
+            "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "constraints": [],
+            "constraintsSatisfied": true,
+            "denominator": 8,
+            "failureBudgetSatisfied": true,
+            "failures": 0,
+            "mean": 0.90625,
+            "previousChampion": null,
+            "promoted": true,
+            "qualityImproved": true
+          },
+          "samples": [
+            {
+              "id": "290e7cf01b9b2bac5d0c4c20f64e311851be4310de26e40863e7eb809c36907f",
+              "task": "normalization",
+              "repetition": 0,
+              "score": 0.25,
+              "deliveryDigest": "429c031b30aa81c882a293f4f8766a3d5ee902a9654f2059ae1e024c67e5d0e7"
+            },
+            {
+              "id": "907de165f9e99043fc4188a796792b2232356ee0ab8f5d9253605f245ebf9691",
+              "task": "normalization",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "ee010a948ae874d8f51d0768ae2d1652cacc23a82a4c778926f2df133b1c7334"
+            },
+            {
+              "id": "fa83d6260a35067d1d89ca0831b3b181aecd69cab1d448a24a3f346bdd936dde",
+              "task": "weighted-portfolio",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "3e4e3eaa9a9180fba6e0367c07e1df22415bc34f10a8d22669bcbdaed52c2b2e"
+            },
+            {
+              "id": "5050f3d224f5eec0ccc9f11e3632577eb07192cb2458c1fd0ab8aa0574af365f",
+              "task": "weighted-portfolio",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "8aa57c1b2d9002100f1cd1d6520f948bbf6b669db804409c528fa812309fd54d"
+            },
+            {
+              "id": "4775f7f2ae86cb8ff08824ce43225009ddd46af510cd6ae9bd040dbbe4b7428f",
+              "task": "debt-rollforward",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "8f6da3f426756019d95c061bc577bf45af29fa64ee6701238bfcce1b5c16e605"
+            },
+            {
+              "id": "c6f8a99f467f246ab005423d7ff2c503f21a7b41c1feea87fe98395ccea6638a",
+              "task": "debt-rollforward",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "9f54b9778c58d86d613dee5141f19f53a051adb251bd5c8f8171defc164ff3a9"
+            },
+            {
+              "id": "142f8e890e1924462ff2f53494e447e0e101c388b28bbe7f38e467a432397873",
+              "task": "scenario-valuation",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "8d3db30f03a5fa7dc16def5a30878a6f959a0b74668260df7ba079a2dcf73c92"
+            },
+            {
+              "id": "23b8704892a7cc9654e043e846cd3ddbf9e5070d895411d5fe6f2244181922ac",
+              "task": "scenario-valuation",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "93074051c88cfa4d83dabfec9664c35a8be39c81adbc9a6d84fdc7b0e3f2e932"
+            }
+          ]
+        },
+        {
+          "digest": "ba37b77c084a5648b8bc6cf67c65556f9fc0a5a9f8dcbf3935105c723527c1e0",
+          "ordinal": 1,
+          "mean": 0.78125,
+          "expectedRuns": 8,
+          "scoredRuns": 8,
+          "failedRuns": 0,
+          "decision": {
+            "candidate": "ba37b77c084a5648b8bc6cf67c65556f9fc0a5a9f8dcbf3935105c723527c1e0",
+            "constraints": [],
+            "constraintsSatisfied": true,
+            "denominator": 8,
+            "failureBudgetSatisfied": true,
+            "failures": 0,
+            "mean": 0.78125,
+            "previousChampion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "promoted": false,
+            "qualityImproved": false
+          },
+          "samples": [
+            {
+              "id": "932a37106af5d81904e37ba357278aa8d783126cd38545bd5ea20dda57bf3425",
+              "task": "normalization",
+              "repetition": 0,
+              "score": 0,
+              "deliveryDigest": "5b2491da3caf222fcbe62ecea1a5e1ccca6164c1d9b571d174ebbc725563520e"
+            },
+            {
+              "id": "bbb75398c72649b649e33cf4a97d749f5a162f8786ff7082aa2ee4d182cd5c12",
+              "task": "normalization",
+              "repetition": 1,
+              "score": 0.25,
+              "deliveryDigest": "b88b1311484c09310f1fd02604f3e0bb2f3cf26a410d5fc02996ad5455819cf6"
+            },
+            {
+              "id": "2a3793b46038f3435aa947b45c5d489144dea3a7ba2e2547f1444bae1a796353",
+              "task": "weighted-portfolio",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "c197edd4c5f8acf740f7363e90d8bc716798976447af56f777587d9fd796f665"
+            },
+            {
+              "id": "7f2670fb007f8a9e28bb135e57e5ad84d8be4c4027354a842f74e2020e1c409e",
+              "task": "weighted-portfolio",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "362ad2fed9e23a79f8db5e48885231008660471c126e0816937be4e9ee7c1812"
+            },
+            {
+              "id": "368d70a28d1ca788f86dd4c86d7a2bc156d7c0cdb00ab135613e037cd8636f74",
+              "task": "debt-rollforward",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "5add77a8f3766c0432602632339395e39eb28124efb2ce183033a980b15f6735"
+            },
+            {
+              "id": "27198cf7c2e9ff9a00689217b909589904b06a4522f27083ad802f64c570e28f",
+              "task": "debt-rollforward",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "2f990ae1645893011580caa388e4e2f3d4cddb32a899468846aeee37a78c64d2"
+            },
+            {
+              "id": "4d902ef5152883e0db2fb37cfca67006ef2e4fccd78a20604e10d71c6e29c548",
+              "task": "scenario-valuation",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "3604f57402ea8d4183862b9341d384f52c4decad51b0e9f7f5a39c2fee18998a"
+            },
+            {
+              "id": "dc97ad9c5f0f68b633e08ba1337a6f5a205c1f8311deac7ff86272af2b822d09",
+              "task": "scenario-valuation",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "ebcc3fafde568d19b07e6fb81c2c80767fbb57defd8373a9dbe749bdc162d71c"
+            }
+          ]
+        },
+        {
+          "digest": "afc649eae3daaa8df7263a598d0f1f0be295f405ed90c8974e229bef9e0199c7",
+          "ordinal": 2,
+          "mean": 0.6875,
+          "expectedRuns": 8,
+          "scoredRuns": 8,
+          "failedRuns": 0,
+          "decision": {
+            "candidate": "afc649eae3daaa8df7263a598d0f1f0be295f405ed90c8974e229bef9e0199c7",
+            "constraints": [],
+            "constraintsSatisfied": true,
+            "denominator": 8,
+            "failureBudgetSatisfied": true,
+            "failures": 0,
+            "mean": 0.6875,
+            "previousChampion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "promoted": false,
+            "qualityImproved": false
+          },
+          "samples": [
+            {
+              "id": "87d580b7c0c209be43c7eb5993a191743e31aa38bc8c4f0e1a7455295a9aa811",
+              "task": "normalization",
+              "repetition": 0,
+              "score": 0.25,
+              "deliveryDigest": "8cc2b395410d030c228ca94704ac29014c6b0e87811bdef4efdf38cec9de318d"
+            },
+            {
+              "id": "08375d23e43939873b5d8814740a272b234b2420793a325428560a7acabdc95c",
+              "task": "normalization",
+              "repetition": 1,
+              "score": 0.25,
+              "deliveryDigest": "9e77415b8f88ea9fd11aea265d357e38435debef4d060afc766ef5082b285596"
+            },
+            {
+              "id": "4fc18e37698c05014d58680b2c8b98d7c7fafae9c12b9147de6fbdcc310081f4",
+              "task": "weighted-portfolio",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "313ec8e44690732488a476833e053f303f2a72970878b0f8b97bb2eaaa215646"
+            },
+            {
+              "id": "a889a8d85f5f45c582543b9026dd1b25c3b5b6caf2ec40dc4708db58bb7f0f1d",
+              "task": "weighted-portfolio",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "90f5814e4aa5cb3e86119939733c2e27b293609de0c5e6272067c0b424489ff2"
+            },
+            {
+              "id": "60a2abc6e0ae4c1ca8d06964741fc5ab979d8d5cc9acf15ee6b411bee9d51355",
+              "task": "debt-rollforward",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "2f9909bdaa6fb2860fa7e5f7804fbea1162117d60eac937333b97afdc542026a"
+            },
+            {
+              "id": "b95c5795e9c9a299be159e2135d9809276c34defca00006a5bbf606c4f90f47b",
+              "task": "debt-rollforward",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "9041ac13a5634c669c3c0786a456c2af70127a843dc88174450795abcb802967"
+            },
+            {
+              "id": "aeb17f4d1edeef48cbc70946c8f58cc36c52f911ab7cb50afc7006ae60345a6d",
+              "task": "scenario-valuation",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "b0af7cfd7e8f3017f992cec0ed0f6f01818817f1b892e57ea63da216bef27457"
+            },
+            {
+              "id": "3dc6b3f44d76559f01f2e0180608f18256d69321b5e532b15111d23c773f033b",
+              "task": "scenario-valuation",
+              "repetition": 1,
+              "score": 0,
+              "deliveryDigest": "0c9de003cbf8f5b8c985b7be94db0485a647230b34b19b6c6bfa0ad0dab76908"
+            }
+          ]
+        },
+        {
+          "digest": "81a5790b1ebcf5bf25519fe20a69fce65ccb78242e28b0ffb6453d61a5a223d2",
+          "ordinal": 3,
+          "mean": 0.6875,
+          "expectedRuns": 8,
+          "scoredRuns": 8,
+          "failedRuns": 0,
+          "decision": {
+            "candidate": "81a5790b1ebcf5bf25519fe20a69fce65ccb78242e28b0ffb6453d61a5a223d2",
+            "constraints": [],
+            "constraintsSatisfied": true,
+            "denominator": 8,
+            "failureBudgetSatisfied": true,
+            "failures": 0,
+            "mean": 0.6875,
+            "previousChampion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "promoted": false,
+            "qualityImproved": false
+          },
+          "samples": [
+            {
+              "id": "54cc3c5e886a15be15e40ba056dc72f95c2eac59e7f5f203152f02fd468d4e30",
+              "task": "normalization",
+              "repetition": 0,
+              "score": 0.25,
+              "deliveryDigest": "bb58cadf1aa46eba2d85f279ab2b0b9f84e1859b432258a34a7bb42dc91decd7"
+            },
+            {
+              "id": "136e465b31c1270dfa460b447cdc7617d166733788b936270a0ca2293c703b7d",
+              "task": "normalization",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "f5034e0011c97137bd2c34cd4d82d0c8624a81601a17cc85ce7a139be5c0cd7d"
+            },
+            {
+              "id": "0fc57565e7a53f63a83ec576cc0e778f4bd43d40cc39c3eae78e2567b1f6ea31",
+              "task": "weighted-portfolio",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "c5957b821303c19bec348831a4f0ff87007120d0aa803e6fddf027cf12043a10"
+            },
+            {
+              "id": "ac6de7f3837fd28c87ee940f8b07cbbcffa82594137c15de28f96af1814e3fe6",
+              "task": "weighted-portfolio",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "a74ea66145f21fc74ebb88c5f09e50153a0d95ad4f7dff7004f21a5b5cc55314"
+            },
+            {
+              "id": "1c34c1a338842655a6bc45b01188b30edc0c36e58ea6173af65ac55e3c38f5f3",
+              "task": "debt-rollforward",
+              "repetition": 0,
+              "score": 1,
+              "deliveryDigest": "c411aa7ca591ff6c11c19d155ac872bd9c826f8da1d7773fd8c03801fd29be14"
+            },
+            {
+              "id": "1305a8ece6b3cd8c36ff9c7ad15612448125f2fbb7f98a612354e50ebabce3fb",
+              "task": "debt-rollforward",
+              "repetition": 1,
+              "score": 1,
+              "deliveryDigest": "30c984f4cd660a2e4df4ce33be8a2ed1bd081b61ea3cbb3a1f0e2b5586690f86"
+            },
+            {
+              "id": "c31f10f1ace3948cc275e0103dfd7ea558795fa0a3eb4e611e2ee288cf59420b",
+              "task": "scenario-valuation",
+              "repetition": 0,
+              "score": 0.25,
+              "deliveryDigest": "dc66146f55ca6a6080345197325128dea1855ba30a527438fa9fc867872abd2d"
+            },
+            {
+              "id": "2ebb7b2e7196b313e827ad1874e18e4f4d868ea41e5403f7985fe7fdec2c44f0",
+              "task": "scenario-valuation",
+              "repetition": 1,
+              "score": 0,
+              "deliveryDigest": "c5114bc823fbb8701d9f2dfc1654266fb32b5d9478494034784900ba8335a785"
+            }
+          ]
+        }
+      ],
+      "optimizer": {
+        "episodes": [
+          {
+            "episode": 0,
+            "usage": {
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+              "started": 236,
+              "results": 236,
+              "failed": 0,
+              "unfinished": 0,
+              "inputTokensReported": 470073,
+              "outputTokensReported": 78229,
+              "missingUsage": 0,
+              "requestDurationMsSum": 878175
+            }
+          }
+        ],
+        "accounting": {
+          "consumedSeconds": 1013.536,
+          "episodes": 1,
+          "optimizerHarness": "0306e8bd61d1951e6823289f664437897661b4c5d3f8115527a169213037eca6",
+          "reason": "optimizer_concluded"
+        },
+        "usage": {
+          "ledgers": 1,
+          "availableLedgers": 1,
+          "unavailableLedgers": 0,
+          "reportedTotals": {
+            "started": 236,
+            "results": 236,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 470073,
+            "outputTokensReported": 78229,
+            "missingUsage": 0,
+            "requestDurationMsSum": 878175
+          },
+          "complete": true
+        }
+      },
+      "totalUsage": {
+        "ledgers": 33,
+        "availableLedgers": 33,
+        "unavailableLedgers": 0,
+        "reportedTotals": {
+          "started": 515,
+          "results": 515,
+          "failed": 0,
+          "unfinished": 0,
+          "inputTokensReported": 813804,
+          "outputTokensReported": 148085,
+          "missingUsage": 0,
+          "requestDurationMsSum": 1504001
+        },
+        "complete": true
+      },
+      "probes": [
+        {
+          "id": "df88b8882d56a5a985d2fec48316cd610ecdd030859e2f84baf599c113f5efff",
+          "entry": "probe.mjs#probe",
+          "phase": "failed",
+          "executionMilliseconds": 487,
+          "observation": {
+            "status": "failed",
+            "toolCalls": 0,
+            "error": "Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/suite/probe.mjs#probe' imported from /app/dist/composition-probe.js"
+          }
+        },
+        {
+          "id": "30acb0ab761a1c4c6b96233cbd63d7c731041586e256a13be8c0e5338fd8db31",
+          "entry": "probe.mjs#probe",
+          "phase": "failed",
+          "executionMilliseconds": 459,
+          "observation": {
+            "status": "failed",
+            "toolCalls": 0,
+            "error": "Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/suite/probe.mjs#probe' imported from /app/dist/composition-probe.js"
+          }
+        },
+        {
+          "id": "e19dbf25345f356c88cd8ecec3030e885e55796a1393f9a7ce097104cac5e17c",
+          "entry": "probe.mjs",
+          "phase": "passed",
+          "executionMilliseconds": 457,
+          "observation": {
+            "status": "passed",
+            "toolCalls": 0,
+            "error": null
+          }
+        },
+        {
+          "id": "e8df25486f184b9bd43429961e905e1d3aa677ef22894c7c007330512ff75bd4",
+          "entry": "probe.mjs",
+          "phase": "failed",
+          "executionMilliseconds": 531,
+          "observation": {
+            "status": "failed",
+            "toolCalls": 1,
+            "error": "SyntaxError: \"[object Object]\" is not valid JSON"
+          }
+        },
+        {
+          "id": "628ceab8d76fa6287a51dcd668abb7b4fe9e4cfd3efab0b1fb48245ee2ba61e3",
+          "entry": "probe.mjs",
+          "phase": "failed",
+          "executionMilliseconds": 568,
+          "observation": {
+            "status": "failed",
+            "toolCalls": 1,
+            "error": "SyntaxError: \"[object Object]\" is not valid JSON"
+          }
+        },
+        {
+          "id": "6d8adb0038bf783e8e6f7582bf6486dc3c0c645dabec608809b9fa640b8940b6",
+          "entry": "probe.mjs",
+          "phase": "failed",
+          "executionMilliseconds": 552,
+          "observation": {
+            "status": "failed",
+            "toolCalls": 1,
+            "error": "SyntaxError: \"[object Object]\" is not valid JSON"
+          }
+        }
+      ]
+    }
+  },
+  "counterexample": {
+    "result": [
+      {
+        "name": "baseline",
+        "id": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+        "exitCode": 0,
+        "observation": {
+          "expected": [
+            "=A1+10",
+            "=A2*20"
+          ],
+          "actual": [
+            "=A1+10",
+            "=A2*20"
+          ]
+        }
+      },
+      {
+        "name": "mutant",
+        "id": "81a5790b1ebcf5bf25519fe20a69fce65ccb78242e28b0ffb6453d61a5a223d2",
+        "exitCode": 1,
+        "observation": {
+          "expected": [
+            "=A1+10",
+            "=A2*20"
+          ],
+          "actual": [
+            "=A1+10",
+            "=A2+10"
+          ]
+        }
+      }
+    ],
+    "suiteSha256": "897b00d96a2405e9b26d46566d3761993ac895a32dd1cf74e9529e11321e838d",
+    "suiteSource": "import assert from 'node:assert/strict';\nimport {execFileSync} from 'node:child_process';\nimport {writeFile} from 'node:fs/promises';\nexport async function probe({call,workspace}) {\n  execFileSync('python',['-c',\"from openpyxl import Workbook; w=Workbook(); w.active.title='Sheet'; w.active['A1']=2; w.active['A2']=3; w.save('/workspace/source.xlsx')\"]);\n  const edits=[{sheet:'Sheet',cell:'B1',value:'=A1+10'},{sheet:'Sheet',cell:'B2',value:'=A2*20'}];\n  const result=await call('workbook_write',{source:'/workspace/source.xlsx',destination:'/workspace/result.xlsx',edits});\n  assert.equal(result.isError,false);\n  const actual=JSON.parse(execFileSync('python',['-c',\"import json; from openpyxl import load_workbook; w=load_workbook('/workspace/result.xlsx'); print(json.dumps([w['Sheet']['B1'].value,w['Sheet']['B2'].value]))\"],{encoding:'utf8'}));\n  await writeFile(workspace+'/explicit-values.json',JSON.stringify({expected:edits.map(x=>x.value),actual}));\n  assert.deepEqual(actual,edits.map(x=>x.value));\n}\n",
+    "evidence": [
+      {
+        "path": ".evolution/explicit-write-counterexample-20261028/baseline/work/explicit-values.json",
+        "sha256": "5a82fe82d15629577d19ebde3ad97c28d43ed3265886e7527f23f7350ddd3790"
+      },
+      {
+        "path": ".evolution/explicit-write-counterexample-20261028/baseline/work/native/behavior.json",
+        "sha256": "09cec9f9555946c74845eed832ff144b2ad97cf5f0c29230403481ef672b4856"
+      },
+      {
+        "path": ".evolution/explicit-write-counterexample-20261028/baseline/launch.json",
+        "sha256": "2e11cc6dc27011fef76aafd8e7387963d8c4c534cef075e447a80ad016418f04"
+      },
+      {
+        "path": ".evolution/explicit-write-counterexample-20261028/mutant/work/explicit-values.json",
+        "sha256": "c18730b79f836f8d01501b4604a3364de9e33701ff1db762b8913b9f0d0eead5"
+      },
+      {
+        "path": ".evolution/explicit-write-counterexample-20261028/mutant/work/native/behavior.json",
+        "sha256": "0d06489408426ba485ac4af1a03f6ced25022d227f20ac74244ebfc5239aa35d"
+      },
+      {
+        "path": ".evolution/explicit-write-counterexample-20261028/mutant/launch.json",
+        "sha256": "2e11cc6dc27011fef76aafd8e7387963d8c4c534cef075e447a80ad016418f04"
+      }
+    ]
+  },
+  "boundaries": [
+    "One paired development search per arm; previously seen public synthetic tasks, not heldout or official benchmark.",
+    "Candidate counts matched; total compute not matched. Shared host and provider confounds remain.",
+    "Raw scores retained. Mutant explicit-write violation excludes it from capability delivery.",
+    "Native DSH adapter streams counted; hidden provider HTTP retries and monetary cost not observed."
+  ]
+}

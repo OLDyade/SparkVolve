@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile, cp, readFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, cp, readFile, access } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { Store } from '../src/store.js';
@@ -97,6 +97,36 @@ test('disabled probes reject without creating an execution', async () => {
     store = new Store(':memory:', spec);
   try {
     await assert.rejects(queueProbe('/unused', store, {}), /not authorized/);
+  } finally {
+    store.close();
+  }
+});
+
+test('invalid probe directories and literal entry paths fail before preparation or budget consumption', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'he-probe-input-'));
+  const spec = specification();
+  spec.probes = { limit: 1, timeoutSeconds: 5 };
+  const store = new Store(':memory:', spec);
+  await mkdir(path.join(root, 'drafts/draft'), { recursive: true });
+  await mkdir(path.join(root, 'drafts/suite/nested'), { recursive: true });
+  await writeFile(path.join(root, 'drafts/suite/nested/check.mjs'), 'export async function probe(){}');
+  await writeFile(path.join(root, 'drafts/file'), 'not a directory');
+  const request = { draft: 'draft', suite: 'suite', entry: 'nested/check.mjs', hypothesis: 'literal entry' };
+  try {
+    for (const invalid of [
+      { ...request, draft: 'file' },
+      { ...request, suite: 'file' },
+      { ...request, entry: 'nested' },
+      { ...request, entry: 'nested/check.mjs#probe' },
+      { ...request, entry: 'missing.mjs' },
+    ]) {
+      await assert.rejects(queueProbe(root, store, invalid), /directory|regular file|ENOENT/);
+      assert.deepEqual(store.probes(), []);
+      await assert.rejects(access(path.join(root, 'probes')), { code: 'ENOENT' });
+    }
+    const probe = await queueProbe(root, store, request);
+    assert.equal(probe.request.entry, 'nested/check.mjs');
+    assert.equal(store.probes().length, 1);
   } finally {
     store.close();
   }

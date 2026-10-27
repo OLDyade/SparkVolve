@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile, stat } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, stat, lstat } from 'node:fs/promises';
 import path from 'node:path';
 import { atomicJSON, confined, digest, freeze, treeDigest } from './artifacts.js';
 import { buildCandidate, bundlePath, verifyBuild } from './build.js';
@@ -15,6 +15,12 @@ export async function queueProbe(root: string, store: Store, raw: unknown): Prom
   const source = confined(path.join(root, 'drafts'), request.draft);
   const suite = confined(path.join(root, 'drafts'), request.suite);
   if (source === suite) throw new Error('Probe suite must be separate from the candidate draft');
+  for (const directory of [source, suite]) {
+    if (!(await lstat(directory)).isDirectory())
+      throw new Error(`Probe input must be a directory: ${directory}`);
+  }
+  const entry = confined(suite, request.entry);
+  if (!(await lstat(entry)).isFile()) throw new Error(`Probe entry must be a regular file: ${entry}`);
   const sourceDigest = await treeDigest(source),
     suiteDigest = await treeDigest(suite);
   const id = digest({ sourceDigest, suiteDigest, entry: request.entry });

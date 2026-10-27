@@ -30,6 +30,8 @@ flowchart LR
 
 这段参数交给 `evolution_probe`。返回实验 ID 后使用已有 `evolution_wait` 游标协议，收到 `probe.completed` 再读取 `evolution_probe_evidence`。后者支持 `source / suite / build / artifact / logs / observations`，省略 `file` 返回清单，文件以 base64 返回。
 
+`suite` 必须是目录；`entry` 是该目录下真实存在的模块文件，例如 `checks/probe.mjs`，不能附加 `#probe`。目录及入口类型在创建实验前检查，输入错误直接返回，不消耗登记额度。`call()` 返回原生对象，不能对整个结果执行 `JSON.parse`；只有工具明确约定 JSON 文本时才解析相应 `content` 文本块。
+
 测试模块导出 `async probe({ agent, ctx, call, workspace })`：
 
 | 接口 | 实际行为 |
@@ -64,3 +66,5 @@ export async function probe({ call }) {
 - 一次实验的结论绑定其实际构建身份。正式提交会登记独立候选及构建；同源非确定性构建不保证同产物，不能把探针通过直接继承成正式验收。
 
 设计来源、当前版本差异和未采纳机制见[调研记录](research/2026-10-28-executable-probes.md)。调用、成功/失败、断言反例及真实模型使用见同页验收记录；未以这些工程测试宣称提分。
+
+后续 [64 次任务对照](experiments/2026-10-28-native-probe-spreadsheet-results.md) 保留负结果、空测试和接口误用；没有观察到开启组相对自身基线的收益。

@@ -39,11 +39,21 @@ export function apply(ctx: Context, config: Config): void {
     defineTool({
       name: 'evolution_probe',
       description:
-        'Queue an isolated behavioral experiment on a Bundle draft. AUTHORING: write a separate ES-module suite under this optimizer\'s /workspace/<suite>. EXECUTION: the frozen suite mounts at /suite (read-only), built Bundle at /candidate (read-only), and a new empty /workspace is writable; authoring subdirectories are NOT copied there. Entry exports async probe({agent, ctx, call, workspace}); workspace is the actual writable directory. Use new URL("./fixture.json", import.meta.url) for suite fixtures; create any output subdirectory explicitly. call(name,args) uses the native tool pipeline and returns its full result. Use node:assert/strict with independently derived expectations. No credentials, network, tasks or evaluation material reach execution. Build uses the contracted build network. Counts against probe limit, never scores. Returns ID; wait for probe.completed and inspect evidence. Identical source/suite/entry cannot be rerun.',
+        'Queue an isolated behavioral experiment on a Bundle draft. AUTHORING: write a separate ES-module suite under this optimizer\'s /workspace/<suite>. EXECUTION: the frozen suite mounts at /suite (read-only), built Bundle at /candidate (read-only), and a new empty /workspace is writable; authoring subdirectories are NOT copied there. Entry exports async probe({agent, ctx, call, workspace}); workspace is the actual writable directory. Use new URL("./fixture.json", import.meta.url) for suite fixtures; create any output subdirectory explicitly. call(name,args) returns a native ToolResult OBJECT, not a JSON string. Check result.isError; inspect result.content text blocks and parse only a text block when that tool documents JSON output. Returning normally only means the authored suite did not throw; an empty suite proves no behavior. Use node:assert/strict with independently derived expectations. No credentials, network, tasks or evaluation material reach execution. Build uses the contracted build network. Counts against probe limit, never scores. Returns ID; wait for probe.completed and inspect evidence. Identical source/suite/entry cannot be rerun.',
       parameters: {
         draft: { type: 'string', required: true },
-        suite: { type: 'string', required: true },
-        entry: { type: 'string', required: true },
+        suite: {
+          type: 'string',
+          required: true,
+          description:
+            'Directory name under /workspace containing the separate test suite, not a module filename.',
+        },
+        entry: {
+          type: 'string',
+          required: true,
+          description:
+            'Existing module file relative to suite, e.g. checks/probe.mjs. The module exports probe; do not append #probe.',
+        },
         hypothesis: { type: 'string', required: true },
       },
       output,
