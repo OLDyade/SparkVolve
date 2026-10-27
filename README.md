@@ -99,7 +99,7 @@ node dist/cli.js export --root .evolution/business/search \
 dsh plugin --profile sdk add /absolute/new-export-directory/bundle.tgz
 ```
 
-进化设施自身同样可安装：`npm pack` 后通过上述原生命令装入 Profile，设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，即可贡献状态、分支、提交、证据、候选源码和结束搜索六项工具。优化器的研究方法也由独立、冻结的原生 Bundle 提供；模型自主选择变异，框架管理实验生命周期。
+进化设施自身同样可安装：`npm pack` 后通过原生命令装入目标 Profile，设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，再选择 **Harness Evolution** Preset。六项进化工具和研究方法只对选择该组合的会话可见。`evolve` 自动完成装配；独立使用 `sdk/sdk-minimal` 时，需加载[原生注册表与选择桥配置](docs/presets.md#sdk-的明确接入)。方法 Bundle 可单独替换，内容哈希写入实验合同。
 
 研究资产支持 `remember → library → import`：保留有效候选与负结果、谱系、来源、账本和证据哈希。导入产生新的可编辑草稿，历史分数不会转移到新实验。详见[架构](docs/architecture.md)。
 

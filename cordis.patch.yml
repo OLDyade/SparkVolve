@@ -1,6 +1,13 @@
 - insert:
-    - id: harness-evolution
-      name: '@harness-evolution/dsh-bundle'
+    - id: preset-evolution
+      name: '@deepseek-ai/dsh-agent-preset'
       config:
-        endpoint: !!js process.env.EVOLUTION_ENDPOINT
-        tokenEnv: EVOLUTION_TOKEN
+        id: evolution
+        name: Harness Evolution
+        description: Evidence-driven plugin evolution with independent experiments
+        plugins:
+          - id: evolution-tools
+            name: '@harness-evolution/dsh-bundle'
+            config:
+              endpoint: !!js process.env.EVOLUTION_ENDPOINT
+              tokenEnv: EVOLUTION_TOKEN

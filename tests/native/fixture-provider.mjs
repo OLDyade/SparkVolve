@@ -21,6 +21,14 @@ export function apply(ctx) {
         process.env.HE_FIXTURE_REQUESTS,
         JSON.stringify({ model: options.model, tools: options.tools, messages: options.messages }) + '\n',
       );
+      if (JSON.stringify(options.messages).includes('ordinary-session')) {
+        if (options.tools.some((tool) => tool.name.startsWith('evolution_')))
+          throw new Error('Evolution capability leaked into ordinary session');
+        yield { type: 'block-start', index: 0, blockType: 'text' };
+        yield { type: 'block-end', index: 0, block: { type: 'text', text: 'ordinary-connected' } };
+        yield { type: 'finish', reason: 'stop' };
+        return;
+      }
       if (this.calls++ === 0) {
         if (!options.tools.some((tool) => tool.name === 'evolution_status'))
           throw new Error('Evolution tool missing from actual model request');

@@ -12,7 +12,6 @@ const config = z
     model: Model,
     patch: z.string(),
     environmentPatch: z.string().nullable(),
-    methodPatch: z.string().optional(),
     prompt: z.string(),
     timeoutSeconds: z.number().positive(),
   })
@@ -44,7 +43,6 @@ const runtime = new DeepSeekHarness({
   profile: config.profile,
   patches: [
     ...(config.environmentPatch ? [config.environmentPatch] : []),
-    ...(config.methodPatch ? [config.methodPatch] : []),
     config.patch,
     '/tmp/evolution-observer.yml',
   ],

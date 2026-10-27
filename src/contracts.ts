@@ -51,7 +51,7 @@ export const Experiment = z
     }),
     executor: Model,
     optimizer: Model,
-    optimizerHarness: BundleRef,
+    optimizerHarness: z.strictObject({ directory: RelativePath, digest: Digest, composition: RelativePath }),
     evaluator: z.strictObject({
       image: Image,
       command: z.array(z.string()).min(1),

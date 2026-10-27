@@ -2,9 +2,11 @@
   "name": "@harness-evolution/optimizer-evidence-driven",
   "version": "0.1.0",
   "type": "module",
+  "exports": "./index.mjs",
   "license": "Apache-2.0",
   "files": [
     "index.mjs",
+    "plugins.yml",
     "cordis.patch.yml",
     "LICENSE"
   ],

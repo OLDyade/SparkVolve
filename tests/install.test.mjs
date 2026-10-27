@@ -8,6 +8,7 @@ import os from 'node:os';
 import { parse, stringify } from 'yaml';
 import { DeepSeekHarness } from '@deepseek-ai/dsh-sdk-client';
 import { command } from '../dist/docker.js';
+import { sdkPreset } from '../dist/preset.js';
 
 test(
   'packed distribution installs through native DSH and executes its registered capability',
@@ -64,11 +65,37 @@ test(
         await readFile(path.join(env.DSH_HOME, 'profiles/sdk-minimal/package.json'), 'utf8'),
       );
       assert.ok(profile.dsh.profile.bundles.includes('@harness-evolution/dsh-bundle'));
-      // Only the deterministic provider is patched; the tested plugin must come from the installed package.
+      const methodPack = JSON.parse(
+        await command('npm', [
+          'pack',
+          './optimizers/evidence-driven',
+          '--ignore-scripts',
+          '--pack-destination',
+          root,
+          '--json',
+        ]),
+      );
+      await command(
+        path.resolve('node_modules/.bin/dsh'),
+        [
+          'plugin',
+          '--profile',
+          'sdk-minimal',
+          'add',
+          path.join(root, methodPack['@harness-evolution/optimizer-evidence-driven'].filename),
+        ],
+        { env, timeoutMs: 180000 },
+      );
+      // SDK host opts into the installed native preset; its declaration/tools come from the package.
       await writeFile(
         patch,
         stringify([
-          { insert: [{ id: 'fixture-provider', name: path.resolve('tests/native/fixture-provider.mjs') }] },
+          {
+            insert: [
+              { id: 'fixture-provider', name: path.resolve('tests/native/fixture-provider.mjs') },
+              ...sdkPreset('evolution', '@harness-evolution/dsh-bundle/sdk-preset'),
+            ],
+          },
         ]),
       );
       runtime = new DeepSeekHarness({
@@ -95,6 +122,7 @@ test(
         .split('\n')
         .map(JSON.parse);
       const names = requests[0].tools.map((t) => t.name);
+      assert.match(JSON.stringify(requests[0].messages), /Evolve the Harness, Not the Model/);
       for (const name of ['status', 'branch', 'submit', 'evidence', 'candidate', 'finish'])
         assert.ok(names.includes('evolution_' + name));
     } finally {

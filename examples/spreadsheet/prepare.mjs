@@ -47,7 +47,7 @@ const spec = Experiment.parse({
   optimizerHarness: {
     directory: 'optimizer-bundle',
     digest: await treeDigest(path.join(dataset, 'optimizer-bundle')),
-    patch: 'cordis.patch.yml',
+    composition: 'plugins.yml',
   },
   evaluator: { image, command: ['python3', '/evaluation/grade.py'], timeoutSeconds: 120 },
   candidate: {

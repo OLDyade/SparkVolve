@@ -1,3 +1,12 @@
-- insert:
-    - id: evolution-research-method
-      name: ./index.mjs
+- id: preset-evolution
+  config:
+    id: evolution
+    name: Harness Evolution
+    plugins:
+      - id: evolution-tools
+        name: '@harness-evolution/dsh-bundle'
+        config:
+          endpoint: !!js process.env.EVOLUTION_ENDPOINT
+          tokenEnv: EVOLUTION_TOKEN
+      - id: evolution-method
+        name: '@harness-evolution/optimizer-evidence-driven'

@@ -7,6 +7,7 @@ import { Docker } from './docker.js';
 import type { ExperimentSpec } from './contracts.js';
 import { collectRequestMetrics } from './metrics.js';
 import { Store } from './store.js';
+import { evolutionPreset, sdkPreset } from './preset.js';
 
 interface Episode {
   identity: string;
@@ -81,11 +82,13 @@ export async function optimize(
           stringify([
             {
               insert: [
-                {
-                  id: 'harness-evolution',
-                  name: '/app/dist/plugin.js',
-                  config: { endpoint, tokenEnv: 'EVOLUTION_TOKEN' },
-                },
+                ...sdkPreset('evolution', '/app/dist/sdk-preset.js'),
+                evolutionPreset({
+                  plugin: '/app/dist/plugin.js',
+                  endpoint,
+                  tokenEnv: 'EVOLUTION_TOKEN',
+                  composition: `/method/${spec.optimizerHarness.composition}`,
+                }),
               ],
             },
           ]),
@@ -94,7 +97,6 @@ export async function optimize(
           profile: 'sdk',
           model: spec.optimizer,
           patch: '/optimizer.patch.yml',
-          methodPatch: `/method/${spec.optimizerHarness.patch}`,
           environmentPatch: environment ? `/environment/${environment.patch}` : null,
           prompt: [
             `Researcher objective: ${spec.objective}`,

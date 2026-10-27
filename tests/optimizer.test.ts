@@ -15,7 +15,7 @@ test('normal session completion continues with durable feedback; restart never r
   await mkdir(path.join(root, 'drafts'));
   const bundle = path.join(root, 'dataset', spec.optimizerHarness.directory);
   await mkdir(bundle, { recursive: true });
-  await writeFile(path.join(bundle, 'cordis.patch.yml'), '[]');
+  await writeFile(path.join(bundle, 'plugins.yml'), '[]');
   spec.optimizerHarness.digest = await treeDigest(bundle);
   await writeFile(path.join(root, 'controller-token'), 'test-capability');
   const store = new Store(path.join(root, 'experiment.sqlite'), spec);
