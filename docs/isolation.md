@@ -68,3 +68,5 @@ GitHub Actions 分别运行 runc 和固定 gVisor，将测试日志与各角色�
 回执依赖可信 daemon，无法对抗宿主管理员，不属于加密远程证明。本次 gVisor 实验机关闭 Mac 文件共享与宿主/其他机器网络访问，但 OrbStack 机器仍共享 Linux 内核，不能宣称每题独立微虚拟机。可信控制器持有专用 daemon socket，候选容器不挂载该 socket。bridge 没有域名白名单；同进程插件可读模型凭证。工作目录和日志尚无磁盘配额；内存/PID 限制不解决磁盘耗尽。当前候选应在专用研究宿主运行。受控出口、磁盘配额与 MicroVM 后端仍需继续实施。
 
 来源及验收见 [运行隔离研究](research/2026-10-27-runtime-isolation.md)。
+
+[受控出口架构实验](research/2026-10-28-controlled-egress.md)已在 runc/gVisor 验证 internal + isolated 网络、代理进程外凭证、显式 DNS/hosts 与代理停止失败。该实验使用独立 HTTP 夹具，正式 Controller/Provider 路由与恢复接线仍待实现；不改变上述现有 bridge 权限说明。

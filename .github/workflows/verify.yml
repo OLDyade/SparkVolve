@@ -61,6 +61,11 @@ jobs:
         if: matrix.runtime == 'he-runsc-20261019'
         run: bash scripts/install-runsc.sh
       - run: docker build -t harness-evolution:test .
+      - name: Verify controlled-egress architecture against the actual runtime
+        run: |
+          set -euo pipefail
+          HE_TEST_IMAGE=$(docker image inspect harness-evolution:test --format '{{.Id}}') \
+            node scripts/verify-egress-boundary.mjs "$TMPDIR/egress-boundary"
       - name: Verify spreadsheet runtime before model tasks
         run: |
           set -euo pipefail
@@ -86,5 +91,6 @@ jobs:
             ${{ runner.temp }}/harness-evolution/**/isolation*.json
             ${{ runner.temp }}/harness-evolution/spreadsheet-image/work/*.json
             ${{ runner.temp }}/harness-evolution/spreadsheet-image/logs/*.log
+            ${{ runner.temp }}/harness-evolution/egress-boundary/*
           if-no-files-found: warn
           retention-days: 14
