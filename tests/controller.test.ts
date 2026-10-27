@@ -108,6 +108,28 @@ test('controller restarts, rescores preserved deliveries, and never reruns compl
     assert.equal(driver.executions, 2);
     assert.ok(store.runs().every((r) => r.gradeAttempt === 1 && r.attempt === 0));
     await assert.rejects(controller.submit(initial.proposal), /Identical candidate/);
+    const abort = new AbortController();
+    const stopped = new Error('watch acceptance completed');
+    const watching = controller.watch(abort.signal);
+    // Submit after the watch has started; it must schedule the new candidate without a polling tick.
+    await controller.draft(initial.digest, 'changed');
+    await writeFile(path.join(root, 'drafts/changed/cordis.patch.yml'), '# changed composition\n[]');
+    const cursor = store.cursor();
+    const changed = await controller.submit({
+      ...initial.proposal,
+      draft: 'changed',
+      parents: [initial.digest],
+    });
+    let page = await store.wait(cursor);
+    while (!page.events.some((event) => event.type === 'candidate.decision'))
+      page = await store.wait(page.cursor);
+    assert.equal(store.candidate(changed.digest).phase, 'rejected');
+    assert.equal(driver.executions, 4);
+    assert.equal(driver.builds, 2);
+    abort.abort(stopped);
+    await assert.rejects(watching, (error) => error === stopped);
+    await controller.pump();
+    assert.equal(driver.executions, 4);
   } finally {
     await controller.close();
     store.close();

@@ -27,6 +27,7 @@ const { positionals, values } = parseArgs({
     host: { type: 'string', default: '127.0.0.1' },
     run: { type: 'string' },
     endpoint: { type: 'string' },
+    'control-endpoint': { type: 'string' },
     candidate: { type: 'string' },
     output: { type: 'string' },
     arms: { type: 'string' },
@@ -44,7 +45,7 @@ init      --root <new-directory> --spec <json> --dataset <directory> --seed <bun
 serve     --root <directory> [--host 127.0.0.1] [--port 8787]
 evolve    --root <directory> --endpoint <container-reachable-url> [--host 127.0.0.1] [--port 8787]
 validate  --root <study-directory> --spec <validation.json> --dataset <directory> --arms <arms.json>
-optimize  --root <directory> --endpoint <controller-url>
+optimize  --root <directory> --endpoint <container-reachable-url> --control-endpoint <host-reachable-url>
 run       --root <directory>
 status    --root <directory>
 rescore   --root <directory> --run <run-id>
@@ -98,10 +99,13 @@ run reconciles original tasks; rescore reuses the original delivery; export does
       console.log(JSON.stringify(controller.status(), null, 2));
       store.close();
     } else if (action === 'optimize') {
-      if (!values.endpoint)
-        throw new Error('optimize requires --endpoint reachable from the optimizer container');
+      if (!values.endpoint || !values['control-endpoint'])
+        throw new Error('optimize requires container --endpoint and host --control-endpoint');
       try {
-        await optimize(root, spec, values.endpoint);
+        await optimize(root, spec, {
+          endpoint: values.endpoint,
+          controlEndpoint: values['control-endpoint'],
+        });
       } finally {
         store.close();
       }
@@ -153,23 +157,23 @@ run reconciles original tasks; rescore reuses the original delivery; export does
             token = randomBytes(32).toString('hex');
             await writeFile(tokenPath, token, { flag: 'wx', mode: 0o600 });
           }
-          const server = await serve(controller, token, Number(values.port), values.host!);
+          const abort = new AbortController();
+          const server = await serve(controller, token, Number(values.port), values.host!, abort.signal);
           console.log(
             `Controller listening on ${values.host}:${values.port}; capability stored in ${root}/controller-token`,
           );
-          let stop = false;
-          process.once('SIGINT', () => {
-            stop = true;
-          });
-          process.once('SIGTERM', () => {
-            stop = true;
-          });
+          const interrupted = new Error('Controller interrupted; original containers retained');
+          const stop = () => abort.abort(interrupted);
+          process.once('SIGINT', stop);
+          process.once('SIGTERM', stop);
           try {
-            while (!stop) {
-              await controller.pump();
-              await new Promise((resolve) => setTimeout(resolve, 1000));
-            }
+            await controller.watch(abort.signal);
+          } catch (error) {
+            if (!abort.signal.aborted || abort.signal.reason !== interrupted) throw error;
           } finally {
+            abort.abort(interrupted);
+            process.removeListener('SIGINT', stop);
+            process.removeListener('SIGTERM', stop);
             await new Promise<void>((resolve, reject) =>
               server.close((error) => (error ? reject(error) : resolve())),
             );

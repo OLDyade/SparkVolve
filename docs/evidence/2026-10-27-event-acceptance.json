@@ -1,0 +1,29 @@
+{
+  "scope": "Real model event lifecycle acceptance; no benchmark or quality claim",
+  "runtimeImage": "sha256:247237d62c837ad39a80959ce8ca2986e278222d6ee7adab39adc92ce4bd5011",
+  "dshVersion": "0.2.1-rc.4",
+  "provider": "venus",
+  "model": "deepseek/deepseek-v4.1-flash-1017",
+  "reasoningEffort": "off",
+  "startedAt": "2026-10-27T14:53:39.804Z",
+  "endedAt": "2026-10-27T14:53:46.691Z",
+  "status": "completed",
+  "episodes": 1,
+  "waitRequests": 1,
+  "hostNonce": "594fe3e2a619ed3b",
+  "conclusionContainsHostNonce": true,
+  "candidateCount": 0,
+  "taskRunCount": 0,
+  "containerSeconds": 7.024,
+  "requests": {
+    "unit": "DSH adapter stream attempts; provider-internal HTTP retries are not independently observable",
+    "started": 4,
+    "results": 4,
+    "failed": 0,
+    "unfinished": 0,
+    "inputTokensReported": 10265,
+    "outputTokensReported": 561,
+    "missingUsage": 0,
+    "requestDurationMsSum": 6380
+  }
+}

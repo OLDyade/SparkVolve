@@ -1,7 +1,6 @@
 import { mkdir, readFile, writeFile, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { randomBytes } from 'node:crypto';
-import { setTimeout as delay } from 'node:timers/promises';
 import { atomicJSON, freeze } from './artifacts.js';
 import type { ExperimentSpec } from './contracts.js';
 import { Controller } from './controller.js';
@@ -46,39 +45,49 @@ export async function evolve(
   controller: Controller,
   options: { host: string; port: number; endpoint: string },
 ): Promise<void> {
-  const server = await serve(controller, await capability(controller.root), options.port, options.host);
   const abort = new AbortController();
+  const server = await serve(
+    controller,
+    await capability(controller.root),
+    options.port,
+    options.host,
+    abort.signal,
+  );
+  const address = server.address();
+  if (!address || typeof address === 'string') throw new Error('Controller has no TCP address');
+  const hostname =
+    options.host === '0.0.0.0'
+      ? '127.0.0.1'
+      : options.host === '::'
+        ? '[::1]'
+        : options.host.includes(':')
+          ? `[${options.host}]`
+          : options.host;
   const interrupt = () =>
     abort.abort(new Error('Coordinator interrupted; original containers retained for resume'));
   process.once('SIGINT', interrupt);
   process.once('SIGTERM', interrupt);
-  let finished = false;
-  const pump = (async () => {
-    while (!finished) {
-      abort.signal.throwIfAborted();
-      await controller.pump(abort.signal);
-      if (controller.store.runs().some((r) => r.phase === 'scoring_failed'))
-        throw new Error('Scoring failure; rescore original delivery explicitly');
-      if (!finished) await delay(250, undefined, { signal: abort.signal });
-    }
-  })();
+  const completed = new Error('Optimizer completed');
+  const pump = controller.watch(abort.signal).catch((error) => {
+    if (error === completed) return;
+    abort.abort(error);
+    throw error;
+  });
   const optimizer = optimize(
     controller.root,
     controller.spec,
-    options.endpoint,
+    { endpoint: options.endpoint, controlEndpoint: `http://${hostname}:${address.port}` },
     controller.docker,
     abort.signal,
-  ).finally(() => {
-    finished = true;
-  });
-  // Either side failing cancels waiting, without rerunning or deleting original executions.
-  const results = await Promise.allSettled([
-    pump.catch((error) => {
+  ).then(
+    () => abort.abort(completed),
+    (error) => {
       abort.abort(error);
       throw error;
-    }),
-    optimizer,
-  ]);
+    },
+  );
+  // Either side failing cancels waiting, without rerunning or deleting original executions.
+  const results = await Promise.allSettled([pump, optimizer]);
   try {
     const errors = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
     if (errors.length)

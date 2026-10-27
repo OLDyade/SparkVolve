@@ -3,6 +3,8 @@ import { randomUUID } from 'node:crypto';
 import { canonical, digest } from './artifacts.js';
 import type { Candidate, ExperimentSpec, RunPhase, TaskRun } from './contracts.js';
 import { Grade } from './contracts.js';
+import { EventCursor } from './events.js';
+import type { EventPage } from './events.js';
 
 const edges: Record<RunPhase, readonly RunPhase[]> = {
   queued: ['executing', 'cancelled'],
@@ -18,6 +20,10 @@ const edges: Record<RunPhase, readonly RunPhase[]> = {
 /** The controller owns this database. Optimizers and candidate containers never mount it. */
 export class Store {
   readonly db: DatabaseSync;
+  private readonly waiters = new Set<() => void>();
+  private readonly shutdown = new AbortController();
+  private inTransaction = false;
+  private pendingNotification = false;
   constructor(
     file: string,
     readonly spec: ExperimentSpec,
@@ -36,17 +42,24 @@ export class Store {
     this.db.prepare('INSERT OR IGNORE INTO metadata VALUES (?,?)').run('experimentId', randomUUID());
   }
   close(): void {
+    this.shutdown.abort(new Error('Event store closed; reconnect using the last acknowledged cursor'));
     this.db.close();
   }
   transaction<T>(action: () => T): T {
     this.db.exec('BEGIN IMMEDIATE');
+    this.inTransaction = true;
     try {
       const result = action();
       this.db.exec('COMMIT');
+      this.inTransaction = false;
+      if (this.pendingNotification) this.notify();
       return result;
     } catch (error) {
       this.db.exec('ROLLBACK');
       throw error;
+    } finally {
+      this.inTransaction = false;
+      this.pendingNotification = false;
     }
   }
   getMeta(key: string): string | undefined {
@@ -63,6 +76,88 @@ export class Store {
     this.db
       .prepare('INSERT INTO events(at,type,body) VALUES (?,?,?)')
       .run(new Date().toISOString(), type, canonical(body));
+    if (this.inTransaction) this.pendingNotification = true;
+    else this.notify();
+  }
+  private notify(): void {
+    for (const wake of [...this.waiters]) wake();
+  }
+  cursor(): EventCursor {
+    return {
+      experimentId: this.getMeta('experimentId')!,
+      sequence: Number(this.db.prepare('SELECT COALESCE(MAX(seq),0) AS seq FROM events').get()!.seq),
+    };
+  }
+  page(raw: EventCursor, limit = 100): EventPage {
+    const cursor = EventCursor.parse(raw);
+    const tail = this.cursor();
+    if (cursor.experimentId !== tail.experimentId) throw new Error('Cursor belongs to another experiment');
+    if (cursor.sequence > tail.sequence) throw new Error('Cursor is ahead of the committed event log');
+    if (!Number.isSafeInteger(limit) || limit < 1 || limit > 100)
+      throw new Error('Event page limit must be between 1 and 100');
+    const rows = this.db
+      .prepare('SELECT seq,at,type,body FROM events WHERE seq>? ORDER BY seq LIMIT ?')
+      .all(cursor.sequence, limit + 1);
+    const events = rows.slice(0, limit).map((row) => ({
+      sequence: Number(row.seq),
+      at: String(row.at),
+      type: String(row.type),
+      body: JSON.parse(String(row.body)) as unknown,
+    }));
+    return {
+      cursor: { ...cursor, sequence: events.at(-1)?.sequence ?? cursor.sequence },
+      events,
+      hasMore: rows.length > limit,
+    };
+  }
+  /** Notifications reduce latency; the committed log remains authoritative across reconnects. */
+  async wait(
+    cursor: EventCursor,
+    options: { signal?: AbortSignal; timeoutMs?: number; limit?: number } = {},
+  ): Promise<EventPage> {
+    const timeoutMs = options.timeoutMs ?? 30_000;
+    if (!Number.isInteger(timeoutMs) || timeoutMs < 0 || timeoutMs > 30_000)
+      throw new Error('Event wait must be between 0 and 30000 milliseconds');
+    const signal = AbortSignal.any([this.shutdown.signal, ...(options.signal ? [options.signal] : [])]);
+    signal.throwIfAborted();
+    const first = this.page(cursor, options.limit);
+    if (first.events.length || timeoutMs === 0) return first;
+    return await new Promise<EventPage>((resolve, reject) => {
+      let timer: ReturnType<typeof setTimeout>;
+      const cleanup = () => {
+        clearTimeout(timer);
+        this.waiters.delete(wake);
+        signal.removeEventListener('abort', cancel);
+      };
+      const wake = () => {
+        try {
+          const page = this.page(cursor, options.limit);
+          if (!page.events.length) return;
+          cleanup();
+          resolve(page);
+        } catch (error) {
+          cleanup();
+          reject(error);
+        }
+      };
+      const cancel = () => {
+        cleanup();
+        reject(signal.reason);
+      };
+      this.waiters.add(wake);
+      signal.addEventListener('abort', cancel, { once: true });
+      timer = setTimeout(() => {
+        cleanup();
+        try {
+          resolve(this.page(cursor, options.limit));
+        } catch (error) {
+          reject(error);
+        }
+      }, timeoutMs);
+      // Close the read/subscribe race, including commits from a second connection.
+      wake();
+      if (signal.aborted) cancel();
+    });
   }
   events(): Array<{ sequence: number; at: string; type: string; body: unknown }> {
     return this.db

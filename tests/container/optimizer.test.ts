@@ -55,10 +55,20 @@ test(
     const controller = new Controller(root, dataset, spec, store);
     await controller.start();
     const server = await serve(controller, token, 0, '0.0.0.0');
+    let waits = 0;
+    server.on('request', (req) => {
+      if (req.url === '/events') {
+        waits++;
+        setTimeout(() => store.event('acceptance.wakeup', { source: 'host-commit' }), 50);
+      }
+    });
     try {
       const address = server.address();
       assert.ok(address && typeof address !== 'string');
-      await optimize(root, spec, `http://host.docker.internal:${address.port}`);
+      await optimize(root, spec, {
+        endpoint: `http://host.docker.internal:${address.port}`,
+        controlEndpoint: `http://127.0.0.1:${address.port}`,
+      });
       assert.match(store.getMeta('searchConclusion')!, /Protocol lifecycle acceptance completed/);
       const summary = JSON.parse(await readFile(path.join(root, 'optimizer/summary.json'), 'utf8'));
       assert.equal(summary.reason, 'optimizer_concluded');
@@ -69,7 +79,9 @@ test(
         .trim()
         .split('\n')
         .map((line) => JSON.parse(line));
-      assert.equal(requests.length, 3);
+      assert.equal(requests.length, 4);
+      assert.equal(waits, 1);
+      assert.ok(JSON.stringify(requests[2].messages).includes('acceptance.wakeup'));
       assert.ok(requests[0].tools.some((t: { name: string }) => t.name === 'evolution_submit'));
       assert.ok(requests[0].tools.some((t: { name: string }) => t.name === 'bash'));
     } finally {

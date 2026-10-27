@@ -37,6 +37,19 @@ export function apply(ctx: Context, config: Config): void {
   };
   ctx.tools.register(
     defineTool({
+      name: 'evolution_wait',
+      description:
+        'Wait for committed experiment events, without repeatedly reading status. Start with the cursor from evolution_status; continue with the returned cursor. Reuse that cursor after reconnecting. A timeout returns an empty page and does not stop or retry any task. Drain hasMore pages before waiting again; read status after a decision for the current state.',
+      parameters: {
+        experimentId: { type: 'string', required: true },
+        sequence: { type: 'integer', required: true },
+      },
+      output,
+      execute: async (args, exec) => request('/events', { cursor: args }, exec.signal),
+    }),
+  );
+  ctx.tools.register(
+    defineTool({
       name: 'evolution_finish',
       description:
         'Conclude search with an evidence-based reason and remaining limitations. Pending evaluations must settle first. This records a stop decision; it does not publish or certify a capability.',

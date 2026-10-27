@@ -7,16 +7,21 @@ import { z } from 'zod';
 import { Controller } from './controller.js';
 import { Digest, Id, RelativePath } from './contracts.js';
 import { confined, inventory } from './artifacts.js';
+import { EventCursor } from './events.js';
 
 export async function serve(
   controller: Controller,
   token: string,
   port: number,
   host: string,
+  signal?: AbortSignal,
 ): Promise<Server> {
   if (controller.spec.purpose !== 'search') throw new Error('Validation experiments have no optimizer API');
   if (token.length < 32) throw new Error('Controller capability must have at least 32 characters');
   const server = createServer(async (req, res) => {
+    const disconnect = new AbortController();
+    const closed = () => disconnect.abort(new Error('Event client disconnected'));
+    res.once('close', closed);
     try {
       const expected = Buffer.from(`Bearer ${token}`),
         actual = Buffer.from(req.headers.authorization ?? '');
@@ -41,6 +46,20 @@ export async function serve(
       const body: unknown = JSON.parse(Buffer.concat(chunks).toString());
       let result: unknown;
       switch (req.url) {
+        case '/events': {
+          const args = z
+            .strictObject({
+              cursor: EventCursor,
+              timeoutMs: z.number().int().min(0).max(30_000).default(30_000),
+              limit: z.number().int().min(1).max(100).default(100),
+            })
+            .parse(body);
+          result = await controller.store.wait(args.cursor, {
+            ...args,
+            signal: AbortSignal.any([disconnect.signal, ...(signal ? [signal] : [])]),
+          });
+          break;
+        }
         case '/finish': {
           const args = z.strictObject({ reason: z.string().min(1) }).parse(body);
           controller.finish(args.reason);
@@ -105,9 +124,12 @@ export async function serve(
       }
       res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(result));
     } catch (error) {
+      if (res.destroyed) return;
       res
         .writeHead(400, { 'content-type': 'application/json' })
         .end(JSON.stringify({ error: String(error) }));
+    } finally {
+      res.removeListener('close', closed);
     }
   });
   await new Promise<void>((resolve, reject) => {

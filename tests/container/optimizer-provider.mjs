@@ -15,7 +15,24 @@ export function apply(ctx) {
       );
       if (!JSON.stringify(options.messages).includes('Evolve the Harness, Not the Model.'))
         throw new Error('Native optimizer preset lost its research method');
-      const tool = ['evolution_status', 'evolution_finish'][this.calls++];
+      const tool = ['evolution_status', 'evolution_wait', 'evolution_finish'][this.calls++];
+      const findCursor = (value) => {
+        if (typeof value === 'string') {
+          try {
+            return findCursor(JSON.parse(value));
+          } catch {
+            return undefined;
+          }
+        }
+        if (!value || typeof value !== 'object') return undefined;
+        if (value.cursor?.experimentId && Number.isInteger(value.cursor.sequence)) return value.cursor;
+        for (const child of Object.values(value)) {
+          const found = findCursor(child);
+          if (found) return found;
+        }
+      };
+      if (tool === 'evolution_finish' && !JSON.stringify(options.messages).includes('acceptance.wakeup'))
+        throw new Error('Committed completion event did not reach the next model request');
       if (tool) {
         if (!options.tools.some((t) => t.name === tool)) throw new Error(`Missing native tool ${tool}`);
         yield { type: 'block-start', index: 0, blockType: 'tool-call' };
@@ -29,7 +46,9 @@ export function apply(ctx) {
             arguments: JSON.stringify(
               tool === 'evolution_finish'
                 ? { reason: 'Protocol lifecycle acceptance completed; no quality claim' }
-                : {},
+                : tool === 'evolution_wait'
+                  ? findCursor(options.messages)
+                  : {},
             ),
           },
         };

@@ -54,8 +54,9 @@ export class Controller {
     if (this.leaseError) throw this.leaseError;
     this.store.assertLease(this.owner);
   }
-  status(): unknown {
+  status() {
     return {
+      cursor: this.store.cursor(),
       specification: this.spec,
       champion: this.store.getMeta('champion') ?? null,
       candidates: this.store.candidates(),
@@ -156,6 +157,18 @@ export class Controller {
       this.activeSignal = undefined;
     });
     return this.active;
+  }
+  async watch(signal: AbortSignal): Promise<void> {
+    for (;;) {
+      signal.throwIfAborted();
+      await this.pump(signal);
+      if (this.store.runs().some((r) => r.phase === 'scoring_failed'))
+        throw new Error('Scoring failure; rescore original delivery explicitly');
+      // A candidate may have been submitted while the previous pump was finishing.
+      const cursor = this.store.cursor();
+      if (this.store.candidates().some((c) => c.phase === 'frozen' || c.phase === 'running')) continue;
+      await this.store.wait(cursor, { signal });
+    }
   }
   private async advance(): Promise<void> {
     for (const candidate of this.store.candidates()) {
@@ -286,15 +299,18 @@ export class Controller {
       this.activeSignal,
     );
     this.assertOwner();
-    this.store.event('candidate.qa', { candidate: candidate.digest, ...result });
     if (result.ExitCode !== 0) {
-      this.store.updateCandidate({
-        ...candidate,
-        phase: 'qa_failed',
-        qaError: `QA container exited ${result.ExitCode}`,
+      this.store.transaction(() => {
+        this.store.updateCandidate({
+          ...candidate,
+          phase: 'qa_failed',
+          qaError: `QA container exited ${result.ExitCode}`,
+        });
+        this.store.event('candidate.qa', { candidate: candidate.digest, ...result });
       });
       return;
     }
+    this.store.event('candidate.qa', { candidate: candidate.digest, ...result });
     const runs = this.spec.tasks.flatMap((task) =>
       Array.from({ length: this.spec.repetitions }, (_, repetition): TaskRun => {
         const id = digest({
