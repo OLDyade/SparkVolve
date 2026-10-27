@@ -24,6 +24,7 @@
 | [当前实现核验](docs/research/2026-10-27-native-implementation.md) | 实际发布物、源码差异、原生验证和工程决策 |
 | [真实模型端到端验收](docs/acceptance.md) | 自主代码变异、真实评分、失败裁决和原生安装后的实际任务 |
 | [连续进化与独立复验](docs/acceptance-continuous.md) | 三次真实变异、双会话接续、负结果与研究资产复用 |
+| [全景方案落实状态](docs/completion.md) | 已验证能力、尚缺的完整交付环节与研究边界 |
 
 ## 它如何运行
 

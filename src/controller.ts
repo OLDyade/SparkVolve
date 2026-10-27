@@ -208,20 +208,41 @@ export class Controller {
   private async qa(candidate: Candidate): Promise<void> {
     const root = path.join(this.root, 'qa', candidate.digest);
     await mkdir(path.join(root, 'work'), { recursive: true });
+    const environment = this.spec.runtime.environment;
+    await atomicJSON(path.join(root, 'launch.json'), {
+      profile: this.spec.runtime.profile,
+      model: this.spec.executor,
+      patches: [
+        ...(environment ? [`/environment/${environment.patch}`] : []),
+        `/candidate/${this.spec.candidate.patch}`,
+      ],
+      command: this.spec.candidate.qa,
+      timeoutSeconds: this.spec.timeoutSeconds,
+    });
     const result = await this.docker.run(
       {
         name: `he-qa-${digest([this.store.getMeta('experimentId'), candidate.digest]).slice(0, 32)}`,
         image: this.spec.runtime.image,
-        command: this.spec.candidate.qa,
+        command: ['node', '/app/dist/runtime/qa.js', '/qa-launch.json'],
         mounts: [
+          ...(environment
+            ? [
+                {
+                  source: confined(this.dataset, environment.directory),
+                  target: '/environment',
+                  writable: false,
+                },
+              ]
+            : []),
           {
             source: path.join(this.root, 'candidates', candidate.digest),
             target: '/candidate',
             writable: false,
           },
           { source: path.join(root, 'work'), target: '/workspace', writable: true },
+          { source: path.join(root, 'launch.json'), target: '/qa-launch.json', writable: false },
         ],
-        env: {},
+        env: this.credentials(this.spec.executor.credentialEnv),
         network: 'none',
         timeoutSeconds: this.spec.timeoutSeconds,
       },
