@@ -1,0 +1,92 @@
+{
+  "kind": "Independent capability installation and real task acceptance; not a quality benchmark or release approval",
+  "model": "deepseek/deepseek-v4.1-flash-1017",
+  "dshVersion": "0.2.1-rc.4",
+  "image": "sha256:e0417747f2108bbad9ca24e34c467ed6040b0527933066358d642a30c181c11f",
+  "candidate": "1e0c73b602decce1d0cc82aafa1b19af6a1dd6b11b3c903c707d345394af1af6",
+  "bundleTarballSha256": "812edeff9801483f4ec9862a59f7c66680e8e2675efc98971a9e6e1f4ddf534d",
+  "installedFiles": {
+    "index.mjs": "dded07438f2ce948ec70dcf9507e08d08b53b0d29222564e6e31df162bd25a58",
+    "workbook.py": "5ec6b95359c03ab3f52feca947b66ecea1ad3de181d0db9fdab19824e6001a1d",
+    "cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    "package.json": "f2ab4869b0242a1ddb20facf115d9599e67c7dd0fd798a28bace38c953ae57a1"
+  },
+  "profileBundles": [
+    "@deepseek-ai/dsh-base",
+    "@deepseek-ai/dsh-headless",
+    "@harness-evolution/spreadsheet"
+  ],
+  "profileLockSha256": "7093d26567b484e2c550a3dc61f7c789291a0338571b44a6f32cf453e7892b88",
+  "container": {
+    "exitCode": 0,
+    "startedAt": "2026-10-27T16:10:55.936860102Z",
+    "finishedAt": "2026-10-27T16:11:05.042419389Z"
+  },
+  "nativeTurnReason": {
+    "kind": "completed"
+  },
+  "installedToolCalls": [
+    "workbook_inspect",
+    "workbook_write",
+    "workbook_verify",
+    "workbook_inspect"
+  ],
+  "committedSteps": [
+    {
+      "inputTokens": 1116,
+      "outputTokens": 52,
+      "totalTokens": 6288,
+      "cacheReadTokens": 5120
+    },
+    {
+      "inputTokens": 536,
+      "outputTokens": 202,
+      "totalTokens": 6882,
+      "cacheReadTokens": 6144
+    },
+    {
+      "inputTokens": 776,
+      "outputTokens": 82,
+      "totalTokens": 7002,
+      "cacheReadTokens": 6144
+    },
+    {
+      "inputTokens": 1551,
+      "outputTokens": 270,
+      "totalTokens": 7965,
+      "cacheReadTokens": 6144
+    }
+  ],
+  "usageBoundary": "Native committed step usage, not a complete underlying adapter/HTTP attempt ledger; no inferred money amount.",
+  "checks": {
+    "formulaCells": {
+      "D2": {
+        "formula": "=B2*C2",
+        "storedValue": 87.5
+      },
+      "D3": {
+        "formula": "=B3*C3",
+        "storedValue": 84
+      },
+      "D4": {
+        "formula": "=SUM(D2:D3)",
+        "storedValue": 171.5
+      }
+    },
+    "nonTargetsPreserved": true,
+    "intentionalBlanksPreserved": true,
+    "installedFilesMatchArtifact": true
+  },
+  "hashes": {
+    "input": "fc6977aaeb25a80060f7d1ec5eae0861b1be2739fdccf67a8b2627c8ba220a12",
+    "delivery": "1aa8b9d432a146b2df218b7f16742600eb4a9d5d06ac7fbedd212765fed43ae4",
+    "events": "f013a4ff5fc7d93d4b93621ba440b2b892229dcc4c9666c062ea12624d2c24b3"
+  },
+  "priorFailure": {
+    "root": "/Users/apple/code/spark-harness-evolution/.evolution/standalone-headless-20261028",
+    "reason": "Acceptance invocation omitted tmpfs exec; native addon could not map shared object. No model request or output. Original logs retained. Production isolation helper already specifies exec.",
+    "stderrSha256": "54beeea5470420e4c31800832567d7092f74a7e05c7e0be0ae133b2a8fcf27bf"
+  },
+  "evidenceRoot": "/Users/apple/code/spark-harness-evolution/.evolution/standalone-headless-20261028-native-exec",
+  "optimizerOrEvaluatorStarted": false
+}

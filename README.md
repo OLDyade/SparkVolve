@@ -135,6 +135,8 @@ node dist/cli.js status --root .evolution/business/search
 
 ## 复验与安装
 
+直接使用能力见[原生 headless 任务入口](docs/use-capability.md)：安装 Bundle、提供工作簿和任务，即可获得交付。干净容器真实验收已通过，无需先启动进化流程。
+
 从 `status` 取得冻结候选 digest。[独立复验指南](docs/research-protocol.md)用同一预注册协议运行基线与候选，记录逐题、重复和配对差异；validation 不开放优化器 API。发布决策由研究证据支持，搜索冠军不会自动变成公开版本。
 
 ```bash

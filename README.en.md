@@ -102,6 +102,8 @@ Current GitHub Actions include macOS/Ubuntu checks and runc/gVisor jobs. Account
 
 ## Install the evolved capability
 
+To use an installed capability directly, follow the [native headless task guide](docs/use-capability.md). A clean-container acceptance installed a real evolved tarball with `dsh plugin add` and completed a real model task; no optimizer or evaluator was needed. The guide includes input mounts, credentials, native session records and actual delivery checks.
+
 Export a frozen candidate by its digest:
 
 ```bash

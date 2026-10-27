@@ -1,0 +1,6 @@
+# Same native route as the research example; credentials come only from the environment.
+- id: agent-default-model
+  config:
+    provider: venus
+    model: deepseek/deepseek-v4.1-flash-1017
+    reasoningEffort: off
