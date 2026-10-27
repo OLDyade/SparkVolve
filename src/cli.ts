@@ -14,6 +14,7 @@ import { exportCandidate, archiveIdentity } from './export.js';
 import { initialize, evolve } from './experiment.js';
 import { validateStudy } from './validation.js';
 import { catalog, importArchive } from './library.js';
+import { experimentReport } from './report.js';
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,
@@ -48,6 +49,7 @@ validate  --root <study-directory> --spec <validation.json> --dataset <directory
 optimize  --root <directory> --endpoint <container-reachable-url> --control-endpoint <host-reachable-url>
 run       --root <directory>
 status    --root <directory>
+report    --root <directory> [--output <new-file>]
 rescore   --root <directory> --run <run-id>
 export    --root <directory> --candidate <digest> --output <new-directory>
 remember  --root <directory> --candidate <digest> --library <directory>
@@ -95,9 +97,19 @@ run reconciles original tasks; rescore reuses the original delivery; export does
     const spec = Experiment.parse(JSON.parse(await readFile(path.join(root, 'experiment.json'), 'utf8')));
     const store = new Store(path.join(root, 'experiment.sqlite'), spec);
     const controller = new Controller(root, path.join(root, 'dataset'), spec, store);
-    if (action === 'status') {
-      console.log(JSON.stringify(controller.status(), null, 2));
-      store.close();
+    if (action === 'status' || action === 'report') {
+      try {
+        const result = JSON.stringify(
+          action === 'report' ? await experimentReport(root, store) : controller.status(),
+          null,
+          2,
+        );
+        if (action === 'report' && values.output)
+          await writeFile(values.output, result + '\n', { flag: 'wx', mode: 0o600 });
+        else console.log(result);
+      } finally {
+        store.close();
+      }
     } else if (action === 'optimize') {
       if (!values.endpoint || !values['control-endpoint'])
         throw new Error('optimize requires container --endpoint and host --control-endpoint');

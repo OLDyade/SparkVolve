@@ -12,7 +12,7 @@ const Record = z.object({
     .nullable()
     .optional(),
 });
-export async function requestMetrics(file: string): Promise<unknown> {
+export async function requestMetrics(file: string) {
   const records = (await readFile(file, 'utf8'))
     .split('\n')
     .filter(Boolean)

@@ -79,6 +79,10 @@ The example creates public synthetic XLSX tasks and grades actual files through 
 
 ## Evidence you can inspect
 
+The latest [preregistered development study](docs/acceptance-joint-development.md) improved the mean from 65.625% to 81.25%, with 24 scored executions, one retained native QA failure and 326 adapter calls. Its selected candidate introduced heuristic source restoration and is **not accepted for capability distribution**. This development result does not establish stable gains.
+
+Use `node dist/cli.js report --root <experiment> --output <new-report.json>` to aggregate scores, failures, executor usage and optimizer expenditure without rerunning tasks.
+
 ![Continuous search and paired validation, including failures](docs/assets/experiment-results.svg)
 
 This figure is generated from the [machine-readable record](docs/evidence/2026-10-27-continuous-acceptance.json). Three real mutations were evaluated. Validation selected Mutation 1 by highest search score, breaking ties by earliest ordinal; it retained one transport failure and two cancellations in the full denominator. Stable quality gains have not been established. These are synthetic business tasks, not official SpreadsheetBench scores.

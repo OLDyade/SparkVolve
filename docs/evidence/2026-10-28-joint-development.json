@@ -1,0 +1,991 @@
+{
+  "experimentId": "9d0f0f25-57b8-44a3-adad-36bbe854c629",
+  "specificationDigest": "9f7ce1fb6b9b7a0c17392e7c83e4f444ca8ae1735cccd8d5c3a27bf95425cd2f",
+  "purpose": "search",
+  "metric": {
+    "name": "formula_value_accuracy",
+    "direction": "maximize",
+    "minimum": 0,
+    "maximum": 1,
+    "failure": 0
+  },
+  "taskOrder": [
+    "normalization",
+    "weighted-portfolio",
+    "debt-rollforward",
+    "scenario-valuation"
+  ],
+  "repetitions": 2,
+  "candidateBudget": 4,
+  "candidatesConsumed": 4,
+  "currentChampion": "7b2857bfcc9c4420aeffc3bee8fa6d8520aa06ad31f0dfcd48dd7ef63d8733cc",
+  "candidates": [
+    {
+      "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+      "ordinal": 0,
+      "phase": "champion",
+      "build": {
+        "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+        "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+        "image": "sha256:e0417747f2108bbad9ca24e34c467ed6040b0527933066358d642a30c181c11f",
+        "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+        "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+      },
+      "buildError": null,
+      "qaError": null,
+      "expectedRuns": 8,
+      "observedRuns": 8,
+      "scoredRuns": 8,
+      "failedRuns": 0,
+      "complete": true,
+      "mean": 0.65625,
+      "decision": {
+        "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+        "constraints": [],
+        "constraintsSatisfied": true,
+        "denominator": 8,
+        "failureBudgetSatisfied": true,
+        "failures": 0,
+        "mean": 0.65625,
+        "previousChampion": null,
+        "promoted": true,
+        "qualityImproved": true
+      },
+      "executionElapsedMsReported": 166437,
+      "missingExecutionDurations": 0,
+      "usage": {
+        "ledgers": 8,
+        "availableLedgers": 8,
+        "unavailableLedgers": 0,
+        "reportedTotals": {
+          "started": 73,
+          "results": 73,
+          "failed": 0,
+          "unfinished": 0,
+          "inputTokensReported": 78663,
+          "outputTokensReported": 17320,
+          "missingUsage": 0,
+          "requestDurationMsSum": 149741
+        },
+        "complete": true
+      },
+      "samples": [
+        {
+          "id": "3d239cbc2c810a6febbb45667d26d4c8ab0ecd9f75e95e83f9885f28a1e21f09",
+          "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+          "task": "normalization",
+          "repetition": 0,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 0,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "f34f43fb02d57a878c8df69760652d0183b4c5726ec3cc8835d02a9976d99163",
+          "startedAt": "2026-10-27T15:52:02.961Z",
+          "completedAt": "2026-10-27T15:52:42.387Z",
+          "executionElapsedMs": 39426,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 14,
+            "results": 14,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 23565,
+            "outputTokensReported": 4486,
+            "missingUsage": 0,
+            "requestDurationMsSum": 36529
+          }
+        },
+        {
+          "id": "1553f92d55eb173917d4f4c2319f62a0fece402e09546030878d5514c4bfc6b3",
+          "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+          "task": "normalization",
+          "repetition": 1,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 0.25,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "5790272eb1cd09254d778731619872b14672179dcf1c88c6774e738a36767657",
+          "startedAt": "2026-10-27T15:52:02.959Z",
+          "completedAt": "2026-10-27T15:52:22.286Z",
+          "executionElapsedMs": 19327,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 9,
+            "results": 9,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 9412,
+            "outputTokensReported": 1896,
+            "missingUsage": 0,
+            "requestDurationMsSum": 17223
+          }
+        },
+        {
+          "id": "a279a7487b76dcf96a5866819647e2924f47bd77681274ca009eac1862bb0170",
+          "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+          "task": "weighted-portfolio",
+          "repetition": 0,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "71280b885948a77d86c88f2477d2d4f92e2c381d7e28d0ac852f5bbeb908862b",
+          "startedAt": "2026-10-27T15:52:02.962Z",
+          "completedAt": "2026-10-27T15:52:18.357Z",
+          "executionElapsedMs": 15395,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 7,
+            "results": 7,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 7376,
+            "outputTokensReported": 1548,
+            "missingUsage": 0,
+            "requestDurationMsSum": 13406
+          }
+        },
+        {
+          "id": "ce5911c594e2d34d2120f4ada89cbd774b12c6a1b2aaa2daf924733bebc563cc",
+          "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+          "task": "weighted-portfolio",
+          "repetition": 1,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "215c3c7d803f591156fa0a324a2b691ff917457a1afe081057588c4ed7a85ff0",
+          "startedAt": "2026-10-27T15:52:02.963Z",
+          "completedAt": "2026-10-27T15:52:27.542Z",
+          "executionElapsedMs": 24579,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 11,
+            "results": 11,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 9715,
+            "outputTokensReported": 2797,
+            "missingUsage": 0,
+            "requestDurationMsSum": 22337
+          }
+        },
+        {
+          "id": "1c9ccf8aeb1c441d2dcee412566b60382274befbef7bb576cb280efa3e2e38ca",
+          "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+          "task": "debt-rollforward",
+          "repetition": 0,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "e9343b00aac532a1f1b46049f178634081b0ac5a6a1651d6f8906a1ed4bb29bc",
+          "startedAt": "2026-10-27T15:52:19.102Z",
+          "completedAt": "2026-10-27T15:52:37.915Z",
+          "executionElapsedMs": 18813,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 9,
+            "results": 9,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 7875,
+            "outputTokensReported": 1774,
+            "missingUsage": 0,
+            "requestDurationMsSum": 16911
+          }
+        },
+        {
+          "id": "b77f65d0a48a75fc6a6342db7e5cdf808df86450d74aedbe9644b38bcd0b0468",
+          "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+          "task": "debt-rollforward",
+          "repetition": 1,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "d65edcc69fb096405c8611c865515607cc30b643e1da547b3ccf964f7dc2cefe",
+          "startedAt": "2026-10-27T15:52:23.041Z",
+          "completedAt": "2026-10-27T15:52:39.196Z",
+          "executionElapsedMs": 16155,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 7,
+            "results": 7,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 6993,
+            "outputTokensReported": 1634,
+            "missingUsage": 0,
+            "requestDurationMsSum": 14460
+          }
+        },
+        {
+          "id": "391be4cf4b23797e3169c2ecd91173278e720194241b96cfe4125f0aaf0a6b9f",
+          "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+          "task": "scenario-valuation",
+          "repetition": 0,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 0,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "f11634cd614cef2361479456a6e418509cafa0bb285044a5ae462d649933b680",
+          "startedAt": "2026-10-27T15:52:28.275Z",
+          "completedAt": "2026-10-27T15:52:42.950Z",
+          "executionElapsedMs": 14675,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 8,
+            "results": 8,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 7594,
+            "outputTokensReported": 1369,
+            "missingUsage": 0,
+            "requestDurationMsSum": 12762
+          }
+        },
+        {
+          "id": "d9389a98fb691c409a9597d090f177e065d97dbafe22b0ab0d8a02ad0ef85b0c",
+          "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+          "task": "scenario-valuation",
+          "repetition": 1,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "22aad0bd70129788f1e572484eb3486f4c891e36974db6a5ae535871e99752a7",
+          "startedAt": "2026-10-27T15:52:38.668Z",
+          "completedAt": "2026-10-27T15:52:56.735Z",
+          "executionElapsedMs": 18067,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 8,
+            "results": 8,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 6133,
+            "outputTokensReported": 1816,
+            "missingUsage": 0,
+            "requestDurationMsSum": 16113
+          }
+        }
+      ]
+    },
+    {
+      "digest": "1e0c73b602decce1d0cc82aafa1b19af6a1dd6b11b3c903c707d345394af1af6",
+      "ordinal": 1,
+      "phase": "champion",
+      "build": {
+        "artifactDigest": "a608aa2e1b747171dacf566e356fc793420b7ba18957d6fc37640239ef10f92b",
+        "bundleDigest": "2bf9d173aa2f875135c47c4c24e3fa858b6aa00636a6f49248d13a5ce9f2eac6",
+        "image": "sha256:e0417747f2108bbad9ca24e34c467ed6040b0527933066358d642a30c181c11f",
+        "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+        "tarballDigest": "812edeff9801483f4ec9862a59f7c66680e8e2675efc98971a9e6e1f4ddf534d"
+      },
+      "buildError": null,
+      "qaError": null,
+      "expectedRuns": 8,
+      "observedRuns": 8,
+      "scoredRuns": 8,
+      "failedRuns": 0,
+      "complete": true,
+      "mean": 0.6875,
+      "decision": {
+        "candidate": "1e0c73b602decce1d0cc82aafa1b19af6a1dd6b11b3c903c707d345394af1af6",
+        "constraints": [],
+        "constraintsSatisfied": true,
+        "denominator": 8,
+        "failureBudgetSatisfied": true,
+        "failures": 0,
+        "mean": 0.6875,
+        "previousChampion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+        "promoted": true,
+        "qualityImproved": true
+      },
+      "executionElapsedMsReported": 159377,
+      "missingExecutionDurations": 0,
+      "usage": {
+        "ledgers": 8,
+        "availableLedgers": 8,
+        "unavailableLedgers": 0,
+        "reportedTotals": {
+          "started": 66,
+          "results": 66,
+          "failed": 0,
+          "unfinished": 0,
+          "inputTokensReported": 68907,
+          "outputTokensReported": 14081,
+          "missingUsage": 0,
+          "requestDurationMsSum": 141425
+        },
+        "complete": true
+      },
+      "samples": [
+        {
+          "id": "600fefb1bcec331c3456005e01a48922f8e61ac7e7cbf661a51deffcb26fe1f2",
+          "candidate": "1e0c73b602decce1d0cc82aafa1b19af6a1dd6b11b3c903c707d345394af1af6",
+          "task": "normalization",
+          "repetition": 0,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 0.25,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "e9961c229fb875dcf2593529acf0ab7041161fa5ab39d369e8ccf560bcf2a61b",
+          "startedAt": "2026-10-27T15:55:41.729Z",
+          "completedAt": "2026-10-27T15:56:21.626Z",
+          "executionElapsedMs": 39897,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 15,
+            "results": 15,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 17536,
+            "outputTokensReported": 3826,
+            "missingUsage": 0,
+            "requestDurationMsSum": 36913
+          }
+        },
+        {
+          "id": "6bc726a5513616bc4e5b25c29d4aeaec56a053f7c5c51d2cfc629d05c5df8534",
+          "candidate": "1e0c73b602decce1d0cc82aafa1b19af6a1dd6b11b3c903c707d345394af1af6",
+          "task": "normalization",
+          "repetition": 1,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 0.25,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "11e49ce3933878e7c41e090d3827b7b1d0dff28ac55495dd27efd647868fd3f2",
+          "startedAt": "2026-10-27T15:55:41.733Z",
+          "completedAt": "2026-10-27T15:55:57.590Z",
+          "executionElapsedMs": 15857,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 7,
+            "results": 7,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 6842,
+            "outputTokensReported": 835,
+            "missingUsage": 0,
+            "requestDurationMsSum": 13605
+          }
+        },
+        {
+          "id": "c71865358b2132b8ff7894fd2676b673676869043376bcdceb923b178235d275",
+          "candidate": "1e0c73b602decce1d0cc82aafa1b19af6a1dd6b11b3c903c707d345394af1af6",
+          "task": "weighted-portfolio",
+          "repetition": 0,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "46a142b48be5e5ccd24138f1a35fb9046efbaf9695a2db3d1756eaab0d21425e",
+          "startedAt": "2026-10-27T15:55:41.731Z",
+          "completedAt": "2026-10-27T15:56:05.209Z",
+          "executionElapsedMs": 23478,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 10,
+            "results": 10,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 10942,
+            "outputTokensReported": 2378,
+            "missingUsage": 0,
+            "requestDurationMsSum": 20871
+          }
+        },
+        {
+          "id": "fcc8c050626387ca18ad94ef06c5c6d602b35b95bcafb57f9a9885aac33aff79",
+          "candidate": "1e0c73b602decce1d0cc82aafa1b19af6a1dd6b11b3c903c707d345394af1af6",
+          "task": "weighted-portfolio",
+          "repetition": 1,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "81e58fdb46690491f8585a66f3e6a38245372b446fed600bf503f2ec1d483749",
+          "startedAt": "2026-10-27T15:55:41.732Z",
+          "completedAt": "2026-10-27T15:55:52.425Z",
+          "executionElapsedMs": 10693,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 5,
+            "results": 5,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 4044,
+            "outputTokensReported": 771,
+            "missingUsage": 0,
+            "requestDurationMsSum": 8643
+          }
+        },
+        {
+          "id": "c9cc8fd2eae9ddd5f12c2c3a0fe4428cd742103d49d75a65e4274e4a8ee7a67e",
+          "candidate": "1e0c73b602decce1d0cc82aafa1b19af6a1dd6b11b3c903c707d345394af1af6",
+          "task": "debt-rollforward",
+          "repetition": 0,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "4b27d1282ace4a25b88df50f762ee98a448be966de12496abac69090f1b569d2",
+          "startedAt": "2026-10-27T15:55:53.179Z",
+          "completedAt": "2026-10-27T15:56:09.894Z",
+          "executionElapsedMs": 16715,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 8,
+            "results": 8,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 9392,
+            "outputTokensReported": 1264,
+            "missingUsage": 0,
+            "requestDurationMsSum": 14788
+          }
+        },
+        {
+          "id": "d1c8fae06f6621db7ed0ffa2d21b7e621550e59daf325eb908bd5fe6bab0f243",
+          "candidate": "1e0c73b602decce1d0cc82aafa1b19af6a1dd6b11b3c903c707d345394af1af6",
+          "task": "debt-rollforward",
+          "repetition": 1,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "89983a47724fd7e2eb3dc25c8b2c2d93e08b23cdb02967f59d24f60d67cea26b",
+          "startedAt": "2026-10-27T15:55:58.438Z",
+          "completedAt": "2026-10-27T15:56:21.516Z",
+          "executionElapsedMs": 23078,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 8,
+            "results": 8,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 7491,
+            "outputTokensReported": 2135,
+            "missingUsage": 0,
+            "requestDurationMsSum": 20553
+          }
+        },
+        {
+          "id": "5a1f0e600309c98e044654a393b2586989e1540fc057e9cbf2677dc04530bba4",
+          "candidate": "1e0c73b602decce1d0cc82aafa1b19af6a1dd6b11b3c903c707d345394af1af6",
+          "task": "scenario-valuation",
+          "repetition": 0,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "0f67ab25b9c5d3b7dbbf65b1c846b2e77dc74b19f4000a8c8556cd6d0daa1202",
+          "startedAt": "2026-10-27T15:56:05.976Z",
+          "completedAt": "2026-10-27T15:56:22.682Z",
+          "executionElapsedMs": 16706,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 7,
+            "results": 7,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 7048,
+            "outputTokensReported": 1664,
+            "missingUsage": 0,
+            "requestDurationMsSum": 14913
+          }
+        },
+        {
+          "id": "093771ead2436a792af88a5b134dfce7e523f0700e4d4035c45e3d853fc459fe",
+          "candidate": "1e0c73b602decce1d0cc82aafa1b19af6a1dd6b11b3c903c707d345394af1af6",
+          "task": "scenario-valuation",
+          "repetition": 1,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 0,
+          "auxiliary": {
+            "preserved": 0.9615384615384616
+          },
+          "error": null,
+          "deliveryDigest": "cb445a9da7c3b986be60aac912f60e816dca7bcdf4fec0fedcd64623a7ec2dfb",
+          "startedAt": "2026-10-27T15:56:10.642Z",
+          "completedAt": "2026-10-27T15:56:23.595Z",
+          "executionElapsedMs": 12953,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 6,
+            "results": 6,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 5612,
+            "outputTokensReported": 1208,
+            "missingUsage": 0,
+            "requestDurationMsSum": 11139
+          }
+        }
+      ]
+    },
+    {
+      "digest": "744edd1707290d61ded60cd6fe4013864b0cfec650d6c7b0a54660c17990fb0c",
+      "ordinal": 2,
+      "phase": "qa_failed",
+      "build": {
+        "artifactDigest": "92c4660de7dce2f41fa809f73167e0d7ae4f1cb742c996c7b4f39f4331856bef",
+        "bundleDigest": "b8a964f2afb80211672e73bba0d2a9b09696eea951a08b092d508bb40b041223",
+        "image": "sha256:e0417747f2108bbad9ca24e34c467ed6040b0527933066358d642a30c181c11f",
+        "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+        "tarballDigest": "0b4eb7fe0f8829b1044330c7054dda9b9d51d5135b192eb6a63e65820f73f3a6"
+      },
+      "buildError": null,
+      "qaError": "QA container exited 1",
+      "expectedRuns": 8,
+      "observedRuns": 0,
+      "scoredRuns": 0,
+      "failedRuns": 0,
+      "complete": false,
+      "mean": null,
+      "decision": null,
+      "executionElapsedMsReported": 0,
+      "missingExecutionDurations": 0,
+      "usage": {
+        "ledgers": 0,
+        "availableLedgers": 0,
+        "unavailableLedgers": 0,
+        "reportedTotals": null,
+        "complete": true
+      },
+      "samples": []
+    },
+    {
+      "digest": "7b2857bfcc9c4420aeffc3bee8fa6d8520aa06ad31f0dfcd48dd7ef63d8733cc",
+      "ordinal": 3,
+      "phase": "champion",
+      "build": {
+        "artifactDigest": "6cf3ffd76dd15bad4a4fe81d68e38aa2bcc48d1cf075272b66bc4ad1c5aac799",
+        "bundleDigest": "ad41778f9663b02f93bbb351df7a839b0165dddf59b95a666c796b95e4b4a4a1",
+        "image": "sha256:e0417747f2108bbad9ca24e34c467ed6040b0527933066358d642a30c181c11f",
+        "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+        "tarballDigest": "5e0cc23f93cf6cdba6e3bf84134b31c3ded9eec16cb68c66e7f0ff8611eeb958"
+      },
+      "buildError": null,
+      "qaError": null,
+      "expectedRuns": 8,
+      "observedRuns": 8,
+      "scoredRuns": 8,
+      "failedRuns": 0,
+      "complete": true,
+      "mean": 0.8125,
+      "decision": {
+        "candidate": "7b2857bfcc9c4420aeffc3bee8fa6d8520aa06ad31f0dfcd48dd7ef63d8733cc",
+        "constraints": [],
+        "constraintsSatisfied": true,
+        "denominator": 8,
+        "failureBudgetSatisfied": true,
+        "failures": 0,
+        "mean": 0.8125,
+        "previousChampion": "1e0c73b602decce1d0cc82aafa1b19af6a1dd6b11b3c903c707d345394af1af6",
+        "promoted": true,
+        "qualityImproved": true
+      },
+      "executionElapsedMsReported": 185357,
+      "missingExecutionDurations": 0,
+      "usage": {
+        "ledgers": 8,
+        "availableLedgers": 8,
+        "unavailableLedgers": 0,
+        "reportedTotals": {
+          "started": 80,
+          "results": 80,
+          "failed": 0,
+          "unfinished": 0,
+          "inputTokensReported": 86537,
+          "outputTokensReported": 16421,
+          "missingUsage": 0,
+          "requestDurationMsSum": 164851
+        },
+        "complete": true
+      },
+      "samples": [
+        {
+          "id": "2971e143c196d35f58a83bb35c84697ba8a64afb446ae905998fe41b772305fe",
+          "candidate": "7b2857bfcc9c4420aeffc3bee8fa6d8520aa06ad31f0dfcd48dd7ef63d8733cc",
+          "task": "normalization",
+          "repetition": 0,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 0.25,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "4ca01253ef53cd34003384fcdf9d6bf404e59578a4b86d03be78cf0a5c1e396a",
+          "startedAt": "2026-10-27T15:58:25.709Z",
+          "completedAt": "2026-10-27T15:58:46.346Z",
+          "executionElapsedMs": 20637,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 9,
+            "results": 9,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 9100,
+            "outputTokensReported": 2045,
+            "missingUsage": 0,
+            "requestDurationMsSum": 18290
+          }
+        },
+        {
+          "id": "1a1917eb7c7b13dfdc6764f348ea7034ead213cf686afa9e192e1b3f2327ed82",
+          "candidate": "7b2857bfcc9c4420aeffc3bee8fa6d8520aa06ad31f0dfcd48dd7ef63d8733cc",
+          "task": "normalization",
+          "repetition": 1,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 0.25,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "c7b3a0449359ed0efb53207444dc6c435b6a6c27c90b3cd50c1aabf253a400d1",
+          "startedAt": "2026-10-27T15:58:25.712Z",
+          "completedAt": "2026-10-27T15:58:49.525Z",
+          "executionElapsedMs": 23813,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 10,
+            "results": 10,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 13781,
+            "outputTokensReported": 2219,
+            "missingUsage": 0,
+            "requestDurationMsSum": 21217
+          }
+        },
+        {
+          "id": "3da59d4aae122014dd0b449fe29e6c9e368064ad97f3bfd53cc0a1ce9775f98a",
+          "candidate": "7b2857bfcc9c4420aeffc3bee8fa6d8520aa06ad31f0dfcd48dd7ef63d8733cc",
+          "task": "weighted-portfolio",
+          "repetition": 0,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "c6b6c1049e81100ffe9dd9dd6d321396cc71309731f9095a4741a4a24fdf7a4f",
+          "startedAt": "2026-10-27T15:58:25.712Z",
+          "completedAt": "2026-10-27T15:58:41.782Z",
+          "executionElapsedMs": 16070,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 7,
+            "results": 7,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 8117,
+            "outputTokensReported": 1465,
+            "missingUsage": 0,
+            "requestDurationMsSum": 13682
+          }
+        },
+        {
+          "id": "fd1be78e37ccd2953e05d82b4e50854063d3fec86397dcd8df7a47fe83b18959",
+          "candidate": "7b2857bfcc9c4420aeffc3bee8fa6d8520aa06ad31f0dfcd48dd7ef63d8733cc",
+          "task": "weighted-portfolio",
+          "repetition": 1,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "d1ad630e0313de6afe608b1f1193b494650c29a6caa73daaab74df6b2abced93",
+          "startedAt": "2026-10-27T15:58:25.711Z",
+          "completedAt": "2026-10-27T15:58:42.722Z",
+          "executionElapsedMs": 17011,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 8,
+            "results": 8,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 8759,
+            "outputTokensReported": 1212,
+            "missingUsage": 0,
+            "requestDurationMsSum": 14751
+          }
+        },
+        {
+          "id": "e4f10ba28c1b305423794f66d975edca2e06fc817de03a19afd24691e875f28c",
+          "candidate": "7b2857bfcc9c4420aeffc3bee8fa6d8520aa06ad31f0dfcd48dd7ef63d8733cc",
+          "task": "debt-rollforward",
+          "repetition": 0,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "a9e2fd2d2806e39716e16defa0f473f1a485352d6118c889339c87da484d9dd0",
+          "startedAt": "2026-10-27T15:58:42.535Z",
+          "completedAt": "2026-10-27T15:59:09.607Z",
+          "executionElapsedMs": 27072,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 10,
+            "results": 10,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 10086,
+            "outputTokensReported": 2567,
+            "missingUsage": 0,
+            "requestDurationMsSum": 24705
+          }
+        },
+        {
+          "id": "40ae4b6bc3f7eaa5c877cdddae12b2d53ab697b6b9989e6198d3f55fe2863729",
+          "candidate": "7b2857bfcc9c4420aeffc3bee8fa6d8520aa06ad31f0dfcd48dd7ef63d8733cc",
+          "task": "debt-rollforward",
+          "repetition": 1,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "80654f7126329bec3dc3e37d5f5eb7ea3eabbb7c39d16b69644483899e1823b9",
+          "startedAt": "2026-10-27T15:58:43.517Z",
+          "completedAt": "2026-10-27T15:59:16.427Z",
+          "executionElapsedMs": 32910,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 15,
+            "results": 15,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 15762,
+            "outputTokensReported": 3088,
+            "missingUsage": 0,
+            "requestDurationMsSum": 29082
+          }
+        },
+        {
+          "id": "87e9650ec49ae258f6027fbeee24333125cf0cb4bf55f9f3309445b433bd7503",
+          "candidate": "7b2857bfcc9c4420aeffc3bee8fa6d8520aa06ad31f0dfcd48dd7ef63d8733cc",
+          "task": "scenario-valuation",
+          "repetition": 0,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "3dbbed438e28ffdbcc3a3407854db7521b3a5aca283eaf219c060e392cde1582",
+          "startedAt": "2026-10-27T15:58:47.085Z",
+          "completedAt": "2026-10-27T15:59:06.122Z",
+          "executionElapsedMs": 19037,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 9,
+            "results": 9,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 8068,
+            "outputTokensReported": 1651,
+            "missingUsage": 0,
+            "requestDurationMsSum": 16415
+          }
+        },
+        {
+          "id": "80d0aa97922e0e324bd61aa50d559285959bdd63b30649714aab820a684425d8",
+          "candidate": "7b2857bfcc9c4420aeffc3bee8fa6d8520aa06ad31f0dfcd48dd7ef63d8733cc",
+          "task": "scenario-valuation",
+          "repetition": 1,
+          "attempt": 0,
+          "gradeAttempt": 0,
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "preserved": 1
+          },
+          "error": null,
+          "deliveryDigest": "56632ab4b56b8c54d1c68303b7e23268d412e0ed3060f50ec1a6f33cbef62347",
+          "startedAt": "2026-10-27T15:58:50.282Z",
+          "completedAt": "2026-10-27T15:59:19.089Z",
+          "executionElapsedMs": 28807,
+          "usage": {
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+            "started": 12,
+            "results": 12,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 12864,
+            "outputTokensReported": 2174,
+            "missingUsage": 0,
+            "requestDurationMsSum": 26709
+          }
+        }
+      ]
+    }
+  ],
+  "optimizer": {
+    "episodes": [
+      {
+        "episode": 0,
+        "usage": {
+          "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+          "started": 107,
+          "results": 107,
+          "failed": 0,
+          "unfinished": 0,
+          "inputTokensReported": 308204,
+          "outputTokensReported": 45722,
+          "missingUsage": 0,
+          "requestDurationMsSum": 424048
+        }
+      }
+    ],
+    "accounting": {
+      "consumedSeconds": 480.696,
+      "episodes": 1,
+      "optimizerHarness": "4702cae12dc9b90ede598a21b70090792b9e95fcb975704f2772ae115171ea2a",
+      "reason": "optimizer_concluded"
+    },
+    "usage": {
+      "ledgers": 1,
+      "availableLedgers": 1,
+      "unavailableLedgers": 0,
+      "reportedTotals": {
+        "started": 107,
+        "results": 107,
+        "failed": 0,
+        "unfinished": 0,
+        "inputTokensReported": 308204,
+        "outputTokensReported": 45722,
+        "missingUsage": 0,
+        "requestDurationMsSum": 424048
+      },
+      "complete": true
+    }
+  },
+  "totalUsage": {
+    "ledgers": 25,
+    "availableLedgers": 25,
+    "unavailableLedgers": 0,
+    "reportedTotals": {
+      "started": 326,
+      "results": 326,
+      "failed": 0,
+      "unfinished": 0,
+      "inputTokensReported": 542311,
+      "outputTokensReported": 93544,
+      "missingUsage": 0,
+      "requestDurationMsSum": 880065
+    },
+    "complete": true
+  },
+  "monetaryCost": null,
+  "lastEvent": 139,
+  "boundary": "Full-denominator descriptive results. QA/build failures consume candidate budget but have no task score. Usage is recomputed from durable DSH adapter stream ledgers; hidden provider retries and prices are unknown. Missing ledgers and missing usage are explicit; reported totals are partial when complete=false. Request durations sum streams and are not wall time. Execution elapsed excludes grading; build/QA time is not token cost. Search selection is not independent validation or causal attribution. No inferred accuracy from optimizer narrative.",
+  "registration": {
+    "path": "docs/experiments/2026-10-27-joint-plugin-development.json",
+    "commit": "a486ce5606144ecf8f928d66f143fe20e24328cf",
+    "specFileSha256": "81cefcbf38183294079d856156e8f2988328f693243bb68bc31d5e1d654429cd",
+    "independentHeldout": false
+  },
+  "review": {
+    "verifiedDevelopmentDeltaPercentagePoints": 15.625,
+    "jointConfigurationImplementationTopologyObserved": false,
+    "patchHashes": {
+      "0": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+      "1": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+      "2": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+      "3": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf"
+    },
+    "releaseAccepted": false,
+    "reason": "Selected candidate includes YEAR_HEADERS/front-four-row heuristic source restoration that can overwrite explicit edits. Preserve original score and artifact, do not distribute it as an accepted capability.",
+    "optimizerNarrativeCorrections": [
+      "Independent grader recalculates with LibreOffice. Baseline normalization repetition 0 has numeric actual B10=171 and B11=35.6, so missing pre-recalculation cache does not explain that failure.",
+      "Baseline scenario-valuation repetition 0 omitted B9 and B10 formulas; those were originally blank task outputs.",
+      "Selected normalization B10=B3+B4-B5 corrects the expense/gain direction; B11=B6-B4*B7+B5*B8 uses adjustment rates with incorrect reversal directions. Do not describe it as use of an overall tax rate."
+    ],
+    "originalConclusionRetainedAt": "experiment/completion.json",
+    "claims": "Exploratory known development tasks only; no stable quality, causal module effect, held-out result or cross-domain transfer established."
+  }
+}

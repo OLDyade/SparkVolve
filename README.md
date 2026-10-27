@@ -123,6 +123,10 @@ node dist/cli.js status --root .evolution/business/search
 
 ## 已经跑通的实验
 
+最新[预注册开发集实验](docs/acceptance-joint-development.md)：65.625% → 81.25%，24 次完整评分、一次原生 QA 失败、326 次模型适配器调用。最终候选含不接受的启发式自动恢复，暂不作为接受能力分发；这次开发集提高不构成稳定收益证明。
+
+`node dist/cli.js report --root <实验目录> --output <新文件.json>` 可统一导出逐题分数、失败、用量与优化器账本，无需重跑任务。
+
 ![连续搜索与配对复验：完整分母、失败和负结果](docs/assets/experiment-results.svg)
 
 图表直接生成自[机器记录](docs/evidence/2026-10-27-continuous-acceptance.json)，包含三次真实变异及新任务配对执行。复验选择搜索最高分且同分最早的 Mutation 1；该候选在复验中发生一次传输故障和两次取消，保留完整分母。当前证据尚未证明稳定提分。逐题结果、源码变化、用量和边界见[完整实验报告](docs/acceptance-continuous.md)。

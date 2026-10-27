@@ -22,6 +22,8 @@
 
 依据 [GitHub 上下文作用域表](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts)，将临时目录初始化移入步骤，通过 `GITHUB_ENV` 传给后续步骤；制品上传的 step `with` 继续使用合法的 `runner.temp`。加入固定版本 [actionlint 1.7.12](https://github.com/rhysd/actionlint/tree/v1.7.12)，本地复现原错误并验证修改通过。与 CI 相同的 `go run` 首次因 Go 校验服务 EOF 失败，保留校验设置后再次执行成功；未禁用依赖校验。只读子代理复核通过。
 
+推送后的 [a2905ca 运行](https://github.com/OLDyade/spark-harness-evolution/actions/runs/40536959221) 已解析出四个任务；任务注释明确报告支付失败或消费额度限制，所有步骤均未开始。作用域修复已被远端解析验证，云端执行验收仍未完成。
+
 ## 双语入口、技术图与实测图
 
 再次核对同事仓库的固定提交后，借鉴其价值定位、架构、使用演示、生命周期及开发者入口的组织方式。保留本项目核心原句，补英文 README、组件与接续图，以及直接从机器记录生成的实验图。
