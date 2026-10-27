@@ -70,3 +70,5 @@ GitHub Actions 分别运行 runc 和固定 gVisor，将测试日志与各角色�
 来源及验收见 [运行隔离研究](research/2026-10-27-runtime-isolation.md)。
 
 [受控出口架构实验](research/2026-10-28-controlled-egress.md)已在 runc/gVisor 验证 internal + isolated 网络、代理进程外凭证、显式 DNS/hosts 与代理停止失败。该实验使用独立 HTTP 夹具，正式 Controller/Provider 路由与恢复接线仍待实现；不改变上述现有 bridge 权限说明。
+
+[受控出口组件](controlled-egress.md)已进一步完成固定路由、TLS、流式取消和持久账本，并在 runc 容器中使用真实 DSH Provider 完成模型→工具→交付。正式 Controller 自动装配和恢复仍未接入，现有实验权限边界保持上述说明。

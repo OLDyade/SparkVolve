@@ -1,0 +1,98 @@
+{
+  "kind": "controlled-egress-native-transport-acceptance",
+  "startedAt": "2026-10-27T17:52:11.212Z",
+  "completedAt": "2026-10-27T17:52:16.876Z",
+  "passed": true,
+  "image": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+  "runtime": "runc",
+  "platform": "linux/arm64 through OrbStack",
+  "model": "deepseek/deepseek-v4.1-flash-1017",
+  "modelMaxTokens": 1024,
+  "observations": {
+    "nativeToolInvocation": true,
+    "delivered": {
+      "sum": 55
+    },
+    "credentialAbsent": true,
+    "directPublicDenied": true,
+    "unapprovedRouteDenied": true,
+    "brokerListensOnlyOn": "192.168.107.2",
+    "modelRequests": 2,
+    "started": 3,
+    "finished": 3,
+    "brokerExit": 0,
+    "transportOutcomes": [
+      "completed",
+      "cancelled"
+    ],
+    "nativeMetrics": {
+      "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+      "started": 2,
+      "results": 2,
+      "failed": 0,
+      "unfinished": 0,
+      "inputTokensReported": 839,
+      "outputTokensReported": 142,
+      "missingUsage": 0,
+      "requestDurationMsSum": 3559
+    },
+    "candidateNetwork": "he-native-egress-af524f7d-isolated",
+    "dns": [
+      "127.0.0.1"
+    ],
+    "nativeReceipt": {
+      "startedAt": "2026-10-27T17:52:12.005Z",
+      "endedAt": "2026-10-27T17:52:16.007Z",
+      "sessionId": "session-35c7e3ac29f74ead8b1d0df10d411e1b",
+      "status": "completed"
+    }
+  },
+  "implementation": {
+    "src/egress.ts": "facf8b6aaf7edbd5186eedc7e6d80842741e556906be14fb85bddf9fef508f3c",
+    "src/runtime/egress.ts": "589d97d94846356040c4a37800f096035c0e0d8cd3d0d1fa5d8c149ad2a5d111",
+    "src/runtime/worker.ts": "dbdfcfa097b292122cbdd05978e0ed4bd9f836418f03fa942e1d377bff91422c",
+    "src/telemetry.ts": "d8365e152056cb8a0bfb6ac3af74b303fedb9af873030dded9f3904f07675dbb",
+    "dist/egress.js": "eecf9b5f568daede581a3afad14bc0c9edf4b96adb932d3c6c6bbef7b9448a13",
+    "dist/runtime/egress.js": "4d47554f2f3d4270782970a58cc478a72106937904037515840046e9396d79f1",
+    "dist/runtime/worker.js": "9206ee208390010f2a0207db2d103ca28446fd7b9d7bf5085ecfa414102febfc",
+    "dist/telemetry.js": "17a337dd5e07ab0be04dc30850a7e08858dccb0faaec5216f5b59390d4757c4d",
+    "package-lock.json": "eac4e1cda219784a5db5c751686f6e9075ef6c9e0f5ecccd8eef30acd268d423",
+    "scripts/verify-egress-native.mjs": "185df7471991115ef63abea10a7af0c0b303efddd018879caf72e379c3808183"
+  },
+  "artifactDigests": {
+    "receipt.json": "25c7d2ad0a1b9339813cc578b177746886a061ec5bff8af0093f26afc1e8fb80",
+    "broker/requests.jsonl": "94e183f9b5fc6ae4581f52226998542df62d6c53fc320b8ea5371d4428deaae1",
+    "trace/receipt.json": "91a8d60dce0b8e466638b96f5d97a96aeb077c7e0713ebb45dc7ab245d61c9a8",
+    "trace/metrics.json": "4811d987733205e3dbf5a029235e752d53b56906f201e070aca0e189657ab3b0",
+    "trace/boundary.json": "49d2d44024116fc253fbfe2ab352836e612afa47a5280eb957cfa1b8809bad93",
+    "work/proof.json": "7473a12a3352b4571ce450504d5c1af70f462ac8539c72d2aa7ef0248edd46b7"
+  },
+  "tests": {
+    "unit": 46,
+    "native": 9,
+    "containerRunc": 7,
+    "distributionInstall": 1,
+    "failed": 0
+  },
+  "preservedEarlierFailures": [
+    {
+      "evidence": "egress-native-20261028",
+      "stage": "native DSH initialization",
+      "reason": "Acceptance launcher omitted exec on /tmp; native binding could not load. Fixed by reusing production temporaryFilesystems.",
+      "modelRequests": 0
+    },
+    {
+      "evidence": "egress-native-20261028-tmpfs",
+      "stage": "acceptance assertion",
+      "reason": "Native task completed but assertion incorrectly required every HTTP stream to end completed. One SSE consumer closed after completion; original cancelled transport event is retained.",
+      "modelRequests": 2
+    }
+  ],
+  "limits": [
+    "Transport acceptance does not measure task-quality improvement.",
+    "Compiled broker and worker files were mounted read-only over the immutable image; their hashes are listed separately.",
+    "Formal Controller launch/recovery is not yet connected to this broker.",
+    "Production broker real-model acceptance currently covers runc; previous gVisor evidence covers the network architecture with HTTP fixtures.",
+    "SSE client cancellation is a transport fact; native completion and output were independently checked."
+  ]
+}

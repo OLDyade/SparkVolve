@@ -11,6 +11,7 @@ HE_TEST_RUNTIME=runc HE_TEST_IMAGE=$(docker image inspect harness-evolution:test
 ```
 
 - 使用 Node 24.16.0、npm 12.2.0；原生 Bundle 安装使用 pnpm 12.15.0。
+- TLS 传输测试使用 OpenSSL 生成临时测试证书；缺少时先安装 OpenSSL。真实模型出口验收另见 [controlled-egress.md](docs/controlled-egress.md)。
 - DSH API 先核对实际安装的版本与源码。新增插件能力通过原生 Cordis 注册、执行、释放验收。
 - 改动实验状态机需要覆盖中断、重复投递、评分恢复、失败分母与冠军更新。
 - 新领域通过输入目录、任务契约、独立评分镜像和能力 Bundle 接入。禁止在框架里添加题目 ID 分支或答案。
