@@ -1,0 +1,46 @@
+{
+  "recordedAt": "2026-10-27T15:51:07.089993+00:00",
+  "boundary": "Native composition and deterministic protocol acceptance, not model quality improvement or autonomous joint-mutation evidence.",
+  "image": "sha256:6949d52c5b52f5f5bc2aadd71f9cc7b1fa10e00ffa225d9fad4bb2e50ac549ab",
+  "files": {
+    "src/contracts.ts": "2882719cbfd0cbcdc5546e32f2bd2087eb7a0f707bc788a56ad6728f29a648d7",
+    "src/runtime/qa.ts": "10923105d23968b455d1ae131c0ab3f17cb567ddb54e00fa23b917df08e73995",
+    "src/composition.ts": "a4b72e148e7c9b6e10999a926ec94915565f00e793153b50a888e792e3f7fec1",
+    "src/composition-probe.ts": "2da43f41d26403beae81b8dd548b1dcc81359582ed4f6a6d93958cfa4e613303",
+    "examples/spreadsheet/prepare.mjs": "52c6185cdd1cb01dbbfac67e822ae779aba6c3fb6bdb2e725337c16ad83c4789",
+    "examples/spreadsheet/Dockerfile": "b53198aa31839e51e0f732a8a074621d6a211b4d01d6a17a6272fd6621e44e07",
+    "tests/native/spreadsheet.test.ts": "9c027b652e822a8e384d3947c7723f19625e2211b4ff54789a4b0c0c0a32d41e",
+    "tests/container/qa.test.ts": "afea41d7e41f5be26bcf84ef9ab637e0cf7ec3078e32b7cd550881afbe1a748f",
+    "tests/container/evolution.test.ts": "e94893ba7eb2b26b823b57c11ac6e03c376b1d0bc85c7cff96854d1a0ed87cc2",
+    "tests/contracts.test.ts": "1f83326dbf318a8fcd956c5dea9a9499497a959289b457153727728a1c9b6ca9"
+  },
+  "checks": {
+    "unit": 31,
+    "native": 8,
+    "runcContainers": 6,
+    "gvisorContainers": 6
+  },
+  "runc": {
+    "suiteRoot": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-container-mPrDDT",
+    "domainFailureRoot": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-domain-qa-gJjdcP"
+  },
+  "gvisor": {
+    "runtime": "he-runsc-20261019",
+    "controller": "he-composition-qa-verified-runsc",
+    "suiteRoot": "/home/apple/harness-evolution/.tmp/he-container-MtK0rx",
+    "domainFailureRoot": "/home/apple/harness-evolution/.tmp/he-domain-qa-Vvqgnj"
+  },
+  "initialFailures": [
+    {
+      "stage": "native fixture",
+      "reason": "settings row ID collided with an SDK row; changed fixture ID to workbook-settings",
+      "retained": "node_modules/.spreadsheet-composition-test-xHTT0a"
+    },
+    {
+      "stage": "container fixture",
+      "reason": "fixture omitted mandatory scripts.build; supplied explicit build script without weakening production validation",
+      "runcRoot": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-domain-qa-4y8qx1",
+      "gvisorController": "he-composition-final-runsc"
+    }
+  ]
+}

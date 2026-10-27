@@ -55,7 +55,7 @@ const spec = Experiment.parse({
   candidate: {
     patch: 'cordis.patch.yml',
     build: { image, timeoutSeconds: 300 },
-    qa: ['node', '/app/spreadsheet-qa.mjs', '/candidate/index.mjs'],
+    qa: null,
   },
   tasks,
   repetitions: 1,

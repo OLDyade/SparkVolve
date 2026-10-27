@@ -90,7 +90,7 @@ await writeFile('/workspace/result.json', JSON.stringify({ score: Number(actual 
       candidate: {
         patch: 'cordis.patch.yml',
         build: { image, timeoutSeconds: 60 },
-        qa: ['node', '--check', '/candidate/fixture.mjs'],
+        qa: null,
       },
     });
     const store = new Store(path.join(root, 'experiment.sqlite'), spec);

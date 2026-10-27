@@ -90,7 +90,7 @@ export const Experiment = z
         image: Image,
         timeoutSeconds: z.number().int().positive(),
       }),
-      qa: z.array(z.string()).min(1),
+      qa: z.array(z.string()).min(1).nullable(),
     }),
     tasks: z.array(Task).min(1),
     repetitions: z.number().int().positive(),

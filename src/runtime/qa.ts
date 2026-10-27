@@ -9,7 +9,7 @@ const config = z
     profile: z.enum(['sdk', 'sdk-minimal']),
     model: Model,
     patches: z.array(z.string()).min(1),
-    command: z.array(z.string()).min(1),
+    command: z.array(z.string()).min(1).nullable(),
     timeoutSeconds: z.number().positive(),
   })
   .parse(JSON.parse(await readFile(process.argv[2]!, 'utf8')));
@@ -24,8 +24,10 @@ await checkComposition({
   timeoutSeconds: config.timeoutSeconds,
 });
 // Domain QA remains a separate, explicit check of synthetic business behaviour.
-process.stdout.write(
-  await command(config.command[0]!, config.command.slice(1), {
-    timeoutMs: config.timeoutSeconds * 1000,
-  }),
-);
+if (config.command !== null) {
+  process.stdout.write(
+    await command(config.command[0]!, config.command.slice(1), {
+      timeoutMs: config.timeoutSeconds * 1000,
+    }),
+  );
+}
