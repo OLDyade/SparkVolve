@@ -30,3 +30,5 @@ seed/
 `feedback` 会反馈给优化器，适配器应明确可公开范围，不能返回未授权答案。`metrics` 分别报告辅助指标；只有实验前在 [constraints](constraints.md) 明确声明的指标参与约束裁决，满足约束的候选仍按主分严格择优。缺失约束观测不补值。异常退出属于评分故障，保留交付后可显式重新评分；禁止把服务失败偷偷改成有效业务分。
 
 现成例子：[`examples/spreadsheet`](../examples/spreadsheet)。`generate.py` 提供三题产品链路验收；`research.py` 提供四类公开业务任务及不同数值的 development / validation 输入。两者均为本项目合成数据，不能替代官方基准结果。
+
+第二领域 [`examples/structured-data`](../examples/structured-data) 已复用同一控制器、优化器、合同和构建完成真实模型验收，覆盖事件归并、日志汇总和清单关联；不依赖 Excel。原生安装后的 `data_read → data_write` 调用也已验证。[接入命令](structured-data.md) · [实验结果与负结果](acceptance-structured-data.md)。

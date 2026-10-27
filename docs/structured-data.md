@@ -56,4 +56,4 @@ node dist/cli.js report --root .evolution/data/search --output .evolution/data/r
 - DSH `0.2.1-rc.4` 原生 `defineTool`、SDK Profile、Cordis `inject=['tools']` 和 Bundle patch；新领域没有实现另一套 Agent Loop。
 - 种子锁文件采用与主仓库一致的 Zod `4.6.7`，规避已核实的 [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)，依赖审计零告警。
 
-真实实验结果及安装证据在完成后另记，不以单元测试替代模型验收。
+真实实验已完成：[结果与独立审查](acceptance-structured-data.md)。基线三题全通过，变异两题通过、一题执行超时，按完整分母拒绝；已验证导出基线包的原生安装和真实工具调用。负结果与算法反例完整保留。

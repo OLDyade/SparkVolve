@@ -79,6 +79,8 @@ The example creates public synthetic XLSX tasks and grades actual files through 
 
 ## Evidence you can inspect
 
+**A second domain runs on the same engine:** [structured events and logs](docs/structured-data.md) reuse the controller, optimizer, contract and build pipeline without Excel dependencies. Real model mutation, independent grading, rejection and native installed-tool invocation are verified. [Six task attempts and the negative result](docs/acceptance-structured-data.md) are retained; this is engineering acceptance, not evidence of stable cross-domain gain.
+
 The latest [preregistered development study](docs/acceptance-joint-development.md) improved the mean from 65.625% to 81.25%, with 24 scored executions, one retained native QA failure and 326 adapter calls. Its selected candidate introduced heuristic source restoration and is **not accepted for capability distribution**. This development result does not establish stable gains.
 
 Use `node dist/cli.js report --root <experiment> --output <new-report.json>` to aggregate scores, failures, executor usage and optimizer expenditure without rerunning tasks.

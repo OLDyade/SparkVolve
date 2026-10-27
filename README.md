@@ -123,6 +123,8 @@ node dist/cli.js status --root .evolution/business/search
 
 ## 已经跑通的实验
 
+**第二领域已接入：**[结构化事件与日志](docs/structured-data.md)复用同一进化引擎，无需 Excel。已完成自主工具变异、独立评分、拒绝退步及原生安装后的真实工具调用。[六次任务与负结果](docs/acceptance-structured-data.md)完整记录；领域适配没有修改控制器。
+
 最新[预注册开发集实验](docs/acceptance-joint-development.md)：65.625% → 81.25%，24 次完整评分、一次原生 QA 失败、326 次模型适配器调用。最终候选含不接受的启发式自动恢复，暂不作为接受能力分发；这次开发集提高不构成稳定收益证明。
 
 `node dist/cli.js report --root <实验目录> --output <新文件.json>` 可统一导出逐题分数、失败、用量与优化器账本，无需重跑任务。
