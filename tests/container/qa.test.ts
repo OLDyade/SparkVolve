@@ -22,6 +22,22 @@ test(
     await mkdir(seed);
     await mkdir(path.join(dataset, 'input'), { recursive: true });
     await mkdir(path.join(dataset, 'private'), { recursive: true });
+    await mkdir(path.join(dataset, 'verification'));
+    await writeFile(
+      path.join(dataset, 'verification/check.mjs'),
+      `import assert from 'node:assert/strict';
+import {readFile,writeFile,access} from 'node:fs/promises';
+export async function probe({call}) {
+  assert.equal(process.env.VENUS_API_KEY, undefined);
+  await assert.rejects(access('/evaluation'));
+  await assert.rejects(writeFile('/verification/changed','x'));
+  const report=JSON.parse(await readFile('/workspace/native/composition.json','utf8'));
+  assert.equal(report.passed,true);
+  const unknown=await call('nonexistent_domain_tool',{});
+  assert.equal(unknown.isError,true);
+  throw new Error('Declared domain invariant failed');
+}`,
+    );
     await cp(new URL('./fixture.mjs', import.meta.url), path.join(seed, 'fixture.mjs'));
     const name = '@harness-evolution/domain-qa-fixture';
     await writeFile(
@@ -70,11 +86,11 @@ test(
       candidate: {
         patch: 'cordis.patch.yml',
         build: { image, timeoutSeconds: 60 },
-        qa: [
-          'node',
-          '-e',
-          'const r=JSON.parse(require("fs").readFileSync("/workspace/native/composition.json", "utf8")); if(r.passed!==true) throw new Error("Native QA did not pass"); console.error("Declared domain invariant failed"); process.exit(23);',
-        ],
+        qa: {
+          directory: 'verification',
+          digest: await treeDigest(path.join(dataset, 'verification')),
+          entry: 'check.mjs',
+        },
       },
     });
     const store = new Store(path.join(root, 'experiment.sqlite'), spec);
@@ -84,6 +100,11 @@ test(
       const candidate = await controller.seed(seed);
       await controller.pump();
       assert.equal(store.candidate(candidate.digest).phase, 'qa_failed');
+      const behavior = JSON.parse(
+        await readFile(path.join(root, 'qa', candidate.digest, 'work/native/behavior.json'), 'utf8'),
+      );
+      assert.equal(behavior.status, 'failed');
+      assert.equal(behavior.observations[0].result.isError, true);
       assert.deepEqual(store.runs(), []);
       assert.equal(store.getMeta('champion'), undefined);
       const directory = path.join(root, 'qa', candidate.digest);
@@ -98,6 +119,9 @@ test(
       await controller.pump();
       assert.equal(store.candidate(candidate.digest).phase, 'qa_failed');
       assert.deepEqual(store.runs(), []);
+      await writeFile(path.join(dataset, 'verification/check.mjs'), 'export async function probe() {}');
+      const changed = new Controller(root, dataset, spec, store);
+      await assert.rejects(changed.start(), /Domain QA digest mismatch/);
     } finally {
       await controller.close();
       store.close();

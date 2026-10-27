@@ -19,6 +19,14 @@ test('normal session completion continues with durable feedback; restart never r
   await mkdir(bundle, { recursive: true });
   await writeFile(path.join(bundle, 'plugins.yml'), '[]');
   spec.optimizerHarness.digest = await treeDigest(bundle);
+  const verification = path.join(root, 'dataset/verification');
+  await mkdir(verification);
+  await writeFile(path.join(verification, 'check.mjs'), 'export async function probe(){}');
+  spec.candidate.qa = {
+    directory: 'verification',
+    digest: await treeDigest(verification),
+    entry: 'check.mjs',
+  };
   const token = 'a'.repeat(64);
   await writeFile(path.join(root, 'controller-token'), token);
   const store = new Store(path.join(root, 'experiment.sqlite'), spec);
@@ -53,6 +61,11 @@ test('normal session completion continues with durable feedback; restart never r
   try {
     await optimize(root, spec, endpoints, driver);
     assert.equal(driver.creations.length, 2);
+    assert.ok(
+      driver.creations.every((c) =>
+        c.mounts.some((m) => m.target === '/verification' && !m.writable && m.source === verification),
+      ),
+    );
     assert.equal(driver.creations[1]!.timeoutSeconds, 59);
     assert.ok(driver.creations[1]!.mounts.some((m) => m.target === '/previous' && !m.writable));
     await optimize(root, spec, endpoints, driver);
@@ -72,6 +85,8 @@ test('normal session completion continues with durable feedback; restart never r
       optimize(root, { ...spec, purpose: 'validation' }, endpoints, driver),
       /cannot launch/,
     );
+    await writeFile(path.join(verification, 'check.mjs'), 'changed');
+    await assert.rejects(optimize(root, spec, endpoints, driver), /Domain QA digest mismatch/);
   } finally {
     await new Promise<void>((resolve) => server.close(() => resolve()));
     store.close();

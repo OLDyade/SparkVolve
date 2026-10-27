@@ -22,12 +22,19 @@ try {
   await mkdir(output);
   const data = path.resolve(output, 'dataset');
   await cp(freshDataset, data, { recursive: true, force: false, errorOnExist: true });
-  for (const ref of [original.runtime.environment, original.optimizerHarness].filter(Boolean)) {
-    await cp(confined(path.join(search, 'dataset'), ref.directory), confined(data, ref.directory), {
+  for (const ref of [original.runtime.environment, original.optimizerHarness, original.candidate.qa].filter(
+    Boolean,
+  )) {
+    const source = confined(path.join(search, 'dataset'), ref.directory);
+    if ((await treeDigest(source)) !== ref.digest)
+      throw new Error(`Frozen dependency changed: ${ref.directory}`);
+    await cp(source, confined(data, ref.directory), {
       recursive: true,
       force: false,
       errorOnExist: true,
     });
+    if ((await treeDigest(confined(data, ref.directory))) !== ref.digest)
+      throw new Error(`Copied dependency changed: ${ref.directory}`);
   }
   const tasks = JSON.parse(await readFile(path.join(data, 'tasks.json'), 'utf8'));
   for (const task of tasks) {

@@ -122,7 +122,7 @@ node --env-file=/absolute/private/venus.env dist/cli.js evolve \
 node dist/cli.js status --root .evolution/business/search
 ```
 
-示例生成公开合成 XLSX 业务任务，使用真实模型和独立 LibreOffice 重算。它验证产品闭环，不能代表 SpreadsheetBench 分数、迁移收益或统计显著性。历史私有题库、答案和运行产物没有进入仓库。
+示例生成公开合成 XLSX 业务任务，使用真实模型和独立 LibreOffice 重算。生成合同同时冻结[独立领域 QA](docs/domain-verification.md)，通过原生工具检查显式写入和源文件保留，再运行正式任务。它验证产品闭环，不能代表 SpreadsheetBench 分数、迁移收益或统计显著性。历史私有题库、答案和运行产物没有进入仓库。
 
 需要研究实验时，使用 `research.py` 生成四类业务机制任务，在 `init` 前登记任务角色、重复次数、候选与失败预算。全部候选使用同一合同；[已登记的联合插件实验](docs/experiments/2026-10-27-joint-plugin-development.json)提供一份具体示例。工程演示与研究实验分别记账。
 

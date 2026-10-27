@@ -38,7 +38,7 @@ export function specification(): ExperimentSpec {
     candidate: {
       patch: 'cordis.patch.yml',
       build: { image: `sha256:${hash}`, timeoutSeconds: 10 },
-      qa: ['node', '/candidate/qa.js'],
+      qa: null,
     },
     tasks: ['one', 'two'].map((id) => ({
       id,

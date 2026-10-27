@@ -23,6 +23,11 @@ await cp(
   },
 );
 const tasks = JSON.parse(await readFile(path.join(dataset, 'tasks.json'), 'utf8'));
+await cp(new URL('./verification/', import.meta.url), path.join(dataset, 'verification'), {
+  recursive: true,
+  force: false,
+  errorOnExist: true,
+});
 for (const task of tasks) {
   task.inputDigest = await treeDigest(path.join(dataset, task.input));
   task.evaluationDigest = await treeDigest(path.join(dataset, task.evaluation));
@@ -55,7 +60,11 @@ const spec = Experiment.parse({
   candidate: {
     patch: 'cordis.patch.yml',
     build: { image, timeoutSeconds: 300 },
-    qa: null,
+    qa: {
+      directory: 'verification',
+      digest: await treeDigest(path.join(dataset, 'verification')),
+      entry: 'check.mjs',
+    },
   },
   tasks,
   repetitions: 1,

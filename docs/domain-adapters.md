@@ -7,6 +7,7 @@ dataset/
 ├── inputs/<task>/       优化器获准读取的任务输入
 ├── evaluation/<task>/   独立裁判和必要私有材料
 ├── runtime/             原生 Provider / 环境 Bundle
+├── verification/        研究者维护的公开操作约束与合成测试（可选）
 └── optimizer-bundle/    优化方法 Bundle
 seed/
 ├── package.json         dsh.bundle.patch + 许可 + 运行依赖
@@ -17,7 +18,7 @@ seed/
 1. **定义任务清单。** 每题有稳定 ID、任务说明、输入路径和评分材料路径。`inputDigest` / `evaluationDigest` 为内容哈希；公开输入和评分目录必须分离。实验运行中不改清单。
 2. **提供运行镜像。** 安装该领域必需的运行工具；以镜像 digest 固定。执行器看到 `/input` 只读、`/workspace` 可写、`/candidate` 只读，使用 DSH 原生模型与工具。
 3. **提供种子 Bundle。** 通过 Cordis 注册工具、服务或事件能力。优化器可变更配置、实现和组合；包不能依赖仓库绝对路径或未分发的源码。
-4. **定义必要 QA。** 每个候选始终在独立容器中接受完整原生装配检查，覆盖 Profile、环境和候选 patch 的全部启用插件及工具 schema。`candidate.qa` 显式填写额外领域检查命令，或设为 `null` 表示没有额外检查；缺失字段和空命令均拒绝。表格示例使用 `null`，允许跨插件服务依赖、入口替换与组合变化。必要的领域行为检查可读取 `/workspace/native/composition.json`，其非零退出会拒绝候选。业务公式正确性交给独立裁判。
+4. **定义必要 QA。** 每个候选始终接受完整原生装配检查。`candidate.qa` 填写独立测试的 `{directory, digest, entry}`，或设为 `null` 明确不增加领域检查。目录属于 dataset，内容身份进入实验合同；入口导出 `async probe({agent,ctx,call,workspace})`，通过实际 Agent 的工具流水线执行。优化器只读查看 `/verification`，可改变实现与组合，不能修改本轮已声明的操作语义。QA 无网络、无模型凭证、无任务或评测材料；失败记为 `qa_failed`，不启动该候选的任务。表格实例检查显式写入、源文件及非目标数据保留、无效编辑无部分提交。完整业务正确性继续交给独立裁判。见[独立领域 QA](domain-verification.md)。
 5. **提供独立评分器。** 禁网容器只读挂载 `/input`、`/delivery`、`/evaluation`；在 `/workspace/result.json` 写入 `Grade`。裁判程序和私有材料不提供给优化器。
 6. **冻结合同。** 用 `Experiment` schema 校验，明确主指标、约束、失败分值、完整分母、重复次数、并发、预算和模型。`constraints: []` 明确表示无附加结果约束。使用 `init → evolve` 运行。
 

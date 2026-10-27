@@ -90,7 +90,7 @@ export const Experiment = z
         image: Image,
         timeoutSeconds: z.number().int().positive(),
       }),
-      qa: z.array(z.string()).min(1).nullable(),
+      qa: z.strictObject({ directory: RelativePath, digest: Digest, entry: RelativePath }).nullable(),
     }),
     tasks: z.array(Task).min(1),
     repetitions: z.number().int().positive(),
@@ -138,6 +138,7 @@ export const Experiment = z
       spec.optimizerHarness.directory,
       ...(spec.researchLibrary ? [spec.researchLibrary.directory] : []),
       ...(spec.runtime.environment ? [spec.runtime.environment.directory] : []),
+      ...(spec.candidate.qa ? [spec.candidate.qa.directory] : []),
     ];
     if (
       publicRoots.some((input) =>

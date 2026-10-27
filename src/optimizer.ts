@@ -28,6 +28,10 @@ export async function optimize(
   const bundle = confined(path.join(root, 'dataset'), spec.optimizerHarness.directory);
   if ((await treeDigest(bundle)) !== spec.optimizerHarness.digest)
     throw new Error('Optimizer bundle digest mismatch');
+  const qa = spec.candidate.qa;
+  const verification = qa ? confined(path.join(root, 'dataset'), qa.directory) : null;
+  if (qa && verification && (await treeDigest(verification)) !== qa.digest)
+    throw new Error('Domain QA digest mismatch');
   const runRoot = path.join(root, 'optimizer');
   await mkdir(runRoot, { recursive: true });
   const identity = digest({ root: path.resolve(root), spec, endpoint });
@@ -162,6 +166,7 @@ export async function optimize(
       env,
       timeoutSeconds: episode.seconds,
       mounts: [
+        ...(verification ? [{ source: verification, target: '/verification', writable: false }] : []),
         ...(environment
           ? [
               {

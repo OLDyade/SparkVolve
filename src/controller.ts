@@ -1,4 +1,4 @@
-import { mkdir, readFile, cp, stat, chmod, readdir } from 'node:fs/promises';
+import { mkdir, readFile, cp, stat, chmod, readdir, lstat } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { Store } from './store.js';
@@ -27,6 +27,7 @@ export class Controller {
   ) {}
   async start(): Promise<void> {
     if (this.spec.researchLibrary) await this.libraryRoot();
+    await this.verificationRoot();
     const environment = this.spec.runtime.environment;
     if (
       environment &&
@@ -307,6 +308,7 @@ export class Controller {
   }
   private async qa(candidate: Candidate): Promise<void> {
     await verifyBuild(this.root, candidate);
+    const verification = await this.verificationRoot();
     const root = path.join(this.root, 'qa', candidate.digest);
     await mkdir(path.join(root, 'work'), { recursive: true });
     const environment = this.spec.runtime.environment;
@@ -317,8 +319,8 @@ export class Controller {
         ...(environment ? [`/environment/${environment.patch}`] : []),
         `/candidate/${this.spec.candidate.patch}`,
       ],
-      command: this.spec.candidate.qa,
-      behaviorModule: null,
+      command: null,
+      behaviorModule: this.spec.candidate.qa ? `/verification/${this.spec.candidate.qa.entry}` : null,
       timeoutSeconds: this.spec.timeoutSeconds,
     });
     const result = await this.docker.run(
@@ -327,6 +329,7 @@ export class Controller {
         image: this.spec.runtime.image,
         command: ['node', '/app/dist/runtime/qa.js', '/qa-launch.json'],
         mounts: [
+          ...(verification ? [{ source: verification, target: '/verification', writable: false }] : []),
           ...(environment
             ? [
                 {
@@ -344,7 +347,7 @@ export class Controller {
           { source: path.join(root, 'work'), target: '/workspace', writable: true },
           { source: path.join(root, 'launch.json'), target: '/qa-launch.json', writable: false },
         ],
-        env: this.credentials(this.spec.executor.credentialEnv),
+        env: {},
         isolation: this.spec.isolation,
         network: this.spec.isolation.network.qa,
         timeoutSeconds: this.spec.timeoutSeconds,
@@ -389,6 +392,16 @@ export class Controller {
       }),
     );
     this.store.admit(candidate, runs);
+  }
+  private async verificationRoot(): Promise<string | null> {
+    const qa = this.spec.candidate.qa;
+    if (!qa) return null;
+    const directory = confined(this.dataset, qa.directory);
+    if (!(await lstat(directory)).isDirectory()) throw new Error('Domain QA must be a directory');
+    if ((await treeDigest(directory)) !== qa.digest) throw new Error('Domain QA digest mismatch');
+    if (!(await lstat(confined(directory, qa.entry))).isFile())
+      throw new Error('Domain QA entry must be a regular file');
+    return directory;
   }
   private credentials(names: string[]): Record<string, string> {
     return Object.fromEntries(

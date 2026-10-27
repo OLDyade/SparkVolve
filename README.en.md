@@ -66,7 +66,7 @@ node dist/cli.js init --root .evolution/business/search \
   --seed examples/spreadsheet/seed
 ```
 
-Before `init`, inspect the generated contract. It freezes the task manifest, model configuration, budgets, resource limits and runtime. `candidate.qa: null` means no additional domain command; native full-composition QA always runs. Explicit outcome constraints are optional declarations; an empty `constraints` array leaves auxiliary metrics report-only.
+Before `init`, inspect the generated contract. It freezes the task manifest, model configuration, budgets, resource limits and runtime. Spreadsheet setup also freezes an independent native QA suite for explicit-write semantics and source preservation. `candidate.qa: null` explicitly opts out of domain checks; native full-composition QA always runs. See [domain verification](docs/domain-verification.md). An empty `constraints` array leaves auxiliary score metrics report-only.
 
 Store `VENUS_API_KEY` in a private environment file outside the repository, with permissions `0600`. Start one coordinator:
 

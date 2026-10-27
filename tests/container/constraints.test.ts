@@ -84,7 +84,7 @@ await writeFile('/workspace/result.json', JSON.stringify({
       candidate: {
         patch: 'cordis.patch.yml',
         build: { image, timeoutSeconds: 60 },
-        qa: ['node', '--check', '/candidate/fixture.mjs'],
+        qa: null,
       },
       constraints: [
         { id: 'text-format', metric: 'newline', aggregation: 'each', operator: 'gte', threshold: 1 },

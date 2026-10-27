@@ -1,0 +1,607 @@
+{
+  "date": "2026-10-28",
+  "scope": "Researcher-owned immutable native domain QA; no model tasks or score resampling.",
+  "cases": [
+    {
+      "name": "baseline",
+      "root": ".evolution/domain-qa-baseline-20261028",
+      "result": {
+        "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+        "container": {
+          "Dead": false,
+          "Error": "",
+          "ExitCode": 0,
+          "FinishedAt": "2026-10-27T17:35:48.234743271Z",
+          "OOMKilled": false,
+          "Paused": false,
+          "Pid": 0,
+          "Restarting": false,
+          "Running": false,
+          "StartedAt": "2026-10-27T17:35:47.501491881Z",
+          "Status": "exited"
+        },
+        "environmentDigest": "e8b8bd9dc56ebab84a5f7ec8a57a66e5106adb39986d7d5d3fa3115ec1c95442",
+        "image": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+        "isolation": {
+          "cpus": 2,
+          "homeMiB": 128,
+          "memoryMiB": 4096,
+          "network": {
+            "build": "bridge",
+            "evaluator": "none",
+            "executor": "bridge",
+            "optimizer": "bridge",
+            "qa": "none"
+          },
+          "pids": 256,
+          "runtime": "runc",
+          "tmpMiB": 512,
+          "user": {
+            "gid": 20,
+            "uid": 501
+          }
+        },
+        "model": {
+          "credentialEnv": [
+            "VENUS_API_KEY"
+          ],
+          "maxTokens": 32768,
+          "model": "deepseek/deepseek-v4.1-flash-1017",
+          "provider": "venus",
+          "reasoningEffort": "off"
+        },
+        "passed": true,
+        "verificationDigest": "914bec72c2cc83736db2d4d257c8f7be64d6362a038fcfbea97b6c35145c8a8f"
+      },
+      "behavior": {
+        "observations": [
+          {
+            "arguments": {
+              "destination": "/workspace/result.xlsx",
+              "edits": [
+                {
+                  "cell": "B1",
+                  "sheet": "Contract",
+                  "value": "=A1+10"
+                },
+                {
+                  "cell": "B2",
+                  "sheet": "Contract",
+                  "value": "=A2*20"
+                },
+                {
+                  "cell": "C2",
+                  "sheet": "Contract",
+                  "value": "=$A$1-A2"
+                },
+                {
+                  "cell": "C3",
+                  "sheet": "Contract",
+                  "value": 0
+                },
+                {
+                  "cell": "C4",
+                  "sheet": "Contract",
+                  "value": null
+                }
+              ],
+              "source": "/workspace/source.xlsx"
+            },
+            "name": "workbook_write",
+            "result": {
+              "content": [
+                {
+                  "text": "{\"saved\": \"/workspace/result.xlsx\", \"submitted_cells\": 5, \"formula_values_recalculated\": false}\n",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": "{\"saved\": \"/workspace/result.xlsx\", \"submitted_cells\": 5, \"formula_values_recalculated\": false}\n"
+            },
+            "sequence": 1
+          },
+          {
+            "arguments": {
+              "destination": "/workspace/result.xlsx",
+              "edits": [
+                {
+                  "cell": "B1",
+                  "sheet": "Contract",
+                  "value": "=A1+10"
+                },
+                {
+                  "cell": "B1",
+                  "sheet": "Contract",
+                  "value": "=A1-5"
+                }
+              ],
+              "source": "/workspace/source.xlsx"
+            },
+            "name": "workbook_write",
+            "result": {
+              "content": [
+                {
+                  "text": "Error: Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 22, in <module>\n    raise ValueError('Duplicate target')\nValueError: Duplicate target\n",
+                  "type": "text"
+                }
+              ],
+              "error": {
+                "message": "Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 22, in <module>\n    raise ValueError('Duplicate target')\nValueError: Duplicate target\n"
+              },
+              "isError": true
+            },
+            "sequence": 2
+          },
+          {
+            "arguments": {
+              "destination": "/workspace/result.xlsx",
+              "edits": [
+                {
+                  "cell": "B1",
+                  "sheet": "Contract",
+                  "value": "=A1+10"
+                },
+                {
+                  "cell": "B2",
+                  "sheet": "Missing",
+                  "value": "=A2*20"
+                }
+              ],
+              "source": "/workspace/source.xlsx"
+            },
+            "name": "workbook_write",
+            "result": {
+              "content": [
+                {
+                  "text": "Error: Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 24, in <module>\n    workbook[edit['sheet']][edit['cell']] = edit['value']\n    ~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/opt/spreadsheet/lib/python3.11/site-packages/openpyxl/workbook/workbook.py\", line 287, in __getitem__\n    raise KeyError(\"Worksheet {0} does not exist.\".format(key))\nKeyError: 'Worksheet Missing does not exist.'\n",
+                  "type": "text"
+                }
+              ],
+              "error": {
+                "message": "Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 24, in <module>\n    workbook[edit['sheet']][edit['cell']] = edit['value']\n    ~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/opt/spreadsheet/lib/python3.11/site-packages/openpyxl/workbook/workbook.py\", line 287, in __getitem__\n    raise KeyError(\"Worksheet {0} does not exist.\".format(key))\nKeyError: 'Worksheet Missing does not exist.'\n"
+              },
+              "isError": true
+            },
+            "sequence": 3
+          },
+          {
+            "arguments": {
+              "destination": "/tmp/domain-contract-output.xlsx",
+              "edits": [
+                {
+                  "cell": "B1",
+                  "sheet": "Contract",
+                  "value": "=A1+10"
+                },
+                {
+                  "cell": "B2",
+                  "sheet": "Contract",
+                  "value": "=A2*20"
+                },
+                {
+                  "cell": "C2",
+                  "sheet": "Contract",
+                  "value": "=$A$1-A2"
+                },
+                {
+                  "cell": "C3",
+                  "sheet": "Contract",
+                  "value": 0
+                },
+                {
+                  "cell": "C4",
+                  "sheet": "Contract",
+                  "value": null
+                }
+              ],
+              "source": "/workspace/source.xlsx"
+            },
+            "name": "workbook_write",
+            "result": {
+              "content": [
+                {
+                  "text": "Error: Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 16, in <module>\n    raise ValueError('Destination must be inside /workspace')\nValueError: Destination must be inside /workspace\n",
+                  "type": "text"
+                }
+              ],
+              "error": {
+                "message": "Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 16, in <module>\n    raise ValueError('Destination must be inside /workspace')\nValueError: Destination must be inside /workspace\n"
+              },
+              "isError": true
+            },
+            "sequence": 4
+          }
+        ],
+        "status": "passed"
+      },
+      "evidence": [
+        {
+          "file": ".evolution/domain-qa-baseline-20261028/identity.json",
+          "sha256": "6803d3567aacfbc90d3c48708e459673927895e2634ebb93e65758b21d24cc57"
+        },
+        {
+          "file": ".evolution/domain-qa-baseline-20261028/result.json",
+          "sha256": "a58f21fcf1c908ab71ee914ad14a0ebf5faadf596ea2d2c4b5270dc1de8edbbb"
+        },
+        {
+          "file": ".evolution/domain-qa-baseline-20261028/work/native/behavior.json",
+          "sha256": "c9702162419647397900bc1e8d9908d34ea372e7b5dd6bfe1b9f3830745a4976"
+        },
+        {
+          "file": ".evolution/domain-qa-baseline-20261028/logs/isolation.json",
+          "sha256": "cb417e71b25091336ab2c9db03a93d501bd36775cbb95b40f02b525f558894a2"
+        }
+      ]
+    },
+    {
+      "name": "composed",
+      "root": ".evolution/domain-qa-composed-20261028",
+      "result": {
+        "bundleDigest": "233a813ccda89d17bcf35e96be85d76cbe45ad09b2bc0c1a903ce0a58559625e",
+        "container": {
+          "Dead": false,
+          "Error": "",
+          "ExitCode": 0,
+          "FinishedAt": "2026-10-27T17:35:56.214652977Z",
+          "OOMKilled": false,
+          "Paused": false,
+          "Pid": 0,
+          "Restarting": false,
+          "Running": false,
+          "StartedAt": "2026-10-27T17:35:55.470864848Z",
+          "Status": "exited"
+        },
+        "environmentDigest": "e8b8bd9dc56ebab84a5f7ec8a57a66e5106adb39986d7d5d3fa3115ec1c95442",
+        "image": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+        "isolation": {
+          "cpus": 2,
+          "homeMiB": 128,
+          "memoryMiB": 4096,
+          "network": {
+            "build": "bridge",
+            "evaluator": "none",
+            "executor": "bridge",
+            "optimizer": "bridge",
+            "qa": "none"
+          },
+          "pids": 256,
+          "runtime": "runc",
+          "tmpMiB": 512,
+          "user": {
+            "gid": 20,
+            "uid": 501
+          }
+        },
+        "model": {
+          "credentialEnv": [
+            "VENUS_API_KEY"
+          ],
+          "maxTokens": 32768,
+          "model": "deepseek/deepseek-v4.1-flash-1017",
+          "provider": "venus",
+          "reasoningEffort": "off"
+        },
+        "passed": true,
+        "verificationDigest": "914bec72c2cc83736db2d4d257c8f7be64d6362a038fcfbea97b6c35145c8a8f"
+      },
+      "behavior": {
+        "observations": [
+          {
+            "arguments": {
+              "destination": "/workspace/result.xlsx",
+              "edits": [
+                {
+                  "cell": "B1",
+                  "sheet": "Contract",
+                  "value": "=A1+10"
+                },
+                {
+                  "cell": "B2",
+                  "sheet": "Contract",
+                  "value": "=A2*20"
+                },
+                {
+                  "cell": "C2",
+                  "sheet": "Contract",
+                  "value": "=$A$1-A2"
+                },
+                {
+                  "cell": "C3",
+                  "sheet": "Contract",
+                  "value": 0
+                },
+                {
+                  "cell": "C4",
+                  "sheet": "Contract",
+                  "value": null
+                }
+              ],
+              "source": "/workspace/source.xlsx"
+            },
+            "name": "workbook_write",
+            "result": {
+              "content": [
+                {
+                  "text": "{\"saved\": \"/workspace/result.xlsx\", \"submitted_cells\": 5, \"overwritten_originals\": [{\"sheet\": \"Contract\", \"cell\": \"C3\", \"previous\": 99}, {\"sheet\": \"Contract\", \"cell\": \"C4\", \"previous\": \"explicitly cleared\"}], \"formula_values_recalculated\": false}\n",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": "{\"saved\": \"/workspace/result.xlsx\", \"submitted_cells\": 5, \"overwritten_originals\": [{\"sheet\": \"Contract\", \"cell\": \"C3\", \"previous\": 99}, {\"sheet\": \"Contract\", \"cell\": \"C4\", \"previous\": \"explicitly cleared\"}], \"formula_values_recalculated\": false}\n"
+            },
+            "sequence": 1
+          },
+          {
+            "arguments": {
+              "destination": "/workspace/result.xlsx",
+              "edits": [
+                {
+                  "cell": "B1",
+                  "sheet": "Contract",
+                  "value": "=A1+10"
+                },
+                {
+                  "cell": "B1",
+                  "sheet": "Contract",
+                  "value": "=A1-5"
+                }
+              ],
+              "source": "/workspace/source.xlsx"
+            },
+            "name": "workbook_write",
+            "result": {
+              "content": [
+                {
+                  "text": "Error: Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 133, in <module>\n    raise ValueError(\"Duplicate target\")\nValueError: Duplicate target\n",
+                  "type": "text"
+                }
+              ],
+              "error": {
+                "message": "Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 133, in <module>\n    raise ValueError(\"Duplicate target\")\nValueError: Duplicate target\n"
+              },
+              "isError": true
+            },
+            "sequence": 2
+          },
+          {
+            "arguments": {
+              "destination": "/workspace/result.xlsx",
+              "edits": [
+                {
+                  "cell": "B1",
+                  "sheet": "Contract",
+                  "value": "=A1+10"
+                },
+                {
+                  "cell": "B2",
+                  "sheet": "Missing",
+                  "value": "=A2*20"
+                }
+              ],
+              "source": "/workspace/source.xlsx"
+            },
+            "name": "workbook_write",
+            "result": {
+              "content": [
+                {
+                  "text": "Error: Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 135, in <module>\n    previous = workbook[edit[\"sheet\"]][edit[\"cell\"]].value\n               ~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/opt/spreadsheet/lib/python3.11/site-packages/openpyxl/workbook/workbook.py\", line 287, in __getitem__\n    raise KeyError(\"Worksheet {0} does not exist.\".format(key))\nKeyError: 'Worksheet Missing does not exist.'\n",
+                  "type": "text"
+                }
+              ],
+              "error": {
+                "message": "Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 135, in <module>\n    previous = workbook[edit[\"sheet\"]][edit[\"cell\"]].value\n               ~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/opt/spreadsheet/lib/python3.11/site-packages/openpyxl/workbook/workbook.py\", line 287, in __getitem__\n    raise KeyError(\"Worksheet {0} does not exist.\".format(key))\nKeyError: 'Worksheet Missing does not exist.'\n"
+              },
+              "isError": true
+            },
+            "sequence": 3
+          },
+          {
+            "arguments": {
+              "destination": "/tmp/domain-contract-output.xlsx",
+              "edits": [
+                {
+                  "cell": "B1",
+                  "sheet": "Contract",
+                  "value": "=A1+10"
+                },
+                {
+                  "cell": "B2",
+                  "sheet": "Contract",
+                  "value": "=A2*20"
+                },
+                {
+                  "cell": "C2",
+                  "sheet": "Contract",
+                  "value": "=$A$1-A2"
+                },
+                {
+                  "cell": "C3",
+                  "sheet": "Contract",
+                  "value": 0
+                },
+                {
+                  "cell": "C4",
+                  "sheet": "Contract",
+                  "value": null
+                }
+              ],
+              "source": "/workspace/source.xlsx"
+            },
+            "name": "workbook_write",
+            "result": {
+              "content": [
+                {
+                  "text": "Error: Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 126, in <module>\n    raise ValueError(\"Destination must be inside /workspace\")\nValueError: Destination must be inside /workspace\n",
+                  "type": "text"
+                }
+              ],
+              "error": {
+                "message": "Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 126, in <module>\n    raise ValueError(\"Destination must be inside /workspace\")\nValueError: Destination must be inside /workspace\n"
+              },
+              "isError": true
+            },
+            "sequence": 4
+          }
+        ],
+        "status": "passed"
+      },
+      "evidence": [
+        {
+          "file": ".evolution/domain-qa-composed-20261028/identity.json",
+          "sha256": "ec12c4380dae79c0a5ce34a05733e6060c3a0a5a25842619d67448082bba8231"
+        },
+        {
+          "file": ".evolution/domain-qa-composed-20261028/result.json",
+          "sha256": "d100fba4a1897e970890984f7468744451e1fd5d916b1ba9479e95a69667da4d"
+        },
+        {
+          "file": ".evolution/domain-qa-composed-20261028/work/native/behavior.json",
+          "sha256": "74e043bd31111937a10a0edc0847da83aa9584b1fa9418f0b151f656c43beb5f"
+        },
+        {
+          "file": ".evolution/domain-qa-composed-20261028/logs/isolation.json",
+          "sha256": "e0b14d3d524603298023dc8dba140e28be80d7be78816eb01988016f3c7b93b1"
+        }
+      ]
+    },
+    {
+      "name": "mutant",
+      "root": ".evolution/domain-qa-mutant-20261028",
+      "result": {
+        "bundleDigest": "896861dc8e298e2a75ce414325b5f2ae8963ba38be21f657a056a291a4fe9603",
+        "container": {
+          "Dead": false,
+          "Error": "",
+          "ExitCode": 1,
+          "FinishedAt": "2026-10-27T17:35:57.509105464Z",
+          "OOMKilled": false,
+          "Paused": false,
+          "Pid": 0,
+          "Restarting": false,
+          "Running": false,
+          "StartedAt": "2026-10-27T17:35:56.927615891Z",
+          "Status": "exited"
+        },
+        "environmentDigest": "e8b8bd9dc56ebab84a5f7ec8a57a66e5106adb39986d7d5d3fa3115ec1c95442",
+        "image": "sha256:6b49389a610d1c61baa7e09047394e467b62ca991a6b6787a789f7e87546d5a5",
+        "isolation": {
+          "cpus": 2,
+          "homeMiB": 128,
+          "memoryMiB": 4096,
+          "network": {
+            "build": "bridge",
+            "evaluator": "none",
+            "executor": "bridge",
+            "optimizer": "bridge",
+            "qa": "none"
+          },
+          "pids": 256,
+          "runtime": "runc",
+          "tmpMiB": 512,
+          "user": {
+            "gid": 20,
+            "uid": 501
+          }
+        },
+        "model": {
+          "credentialEnv": [
+            "VENUS_API_KEY"
+          ],
+          "maxTokens": 32768,
+          "model": "deepseek/deepseek-v4.1-flash-1017",
+          "provider": "venus",
+          "reasoningEffort": "off"
+        },
+        "passed": false,
+        "verificationDigest": "914bec72c2cc83736db2d4d257c8f7be64d6362a038fcfbea97b6c35145c8a8f"
+      },
+      "behavior": {
+        "error": "Error: Command failed: python3 /verification/fixture.py verify /workspace/source.xlsx /workspace/result.xlsx [{\"sheet\":\"Contract\",\"cell\":\"B1\",\"value\":\"=A1+10\"},{\"sheet\":\"Contract\",\"cell\":\"B2\",\"value\":\"=A2*20\"},{\"sheet\":\"Contract\",\"cell\":\"C2\",\"value\":\"=$A$1-A2\"},{\"sheet\":\"Contract\",\"cell\":\"C3\",\"value\":0},{\"sheet\":\"Contract\",\"cell\":\"C4\",\"value\":null}]\nTraceback (most recent call last):\n  File \"/verification/fixture.py\", line 29, in <module>\n    assert value == edit['value'], (edit, value)\n           ^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ({'sheet': 'Contract', 'cell': 'B2', 'value': '=A2*20'}, '=A2+10')\n",
+        "observations": [
+          {
+            "arguments": {
+              "destination": "/workspace/result.xlsx",
+              "edits": [
+                {
+                  "cell": "B1",
+                  "sheet": "Contract",
+                  "value": "=A1+10"
+                },
+                {
+                  "cell": "B2",
+                  "sheet": "Contract",
+                  "value": "=A2*20"
+                },
+                {
+                  "cell": "C2",
+                  "sheet": "Contract",
+                  "value": "=$A$1-A2"
+                },
+                {
+                  "cell": "C3",
+                  "sheet": "Contract",
+                  "value": 0
+                },
+                {
+                  "cell": "C4",
+                  "sheet": "Contract",
+                  "value": null
+                }
+              ],
+              "source": "/workspace/source.xlsx"
+            },
+            "name": "workbook_write",
+            "result": {
+              "content": [
+                {
+                  "text": "{\"saved\": \"/workspace/result.xlsx\", \"submitted_cells\": 5, \"formula_values_recalculated\": false, \"shared_formula_followers_cleared\": {\"Contract\": {\"shared_followers\": 0, \"cleared\": 0}}, \"formulas_rebased_to_their_cell\": 2, \"replaced_non_formula_inputs\": [], \"formulas_placed_over_numeric_values\": []}",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": "{\"saved\": \"/workspace/result.xlsx\", \"submitted_cells\": 5, \"formula_values_recalculated\": false, \"shared_formula_followers_cleared\": {\"Contract\": {\"shared_followers\": 0, \"cleared\": 0}}, \"formulas_rebased_to_their_cell\": 2, \"replaced_non_formula_inputs\": [], \"formulas_placed_over_numeric_values\": []}"
+            },
+            "sequence": 1
+          }
+        ],
+        "status": "failed"
+      },
+      "evidence": [
+        {
+          "file": ".evolution/domain-qa-mutant-20261028/identity.json",
+          "sha256": "dd890e0a9892df80bd75fa5aaabe646a0018152e4cc6e249ca556bdf68a36301"
+        },
+        {
+          "file": ".evolution/domain-qa-mutant-20261028/result.json",
+          "sha256": "c64b97223052c3d70b9b142d482e86fa376655947d11baf29e86ce8d3a008bac"
+        },
+        {
+          "file": ".evolution/domain-qa-mutant-20261028/work/native/behavior.json",
+          "sha256": "c9ad8cdaac5e10f9a17774c165d8e047b45dd48562c81e1feebdb6a941132018"
+        },
+        {
+          "file": ".evolution/domain-qa-mutant-20261028/logs/isolation.json",
+          "sha256": "dbd21d1df4a0e875a1c0b36681af7d3d4381f22c52b1ee227342e9e22c7ea85f"
+        }
+      ]
+    }
+  ],
+  "files": {
+    "src/contracts.ts": "70d0e14d8784635e7d7eea4e0b40d15362ddb006db1e6911d1029fdcc1a56aa1",
+    "src/controller.ts": "c7198eb2bbcb340eeb6ed79614e169ba72848b3fa9e9b3f703d3ea7f727b7303",
+    "src/optimizer.ts": "39d29ec04008fa5c91508f5657be5aea2c202fadc7890bd2339935474d44683c",
+    "examples/spreadsheet/prepare.mjs": "e76c6fc471e44d06ef417844f0c57df654bc5b34b51ee84cd0c12f52d14c5de8",
+    "examples/spreadsheet/validation.mjs": "11f8be3e1185baf625b4c35c162cb72adbcdb8c1ef5a29f8e724159d78b8915f",
+    "examples/spreadsheet/verification/check.mjs": "80cbcd2129a718ced575d06c099e5602265909991f5d21d3d0f4d0eed2ea94da",
+    "examples/spreadsheet/verification/fixture.py": "36170528b31ccc04ea8386bffdb0f061a12ceac4638a4769edaf70a58e7a0a79",
+    "examples/spreadsheet/verify-contract.mjs": "276ece90cde3667999763fb35f970e6dcc4069024ac3700f1254ba275eefa5af",
+    "tests/native/validation-plan.test.ts": "3c003cae4a610d1939e5c749f126e1a7c4e0c551f2b53391199e8597ba4208ab"
+  },
+  "regression": {
+    "unit": 37,
+    "native": 9,
+    "container": 7,
+    "validationPlanEvidence": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-verification-plan-k4sAMR",
+    "domainContainerEvidence": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-domain-qa-Q6X0Uy"
+  }
+}
