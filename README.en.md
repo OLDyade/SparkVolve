@@ -35,9 +35,13 @@ The optimizer chooses mechanisms from original inputs, traces, deliveries and in
 
 [Native behavioral probes](docs/behavioral-probes.md) let the optimizer test a mechanism before submitting a scored candidate. Authored suites exercise actual tools and services inside the contracted DSH composition, with frozen inputs, a separate budget and retained counterexamples. Probe outcomes do not replace independent task evaluation.
 
+The [cold-checkout walkthrough](docs/research/2026-10-28-user-journey.md) completed 13 public commands through autonomous search, frozen-build validation and research export. Both validation arms scored 81.25%; independent API checks rejected the selected candidate for trusted installation. The walkthrough retains this negative delivery decision alongside the successful execution path.
+
+[Native evidence materialization](docs/evidence-access.md) gives DSH tools read-only access to authorized original files. A real model copied and hashed the exact bytes; independent race tests verified descriptor-relative reads and publication boundaries.
+
 ## Run a real spreadsheet evolution
 
-Use Node **24.16.0**, npm **12.2.0**, pnpm **12.15.0**, Docker and a working model credential. The supplied provider configuration uses Venus `deepseek/deepseek-v4.1-flash-1017`; other models require explicit native DSH Provider configuration. No automatic model substitution occurs.
+Use Node **24.16.0**, npm **12.2.0**, pnpm **12.15.0**, Python 3, Docker and a working model credential. Host Python must support Unix `dir_fd`, `O_NOFOLLOW` and `O_DIRECTORY` for descriptor-relative reads of untrusted files; missing support fails explicitly, with no path-based fallback. The supplied provider configuration uses Venus `deepseek/deepseek-v4.1-flash-1017`; other models require explicit native DSH Provider configuration. No automatic model substitution occurs.
 
 Set `HE_EGRESS_POOL` to an operator-reserved private IPv4 CIDR that does not overlap host, LAN or VPN routes. Each controlled execution leases two `/29` subnets; 30 executors plus one optimizer need 62, while a `/23` supplies 64. The frozen contract rejects insufficient capacity. Terminal evidence is archived before resources are reclaimed.
 
@@ -119,6 +123,8 @@ Current GitHub Actions include macOS/Ubuntu checks and runc/gVisor jobs. Account
 
 ## Install the evolved capability
 
+The [complete user journey](docs/user-journey.md) connects the public commands, durable progress events, preregistered candidate selection and explicit negative-result branches. `node dist/cli.js events --root <experiment> --follow` observes committed events through a read-only SQLite connection; stopping the observer does not stop the experiment.
+
 To use an installed capability directly, follow the [native headless task guide](docs/use-capability.md). A clean-container acceptance installed a real evolved tarball with `dsh plugin add` and completed a real model task; no optimizer or evaluator was needed. The guide includes input mounts, credentials, native session records and actual delivery checks.
 
 Export a frozen candidate by its digest:
@@ -126,7 +132,8 @@ Export a frozen candidate by its digest:
 ```bash
 node dist/cli.js export --root .evolution/business/search \
   --candidate <digest> --output /absolute/new-export-directory
-dsh plugin --profile sdk add /absolute/new-export-directory/bundle.tgz
+# Install and run through the declared image in docs/use-capability.md.
+# It uses the locked DSH and native dependency build permissions; no global dsh is required.
 ```
 
 Independent validation uses the same frozen build artifacts under a preregistered comparison contract. Validation exposes no optimizer API; a search champion is not automatically published. See [research protocol](docs/research-protocol.md).

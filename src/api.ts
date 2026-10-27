@@ -1,15 +1,13 @@
 import { createServer } from 'node:http';
 import type { Server } from 'node:http';
 import { timingSafeEqual } from 'node:crypto';
-import { readFile, realpath } from 'node:fs/promises';
-import path from 'node:path';
 import { z } from 'zod';
 import { Controller } from './controller.js';
 import { Digest, Id, RelativePath } from './contracts.js';
-import { confined, inventory } from './artifacts.js';
 import { EventCursor } from './events.js';
 import { draftOrigin } from './library.js';
 import { controlPaths } from './control-routes.js';
+import { readEvidence, materializeEvidence } from './evidence.js';
 
 export async function serve(
   controller: Controller,
@@ -63,20 +61,12 @@ export async function serve(
               file: RelativePath.optional(),
             })
             .parse(body);
-          const probe = controller.store.probes().find((probe) => probe.id === args.probe);
-          if (!probe) throw new Error('Unknown probe');
-          const areas = {
-            source: `candidates/${probe.sourceDigest}`,
-            suite: 'suite',
-            build: `builds/${probe.sourceDigest}/logs`,
-            artifact: `artifacts/${probe.sourceDigest}`,
-            logs: 'logs',
-            observations: 'work',
-          };
-          result = await artifact(
-            path.join(controller.root, 'probes', args.probe, areas[args.area]),
-            args.file,
-          );
+          result = await readEvidence(controller, {
+            kind: 'probe',
+            id: args.probe,
+            area: args.area,
+            file: args.file,
+          });
           break;
         }
         case '/library': {
@@ -86,9 +76,17 @@ export async function serve(
         }
         case '/asset': {
           const args = z.strictObject({ archive: Digest, file: RelativePath.optional() }).parse(body);
-          result = await controller.asset(args.archive, args.file);
+          result = await readEvidence(controller, {
+            kind: 'asset',
+            id: args.archive,
+            area: 'source',
+            file: args.file,
+          });
           break;
         }
+        case '/materialize':
+          result = await materializeEvidence(controller, body);
+          break;
         case '/import': {
           const args = z.strictObject({ archive: Digest, draft: Id }).parse(body);
           await controller.importAsset(args.archive, args.draft);
@@ -126,14 +124,12 @@ export async function serve(
               file: RelativePath.optional(),
             })
             .parse(body);
-          controller.store.candidate(args.candidate);
-          const root = path.join(
-            controller.root,
-            { source: 'candidates', build: 'builds', artifact: 'artifacts', qa: 'qa' }[args.area],
-            args.candidate,
-            ...(args.area === 'build' ? ['logs'] : []),
-          );
-          result = await artifact(root, args.file);
+          result = await readEvidence(controller, {
+            kind: 'candidate',
+            id: args.candidate,
+            area: args.area,
+            file: args.file,
+          });
           break;
         }
         case '/status':
@@ -156,17 +152,15 @@ export async function serve(
               file: RelativePath.optional(),
             })
             .parse(body);
-          const run = controller.store.runs().find((r) => r.id === args.run);
-          if (!run) throw new Error('Unknown run');
-          const task = controller.spec.tasks.find((t) => t.id === run.task)!;
-          const root =
-            args.area === 'input'
-              ? confined(controller.dataset, task.input)
-              : path.join(controller.root, 'runs', run.id, args.area);
           result = {
-            run: run.id,
+            run: args.run,
             area: args.area,
-            artifact: await artifact(root, args.file),
+            artifact: await readEvidence(controller, {
+              kind: 'run',
+              id: args.run,
+              area: args.area,
+              file: args.file,
+            }),
           };
           break;
         }
@@ -189,12 +183,4 @@ export async function serve(
     server.listen(port, host, resolve);
   });
   return server;
-}
-
-async function artifact(root: string, file?: string): Promise<unknown> {
-  if (file === undefined) return await inventory(root);
-  const resolved = await realpath(confined(root, file));
-  if (!resolved.startsWith(`${await realpath(root)}${path.sep}`))
-    throw new Error('Artifact escapes authorized area');
-  return { file, encoding: 'base64', data: (await readFile(resolved)).toString('base64') };
 }

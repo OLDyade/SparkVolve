@@ -120,7 +120,7 @@ test('authorized library API confines access, freezes exposure and carries origi
     };
     assert.throws(() => Experiment.parse(overlapping), /disjoint/);
     await symlink(path.join(dataset, spec.tasks[0]!.evaluation), path.join(library, 'escape'));
-    await assert.rejects(controller.library(), /Symlinks/);
+    await assert.rejects(controller.library(), { code: 'ELOOP' });
     await rm(path.join(library, 'escape'));
     await writeFile(
       path.join(library, fixture.archiveId, 'research-record.json'),

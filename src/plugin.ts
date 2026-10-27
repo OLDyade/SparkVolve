@@ -37,6 +37,36 @@ export function apply(ctx: Context, config: Config): void {
   };
   ctx.tools.register(
     defineTool({
+      name: 'evolution_materialize',
+      description:
+        'Materialize an authorized evidence file as exact bytes at a read-only /evidence path. Use native file, shell or format tools on that path; do not transcribe base64. Supply kind, its recorded id, area and exact inventory file. run areas: input/delivery/trace; candidate: source/build/artifact/qa; probe: source/suite/build/artifact/logs/observations; asset: source. Returns path, byte count, SHA-256 and a provenance file. Captures the observed bytes; a live trace may have later contents. No evaluator-private material, workspace writes, execution, or automatic repair.',
+      parameters: {
+        kind: { type: 'string', enum: ['run', 'candidate', 'probe', 'asset'], required: true },
+        id: { type: 'string', required: true },
+        area: {
+          type: 'string',
+          enum: [
+            'input',
+            'delivery',
+            'trace',
+            'source',
+            'build',
+            'artifact',
+            'qa',
+            'suite',
+            'logs',
+            'observations',
+          ],
+          required: true,
+        },
+        file: { type: 'string', required: true },
+      },
+      output,
+      execute: async (args, exec) => request('/materialize', args, exec.signal),
+    }),
+  );
+  ctx.tools.register(
+    defineTool({
       name: 'evolution_probe',
       description:
         'Queue an isolated behavioral experiment on a Bundle draft. AUTHORING: write a separate ES-module suite under this optimizer\'s /workspace/<suite>. EXECUTION: the frozen suite mounts at /suite (read-only), built Bundle at /candidate (read-only), and a new empty /workspace is writable; authoring subdirectories are NOT copied there. Entry exports async probe({agent, ctx, call, observe, workspace}); workspace is the actual writable directory. Use new URL("./fixture.json", import.meta.url) for suite fixtures; create any output subdirectory explicitly. await observe(label, jsonValue) records explicit service/scope/lifecycle values before assertions; it does not assert correctness. call(name,args) returns a native ToolResult OBJECT, not a JSON string. Check result.isError; inspect result.content text blocks and parse only a text block when that tool documents JSON output. Returning normally only means the authored suite did not throw; an empty suite proves no behavior. Use node:assert/strict with independently derived expectations. No credentials, network, tasks or evaluation material reach execution. Build uses the contracted build network. Counts against probe limit, never scores. Returns ID; wait for probe.completed and inspect evidence. Identical source/suite/entry cannot be rerun.',

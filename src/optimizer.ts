@@ -38,6 +38,7 @@ export async function optimize(
     throw new Error('Domain QA digest mismatch');
   const runRoot = path.join(root, 'optimizer');
   await mkdir(runRoot, { recursive: true });
+  await mkdir(path.join(root, 'materialized'), { recursive: true });
   const identity = digest({ root: path.resolve(root), spec, endpoint });
   const token = await readFile(path.join(root, 'controller-token'), 'utf8');
   async function control(route: string, body: unknown): Promise<unknown> {
@@ -217,6 +218,7 @@ export async function optimize(
             ]
           : []),
         { source: path.join(root, 'drafts'), target: '/workspace', writable: true },
+        { source: path.join(root, 'materialized'), target: '/evidence', writable: false },
         { source: path.join(episodeRoot, 'trace'), target: '/trace', writable: true },
         { source: path.join(episodeRoot, 'launch.json'), target: '/launch.json', writable: false },
         {

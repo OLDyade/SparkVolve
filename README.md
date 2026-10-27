@@ -36,6 +36,8 @@
 | [可执行架构与边界](docs/architecture.md) | 原生插件、控制服务、身份、恢复、隔离与成本 |
 | [当前实现核验](docs/research/2026-10-27-native-implementation.md) | 实际发布物、源码差异、原生验证和工程决策 |
 | [真实模型端到端验收](docs/acceptance.md) | 自主代码变异、真实评分、失败裁决和原生安装后的实际任务 |
+| [冷启动用户旅程](docs/research/2026-10-28-user-journey.md) | 干净检出、13 条公开命令、自主搜索、原包复验与安装前审查；正负结果完整保留 |
+| [原字节证据交付](docs/evidence-access.md) | 授权文件直接进入只读工具挂载，真实模型读取与复制，独立竞态复核 |
 | [连续进化与独立复验](docs/acceptance-continuous.md) | 三次真实变异、双会话接续、负结果与研究资产复用 |
 | [全景方案落实状态](docs/completion.md) | 已验证能力、尚缺的完整交付环节与研究边界 |
 | [深度评审落实账本](docs/review-ledger.md) | 全部评审项、核实结论、实现与验收进度 |
@@ -78,11 +80,13 @@ flowchart LR
 
 ## Quick start：真实 Excel 闭环
 
+[完整用户旅程](docs/user-journey.md)提供公开命令串联、逐步日志、真实事件观察和负结果分支。下面先准备运行环境，再启动真实模型闭环。
+
 运行前显式生成[隔离合同](docs/isolation.md)：五类角色使用声明的运行时、非 root 身份和资源预算。原容器恢复时重新核验权限，运行时缺失直接报错。
 
 支持显式选择 runc 或 gVisor；gVisor 已完成插件构建、原生 DSH 执行、独立评分、恢复及真实模型接续验收。[固定版本安装与测试矩阵](docs/isolation.md)提供可复现入口。
 
-需要 Node **24.16.0**、npm **12.2.0**、pnpm **12.15.0** 和运行中的 Docker。示例采用用户指定的 Venus 模型快照；其他模型通过原生 DSH Provider 配置接入。没有自动模型降级。
+需要 Node **24.16.0**、npm **12.2.0**、pnpm **12.15.0**、Python 3 和运行中的 Docker。宿主 Python 必须支持 Unix `dir_fd`、`O_NOFOLLOW` 和 `O_DIRECTORY`，用于按授权目录读取不可信文件；缺失时明确报错，不退回存在竞态的路径读取。示例采用用户指定的 Venus 模型快照；其他模型通过原生 DSH Provider 配置接入。没有自动模型降级。
 
 将 `HE_EGRESS_POOL` 设为部署方已预留、与宿主/LAN/VPN 不冲突的私有 IPv4 CIDR。每个受控执行占两个 `/29` 网段，30 执行器加 1 优化器需要至少 62 个；一个 `/23` 提供 64 个。地址池进入合同，容量不足直接拒绝，终态归档后释放。
 
@@ -127,6 +131,8 @@ node --env-file=/absolute/private/venus.env dist/cli.js evolve \
 
 # 查看真实产物与裁决
 node dist/cli.js status --root .evolution/business/search
+# 在另一个终端跟随已提交事件；Ctrl-C 只停止观察
+node dist/cli.js events --root .evolution/business/search --follow
 ```
 
 示例生成公开合成 XLSX 业务任务，使用真实模型和独立 LibreOffice 重算。生成合同同时冻结[独立领域 QA](docs/domain-verification.md)，通过原生工具检查显式写入和源文件保留，再运行正式任务。它验证产品闭环，不能代表 SpreadsheetBench 分数、迁移收益或统计显著性。历史私有题库、答案和运行产物没有进入仓库。
@@ -159,11 +165,11 @@ node dist/cli.js status --root .evolution/business/search
 node dist/cli.js export --root .evolution/business/search \
   --candidate <digest> --output /absolute/new-export-directory
 
-# 导出的 capability Bundle 可直接装入 DSH 的目标 Profile
-dsh plugin --profile sdk add /absolute/new-export-directory/bundle.tgz
+# 按 docs/use-capability.md 的声明镜像入口安装并执行
+# 入口使用镜像内锁定的 DSH 和原生依赖构建授权，无需宿主全局 dsh。
 ```
 
-进化设施自身同样可安装：`npm pack` 后通过原生命令装入目标 Profile，设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，再选择 **Harness Evolution** Preset。十二项进化工具和研究方法只对选择该组合的会话可见。`evolve` 自动完成装配；独立使用 `sdk/sdk-minimal` 时，需加载[原生注册表与选择桥配置](docs/presets.md#sdk-的明确接入)。方法 Bundle 可单独替换，内容哈希写入实验合同。
+进化设施自身同样可安装：`npm pack` 后通过原生命令装入目标 Profile，设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，再选择 **Harness Evolution** Preset。进化工具和研究方法只对选择该组合的会话可见。`evolve` 自动完成装配；独立使用 `sdk/sdk-minimal` 时，需加载[原生注册表与选择桥配置](docs/presets.md#sdk-的明确接入)。方法 Bundle 可单独替换，内容哈希写入实验合同。
 
 提交候选后，优化器通过 `evolution_wait` 等待已提交事件。持久游标支持断线补读，控制器恢复时收集原容器；无须反复空查，也不会因等待超时重跑任务。[事件与恢复协议](docs/events.md)
 

@@ -6,6 +6,7 @@ export const controlPaths = [
   '/probe-evidence',
   '/library',
   '/asset',
+  '/materialize',
   '/import',
   '/events',
   '/finish',

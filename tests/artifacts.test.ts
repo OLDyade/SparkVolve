@@ -36,7 +36,7 @@ test('symlinks and traversal cannot enter frozen bundles', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'he-links-'));
   try {
     await symlink('/etc/passwd', path.join(root, 'leak'));
-    await assert.rejects(treeDigest(root), /Symlinks/);
+    await assert.rejects(treeDigest(root), { code: 'ELOOP' });
   } finally {
     await rm(root, { recursive: true, force: true });
   }

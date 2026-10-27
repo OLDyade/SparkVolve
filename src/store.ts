@@ -28,9 +28,17 @@ export class Store {
   constructor(
     file: string,
     readonly spec: ExperimentSpec,
+    access: 'read' | 'write' = 'write',
   ) {
-    this.db = new DatabaseSync(file);
-    this.db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;
+    this.db = new DatabaseSync(file, { readOnly: access === 'read', timeout: 5000 });
+    try {
+      if (access === 'read') {
+        if (this.getMeta('spec') !== digest(spec))
+          throw new Error('Experiment specification changed or missing');
+        EventCursor.parse({ experimentId: this.getMeta('experimentId'), sequence: 0 });
+        return;
+      }
+      this.db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;
       CREATE TABLE IF NOT EXISTS metadata(key TEXT PRIMARY KEY, value TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS candidates(id TEXT PRIMARY KEY, body TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS submissions(id TEXT PRIMARY KEY, body TEXT NOT NULL);
@@ -38,11 +46,15 @@ export class Store {
       CREATE TABLE IF NOT EXISTS probes(id TEXT PRIMARY KEY, body TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, type TEXT NOT NULL, body TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS lease(id INTEGER PRIMARY KEY CHECK(id=1), owner TEXT NOT NULL, expires INTEGER NOT NULL);`);
-    const old = this.getMeta('spec');
-    if (old !== undefined && old !== digest(spec))
-      throw new Error('Experiment specification changed; use a new experiment directory');
-    this.setMeta('spec', digest(spec));
-    this.db.prepare('INSERT OR IGNORE INTO metadata VALUES (?,?)').run('experimentId', randomUUID());
+      const old = this.getMeta('spec');
+      if (old !== undefined && old !== digest(spec))
+        throw new Error('Experiment specification changed; use a new experiment directory');
+      this.setMeta('spec', digest(spec));
+      this.db.prepare('INSERT OR IGNORE INTO metadata VALUES (?,?)').run('experimentId', randomUUID());
+    } catch (error) {
+      this.db.close();
+      throw error;
+    }
   }
   close(): void {
     this.shutdown.abort(new Error('Event store closed; reconnect using the last acknowledged cursor'));

@@ -14,6 +14,8 @@
 
 ## 准备
 
+此入口用于已经审核并信任的 Bundle，模型凭证直接进入能力容器。优化器生成的未审核候选继续使用实验系统的受控出口，不可据此入口声称候选与凭证已经隔离。
+
 沿 README 构建表格运行镜像；选择已审核的能力归档。实验冠军只表示满足当时的评分规则，仍需检查是否包含违背能力语义的自动修复等逻辑。新开发集的变异 3 已因此排除分发。
 
 以下命令从仓库根目录运行。`CAPABILITY_IMAGE` 使用本地镜像的不可变 ID；凭证文件仅包含 `VENUS_API_KEY=...`，放在仓库外并设为 `0600`，不复制进镜像。选择其他原生模型适配器时，替换两个模型 patch；不更改 Agent Loop。
@@ -23,6 +25,7 @@ export CAPABILITY_IMAGE=$(docker image inspect harness-evolution-spreadsheet:loc
 export CAPABILITY_BUNDLE=/absolute/path/to/export/bundle.tgz
 export CAPABILITY_CREDENTIALS=/absolute/private/path/venus.env
 export TASK_DIR=$(mktemp -d)
+export CAPABILITY_CONTAINER="harness-capability-$(basename "$TASK_DIR" | tr '[:upper:]' '[:lower:]')"
 mkdir -p "$TASK_DIR/input" "$TASK_DIR/output" "$TASK_DIR/state"
 cp /absolute/path/to/my-workbook.xlsx "$TASK_DIR/input/source.xlsx"
 printf '%s\n' '请按我的业务要求处理 /input/source.xlsx，保留原输入，交付 /workspace/result.xlsx。这里替换为你的完整任务。' > "$TASK_DIR/task.txt"
@@ -31,7 +34,7 @@ printf '%s\n' '请按我的业务要求处理 /input/source.xlsx，保留原输�
 ## 原生安装与执行
 
 ```bash
-docker run --name harness-capability-task --runtime runc \
+docker run --name "$CAPABILITY_CONTAINER" --runtime runc \
   --user "$(id -u):$(id -g)" --cap-drop ALL --security-opt no-new-privileges \
   --read-only --memory 4g --cpus 2 --pids-limit 256 \
   --tmpfs /tmp:rw,exec,nosuid,nodev,size=536870912,mode=1777 \
@@ -57,6 +60,8 @@ docker run --name harness-capability-task --runtime runc \
 ```
 
 安装脚本只调用原生 `dsh plugin add`，并沿用镜像锁定的依赖构建授权；不会创建优化策略或改变候选代码。首次安装需要访问包仓库；执行阶段需要模型网络。原生动态库会从 `/tmp` 加载，因此该 tmpfs 显式允许 `exec`，与实验运行器的声明一致。仅挂载两个公开示例配置/安装脚本目录，不挂载完整项目工作树、私有评测材料或 Docker socket。
+
+每个新任务使用独立 `TASK_DIR` 和容器名，容器结束后保留。记录 `docker inspect --format '{{.Id}} {{.State.ExitCode}}' "$CAPABILITY_CONTAINER"`；失败时检查原容器与日志，不重新执行同一命令制造新 attempt。
 
 结果位于 `$TASK_DIR/output`。`events.jsonl` 是原生有界事件投影，完整会话保存在 `$TASK_DIR/state/dsh`。本项目锁定版本 `0.2.1-rc.4` 的终态在 `status` 事件中：`phase=turn_end` 且 `reason.kind=completed`；随后 `final` 事件提供文本。须同时核对容器退出码、该终态和实际文件。较新源码文档将 reason 放入 final，不能将其字段直接套到当前版本。退出成功不证明业务正确，失败保留日志与事件，不自动重复模型任务。
 

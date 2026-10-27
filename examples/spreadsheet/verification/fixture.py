@@ -11,7 +11,8 @@ if operation == 'create':
     sheet = book.active
     sheet.title = 'Contract'
     sheet['A1'], sheet['A2'] = 2, 3
-    sheet['C3'], sheet['C4'] = 99, 'explicitly cleared'
+    sheet['B1'], sheet['B2'] = '=A1-1', '=A2+1'
+    sheet['C3'], sheet['C4'] = '=A1*9', 'explicitly cleared'
     sheet['D5'] = 'preserved label'
     sheet['D5'].comment = Comment('original comment', 'fixture')
     sheet['D5'].font = Font(bold=True, color='FF112233')

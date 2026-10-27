@@ -9,7 +9,7 @@ import { Store } from '../src/store.js';
 import { Experiment } from '../src/contracts.js';
 import { specification, candidate, runs } from './fixtures.js';
 
-test('optimizer API enforces capability, authorized areas and realpath boundaries', async () => {
+test('optimizer API enforces capability, authorized areas and descriptor-relative boundaries', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'he-api-'));
   const spec = specification(),
     store = new Store(':memory:', spec);

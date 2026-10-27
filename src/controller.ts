@@ -8,6 +8,7 @@ import type { ContainerSpec } from './docker.js';
 import { Grade, Proposal, Digest } from './contracts.js';
 import { catalog, inspectAsset, importArchive, draftOrigin } from './library.js';
 import { collectRequestMetrics } from './metrics.js';
+import { fileReaderCapabilities } from './file-reader.js';
 import { buildCandidate, bundlePath, verifyBuild } from './build.js';
 import { queueProbe, executeProbe } from './probes.js';
 import type { Candidate, CandidateProposal, ExperimentSpec, TaskRun } from './contracts.js';
@@ -30,6 +31,7 @@ export class Controller {
     readonly egress: EgressFactory = createEgressSession,
   ) {}
   async start(): Promise<void> {
+    await fileReaderCapabilities();
     if (this.spec.researchLibrary) await this.libraryRoot();
     await this.verificationRoot();
     const environment = this.spec.runtime.environment;

@@ -133,7 +133,7 @@ test(
         .map(JSON.parse);
       const names = requests[0].tools.map((t) => t.name);
       assert.match(JSON.stringify(requests[0].messages), /Evolve the Harness, Not the Model/);
-      for (const name of ['status', 'branch', 'submit', 'evidence', 'candidate', 'finish'])
+      for (const name of ['status', 'branch', 'submit', 'evidence', 'materialize', 'candidate', 'finish'])
         assert.ok(names.includes('evolution_' + name));
     } finally {
       await runtime?.close();

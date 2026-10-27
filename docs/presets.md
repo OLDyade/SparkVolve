@@ -6,7 +6,7 @@ SDK Profile：Agent Loop / 模型 / 文件 / Shell / 原生压缩
                   Agent Preset Registry
                     ┌────┴────┐
              evolution       其他 Preset
-             十二项进化工具   各自能力
+             进化工具         各自能力
              冻结研究方法     无进化工具、无研究方法
                     │
          原生模型请求 → 工具执行 → 独立实验 API
@@ -16,7 +16,9 @@ SDK Profile：Agent Loop / 模型 / 文件 / Shell / 原生压缩
 
 ## 在已有 DSH 中安装
 
-打包本仓库，使用原生 `dsh plugin --profile <目标 Profile> add <tarball>` 安装。启动前设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，指向一个实际 `search` 实验控制服务。安装提供名为 **Harness Evolution**、ID 为 `evolution` 的原生 Preset；有 Preset 注册表和选择界面的部署可直接选择它。不会把十二项工具注册到所有会话。
+打包本仓库，使用原生 `dsh plugin --profile <目标 Profile> add <tarball>` 安装。启动前设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，指向一个实际 `search` 实验控制服务。安装提供名为 **Harness Evolution**、ID 为 `evolution` 的原生 Preset；有 Preset 注册表和选择界面的部署可直接选择它。不会把进化工具注册到所有会话。
+
+工具安装只完成原生注册。自行托管优化器时，还须建立其工作目录与控制服务之间的挂载合同：实验的 `drafts/` 可写映射到 `/workspace`，`materialized/` 只读映射到 `/evidence`，合同声明的方法和验证目录也须按对应只读路径挂载。API 返回的是优化器运行环境路径，不是下载 URL；仅连接 HTTP API 不会传输或创建这些挂载。推荐通过 `evolve` 使用已实现的隔离启动路径，它自动建立并核验这些映射，不向优化器暴露数据库、评分材料或 Docker socket。
 
 研究方法也可独立打包安装：
 

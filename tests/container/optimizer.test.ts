@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, writeFile, cp, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { randomBytes } from 'node:crypto';
-import { containerSpecification as specification } from '../fixtures.js';
+import { containerSpecification as specification, candidate, runs } from '../fixtures.js';
 import { treeDigest } from '../../src/artifacts.js';
 import { Store } from '../../src/store.js';
 import { Controller } from '../../src/controller.js';
@@ -31,9 +31,11 @@ test(
       '- insert:\n    - id: optimizer-fixture\n      name: ./provider.mjs\n',
     );
     const spec = specification();
+    const binary = Buffer.from(Array.from({ length: 6643 }, (_, index) => index % 256));
     for (const task of spec.tasks) {
       await mkdir(path.join(dataset, task.input), { recursive: true });
       await mkdir(path.join(dataset, task.evaluation), { recursive: true });
+      await writeFile(path.join(dataset, task.input, 'original.bin'), binary);
       task.inputDigest = await treeDigest(path.join(dataset, task.input));
       task.evaluationDigest = await treeDigest(path.join(dataset, task.evaluation));
     }
@@ -53,6 +55,14 @@ test(
     const token = randomBytes(32).toString('hex');
     await writeFile(path.join(root, 'controller-token'), token, { mode: 0o600 });
     const store = new Store(path.join(root, 'experiment.sqlite'), spec);
+    store.addCandidate({
+      ...candidate(),
+      phase: 'qa_failed',
+      qaError: 'Protocol fixture only; no task executed',
+    });
+    store.addRuns([
+      { ...runs()[0]!, id: 'e'.repeat(64), phase: 'cancelled', error: 'Protocol fixture only' },
+    ]);
     const controller = new Controller(root, dataset, spec, store);
     await controller.start();
     const server = await serve(controller, token, 0, '0.0.0.0');
@@ -92,11 +102,20 @@ test(
         .trim()
         .split('\n')
         .map((line) => JSON.parse(line));
-      assert.equal(requests.length, 4);
+      assert.equal(requests.length, 5);
       assert.equal(waits, 1);
       assert.ok(JSON.stringify(requests[2].messages).includes('acceptance.wakeup'));
       assert.ok(requests[0].tools.some((t: { name: string }) => t.name === 'evolution_submit'));
       assert.ok(requests[0].tools.some((t: { name: string }) => t.name === 'bash'));
+      assert.ok(requests[0].tools.some((t: { name: string }) => t.name === 'evolution_materialize'));
+      assert.deepEqual(await readFile(path.join(root, 'drafts/observed.bin')), binary);
+      const materialization = JSON.parse(
+        await readFile(path.join(root, 'optimizer/0/trace/materialization.json'), 'utf8'),
+      );
+      assert.equal(materialization.bytes, binary.length);
+      assert.equal(materialization.writeError, 'EROFS');
+      assert.equal(materialization.sha256, materialization.observedSha256);
+      assert.equal(materialization.reference.kind, 'run');
     } finally {
       await new Promise<void>((resolve) => server.close(() => resolve()));
       await controller.close();

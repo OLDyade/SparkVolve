@@ -5,6 +5,7 @@ import { Digest, Id, BuildIdentity, RelativePath } from './contracts.js';
 import { confined, inventory, treeDigest, digest, freeze } from './artifacts.js';
 import type { Store } from './store.js';
 import { verifyArtifact } from './build.js';
+import { readAuthorizedFile } from './file-reader.js';
 
 const Archive = z.looseObject({
   format: z.literal('harness-evolution-research-archive'),
@@ -78,7 +79,7 @@ export async function inspectAsset(directory: string, archiveId: string, file?: 
     recordDigest: verified.recordDigest,
     ...entry,
     encoding: 'base64',
-    data: (await readFile(confined(source, file))).toString('base64'),
+    data: (await readAuthorizedFile(source, file)).toString('base64'),
   };
 }
 

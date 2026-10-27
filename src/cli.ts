@@ -15,6 +15,7 @@ import { initialize, evolve } from './experiment.js';
 import { validateStudy } from './validation.js';
 import { catalog, importArchive } from './library.js';
 import { experimentReport } from './report.js';
+import { EventCursor } from './events.js';
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,
@@ -36,6 +37,8 @@ const { positionals, values } = parseArgs({
     query: { type: 'string' },
     archive: { type: 'string' },
     draft: { type: 'string' },
+    cursor: { type: 'string' },
+    follow: { type: 'boolean' },
   },
 });
 const action = positionals[0];
@@ -50,6 +53,7 @@ optimize  --root <directory> --endpoint <container-reachable-url> --control-endp
 run       --root <directory>
 status    --root <directory>
 report    --root <directory> [--output <new-file>]
+events    --root <directory> [--cursor <cursor.json>] [--follow]
 rescore   --root <directory> --run <run-id>
 export    --root <directory> --candidate <digest> --output <new-directory>
 remember  --root <directory> --candidate <digest> --library <directory>
@@ -95,9 +99,49 @@ run reconciles original tasks; rescore reuses the original delivery; export does
     console.log(await readFile(path.join(root, 'comparison.json'), 'utf8'));
   } else {
     const spec = Experiment.parse(JSON.parse(await readFile(path.join(root, 'experiment.json'), 'utf8')));
-    const store = new Store(path.join(root, 'experiment.sqlite'), spec);
+    const store = new Store(
+      path.join(root, 'experiment.sqlite'),
+      spec,
+      ['status', 'report', 'events'].includes(action) ? 'read' : 'write',
+    );
     const controller = new Controller(root, path.join(root, 'dataset'), spec, store);
-    if (action === 'status' || action === 'report') {
+    if (action === 'events') {
+      const stop = new AbortController();
+      const interrupted = new Error('Event observer interrupted');
+      const interrupt = () => stop.abort(interrupted);
+      process.once('SIGINT', interrupt);
+      process.once('SIGTERM', interrupt);
+      try {
+        let cursor = values.cursor
+          ? EventCursor.parse(JSON.parse(await readFile(values.cursor, 'utf8')))
+          : { ...store.cursor(), sequence: 0 };
+        for (;;) {
+          const page = await store.wait(cursor, {
+            timeoutMs: values.follow ? 30_000 : 0,
+            signal: stop.signal,
+          });
+          for (const event of page.events) {
+            const entry = {
+              cursor: { experimentId: page.cursor.experimentId, sequence: event.sequence },
+              event,
+            };
+            await new Promise<void>((resolve, reject) =>
+              process.stdout.write(JSON.stringify(entry) + '\n', (error) =>
+                error ? reject(error) : resolve(),
+              ),
+            );
+          }
+          cursor = page.cursor;
+          if (!page.hasMore && !values.follow) break;
+        }
+      } catch (error) {
+        if (error !== interrupted) throw error;
+      } finally {
+        process.removeListener('SIGINT', interrupt);
+        process.removeListener('SIGTERM', interrupt);
+        store.close();
+      }
+    } else if (action === 'status' || action === 'report') {
       try {
         const result = JSON.stringify(
           action === 'report' ? await experimentReport(root, store) : controller.status(),

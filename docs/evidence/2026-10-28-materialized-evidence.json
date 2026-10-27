@@ -1,0 +1,1769 @@
+{
+  "date": "2026-10-28",
+  "kind": "native-materialized-evidence-acceptance",
+  "boundary": "Real-model native interface, original-byte transport, and controlled execution lifecycle. No scored tasks or quality-gain claim. Initial failed driver contract is retained independently; production implementation and image were unchanged for the corrected driver run.",
+  "productionImage": "sha256:fc2147a880b4d7c2c32506b65fb24745c07d5610b265076c34aa6d03e29804a7",
+  "initialFailure": {
+    "acceptance": {
+      "source": {
+        "path": "/Users/apple/code/spark-harness-evolution/.evolution/materialize-live-20261028/acceptance.json",
+        "bytes": 722,
+        "sha256": "2ead03accebf6629b6fee9f2e0c5873a7ee0c4a1df68110b908c6e9ee2854b21"
+      },
+      "value": {
+        "boundary": "Native materialization interface acceptance with a real model; no task score, search effectiveness, or quality gain claim. The fixture candidate remains frozen and is never executed or promoted.",
+        "completedAt": "2026-10-27T19:54:05.348Z",
+        "container": {
+          "Dead": false,
+          "Error": "",
+          "ExitCode": 0,
+          "FinishedAt": "2026-10-27T19:54:03.350515513Z",
+          "OOMKilled": false,
+          "Paused": false,
+          "Pid": 0,
+          "Restarting": false,
+          "Running": false,
+          "StartedAt": "2026-10-27T19:53:55.229313558Z",
+          "Status": "exited"
+        },
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n1 !== 'EROFS'\n",
+        "image": "sha256:fc2147a880b4d7c2c32506b65fb24745c07d5610b265076c34aa6d03e29804a7",
+        "passed": false,
+        "startedAt": "2026-10-27T19:53:53.394Z"
+      }
+    },
+    "observation": {
+      "source": {
+        "path": "/Users/apple/code/spark-harness-evolution/.evolution/materialize-live-20261028/work/observed.json",
+        "bytes": 224,
+        "sha256": "3370dbd4f9e4ae5b818453dbdc445c8e97804a2217fb761fffbde6f61e7055be"
+      },
+      "value": {
+        "path": "/evidence/5514cf20882861501d9583a541ee2b07498e203cb0f37d2c0a442e8fc18294cc/files/payload.bin",
+        "bytes": 8192,
+        "sha256": "b430759733aae7dab785f19d44c2015a2abdf9f8a006ae94febbbabc231cfd49",
+        "writeError": 1
+      }
+    },
+    "usage": {
+      "source": {
+        "path": "/Users/apple/code/spark-harness-evolution/.evolution/materialize-live-20261028/execution/trace/metrics.json",
+        "bytes": 252,
+        "sha256": "9ec8511c64a6cf4831accff4a9a1d6649545d26896732efc1dbb8f7b22566bd5"
+      },
+      "value": {
+        "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+        "started": 3,
+        "results": 3,
+        "failed": 0,
+        "unfinished": 0,
+        "inputTokensReported": 8852,
+        "outputTokensReported": 823,
+        "missingUsage": 0,
+        "requestDurationMsSum": 7340
+      }
+    },
+    "registration": {
+      "source": {
+        "path": "/Users/apple/code/spark-harness-evolution/.evolution/materialize-live-20261028/registration.json",
+        "bytes": 1149,
+        "sha256": "ab2f9cae406d03caae10d7a6aad6c8ed0a4af5cdb452fe871e45704948c5d288"
+      },
+      "value": {
+        "driverSha256": "1bcb8dde030d45872b28d17b70c805582683a4ca024121c250852554cf1231d6",
+        "environmentDigest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+        "hostExpected": {
+          "bytes": 8192,
+          "sha256": "b430759733aae7dab785f19d44c2015a2abdf9f8a006ae94febbbabc231cfd49"
+        },
+        "image": "sha256:fc2147a880b4d7c2c32506b65fb24745c07d5610b265076c34aa6d03e29804a7",
+        "isolation": {
+          "cpus": 2,
+          "homeMiB": 128,
+          "memoryMiB": 4096,
+          "network": {
+            "build": "bridge",
+            "egressDns": [
+              "0.250.250.200"
+            ],
+            "egressPool": "10.230.0.0/16",
+            "evaluator": "none",
+            "executor": "controlled",
+            "optimizer": "controlled",
+            "qa": "none"
+          },
+          "pids": 256,
+          "runtime": "runc",
+          "tmpMiB": 512,
+          "user": {
+            "gid": 20,
+            "uid": 501
+          }
+        },
+        "kind": "real-model-native-materialization-interface",
+        "model": {
+          "credentialEnv": [
+            "VENUS_API_KEY"
+          ],
+          "maxTokens": 4096,
+          "model": "deepseek/deepseek-v4.1-flash-1017",
+          "provider": "venus",
+          "reasoningEffort": "off"
+        },
+        "promptReceivesExpectedHash": false,
+        "reference": {
+          "area": "source",
+          "file": "payload.bin",
+          "id": "471caf60fbec6c26b45d39f74378d9902b256df6c04a4829cc19c47a1d9848d5",
+          "kind": "candidate"
+        },
+        "sourceDigest": "471caf60fbec6c26b45d39f74378d9902b256df6c04a4829cc19c47a1d9848d5",
+        "startedAt": "2026-10-27T19:53:53.394Z"
+      }
+    },
+    "trace": {
+      "path": "/Users/apple/code/spark-harness-evolution/.evolution/materialize-live-20261028/execution/trace/result.json",
+      "bytes": 121837,
+      "sha256": "93baaaa06bffeff5baeb9732615135f1bcec3d23ee6f2d88b47c9e8f7fae3729"
+    },
+    "finding": "Model copied 8192 bytes exactly and bash reported Read-only file system; wrote shell exit status 1 where verifier required symbolic errno EROFS. Original acceptance remains failed."
+  },
+  "correctedDriver": {
+    "acceptance": {
+      "source": {
+        "path": "/Users/apple/code/spark-harness-evolution/.evolution/materialize-live-errno-contract-20261028/acceptance.json",
+        "bytes": 1786,
+        "sha256": "cbb99e786c89d7209947b4c327251f5edfd906da5f3f1e7729c5d3e60ecc0489"
+      },
+      "value": {
+        "boundary": "Native materialization interface acceptance with a real model; no task score, search effectiveness, or quality gain claim. The fixture candidate remains frozen and is never executed or promoted.",
+        "completedAt": "2026-10-27T19:55:08.102Z",
+        "container": {
+          "Dead": false,
+          "Error": "",
+          "ExitCode": 0,
+          "FinishedAt": "2026-10-27T19:55:06.228110923Z",
+          "OOMKilled": false,
+          "Paused": false,
+          "Pid": 0,
+          "Restarting": false,
+          "Running": false,
+          "StartedAt": "2026-10-27T19:54:57.932410667Z",
+          "Status": "exited"
+        },
+        "http": {
+          "finished": 4,
+          "started": 4
+        },
+        "image": "sha256:fc2147a880b4d7c2c32506b65fb24745c07d5610b265076c34aa6d03e29804a7",
+        "lifecycleReclaimed": true,
+        "native": {
+          "endedAt": "2026-10-27T19:55:06.168Z",
+          "sessionId": "session-7ea021b6906043928ea3f73fe15fa8bd",
+          "startedAt": "2026-10-27T19:54:58.061Z",
+          "status": "completed"
+        },
+        "noScoredTasks": true,
+        "observed": {
+          "bytes": 8192,
+          "path": "/evidence/49ad11478c826727952442c60e71894997c6d58590abc5460039fa6f504eb75f/files/payload.bin",
+          "sha256": "320b416c3abe1e1faa1e689372fb31130fee1757e55449dc92e059ac4bc7cc85",
+          "writeError": "EROFS"
+        },
+        "passed": true,
+        "provenance": {
+          "bytes": 8192,
+          "experimentId": "2ec71cc6-03fb-4199-a00f-6a3e60020e7a",
+          "reference": {
+            "area": "source",
+            "file": "payload.bin",
+            "id": "68da8a5a3bb4c8ae9f6c388410020cd1346eb52cf7cfd07c59f65bbf80553ee5",
+            "kind": "candidate"
+          },
+          "sha256": "320b416c3abe1e1faa1e689372fb31130fee1757e55449dc92e059ac4bc7cc85"
+        },
+        "readOnlyMountVerified": true,
+        "sourceDigest": "68da8a5a3bb4c8ae9f6c388410020cd1346eb52cf7cfd07c59f65bbf80553ee5",
+        "sourceUnchanged": true,
+        "startedAt": "2026-10-27T19:54:56.055Z",
+        "usage": {
+          "failed": 0,
+          "inputTokensReported": 2053,
+          "missingUsage": 0,
+          "outputTokensReported": 677,
+          "requestDurationMsSum": 7523,
+          "results": 3,
+          "started": 3,
+          "unfinished": 0,
+          "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+        }
+      }
+    },
+    "registration": {
+      "source": {
+        "path": "/Users/apple/code/spark-harness-evolution/.evolution/materialize-live-errno-contract-20261028/registration.json",
+        "bytes": 1149,
+        "sha256": "e008b7f89e80abd5714ab239a4c2094e612a3cabd19058015b8f15111ef88543"
+      },
+      "value": {
+        "driverSha256": "17c9b2bdb839d7b6974ea8f4bf49dbe6c38a682fe69ebe1c836e10f7c88444b9",
+        "environmentDigest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+        "hostExpected": {
+          "bytes": 8192,
+          "sha256": "320b416c3abe1e1faa1e689372fb31130fee1757e55449dc92e059ac4bc7cc85"
+        },
+        "image": "sha256:fc2147a880b4d7c2c32506b65fb24745c07d5610b265076c34aa6d03e29804a7",
+        "isolation": {
+          "cpus": 2,
+          "homeMiB": 128,
+          "memoryMiB": 4096,
+          "network": {
+            "build": "bridge",
+            "egressDns": [
+              "0.250.250.200"
+            ],
+            "egressPool": "10.230.0.0/16",
+            "evaluator": "none",
+            "executor": "controlled",
+            "optimizer": "controlled",
+            "qa": "none"
+          },
+          "pids": 256,
+          "runtime": "runc",
+          "tmpMiB": 512,
+          "user": {
+            "gid": 20,
+            "uid": 501
+          }
+        },
+        "kind": "real-model-native-materialization-interface",
+        "model": {
+          "credentialEnv": [
+            "VENUS_API_KEY"
+          ],
+          "maxTokens": 4096,
+          "model": "deepseek/deepseek-v4.1-flash-1017",
+          "provider": "venus",
+          "reasoningEffort": "off"
+        },
+        "promptReceivesExpectedHash": false,
+        "reference": {
+          "area": "source",
+          "file": "payload.bin",
+          "id": "68da8a5a3bb4c8ae9f6c388410020cd1346eb52cf7cfd07c59f65bbf80553ee5",
+          "kind": "candidate"
+        },
+        "sourceDigest": "68da8a5a3bb4c8ae9f6c388410020cd1346eb52cf7cfd07c59f65bbf80553ee5",
+        "startedAt": "2026-10-27T19:54:56.055Z"
+      }
+    },
+    "trace": {
+      "path": "/Users/apple/code/spark-harness-evolution/.evolution/materialize-live-errno-contract-20261028/execution/trace/result.json",
+      "bytes": 117288,
+      "sha256": "18472b1bde6056aa6883ff6008076fde172c8f9e58ead204dd62ce9755454117"
+    },
+    "requests": {
+      "path": "/Users/apple/code/spark-harness-evolution/.evolution/materialize-live-errno-contract-20261028/execution/egress/ledger/requests.jsonl",
+      "bytes": 1315,
+      "sha256": "bd149b394c023c1bdfa0dadc814b9ae046633d0aea4d935e951bd6f87fab8bb2"
+    },
+    "isolation": {
+      "path": "/Users/apple/code/spark-harness-evolution/.evolution/materialize-live-errno-contract-20261028/execution/isolation-final.json",
+      "bytes": 7349,
+      "sha256": "6be57f2b44ab02e667159fbaf35fe0a52031c752f75569eeb95d2744a8f76c15"
+    },
+    "release": {
+      "source": {
+        "path": "/Users/apple/code/spark-harness-evolution/.evolution/materialize-live-errno-contract-20261028/execution/egress/release.json",
+        "bytes": 1214,
+        "sha256": "2a48b308e1ff50e2640404652aebdad50a8026b109d26617ff2fafc93a5aa073"
+      },
+      "value": {
+        "containers": [
+          {
+            "id": "db33e84e0fff140472871cca0d79c0451343188c72c2e6fbcc157bd5b3c499a6",
+            "intent": "cf621b06fe52fec940fc7015f8191d16da007d70c361e2f02cf946f1c9a52d13",
+            "name": "he-materialize-live-4434bee3-6dbd-436c-9650-e2238a02c809"
+          },
+          {
+            "id": "57e681d8e767c0e38f26fda65f64361a990d1f707f5a338fff322cb5a801bb46",
+            "intent": "ca1d97b493726d686cf48c11da01fc8e6e14006b6b9b5ed15ef62e2ea920939c",
+            "name": "he-egress-d749f00040388b4f6fb35948d7fdf8749485aaa0"
+          }
+        ],
+        "evidence": {
+          "config.json": "a9ad5ae1d8c7fd56efd4da15911ee2bb0825c472e6aa7a837c6b27c9550e6df9",
+          "failure-broker": null,
+          "failure-worker": null,
+          "ledger": "a4262de76c4b25c1281ace86b318e3d42b56efd6669f6a123a9f93450cf7084d",
+          "logs": "cea27b5f256f0100e6e29c2320fef3f59ff2b5e093ebd0ccd2e0acacaf41314f",
+          "resolv.conf": "c933199fbb5c653e58b9b5c43e46a11659fcc64508d0eb72eaa3212207e416fd"
+        },
+        "identity": "d749f00040388b4f6fb35948d7fdf8749485aaa03fef614a36a62884ffe781e7",
+        "networks": [
+          {
+            "id": "caaaf99a912731e186642f6b3a148e9d7e403b506e5ddd76db9655656a879944",
+            "name": "he-isolated-d749f00040388b4f6fb35948d7fdf8749485aaa0"
+          },
+          {
+            "id": "ed6d4242dc15bc623c521366464f75e6b05672eab0355ade0fbb5db1382826e9",
+            "name": "he-uplink-d749f00040388b4f6fb35948d7fdf8749485aaa0"
+          }
+        ],
+        "outcome": "completed",
+        "phase": "released"
+      }
+    }
+  },
+  "independentRaceReview": {
+    "source": {
+      "path": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-independent-reader-audit-PGFcTB/results.json",
+      "bytes": 1346,
+      "sha256": "e5d80bcd12ebf94a9ff403f5badd114abe8693341855f013efc1fc005a89c2f1"
+    },
+    "value": [
+      {
+        "operation": "readEvidence",
+        "attack": "leaf",
+        "status": "explicit-rejection",
+        "code": "ELOOP",
+        "outsideBytesReturnedOrPublished": false
+      },
+      {
+        "operation": "readEvidence",
+        "attack": "parent",
+        "status": "original-authorized-inode",
+        "code": null,
+        "outsideBytesReturnedOrPublished": false
+      },
+      {
+        "operation": "materializeEvidence",
+        "attack": "leaf",
+        "status": "explicit-rejection",
+        "code": "ELOOP",
+        "outsideBytesReturnedOrPublished": false
+      },
+      {
+        "operation": "materializeEvidence",
+        "attack": "parent",
+        "status": "original-authorized-inode",
+        "code": null,
+        "outsideBytesReturnedOrPublished": false
+      },
+      {
+        "operation": "inventory",
+        "attack": "leaf",
+        "status": "explicit-rejection",
+        "code": "ELOOP",
+        "outsideBytesReturnedOrPublished": false
+      },
+      {
+        "operation": "inventory",
+        "attack": "parent",
+        "status": "original-authorized-inode",
+        "code": null,
+        "outsideBytesReturnedOrPublished": false
+      },
+      {
+        "operation": "freeze",
+        "attack": "leaf",
+        "status": "explicit-rejection",
+        "code": "ELOOP",
+        "outsideBytesReturnedOrPublished": false
+      },
+      {
+        "operation": "freeze",
+        "attack": "parent",
+        "status": "explicit-rejection",
+        "code": "ELOOP",
+        "outsideBytesReturnedOrPublished": false
+      }
+    ]
+  },
+  "verification": {
+    "unit": 75,
+    "native": 11,
+    "container": 16,
+    "checkLog": {
+      "path": "/Users/apple/.local/state/lean-ctx/tee/npm_run_check_78645911.log",
+      "bytes": 9934,
+      "sha256": "3fd8dae9355499ea17a00b01d98f461a4227cb9eba660234b8da394e7be2a45b"
+    },
+    "scope": "Unit/native tests cover reader failures, race scheduling, atomic publication, native tool exposure, observers and existing lifecycle. Container suite covers mounted bytes, readonly writes, process interruptions and existing runtime paths.",
+    "actualPackage": {
+      "source": {
+        "path": "/Users/apple/code/spark-harness-evolution/.evolution/package-materialization-20261028/artifact.json",
+        "bytes": 29237,
+        "sha256": "5349e8285ae836b11248baf75518dcd9c3e8acc2b219bc0c0eeebfde7b658820"
+      },
+      "value": {
+        "status": "unpublished-artifact",
+        "name": "@harness-evolution/dsh-bundle",
+        "version": "0.0.0-development",
+        "commit": "0a27c41e1df4916390a6e70eac83cce70973a6de",
+        "workingTreeDirty": true,
+        "workingTreeStatus": [
+          "M CONTRIBUTING.md",
+          " M README.en.md",
+          " M README.md",
+          " M SECURITY.md",
+          " M docs/architecture.md",
+          " M docs/completion.md",
+          " M docs/domain-verification.md",
+          " M docs/presets.md",
+          " M docs/review-ledger.md",
+          " M docs/use-capability.md",
+          " M examples/spreadsheet/verification/fixture.py",
+          " M optimizers/evidence-driven/index.mjs",
+          " M package.json",
+          " M src/api.ts",
+          " M src/artifacts.ts",
+          " M src/cli.ts",
+          " M src/control-routes.ts",
+          " M src/controller.ts",
+          " M src/library.ts",
+          " M src/optimizer.ts",
+          " M src/plugin.ts",
+          " M src/store.ts",
+          " M tests/artifacts.test.ts",
+          " M tests/container/optimizer-provider.mjs",
+          " M tests/container/optimizer.test.ts",
+          " M tests/install.test.mjs",
+          " M tests/library.test.ts",
+          " M tests/native/plugin.test.ts",
+          "?? docs/evidence-access.md",
+          "?? docs/evidence/2026-10-28-user-journey.json",
+          "?? docs/research/2026-10-28-optimizer-self-evolution.md",
+          "?? docs/research/2026-10-28-user-journey.md",
+          "?? docs/user-journey.md",
+          "?? scripts/accept-walkthrough.mjs",
+          "?? scripts/verify-materialized-evidence.mjs",
+          "?? src/evidence.ts",
+          "?? src/file-reader.ts",
+          "?? tests/evidence.test.ts",
+          "?? tests/file-reader.test.ts",
+          "?? tests/native/progress.test.ts",
+          "?? tests/walkthrough.test.ts"
+        ],
+        "node": "v24.16.0",
+        "npm": "12.2.0",
+        "platform": "darwin",
+        "architecture": "arm64",
+        "archive": {
+          "file": "harness-evolution-dsh-bundle-0.0.0-development.tgz",
+          "sha256": "ef85ff643f45a6a6fd1d6df9f59d39456db82d0fc307138ca21ca1a3b390edbc",
+          "integrity": "sha512-JrOOUVyODgvCvCwhXxl//dr8CzX0W1fS2IJl3jIoh8kxUTGz31OE9M1AN9XI7XP/IV3aoZQg6HBEGOQr5tv8ZQ==",
+          "files": [
+            {
+              "path": "11.md",
+              "size": 37379,
+              "mode": 420
+            },
+            {
+              "path": "LICENSE",
+              "size": 11360,
+              "mode": 420
+            },
+            {
+              "path": "NOTICE",
+              "size": 592,
+              "mode": 420
+            },
+            {
+              "path": "README.en.md",
+              "size": 13967,
+              "mode": 420
+            },
+            {
+              "path": "README.md",
+              "size": 16249,
+              "mode": 420
+            },
+            {
+              "path": "SECURITY.md",
+              "size": 2712,
+              "mode": 420
+            },
+            {
+              "path": "cordis.patch.yml",
+              "size": 451,
+              "mode": 420
+            },
+            {
+              "path": "dist/api.d.ts",
+              "size": 224,
+              "mode": 420
+            },
+            {
+              "path": "dist/api.js",
+              "size": 7642,
+              "mode": 420
+            },
+            {
+              "path": "dist/api.js.map",
+              "size": 6900,
+              "mode": 420
+            },
+            {
+              "path": "dist/artifacts.d.ts",
+              "size": 750,
+              "mode": 420
+            },
+            {
+              "path": "dist/artifacts.js",
+              "size": 6861,
+              "mode": 420
+            },
+            {
+              "path": "dist/artifacts.js.map",
+              "size": 6772,
+              "mode": 420
+            },
+            {
+              "path": "dist/behavior-journal.d.ts",
+              "size": 539,
+              "mode": 420
+            },
+            {
+              "path": "dist/behavior-journal.js",
+              "size": 1788,
+              "mode": 420
+            },
+            {
+              "path": "dist/behavior-journal.js.map",
+              "size": 1819,
+              "mode": 420
+            },
+            {
+              "path": "dist/build.d.ts",
+              "size": 703,
+              "mode": 420
+            },
+            {
+              "path": "dist/build.js",
+              "size": 4457,
+              "mode": 420
+            },
+            {
+              "path": "dist/build.js.map",
+              "size": 4548,
+              "mode": 420
+            },
+            {
+              "path": "dist/cli.d.ts",
+              "size": 31,
+              "mode": 420
+            },
+            {
+              "path": "dist/cli.js",
+              "size": 11874,
+              "mode": 420
+            },
+            {
+              "path": "dist/cli.js.map",
+              "size": 10285,
+              "mode": 420
+            },
+            {
+              "path": "dist/composition-probe.d.ts",
+              "size": 895,
+              "mode": 420
+            },
+            {
+              "path": "dist/composition-probe.js",
+              "size": 3408,
+              "mode": 420
+            },
+            {
+              "path": "dist/composition-probe.js.map",
+              "size": 3212,
+              "mode": 420
+            },
+            {
+              "path": "dist/composition.d.ts",
+              "size": 477,
+              "mode": 420
+            },
+            {
+              "path": "dist/composition.js",
+              "size": 2259,
+              "mode": 420
+            },
+            {
+              "path": "dist/composition.js.map",
+              "size": 2114,
+              "mode": 420
+            },
+            {
+              "path": "dist/constraints.d.ts",
+              "size": 796,
+              "mode": 420
+            },
+            {
+              "path": "dist/constraints.js",
+              "size": 3402,
+              "mode": 420
+            },
+            {
+              "path": "dist/constraints.js.map",
+              "size": 3830,
+              "mode": 420
+            },
+            {
+              "path": "dist/contracts.d.ts",
+              "size": 11151,
+              "mode": 420
+            },
+            {
+              "path": "dist/contracts.js",
+              "size": 9589,
+              "mode": 420
+            },
+            {
+              "path": "dist/contracts.js.map",
+              "size": 11741,
+              "mode": 420
+            },
+            {
+              "path": "dist/control-routes.d.ts",
+              "size": 438,
+              "mode": 420
+            },
+            {
+              "path": "dist/control-routes.js",
+              "size": 1364,
+              "mode": 420
+            },
+            {
+              "path": "dist/control-routes.js.map",
+              "size": 1367,
+              "mode": 420
+            },
+            {
+              "path": "dist/controller.d.ts",
+              "size": 9186,
+              "mode": 420
+            },
+            {
+              "path": "dist/controller.js",
+              "size": 30318,
+              "mode": 420
+            },
+            {
+              "path": "dist/controller.js.map",
+              "size": 30762,
+              "mode": 420
+            },
+            {
+              "path": "dist/docker.d.ts",
+              "size": 1723,
+              "mode": 420
+            },
+            {
+              "path": "dist/docker.js",
+              "size": 9657,
+              "mode": 420
+            },
+            {
+              "path": "dist/docker.js.map",
+              "size": 9985,
+              "mode": 420
+            },
+            {
+              "path": "dist/egress-session.d.ts",
+              "size": 1731,
+              "mode": 420
+            },
+            {
+              "path": "dist/egress-session.js",
+              "size": 17911,
+              "mode": 420
+            },
+            {
+              "path": "dist/egress-session.js.map",
+              "size": 17689,
+              "mode": 420
+            },
+            {
+              "path": "dist/egress.d.ts",
+              "size": 3474,
+              "mode": 420
+            },
+            {
+              "path": "dist/egress.js",
+              "size": 13275,
+              "mode": 420
+            },
+            {
+              "path": "dist/egress.js.map",
+              "size": 14177,
+              "mode": 420
+            },
+            {
+              "path": "dist/events.d.ts",
+              "size": 425,
+              "mode": 420
+            },
+            {
+              "path": "dist/events.js",
+              "size": 203,
+              "mode": 420
+            },
+            {
+              "path": "dist/events.js.map",
+              "size": 359,
+              "mode": 420
+            },
+            {
+              "path": "dist/evidence.d.ts",
+              "size": 2181,
+              "mode": 420
+            },
+            {
+              "path": "dist/evidence.js",
+              "size": 6439,
+              "mode": 420
+            },
+            {
+              "path": "dist/evidence.js.map",
+              "size": 6475,
+              "mode": 420
+            },
+            {
+              "path": "dist/execution.d.ts",
+              "size": 1042,
+              "mode": 420
+            },
+            {
+              "path": "dist/execution.js",
+              "size": 5738,
+              "mode": 420
+            },
+            {
+              "path": "dist/execution.js.map",
+              "size": 5628,
+              "mode": 420
+            },
+            {
+              "path": "dist/experiment.d.ts",
+              "size": 519,
+              "mode": 420
+            },
+            {
+              "path": "dist/experiment.js",
+              "size": 3521,
+              "mode": 420
+            },
+            {
+              "path": "dist/experiment.js.map",
+              "size": 4055,
+              "mode": 420
+            },
+            {
+              "path": "dist/export.d.ts",
+              "size": 240,
+              "mode": 420
+            },
+            {
+              "path": "dist/export.js",
+              "size": 3496,
+              "mode": 420
+            },
+            {
+              "path": "dist/export.js.map",
+              "size": 3579,
+              "mode": 420
+            },
+            {
+              "path": "dist/file-reader.d.ts",
+              "size": 550,
+              "mode": 420
+            },
+            {
+              "path": "dist/file-reader.js",
+              "size": 5485,
+              "mode": 420
+            },
+            {
+              "path": "dist/file-reader.js.map",
+              "size": 2100,
+              "mode": 420
+            },
+            {
+              "path": "dist/ip-pool.d.ts",
+              "size": 479,
+              "mode": 420
+            },
+            {
+              "path": "dist/ip-pool.js",
+              "size": 1857,
+              "mode": 420
+            },
+            {
+              "path": "dist/ip-pool.js.map",
+              "size": 2350,
+              "mode": 420
+            },
+            {
+              "path": "dist/isolation.d.ts",
+              "size": 3718,
+              "mode": 420
+            },
+            {
+              "path": "dist/isolation.js",
+              "size": 4735,
+              "mode": 420
+            },
+            {
+              "path": "dist/isolation.js.map",
+              "size": 4702,
+              "mode": 420
+            },
+            {
+              "path": "dist/library.d.ts",
+              "size": 3171,
+              "mode": 420
+            },
+            {
+              "path": "dist/library.js",
+              "size": 7967,
+              "mode": 420
+            },
+            {
+              "path": "dist/library.js.map",
+              "size": 8583,
+              "mode": 420
+            },
+            {
+              "path": "dist/metrics.d.ts",
+              "size": 474,
+              "mode": 420
+            },
+            {
+              "path": "dist/metrics.js",
+              "size": 2465,
+              "mode": 420
+            },
+            {
+              "path": "dist/metrics.js.map",
+              "size": 2984,
+              "mode": 420
+            },
+            {
+              "path": "dist/network-pool.d.ts",
+              "size": 304,
+              "mode": 420
+            },
+            {
+              "path": "dist/network-pool.js",
+              "size": 2647,
+              "mode": 420
+            },
+            {
+              "path": "dist/network-pool.js.map",
+              "size": 2467,
+              "mode": 420
+            },
+            {
+              "path": "dist/network.d.ts",
+              "size": 1127,
+              "mode": 420
+            },
+            {
+              "path": "dist/network.js",
+              "size": 3012,
+              "mode": 420
+            },
+            {
+              "path": "dist/network.js.map",
+              "size": 3702,
+              "mode": 420
+            },
+            {
+              "path": "dist/optimizer.d.ts",
+              "size": 546,
+              "mode": 420
+            },
+            {
+              "path": "dist/optimizer.js",
+              "size": 11383,
+              "mode": 420
+            },
+            {
+              "path": "dist/optimizer.js.map",
+              "size": 10177,
+              "mode": 420
+            },
+            {
+              "path": "dist/plugin.d.ts",
+              "size": 725,
+              "mode": 420
+            },
+            {
+              "path": "dist/plugin.js",
+              "size": 11907,
+              "mode": 420
+            },
+            {
+              "path": "dist/plugin.js.map",
+              "size": 7326,
+              "mode": 420
+            },
+            {
+              "path": "dist/preset.d.ts",
+              "size": 1155,
+              "mode": 420
+            },
+            {
+              "path": "dist/preset.js",
+              "size": 1444,
+              "mode": 420
+            },
+            {
+              "path": "dist/preset.js.map",
+              "size": 935,
+              "mode": 420
+            },
+            {
+              "path": "dist/probes.d.ts",
+              "size": 687,
+              "mode": 420
+            },
+            {
+              "path": "dist/probes.js",
+              "size": 7165,
+              "mode": 420
+            },
+            {
+              "path": "dist/probes.js.map",
+              "size": 7063,
+              "mode": 420
+            },
+            {
+              "path": "dist/report.d.ts",
+              "size": 3892,
+              "mode": 420
+            },
+            {
+              "path": "dist/report.js",
+              "size": 6902,
+              "mode": 420
+            },
+            {
+              "path": "dist/report.js.map",
+              "size": 6899,
+              "mode": 420
+            },
+            {
+              "path": "dist/runtime/build.d.ts",
+              "size": 11,
+              "mode": 420
+            },
+            {
+              "path": "dist/runtime/build.js",
+              "size": 3246,
+              "mode": 420
+            },
+            {
+              "path": "dist/runtime/build.js.map",
+              "size": 3656,
+              "mode": 420
+            },
+            {
+              "path": "dist/runtime/egress.d.ts",
+              "size": 11,
+              "mode": 420
+            },
+            {
+              "path": "dist/runtime/egress.js",
+              "size": 1135,
+              "mode": 420
+            },
+            {
+              "path": "dist/runtime/egress.js.map",
+              "size": 1405,
+              "mode": 420
+            },
+            {
+              "path": "dist/runtime/qa.d.ts",
+              "size": 11,
+              "mode": 420
+            },
+            {
+              "path": "dist/runtime/qa.js",
+              "size": 1164,
+              "mode": 420
+            },
+            {
+              "path": "dist/runtime/qa.js.map",
+              "size": 1450,
+              "mode": 420
+            },
+            {
+              "path": "dist/runtime/worker.d.ts",
+              "size": 11,
+              "mode": 420
+            },
+            {
+              "path": "dist/runtime/worker.js",
+              "size": 3163,
+              "mode": 420
+            },
+            {
+              "path": "dist/runtime/worker.js.map",
+              "size": 3346,
+              "mode": 420
+            },
+            {
+              "path": "dist/sdk-preset.d.ts",
+              "size": 699,
+              "mode": 420
+            },
+            {
+              "path": "dist/sdk-preset.js",
+              "size": 1313,
+              "mode": 420
+            },
+            {
+              "path": "dist/sdk-preset.js.map",
+              "size": 1147,
+              "mode": 420
+            },
+            {
+              "path": "dist/store.d.ts",
+              "size": 2217,
+              "mode": 420
+            },
+            {
+              "path": "dist/store.js",
+              "size": 17565,
+              "mode": 420
+            },
+            {
+              "path": "dist/store.js.map",
+              "size": 16696,
+              "mode": 420
+            },
+            {
+              "path": "dist/telemetry.d.ts",
+              "size": 1048,
+              "mode": 420
+            },
+            {
+              "path": "dist/telemetry.js",
+              "size": 2907,
+              "mode": 420
+            },
+            {
+              "path": "dist/telemetry.js.map",
+              "size": 2960,
+              "mode": 420
+            },
+            {
+              "path": "dist/validation.d.ts",
+              "size": 824,
+              "mode": 420
+            },
+            {
+              "path": "dist/validation.js",
+              "size": 7541,
+              "mode": 420
+            },
+            {
+              "path": "dist/validation.js.map",
+              "size": 8429,
+              "mode": 420
+            },
+            {
+              "path": "docs/acceptance-continuous.md",
+              "size": 5628,
+              "mode": 420
+            },
+            {
+              "path": "docs/acceptance-joint-development.md",
+              "size": 4335,
+              "mode": 420
+            },
+            {
+              "path": "docs/acceptance-structured-data.md",
+              "size": 4664,
+              "mode": 420
+            },
+            {
+              "path": "docs/acceptance.md",
+              "size": 5380,
+              "mode": 420
+            },
+            {
+              "path": "docs/architecture.md",
+              "size": 11526,
+              "mode": 420
+            },
+            {
+              "path": "docs/assets/experiment-results.png",
+              "size": 149758,
+              "mode": 420
+            },
+            {
+              "path": "docs/assets/experiment-results.svg",
+              "size": 84415,
+              "mode": 420
+            },
+            {
+              "path": "docs/behavioral-probes.md",
+              "size": 6181,
+              "mode": 420
+            },
+            {
+              "path": "docs/compatibility.md",
+              "size": 3001,
+              "mode": 420
+            },
+            {
+              "path": "docs/completion.md",
+              "size": 7889,
+              "mode": 420
+            },
+            {
+              "path": "docs/components.md",
+              "size": 4625,
+              "mode": 420
+            },
+            {
+              "path": "docs/constraints.md",
+              "size": 3551,
+              "mode": 420
+            },
+            {
+              "path": "docs/controlled-egress.md",
+              "size": 10947,
+              "mode": 420
+            },
+            {
+              "path": "docs/domain-adapters.md",
+              "size": 3789,
+              "mode": 420
+            },
+            {
+              "path": "docs/domain-verification.md",
+              "size": 3897,
+              "mode": 420
+            },
+            {
+              "path": "docs/events.md",
+              "size": 2702,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence-access.md",
+              "size": 4522,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-27-composable-qa-acceptance.json",
+              "size": 2454,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-27-constraints-acceptance.json",
+              "size": 5996,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-27-continuous-acceptance.json",
+              "size": 24123,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-27-event-acceptance.json",
+              "size": 928,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-27-gvisor-acceptance.json",
+              "size": 11226,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-27-isolation-acceptance.json",
+              "size": 2105,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-27-library-acceptance.json",
+              "size": 1346,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-27-real-acceptance.json",
+              "size": 9510,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-behavioral-probes.json",
+              "size": 11980,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-controlled-controller-integration.json",
+              "size": 1542,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-domain-verification.json",
+              "size": 23800,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-egress-boundary.json",
+              "size": 17469,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-egress-native-transport.json",
+              "size": 4322,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-egress-resource-lifecycle.json",
+              "size": 4072,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-gvisor-controlled-dns.json",
+              "size": 7137,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-joint-development.json",
+              "size": 37567,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-joint-independent-validation.json",
+              "size": 54744,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-native-probe-spreadsheet-control.json",
+              "size": 36728,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-package-artifacts.json",
+              "size": 960,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-persistent-volume-host-probe.json",
+              "size": 1524,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-probe-study-setup-failure.json",
+              "size": 10809,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-publication-recovery.json",
+              "size": 21114,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-service-observations.json",
+              "size": 11519,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-standalone-capability.json",
+              "size": 3264,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-structured-data.json",
+              "size": 23780,
+              "mode": 420
+            },
+            {
+              "path": "docs/evidence/2026-10-28-user-journey.json",
+              "size": 115518,
+              "mode": 420
+            },
+            {
+              "path": "docs/experiments/2026-10-27-joint-plugin-development.json",
+              "size": 8891,
+              "mode": 420
+            },
+            {
+              "path": "docs/experiments/2026-10-28-joint-independent-results.md",
+              "size": 3353,
+              "mode": 420
+            },
+            {
+              "path": "docs/experiments/2026-10-28-joint-independent-validation.json",
+              "size": 11534,
+              "mode": 420
+            },
+            {
+              "path": "docs/experiments/2026-10-28-native-probe-control.json",
+              "size": 18055,
+              "mode": 420
+            },
+            {
+              "path": "docs/experiments/2026-10-28-native-probe-spreadsheet-control.json",
+              "size": 18545,
+              "mode": 420
+            },
+            {
+              "path": "docs/experiments/2026-10-28-native-probe-spreadsheet-results.md",
+              "size": 5458,
+              "mode": 420
+            },
+            {
+              "path": "docs/experiments/2026-10-28-structured-data.json",
+              "size": 6583,
+              "mode": 420
+            },
+            {
+              "path": "docs/isolation.md",
+              "size": 8861,
+              "mode": 420
+            },
+            {
+              "path": "docs/prd/DIAGNOSIS-Round176-Fixed5.md",
+              "size": 1998,
+              "mode": 420
+            },
+            {
+              "path": "docs/prd/DIAGNOSIS-Round179-Controlled-Ablation.md",
+              "size": 5124,
+              "mode": 420
+            },
+            {
+              "path": "docs/presets.md",
+              "size": 4029,
+              "mode": 420
+            },
+            {
+              "path": "docs/releasing.md",
+              "size": 4014,
+              "mode": 420
+            },
+            {
+              "path": "docs/research-assets.md",
+              "size": 3876,
+              "mode": 420
+            },
+            {
+              "path": "docs/research-protocol.md",
+              "size": 4202,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-09-harness-blueprint-audit.md",
+              "size": 15581,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-27-candidate-build.md",
+              "size": 3724,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-27-composable-domain-qa.md",
+              "size": 2947,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-27-composition-qa.md",
+              "size": 3103,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-27-event-continuation.md",
+              "size": 2343,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-27-harness-evolution-design-review.md",
+              "size": 21711,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-27-native-evolution-preset.md",
+              "size": 3818,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-27-native-implementation.md",
+              "size": 8631,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-27-outcome-constraints.md",
+              "size": 3194,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-27-repository-conventions.md",
+              "size": 4230,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-27-research-asset-reuse.md",
+              "size": 2601,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-27-runtime-isolation.md",
+              "size": 5588,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-28-controlled-egress.md",
+              "size": 6005,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-28-egress-lifecycle-review.md",
+              "size": 4881,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-28-executable-probes.md",
+              "size": 5678,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-28-gvisor-egress-dns.md",
+              "size": 3876,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-28-independent-domain-contracts.md",
+              "size": 3160,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-28-optimizer-self-evolution.md",
+              "size": 8124,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-28-persistent-storage-boundary.md",
+              "size": 4758,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-28-publication-recovery.md",
+              "size": 5247,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-28-service-observations.md",
+              "size": 4769,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/2026-10-28-user-journey.md",
+              "size": 5345,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/archive/evolution-policy-2026-10-27.md",
+              "size": 11808,
+              "mode": 420
+            },
+            {
+              "path": "docs/research/archive/README.md",
+              "size": 1655,
+              "mode": 420
+            },
+            {
+              "path": "docs/review-ledger.md",
+              "size": 6970,
+              "mode": 420
+            },
+            {
+              "path": "docs/structured-data.md",
+              "size": 4796,
+              "mode": 420
+            },
+            {
+              "path": "docs/use-capability.md",
+              "size": 6657,
+              "mode": 420
+            },
+            {
+              "path": "docs/user-journey.md",
+              "size": 5812,
+              "mode": 420
+            },
+            {
+              "path": "examples/capability/headless.yml",
+              "size": 215,
+              "mode": 420
+            },
+            {
+              "path": "examples/capability/install.mjs",
+              "size": 973,
+              "mode": 420
+            },
+            {
+              "path": "examples/isolation.mjs",
+              "size": 872,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/Dockerfile",
+              "size": 352,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/generate.py",
+              "size": 2492,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/grade.py",
+              "size": 1803,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/prepare.mjs",
+              "size": 3267,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/research.py",
+              "size": 7527,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/seed/cordis.patch.yml",
+              "size": 34,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/seed/index.mjs",
+              "size": 2324,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/seed/LICENSE",
+              "size": 11360,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/seed/package-lock.json",
+              "size": 14209,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/seed/package.json",
+              "size": 412,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/seed/workbook.py",
+              "size": 1329,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/validation.mjs",
+              "size": 3132,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/verification/check.mjs",
+              "size": 2142,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/verification/fixture.py",
+              "size": 1757,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/verify-contract.mjs",
+              "size": 2636,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/verify-image.mjs",
+              "size": 1781,
+              "mode": 420
+            },
+            {
+              "path": "examples/spreadsheet/verify.py",
+              "size": 1260,
+              "mode": 420
+            },
+            {
+              "path": "examples/structured-data/generate.py",
+              "size": 5558,
+              "mode": 420
+            },
+            {
+              "path": "examples/structured-data/grade.py",
+              "size": 2612,
+              "mode": 420
+            },
+            {
+              "path": "examples/structured-data/prepare.mjs",
+              "size": 3021,
+              "mode": 420
+            },
+            {
+              "path": "examples/structured-data/seed/cordis.patch.yml",
+              "size": 34,
+              "mode": 420
+            },
+            {
+              "path": "examples/structured-data/seed/index.mjs",
+              "size": 1530,
+              "mode": 420
+            },
+            {
+              "path": "examples/structured-data/seed/LICENSE",
+              "size": 11360,
+              "mode": 420
+            },
+            {
+              "path": "examples/structured-data/seed/package-lock.json",
+              "size": 14217,
+              "mode": 420
+            },
+            {
+              "path": "examples/structured-data/seed/package.json",
+              "size": 438,
+              "mode": 420
+            },
+            {
+              "path": "examples/venus/cordis.patch.yml",
+              "size": 877,
+              "mode": 420
+            },
+            {
+              "path": "examples/venus/egress.mjs",
+              "size": 1353,
+              "mode": 420
+            },
+            {
+              "path": "examples/venus/model.json",
+              "size": 162,
+              "mode": 420
+            },
+            {
+              "path": "optimizers/evidence-driven/cordis.patch.yml",
+              "size": 364,
+              "mode": 420
+            },
+            {
+              "path": "optimizers/evidence-driven/index.mjs",
+              "size": 4880,
+              "mode": 420
+            },
+            {
+              "path": "optimizers/evidence-driven/LICENSE",
+              "size": 11360,
+              "mode": 420
+            },
+            {
+              "path": "optimizers/evidence-driven/package.json",
+              "size": 324,
+              "mode": 420
+            },
+            {
+              "path": "optimizers/evidence-driven/plugins.yml",
+              "size": 52,
+              "mode": 420
+            },
+            {
+              "path": "package.json",
+              "size": 3285,
+              "mode": 420
+            }
+          ]
+        },
+        "sbom": {
+          "file": "dependencies.cdx.json",
+          "sha256": "461751e10029f0432c10e064604a2b20a4460b378d576f02f6a00261e9a26b73",
+          "components": 627
+        },
+        "lock": {
+          "file": "package-lock.json",
+          "sha256": "eac4e1cda219784a5db5c751686f6e9075ef6c9e0f5ecccd8eef30acd268d423"
+        },
+        "boundary": "Local build inventory, not a signature or public release. SBOM describes this repository lock before installation and excludes dev-only dependencies. Consumer Profile resolution can differ. Dirty working trees are explicitly recorded. Packaging does not substitute for native installation, real-model acceptance, or independent quality results."
+      }
+    },
+    "install": {
+      "passed": 1,
+      "packageSha256": "ef85ff643f45a6a6fd1d6df9f59d39456db82d0fc307138ca21ca1a3b390edbc",
+      "scope": "Native DSH installs the same tarball, loads the registered preset/tools including materialize and invokes status via protocol fixture; paid real-model materialization uses the pinned image separately."
+    }
+  },
+  "files": [
+    {
+      "path": "/Users/apple/code/spark-harness-evolution/src/file-reader.ts",
+      "bytes": 5626,
+      "sha256": "528af5387d84f894bee7c488a5368cb835011e9b7175d05d8526fb601ca3b4b1"
+    },
+    {
+      "path": "/Users/apple/code/spark-harness-evolution/src/evidence.ts",
+      "bytes": 5919,
+      "sha256": "28f081b43054191e643ba6d7dc750bd83df83ba4d9e73bdca41b39352bd8502a"
+    },
+    {
+      "path": "/Users/apple/code/spark-harness-evolution/src/api.ts",
+      "bytes": 6281,
+      "sha256": "5a47bf085a9e41e1d8b246f43fec2bc43a03d70eb50f1f3a97f388592596ee95"
+    },
+    {
+      "path": "/Users/apple/code/spark-harness-evolution/src/artifacts.ts",
+      "bytes": 6741,
+      "sha256": "e30e302e6ed75d801276efa8b6ce2ffd3b8776a4502586b501fd3dd772cfb8ee"
+    },
+    {
+      "path": "/Users/apple/code/spark-harness-evolution/src/library.ts",
+      "bytes": 7952,
+      "sha256": "983a4d7631e8df552e9285ddd898497806512064957e91b65990ad9c73ec3be2"
+    },
+    {
+      "path": "/Users/apple/code/spark-harness-evolution/src/optimizer.ts",
+      "bytes": 10961,
+      "sha256": "dc740261db12a5dac1bf4ff1ce28b3f5c779df32b8aa135d5589c13f8619d21e"
+    },
+    {
+      "path": "/Users/apple/code/spark-harness-evolution/src/controller.ts",
+      "bytes": 28296,
+      "sha256": "f89fc2d006a3a031a1a49af98854eb3078593309b2de0bede2cd323a80630ae6"
+    },
+    {
+      "path": "/Users/apple/code/spark-harness-evolution/src/plugin.ts",
+      "bytes": 11784,
+      "sha256": "735245a122869ca7853decbec1958b2b13874ba8ee183f37cda7a0ed9ffce82f"
+    },
+    {
+      "path": "/Users/apple/code/spark-harness-evolution/scripts/verify-materialized-evidence.mjs",
+      "bytes": 15251,
+      "sha256": "17c9b2bdb839d7b6974ea8f4bf49dbe6c38a682fe69ebe1c836e10f7c88444b9"
+    },
+    {
+      "path": "/Users/apple/code/spark-harness-evolution/tests/file-reader.test.ts",
+      "bytes": 5836,
+      "sha256": "d88c7604a5838b9f2850b0ee327c0a191d2d7ad5a6e8d7a81bf5f0bc4efa6b2a"
+    },
+    {
+      "path": "/Users/apple/code/spark-harness-evolution/tests/evidence.test.ts",
+      "bytes": 11469,
+      "sha256": "85c915500175beca2a3b81019663a26becd10243452e9998c8e63b7c09ee6794"
+    },
+    {
+      "path": "/Users/apple/code/spark-harness-evolution/11.md",
+      "bytes": 37379,
+      "sha256": "46ecb1cf793756ceae7e9c881f51fa56cc3a960ddd2906a12c16808db84b1a44"
+    }
+  ]
+}

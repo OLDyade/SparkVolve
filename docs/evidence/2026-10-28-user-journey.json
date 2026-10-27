@@ -1,0 +1,2594 @@
+{
+  "recordedAt": "2026-10-27T19:44:38.561Z",
+  "purpose": "Cold-checkout usability, read-only observation and explicit-write contract regression; not a quality-gain claim",
+  "sources": {
+    "package.json": "d11f023c935994d8cd0cfe131ed74c5a12345289e46324798a00fef8107857ec",
+    "src/cli.ts": "705129f53630c42abec59ed0372110cb16584be77f9f986a8e013a02046e9338",
+    "src/store.ts": "a6bc2c740e1103af53ee76725a5fd26b5eea8fa83e14b6337a73baef5f547edc",
+    "tests/native/progress.test.ts": "28705dc15d19162585288e699a9fd5848a6df03e47b6c48e69c369f696121e79",
+    "tests/walkthrough.test.ts": "98453c4ede10cc82da12abb4ddee383ab842c9dde9ba84720e5c5891457d9c8f",
+    "scripts/accept-walkthrough.mjs": "d652a02a9b61af18f79eb018fcfd15941a83f205cfdfcdeea127a1108104fd4a",
+    "examples/spreadsheet/verification/check.mjs": "80cbcd2129a718ced575d06c099e5602265909991f5d21d3d0f4d0eed2ea94da",
+    "examples/spreadsheet/verification/fixture.py": "685eaa0b0c8064f69c5320c526a628bd440c4ab3bde2d4f1049412d9d8fecc81"
+  },
+  "observer": {
+    "file": ".evolution/user-journey-observer.json",
+    "sha256": "5f6d5a080eae58273fcbbfdc1869936c45a1ba7c06f1942d7800dd2a8e3dbbc8",
+    "record": {
+      "checkedAt": "2026-10-27T19:33:03.496Z",
+      "root": "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/search",
+      "count": 21,
+      "first": {
+        "experimentId": "6f162ead-d7e9-461f-8445-d714ef8b110e",
+        "sequence": 1
+      },
+      "last": {
+        "experimentId": "6f162ead-d7e9-461f-8445-d714ef8b110e",
+        "sequence": 21
+      },
+      "types": [
+        "candidate.submission_started",
+        "candidate.frozen",
+        "candidate.built",
+        "candidate.qa",
+        "candidate.admitted",
+        "run.transition",
+        "run.exit",
+        "candidate.decision"
+      ]
+    }
+  },
+  "preMaterializationChecks": {
+    "unit": 67,
+    "native": 11,
+    "container": 16,
+    "install": 1,
+    "additionalWalkthroughRegression": 1,
+    "containerImage": "sha256:cd36338e983b940e4ba99d5d70e4a9c08355c80c86a7382bc7e10b71a8d672e8",
+    "archive": "d586bcedc967dbfc4ba57f4baf5baf1275406ade7db8bcda7af34cb00879ae62",
+    "boundary": "This archive predates the parent-directory regression and new evidence materialization implementation; later integration checks are recorded separately."
+  },
+  "coldCheckout": {
+    "transport": "Local git clone --no-local, not GitHub network clone",
+    "registration": {
+      "file": "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/registration.json",
+      "sha256": "50c3d80b8fac77498c4b9de8219562e62e53b056cd2a7944a93c2ee4e6a5d218",
+      "record": {
+        "purpose": "Public-command engineering acceptance, not a quality benchmark or release approval",
+        "revision": "0a27c41e1df4916390a6e70eac83cce70973a6de",
+        "changes": " M package.json\n?? scripts/accept-walkthrough.mjs\n",
+        "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+        "specificationSha256": "12bfd8efb21a1d8a7764ec34bd8d8b42ee4753694eb584fac155bec27d9e192a",
+        "scriptSha256": "215f7e66bc5afb0ab4f04e6185c9fadefe85eb2b104c156049a9103c6408d59d",
+        "selection": "Highest full-denominator mean among distinct terminal mutations, earliest ordinal on ties, including negative results. No eligible mutation ends this journey without resampling.",
+        "validation": "Public research.py validation family, one repetition per task per arm; previously used in repository development, not unseen heldout data.",
+        "release": "Export is a research archive. Installation requires separate explicit source/semantic review; no automatic distribution."
+      }
+    },
+    "logs": [
+      {
+        "file": "/Users/apple/.local/state/lean-ctx/tee/npm_--prefix__Users_apple_code_harness-e_a1cc5932.log",
+        "sha256": "dcbbb7ac5917dd056ea7c6c735de33a4c7d9f26853ea7264ec6475107add4c32",
+        "bytes": 564
+      },
+      {
+        "file": "/Users/apple/.local/state/lean-ctx/tee/npm_--prefix__Users_apple_code_harness-e_7f911187.log",
+        "sha256": "2afe6ad2743d6023f98654a0e185df72c65a766330871fe0df605fe60644d4f5",
+        "bytes": 8939
+      },
+      {
+        "file": "/Users/apple/.local/state/lean-ctx/tee/docker_build_--build-arg_HARNESS_IMAGE_h_31f817bf.log",
+        "sha256": "5f6f44501957ad89ef32b2d1606c887d11f2d2f0fe0b9680ad64548f7768a0cb",
+        "bytes": 66835
+      }
+    ],
+    "baseImageBuildLog": "Base image build succeeded in the original tool output, but its full output was not separately retained as a file. The retained Docker log covers the spreadsheet extension build only.",
+    "initialCheckFailure": "TS2307: native test imports referenced missing dist before the first build; corrected typecheck builds first. The rerun log is retained; the initial failure was observed in tool output.",
+    "stateAtCollection": {
+      "cursor": {
+        "experimentId": "6f162ead-d7e9-461f-8445-d714ef8b110e",
+        "sequence": 82
+      },
+      "candidates": [
+        {
+          "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+          "ordinal": 0,
+          "phase": "champion",
+          "mean": 1,
+          "build": {
+            "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+            "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+            "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+            "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+            "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+          }
+        },
+        {
+          "digest": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+          "ordinal": 1,
+          "phase": "rejected",
+          "mean": 1,
+          "build": {
+            "artifactDigest": "630427fc400e413bd354af7e614f751c776c79878e04720bfbc589a9e07586de",
+            "bundleDigest": "3cdc015c95d569efb93de8d93bef87f7942d6879af66ca5dddb8b6187052a7b2",
+            "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+            "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+            "tarballDigest": "83fb7fa36b6106beafb7bfa020ef98c6e2c96154b7610f9de07697557924308d"
+          }
+        },
+        {
+          "digest": "8ad756a88d8d87a82099045e8784adb2eb78172342dcfa5dade7639baf454e8f",
+          "ordinal": 2,
+          "phase": "rejected",
+          "mean": 1,
+          "build": {
+            "artifactDigest": "becb48a316415b735a2cf2d15566a2f27cefb8c689693dfd2392978658c9255d",
+            "bundleDigest": "17ffc095499278704d9f251146f740e6a6870c1692f1a193d66d50a5e873c960",
+            "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+            "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+            "tarballDigest": "21bd8c27b6bef225d69f67d251f7b625d179ff946688765e00742730cd6b724b"
+          }
+        }
+      ],
+      "conclusion": {
+        "reason": "Both substantive, evidence-backed experiments are complete and evaluated under the fixed contract (3/3 candidates used). Result: a tie at the ceiling (mean 1.0, preserved 1, 0 failures) for the baseline, the composed toolkit candidate (985911109), and the task-profile fix candidate (8ad756a8). The champion stays the baseline, since no accuracy improvement was observable at the ceiling. Positive evidence: after reading the trace of 985911109 (the first shipped version of the toolkit), we found its tool family was badly limited, because reads outside /workspace were rejected, relative paths failed, and LibreOffice launched without an isolated profile. That evidence led to 8ad756a8, and under the native profile its first call (workbook_inspect on /input/source.xlsx) succeeded. The run then used the whole tool family (inspect, labels, formula write, recalc) and produced the correct formulas and values. Cost went from about 6/5576/12301 (steps/input tokens/ms per operating-plan run) to about 5/7116/10289 (fewer steps, slightly more input tokens because tool schemas are richer, faster wall clock). Limitations: (1) all tasks were already at 100% accuracy, so accuracy cannot discriminate between bundles here; (2) the suite exercises only one family per task, so we cannot infer transfer to other spreadsheet work, such as multi-sheet, formatting or text tasks; (3) corrections were driven by observing that earlier version; the improvement shown for 8ad756a8 is based on traces, not an independent correctness score; (4) the native probe environment has no /input mount, so /input access was verified from the task trace, not from a probe.",
+        "at": "2026-10-27T19:40:18.869Z",
+        "champion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b"
+      }
+    },
+    "status": "completed through research export; selected candidate rejected for trusted capability distribution",
+    "outcome": {
+      "file": "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/outcome.json",
+      "sha256": "a416aa1368a8ba68b681b7b01b88e41a4358398053bae0c05823b1f348cb5f72",
+      "record": {
+        "status": "completed-awaiting-capability-review",
+        "selected": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+        "comparison": "validation-study/comparison.json",
+        "journal": [
+          {
+            "id": "01-revision",
+            "executable": "git",
+            "args": [
+              "rev-parse",
+              "HEAD"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:30:09.653Z",
+            "finishedAt": "2026-10-27T19:30:09.670Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/01-revision.stdout",
+              "sha256": "7f5c09ec4a3148481c93b88fc74618447b24e00e756760ec7a692eace56e7496"
+            },
+            "stderr": {
+              "file": "commands/01-revision.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "id": "02-working-tree",
+            "executable": "git",
+            "args": [
+              "status",
+              "--short"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:30:09.671Z",
+            "finishedAt": "2026-10-27T19:30:09.714Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/02-working-tree.stdout",
+              "sha256": "2b89fb5255158b6062183303fe85998ae194d85310c48d22a675b1cb80cf4b73"
+            },
+            "stderr": {
+              "file": "commands/02-working-tree.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "id": "03-isolation",
+            "executable": "/Users/apple/.volta/tools/image/node/24.16.0/bin/node",
+            "args": [
+              "examples/isolation.mjs",
+              "runc",
+              "10.230.0.0/16",
+              "0.250.250.200"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:30:09.714Z",
+            "finishedAt": "2026-10-27T19:30:09.909Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/03-isolation.stdout",
+              "sha256": "a85df2e1a221096ccebb0afa74a334e086ff1907d5ea2c14f3028941c5e13447"
+            },
+            "stderr": {
+              "file": "commands/03-isolation.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "id": "04-image-check",
+            "executable": "/Users/apple/.volta/tools/image/node/24.16.0/bin/node",
+            "args": [
+              "examples/spreadsheet/verify-image.mjs",
+              "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/isolation.json",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/image-check"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:30:09.909Z",
+            "finishedAt": "2026-10-27T19:30:10.993Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/04-image-check.stdout",
+              "sha256": "1be3ed1e6b7098265f0a13d5f8c7252af6563ea172e2d92cab66424ca76e7af9"
+            },
+            "stderr": {
+              "file": "commands/04-image-check.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "id": "05-public-inputs",
+            "executable": "docker",
+            "args": [
+              "run",
+              "--rm",
+              "--user",
+              "501:20",
+              "--mount",
+              "type=bind,src=/Users/apple/code/harness-evolution-walkthrough-20261028/examples/spreadsheet,dst=/example,readonly",
+              "--mount",
+              "type=bind,src=/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey,dst=/workspace",
+              "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "python3",
+              "/example/generate.py",
+              "/workspace/dataset"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:30:10.993Z",
+            "finishedAt": "2026-10-27T19:30:11.456Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/05-public-inputs.stdout",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "file": "commands/05-public-inputs.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "id": "06-contract",
+            "executable": "/Users/apple/.volta/tools/image/node/24.16.0/bin/node",
+            "args": [
+              "examples/spreadsheet/prepare.mjs",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/dataset",
+              "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "examples/venus/model.json",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/spec.json",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/isolation.json"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:30:11.457Z",
+            "finishedAt": "2026-10-27T19:30:11.553Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/06-contract.stdout",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "file": "commands/06-contract.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "id": "07-initialize",
+            "executable": "/Users/apple/.volta/tools/image/node/24.16.0/bin/node",
+            "args": [
+              "dist/cli.js",
+              "init",
+              "--root",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/search",
+              "--spec",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/spec.json",
+              "--dataset",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/dataset",
+              "--seed",
+              "examples/spreadsheet/seed"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:30:11.554Z",
+            "finishedAt": "2026-10-27T19:30:11.653Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/07-initialize.stdout",
+              "sha256": "a997603b21cabda711e446bb7665422b719a3aa74c7ab9a92ed85274c9ad3f45"
+            },
+            "stderr": {
+              "file": "commands/07-initialize.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "id": "08-evolve",
+            "executable": "/Users/apple/.volta/tools/image/node/24.16.0/bin/node",
+            "args": [
+              "dist/cli.js",
+              "evolve",
+              "--root",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/search",
+              "--host",
+              "0.0.0.0",
+              "--port",
+              "18958",
+              "--endpoint",
+              "http://0.250.250.254:18958"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:30:11.653Z",
+            "finishedAt": "2026-10-27T19:40:27.020Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/08-evolve.stdout",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "file": "commands/08-evolve.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "id": "09-report",
+            "executable": "/Users/apple/.volta/tools/image/node/24.16.0/bin/node",
+            "args": [
+              "dist/cli.js",
+              "report",
+              "--root",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/search",
+              "--output",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/search-report.json"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:40:27.020Z",
+            "finishedAt": "2026-10-27T19:40:27.282Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/09-report.stdout",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "file": "commands/09-report.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "id": "10-validation-inputs",
+            "executable": "docker",
+            "args": [
+              "run",
+              "--rm",
+              "--user",
+              "501:20",
+              "--mount",
+              "type=bind,src=/Users/apple/code/harness-evolution-walkthrough-20261028/examples/spreadsheet,dst=/example,readonly",
+              "--mount",
+              "type=bind,src=/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey,dst=/workspace",
+              "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "python3",
+              "/example/research.py",
+              "/workspace/validation-inputs",
+              "validation"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:40:27.283Z",
+            "finishedAt": "2026-10-27T19:40:27.667Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/10-validation-inputs.stdout",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "file": "commands/10-validation-inputs.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "id": "11-validation-plan",
+            "executable": "/Users/apple/.volta/tools/image/node/24.16.0/bin/node",
+            "args": [
+              "examples/spreadsheet/validation.mjs",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/search",
+              "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/validation-inputs",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/validation-plan",
+              "1"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:40:27.667Z",
+            "finishedAt": "2026-10-27T19:40:27.751Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/11-validation-plan.stdout",
+              "sha256": "c28cf32b1133596750cc8478f097c2edb8d35da8a6dd0893eb0858691bdb39ad"
+            },
+            "stderr": {
+              "file": "commands/11-validation-plan.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "id": "12-validate",
+            "executable": "/Users/apple/.volta/tools/image/node/24.16.0/bin/node",
+            "args": [
+              "dist/cli.js",
+              "validate",
+              "--root",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/validation-study",
+              "--spec",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/validation-plan/spec.json",
+              "--dataset",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/validation-plan/dataset",
+              "--arms",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/validation-plan/arms.json"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:40:27.751Z",
+            "finishedAt": "2026-10-27T19:41:53.854Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/12-validate.stdout",
+              "sha256": "87f0fd8aea6a3e0801ada53697c3276cc52c548ce7dff1d3fd6c81f1866dba4b"
+            },
+            "stderr": {
+              "file": "commands/12-validate.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "id": "13-research-export",
+            "executable": "/Users/apple/.volta/tools/image/node/24.16.0/bin/node",
+            "args": [
+              "dist/cli.js",
+              "export",
+              "--root",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/search",
+              "--candidate",
+              "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+              "--output",
+              "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/research-export"
+            ],
+            "cwd": "/Users/apple/code/harness-evolution-walkthrough-20261028",
+            "startedAt": "2026-10-27T19:41:53.855Z",
+            "finishedAt": "2026-10-27T19:41:53.958Z",
+            "code": 0,
+            "signal": null,
+            "stdout": {
+              "file": "commands/13-research-export.stdout",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "file": "commands/13-research-export.stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        ]
+      }
+    },
+    "searchReport": {
+      "file": "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/search-report.json",
+      "sha256": "aab6a59510132af3dfd79b3e91bc21609e5b0b5c6487c2f38e4b7a4163db2d02",
+      "record": {
+        "experimentId": "6f162ead-d7e9-461f-8445-d714ef8b110e",
+        "specificationDigest": "2b0bba093c659f0e8d01c0249f79be01e1252139302e60fa0da79f24770a4951",
+        "purpose": "search",
+        "metric": {
+          "name": "formula_value_accuracy",
+          "direction": "maximize",
+          "minimum": 0,
+          "maximum": 1,
+          "failure": 0
+        },
+        "taskOrder": [
+          "operating-plan",
+          "regional-plan",
+          "stress-plan"
+        ],
+        "repetitions": 1,
+        "candidateBudget": 4,
+        "candidatesConsumed": 3,
+        "pendingSubmissions": [],
+        "probes": {
+          "budget": {
+            "limit": 6,
+            "timeoutSeconds": 120
+          },
+          "consumed": 6,
+          "records": [
+            {
+              "build": {
+                "artifactDigest": "58b9b4410dfaed7efc79ab539a9e28b8d83107ee8aa0cead554c8c3553e61a1f",
+                "bundleDigest": "177f7ba7220b919eedc39d845ff629a908fb69062d77c36df708bb93373091c4",
+                "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+                "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                "tarballDigest": "89b1879910d3e9f4b5467430a845da7269bb1a57ff052263757bd7fd079f8e65"
+              },
+              "completedAt": "2026-10-27T19:36:07.761Z",
+              "error": "Probe container exited 1; inspect original logs",
+              "executionMilliseconds": 573,
+              "exitCode": 1,
+              "id": "32f738d56a8900b1475b54e0b8e650d7ba422d288d2826f1d2fe7a41db85f479",
+              "phase": "failed",
+              "queuedAt": "2026-10-27T19:36:05.730Z",
+              "request": {
+                "draft": "robust-v2",
+                "entry": "core.mjs",
+                "hypothesis": "Composing inspection (labels/comments, value-vs-formula kinds), formula-aware edits, staged atomic writes, a LibreOffice recalculation tool and a formula-vs-literal overwrite guard into one tool family lets the agent read required definitions and verify computed formula results before delivery without weakening the native write contract (source bytes, preserved styles/comments, native errors, /workspace restriction).",
+                "suite": "probe-suite"
+              },
+              "sourceDigest": "a74e65016d7894e5d4729fcb506f215aab6248805727a2993c6dc3606a3d3bc2",
+              "suiteDigest": "7617320da0f285d752e0869359a89913cd6fee1e9daa5204a7ae661554153e12"
+            },
+            {
+              "build": {
+                "artifactDigest": "58b9b4410dfaed7efc79ab539a9e28b8d83107ee8aa0cead554c8c3553e61a1f",
+                "bundleDigest": "177f7ba7220b919eedc39d845ff629a908fb69062d77c36df708bb93373091c4",
+                "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+                "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                "tarballDigest": "89b1879910d3e9f4b5467430a845da7269bb1a57ff052263757bd7fd079f8e65"
+              },
+              "completedAt": "2026-10-27T19:36:37.087Z",
+              "error": "Probe container exited 1; inspect original logs",
+              "executionMilliseconds": 666,
+              "exitCode": 1,
+              "id": "0cd056d1b4137b539eb1ca1dc2370fb159ad90b3354fd9ce06e9ae1b93d29aaf",
+              "phase": "failed",
+              "queuedAt": "2026-10-27T19:36:35.004Z",
+              "request": {
+                "draft": "robust-v2",
+                "entry": "core.mjs",
+                "hypothesis": "Composing inspection (labels/comments, value-vs-formula kinds), formula-aware edits, staged atomic writes, a LibreOffice recalculation tool and a formula-vs-literal overwrite guard into one tool family lets the agent read required definitions and verify computed formula results before delivery without weakening the native write contract (source bytes, preserved styles/comments, native errors, /workspace restriction).",
+                "suite": "probe-suite"
+              },
+              "sourceDigest": "a74e65016d7894e5d4729fcb506f215aab6248805727a2993c6dc3606a3d3bc2",
+              "suiteDigest": "b501601b160adabb9d41e8573d55220de87900425c21c953991d90db2ae2c6d3"
+            },
+            {
+              "build": {
+                "artifactDigest": "796bfa202c0c2b60b51f895d4f3901db679bda4331cd62cb5b230e148b025b2f",
+                "bundleDigest": "f1c62a34ef2b05a0e8b0fec62658b6982c95fdfea73be4757aadf56d428a2c29",
+                "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+                "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                "tarballDigest": "df772e7a2324c320ebc046e85aef591c8dd8d45ae89daadb3adc7a90d66670b1"
+              },
+              "completedAt": "2026-10-27T19:37:11.724Z",
+              "executionMilliseconds": 1375,
+              "exitCode": 0,
+              "id": "edc2fefe690c18c98766b47788340d254d54811c91e765cc9ec4bfde200065b8",
+              "phase": "passed",
+              "queuedAt": "2026-10-27T19:37:08.925Z",
+              "request": {
+                "draft": "robust-v2",
+                "entry": "core.mjs",
+                "hypothesis": "Composing inspection (labels/comments, value-vs-formula kinds), formula-aware edits, staged atomic writes, a LibreOffice recalculation tool and a formula-vs-literal overwrite guard into one tool family lets the agent read required definitions and verify computed formula results before delivery without weakening the native write contract (source bytes, preserved styles/comments, native errors, /workspace restriction).",
+                "suite": "probe-suite"
+              },
+              "sourceDigest": "2b7b10b87e7c59eb44cfe3b72836fd227a36524f4685380d01ad8a756ae8cce5",
+              "suiteDigest": "e32b5cad257396eabba9c0f575453e018ea244ec9ee8473308443f7d43a9fdb4"
+            },
+            {
+              "build": {
+                "artifactDigest": "becb48a316415b735a2cf2d15566a2f27cefb8c689693dfd2392978658c9255d",
+                "bundleDigest": "17ffc095499278704d9f251146f740e6a6870c1692f1a193d66d50a5e873c960",
+                "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+                "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                "tarballDigest": "21bd8c27b6bef225d69f67d251f7b625d179ff946688765e00742730cd6b724b"
+              },
+              "completedAt": "2026-10-27T19:38:43.294Z",
+              "error": "Probe container exited 1; inspect original logs",
+              "executionMilliseconds": 567,
+              "exitCode": 1,
+              "id": "7dbe38e94df4ec0e33aa6dafeb3232188d8590f46758c2900b894eaf522cb7ac",
+              "phase": "failed",
+              "queuedAt": "2026-10-27T19:38:41.357Z",
+              "request": {
+                "draft": "robust-v2",
+                "entry": "core.mjs",
+                "hypothesis": "Allowing absolute /input paths to be read (while keeping every write inside /workspace) removes the observed first-call failure of workbook_inspect against /input/source.xlsx, and making relative paths resolve against the current directory lets compact relative calls reach the same tools; the recalc/resolve/inspect composition still verifies formula values.",
+                "suite": "probe-suite"
+              },
+              "sourceDigest": "8ad756a88d8d87a82099045e8784adb2eb78172342dcfa5dade7639baf454e8f",
+              "suiteDigest": "2f65a7cbb684e8067225b8cf3f19a44b98808e17f42ea296e182b8e21664587a"
+            },
+            {
+              "build": {
+                "artifactDigest": "becb48a316415b735a2cf2d15566a2f27cefb8c689693dfd2392978658c9255d",
+                "bundleDigest": "17ffc095499278704d9f251146f740e6a6870c1692f1a193d66d50a5e873c960",
+                "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+                "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                "tarballDigest": "21bd8c27b6bef225d69f67d251f7b625d179ff946688765e00742730cd6b724b"
+              },
+              "completedAt": "2026-10-27T19:39:03.604Z",
+              "executionMilliseconds": 603,
+              "exitCode": 0,
+              "id": "640e407bf3963c065d8aef527aba7f8f12f07112123ada50db7298fda502254a",
+              "phase": "passed",
+              "queuedAt": "2026-10-27T19:39:01.570Z",
+              "request": {
+                "draft": "robust-v2",
+                "entry": "core.mjs",
+                "hypothesis": "Allowing absolute /input paths to be read (while keeping every write inside /workspace) removes the observed first-call failure of workbook_inspect against /input/source.xlsx, and making relative paths resolve against the current directory lets compact relative calls reach the same tools; the recalc/resolve/inspect composition still verifies formula values.",
+                "suite": "probe-suite"
+              },
+              "sourceDigest": "8ad756a88d8d87a82099045e8784adb2eb78172342dcfa5dade7639baf454e8f",
+              "suiteDigest": "054460a83a678d1264040c0c3c83c5135c2024b8b99b94bc4778fa10e92d129e"
+            },
+            {
+              "build": {
+                "artifactDigest": "becb48a316415b735a2cf2d15566a2f27cefb8c689693dfd2392978658c9255d",
+                "bundleDigest": "17ffc095499278704d9f251146f740e6a6870c1692f1a193d66d50a5e873c960",
+                "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+                "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                "tarballDigest": "21bd8c27b6bef225d69f67d251f7b625d179ff946688765e00742730cd6b724b"
+              },
+              "completedAt": "2026-10-27T19:39:24.216Z",
+              "executionMilliseconds": 590,
+              "exitCode": 0,
+              "id": "021844b67d57c6fb1433a27894422c9b8f5bcccf321d0f9b06bc8cd67ec8bb1b",
+              "phase": "passed",
+              "queuedAt": "2026-10-27T19:39:22.260Z",
+              "request": {
+                "draft": "robust-v2",
+                "entry": "core.mjs",
+                "hypothesis": "Allowing absolute /input paths to be read (while keeping every write inside /workspace) removes the observed first-call failure of workbook_inspect against /input/source.xlsx, and current-directory-relative resolution lets compact relative calls reach the same tools; the recalc/resolve/inspect composition still verifies formula values with unchanged write-contract semantics.",
+                "suite": "probe-suite"
+              },
+              "sourceDigest": "8ad756a88d8d87a82099045e8784adb2eb78172342dcfa5dade7639baf454e8f",
+              "suiteDigest": "e91828da844fd28ea29005e6d86525f04a77924579cc91ceaa342acc228d3bca"
+            }
+          ],
+          "boundary": "Optimizer-authored behavioral experiments, not task scores or independent validation. Build and execution logs are retained under probes/<id>. No model credentials or network are supplied to probe execution."
+        },
+        "currentChampion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+        "candidates": [
+          {
+            "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "ordinal": 0,
+            "phase": "champion",
+            "build": {
+              "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+              "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+              "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+              "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+            },
+            "buildError": null,
+            "qaError": null,
+            "expectedRuns": 3,
+            "observedRuns": 3,
+            "scoredRuns": 3,
+            "failedRuns": 0,
+            "complete": true,
+            "mean": 1,
+            "decision": {
+              "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+              "constraints": [],
+              "constraintsSatisfied": true,
+              "denominator": 3,
+              "failureBudgetSatisfied": true,
+              "failures": 0,
+              "mean": 1,
+              "previousChampion": null,
+              "promoted": true,
+              "qualityImproved": true
+            },
+            "executionElapsedMsReported": 69803,
+            "missingExecutionDurations": 0,
+            "usage": {
+              "ledgers": 3,
+              "availableLedgers": 3,
+              "unavailableLedgers": 0,
+              "reportedTotals": {
+                "started": 29,
+                "results": 29,
+                "failed": 0,
+                "unfinished": 0,
+                "inputTokensReported": 24059,
+                "outputTokensReported": 5757,
+                "missingUsage": 0,
+                "requestDurationMsSum": 55191
+              },
+              "complete": true
+            },
+            "samples": [
+              {
+                "id": "5add31799545d7c7cb3dd25f58cdad6f8f4273bf2896e3fb4bb147ac5953c3ca",
+                "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+                "task": "operating-plan",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "5c5725048576e822bf51ecb5e25a4423f0ac2009154b50a9eac6eab9ecec2dc2",
+                "startedAt": "2026-10-27T19:30:14.068Z",
+                "completedAt": "2026-10-27T19:30:37.283Z",
+                "executionElapsedMs": 23215,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 10,
+                  "results": 10,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 8394,
+                  "outputTokensReported": 1999,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 18399
+                }
+              },
+              {
+                "id": "05906a2bfe7d16c62d66b11558bc0c4d2e77135af7c6accba10d6a01cc026494",
+                "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+                "task": "regional-plan",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "76be7897d1d8382d459c334778168e2a559ad5dfca220a0ef994da103ba2aefb",
+                "startedAt": "2026-10-27T19:30:14.068Z",
+                "completedAt": "2026-10-27T19:30:42.188Z",
+                "executionElapsedMs": 28120,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 11,
+                  "results": 11,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 8480,
+                  "outputTokensReported": 2485,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 23216
+                }
+              },
+              {
+                "id": "0ae48f815f73cf744ce9555cbb1da7538be42aff264aa27b434d9202e97c494a",
+                "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+                "task": "stress-plan",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "652952a6c613288a62fb4687ff62fd2d89efd95308317bb536ce23936e28ef6f",
+                "startedAt": "2026-10-27T19:30:14.069Z",
+                "completedAt": "2026-10-27T19:30:32.537Z",
+                "executionElapsedMs": 18468,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 8,
+                  "results": 8,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 7185,
+                  "outputTokensReported": 1273,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 13576
+                }
+              }
+            ]
+          },
+          {
+            "digest": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+            "ordinal": 1,
+            "phase": "rejected",
+            "build": {
+              "artifactDigest": "630427fc400e413bd354af7e614f751c776c79878e04720bfbc589a9e07586de",
+              "bundleDigest": "3cdc015c95d569efb93de8d93bef87f7942d6879af66ca5dddb8b6187052a7b2",
+              "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+              "tarballDigest": "83fb7fa36b6106beafb7bfa020ef98c6e2c96154b7610f9de07697557924308d"
+            },
+            "buildError": null,
+            "qaError": null,
+            "expectedRuns": 3,
+            "observedRuns": 3,
+            "scoredRuns": 3,
+            "failedRuns": 0,
+            "complete": true,
+            "mean": 1,
+            "decision": {
+              "candidate": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+              "constraints": [],
+              "constraintsSatisfied": true,
+              "denominator": 3,
+              "failureBudgetSatisfied": true,
+              "failures": 0,
+              "mean": 1,
+              "previousChampion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+              "promoted": false,
+              "qualityImproved": false
+            },
+            "executionElapsedMsReported": 69316,
+            "missingExecutionDurations": 0,
+            "usage": {
+              "ledgers": 3,
+              "availableLedgers": 3,
+              "unavailableLedgers": 0,
+              "reportedTotals": {
+                "started": 25,
+                "results": 25,
+                "failed": 0,
+                "unfinished": 0,
+                "inputTokensReported": 22377,
+                "outputTokensReported": 4769,
+                "missingUsage": 0,
+                "requestDurationMsSum": 55354
+              },
+              "complete": true
+            },
+            "samples": [
+              {
+                "id": "b3f12fab036169644fed0e78cf9679dc847ae2bc1db2983d93c69d541dc662ec",
+                "candidate": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+                "task": "operating-plan",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "142ee3148fa3d1593343b75c76897dfae10d5fedbd5ce3d7dcd4a6ad901cd039",
+                "startedAt": "2026-10-27T19:37:25.340Z",
+                "completedAt": "2026-10-27T19:37:52.080Z",
+                "executionElapsedMs": 26740,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 10,
+                  "results": 10,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 9175,
+                  "outputTokensReported": 2078,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 21862
+                }
+              },
+              {
+                "id": "3a8228d93b98c9aeb5a4749b62beda48aca75f180632c809f81ea0ed6a9b4e3b",
+                "candidate": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+                "task": "regional-plan",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "407e9eb95d96ab9f0efee5d210bea1900e37270422689f81f2116b1b095c86dd",
+                "startedAt": "2026-10-27T19:37:25.340Z",
+                "completedAt": "2026-10-27T19:37:50.981Z",
+                "executionElapsedMs": 25641,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 9,
+                  "results": 9,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 7626,
+                  "outputTokensReported": 1633,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 21191
+                }
+              },
+              {
+                "id": "1e684d32d15a73935bf561b7325fb09aba67121e7f496291a80dfc6a41fc674d",
+                "candidate": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+                "task": "stress-plan",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "39042560233550695e59276c1a086509bd59aee1d744f626e00d23066a29d775",
+                "startedAt": "2026-10-27T19:37:25.340Z",
+                "completedAt": "2026-10-27T19:37:42.275Z",
+                "executionElapsedMs": 16935,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 6,
+                  "results": 6,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 5576,
+                  "outputTokensReported": 1058,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 12301
+                }
+              }
+            ]
+          },
+          {
+            "digest": "8ad756a88d8d87a82099045e8784adb2eb78172342dcfa5dade7639baf454e8f",
+            "ordinal": 2,
+            "phase": "rejected",
+            "build": {
+              "artifactDigest": "becb48a316415b735a2cf2d15566a2f27cefb8c689693dfd2392978658c9255d",
+              "bundleDigest": "17ffc095499278704d9f251146f740e6a6870c1692f1a193d66d50a5e873c960",
+              "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+              "tarballDigest": "21bd8c27b6bef225d69f67d251f7b625d179ff946688765e00742730cd6b724b"
+            },
+            "buildError": null,
+            "qaError": null,
+            "expectedRuns": 3,
+            "observedRuns": 3,
+            "scoredRuns": 3,
+            "failedRuns": 0,
+            "complete": true,
+            "mean": 1,
+            "decision": {
+              "candidate": "8ad756a88d8d87a82099045e8784adb2eb78172342dcfa5dade7639baf454e8f",
+              "constraints": [],
+              "constraintsSatisfied": true,
+              "denominator": 3,
+              "failureBudgetSatisfied": true,
+              "failures": 0,
+              "mean": 1,
+              "previousChampion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+              "promoted": false,
+              "qualityImproved": false
+            },
+            "executionElapsedMsReported": 46790,
+            "missingExecutionDurations": 0,
+            "usage": {
+              "ledgers": 3,
+              "availableLedgers": 3,
+              "unavailableLedgers": 0,
+              "reportedTotals": {
+                "started": 19,
+                "results": 19,
+                "failed": 0,
+                "unfinished": 0,
+                "inputTokensReported": 19921,
+                "outputTokensReported": 3396,
+                "missingUsage": 0,
+                "requestDurationMsSum": 32866
+              },
+              "complete": true
+            },
+            "samples": [
+              {
+                "id": "bbe846875dd47cb0fd2cb344499cdf1958e14fd995d7befd150001e3b631f41e",
+                "candidate": "8ad756a88d8d87a82099045e8784adb2eb78172342dcfa5dade7639baf454e8f",
+                "task": "operating-plan",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "f067c7b2ee3b7cbc59eae4c4fc18da2b364a15c60332326dd5729116e682b897",
+                "startedAt": "2026-10-27T19:39:41.021Z",
+                "completedAt": "2026-10-27T19:39:55.788Z",
+                "executionElapsedMs": 14767,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 5,
+                  "results": 5,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 7116,
+                  "outputTokensReported": 1102,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 10289
+                }
+              },
+              {
+                "id": "3231e8e94e7244f6d0c5aad58043b4a439ffd744e36236af4bc8620f59ef89e1",
+                "candidate": "8ad756a88d8d87a82099045e8784adb2eb78172342dcfa5dade7639baf454e8f",
+                "task": "regional-plan",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "5e712449ee0957300b55270da94891b659b97252a53dce4144a20e386f661346",
+                "startedAt": "2026-10-27T19:39:41.021Z",
+                "completedAt": "2026-10-27T19:39:58.114Z",
+                "executionElapsedMs": 17093,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 8,
+                  "results": 8,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 7411,
+                  "outputTokensReported": 1228,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 12430
+                }
+              },
+              {
+                "id": "b8549b85b2515f305c553cd613bc4a2cca756f35b5ca019e456ea8e4843b6897",
+                "candidate": "8ad756a88d8d87a82099045e8784adb2eb78172342dcfa5dade7639baf454e8f",
+                "task": "stress-plan",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "1d90552087c28c00649f2e95b91f78c79c3c4a3141ed5c6deaceedf70b617f17",
+                "startedAt": "2026-10-27T19:39:41.021Z",
+                "completedAt": "2026-10-27T19:39:55.951Z",
+                "executionElapsedMs": 14930,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 6,
+                  "results": 6,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 5394,
+                  "outputTokensReported": 1066,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 10147
+                }
+              }
+            ]
+          }
+        ],
+        "optimizer": {
+          "episodes": [
+            {
+              "episode": 0,
+              "usage": {
+                "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                "started": 128,
+                "results": 128,
+                "failed": 0,
+                "unfinished": 0,
+                "inputTokensReported": 313765,
+                "outputTokensReported": 61870,
+                "missingUsage": 0,
+                "requestDurationMsSum": 546290
+              }
+            }
+          ],
+          "accounting": {
+            "consumedSeconds": 580.972,
+            "episodes": 1,
+            "optimizerHarness": "0d4c2c7bce43f893250cac42a438f68fc37bcae774c0bba48444aff3f17d2365",
+            "reason": "optimizer_concluded"
+          },
+          "usage": {
+            "ledgers": 1,
+            "availableLedgers": 1,
+            "unavailableLedgers": 0,
+            "reportedTotals": {
+              "started": 128,
+              "results": 128,
+              "failed": 0,
+              "unfinished": 0,
+              "inputTokensReported": 313765,
+              "outputTokensReported": 61870,
+              "missingUsage": 0,
+              "requestDurationMsSum": 546290
+            },
+            "complete": true
+          }
+        },
+        "totalUsage": {
+          "ledgers": 10,
+          "availableLedgers": 10,
+          "unavailableLedgers": 0,
+          "reportedTotals": {
+            "started": 201,
+            "results": 201,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 380122,
+            "outputTokensReported": 75792,
+            "missingUsage": 0,
+            "requestDurationMsSum": 689701
+          },
+          "complete": true
+        },
+        "monetaryCost": null,
+        "lastEvent": 82,
+        "boundary": "Full-denominator descriptive results. QA/build failures consume candidate budget but have no task score. Usage is recomputed from durable DSH adapter stream ledgers; hidden provider retries and prices are unknown. Missing ledgers and missing usage are explicit; reported totals are partial when complete=false. Request durations sum streams and are not wall time. Execution elapsed excludes grading; build/QA time is not token cost. Search selection is not independent validation or causal attribution. No inferred accuracy from optimizer narrative."
+      }
+    },
+    "selection": {
+      "file": "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/selection.json",
+      "sha256": "b463accab62ece1c7e5d925fae4d2d63efaa69d1a8d20544397a851ddd7a4b63",
+      "record": {
+        "candidate": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+        "ordinal": 1,
+        "mean": 1,
+        "reportSha256": "aab6a59510132af3dfd79b3e91bc21609e5b0b5c6487c2f38e4b7a4163db2d02"
+      }
+    },
+    "validationRegistration": {
+      "file": "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/validation-study/registration.json",
+      "sha256": "0997592e7585db859fe4f53c1672f14c21ad5809491bad47af979b3b293d0e35",
+      "record": {
+        "arms": [
+          {
+            "artifact": "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/search/artifacts/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "build": {
+              "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+              "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+              "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+              "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+            },
+            "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "id": "baseline",
+            "source": "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/search/candidates/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b"
+          },
+          {
+            "artifact": "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/search/artifacts/985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+            "build": {
+              "artifactDigest": "630427fc400e413bd354af7e614f751c776c79878e04720bfbc589a9e07586de",
+              "bundleDigest": "3cdc015c95d569efb93de8d93bef87f7942d6879af66ca5dddb8b6187052a7b2",
+              "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+              "tarballDigest": "83fb7fa36b6106beafb7bfa020ef98c6e2c96154b7610f9de07697557924308d"
+            },
+            "digest": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+            "id": "candidate",
+            "source": "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/search/candidates/985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1"
+          }
+        ],
+        "datasetDigest": "f140f3ff131d5643877d1ef19eed9aa48da06011c7aae669de0f0d5030b43352",
+        "specification": {
+          "budget": {
+            "candidates": 1,
+            "optimizerSeconds": 1800
+          },
+          "candidate": {
+            "build": {
+              "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "timeoutSeconds": 300
+            },
+            "patch": "cordis.patch.yml",
+            "qa": {
+              "digest": "914bec72c2cc83736db2d4d257c8f7be64d6362a038fcfbea97b6c35145c8a8f",
+              "directory": "verification",
+              "entry": "check.mjs"
+            }
+          },
+          "concurrency": 3,
+          "constraints": [],
+          "egress": {
+            "executor": [
+              {
+                "addresses": {
+                  "kind": "public"
+                },
+                "body": {
+                  "equals": {
+                    "model": "deepseek/deepseek-v4.1-flash-1017"
+                  },
+                  "kind": "json",
+                  "maximum": {
+                    "max_tokens": 32768
+                  }
+                },
+                "credential": {
+                  "env": "VENUS_API_KEY",
+                  "header": "authorization",
+                  "prefix": "Bearer "
+                },
+                "id": "venus",
+                "maxRequestBytes": 8388608,
+                "method": "POST",
+                "path": "/v1/chat/completions",
+                "timeoutSeconds": 300,
+                "upstream": "https://venus.xfinfr.com/v1/chat/completions"
+              }
+            ],
+            "optimizer": [
+              {
+                "addresses": {
+                  "kind": "public"
+                },
+                "body": {
+                  "equals": {
+                    "model": "deepseek/deepseek-v4.1-flash-1017"
+                  },
+                  "kind": "json",
+                  "maximum": {
+                    "max_tokens": 32768
+                  }
+                },
+                "credential": {
+                  "env": "VENUS_API_KEY",
+                  "header": "authorization",
+                  "prefix": "Bearer "
+                },
+                "id": "venus",
+                "maxRequestBytes": 8388608,
+                "method": "POST",
+                "path": "/v1/chat/completions",
+                "timeoutSeconds": 300,
+                "upstream": "https://venus.xfinfr.com/v1/chat/completions"
+              }
+            ]
+          },
+          "evaluator": {
+            "command": [
+              "python3",
+              "/evaluation/grade.py"
+            ],
+            "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+            "timeoutSeconds": 120
+          },
+          "executor": {
+            "credentialEnv": [
+              "VENUS_API_KEY"
+            ],
+            "maxTokens": 32768,
+            "model": "deepseek/deepseek-v4.1-flash-1017",
+            "provider": "venus",
+            "reasoningEffort": "off"
+          },
+          "failureLimit": 0,
+          "isolation": {
+            "cpus": 2,
+            "homeMiB": 128,
+            "memoryMiB": 4096,
+            "network": {
+              "build": "bridge",
+              "egressDns": [
+                "0.250.250.200"
+              ],
+              "egressPool": "10.230.0.0/16",
+              "evaluator": "none",
+              "executor": "controlled",
+              "optimizer": "controlled",
+              "qa": "none"
+            },
+            "pids": 256,
+            "runtime": "runc",
+            "tmpMiB": 512,
+            "user": {
+              "gid": 20,
+              "uid": 501
+            }
+          },
+          "metric": {
+            "direction": "maximize",
+            "failure": 0,
+            "maximum": 1,
+            "minimum": 0,
+            "name": "formula_value_accuracy"
+          },
+          "name": "spreadsheet-independent-validation",
+          "objective": "Improve the general spreadsheet capability bundle from actual task evidence. Conduct at least one substantive, evidence-backed plugin experiment, including implementation or composition changes; test the resulting candidate under the fixed task contract. Do not insert case-specific answers. Correctness is primary; report preservation and cost separately. A tie is a legitimate negative result, never a reason to modify the evaluator.",
+          "optimizer": {
+            "credentialEnv": [
+              "VENUS_API_KEY"
+            ],
+            "maxTokens": 32768,
+            "model": "deepseek/deepseek-v4.1-flash-1017",
+            "provider": "venus",
+            "reasoningEffort": "off"
+          },
+          "optimizerHarness": {
+            "composition": "plugins.yml",
+            "digest": "0d4c2c7bce43f893250cac42a438f68fc37bcae774c0bba48444aff3f17d2365",
+            "directory": "optimizer-bundle"
+          },
+          "probes": null,
+          "purpose": "validation",
+          "repetitions": 1,
+          "researchLibrary": null,
+          "runtime": {
+            "dshVersion": "0.2.1-rc.4",
+            "environment": {
+              "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+              "directory": "runtime",
+              "patch": "cordis.patch.yml"
+            },
+            "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+            "profile": "sdk"
+          },
+          "tasks": [
+            {
+              "evaluation": "evaluation/normalization",
+              "evaluationDigest": "8516824bcd2d6ab4dc0e9817365047957787c7ac63bb21caa0cafb2015d47817",
+              "id": "normalization",
+              "input": "inputs/normalization",
+              "inputDigest": "e5e9dc109681b50a2e5452acc455b276c0bb7f32abb6192f759db8629fb5b981",
+              "prompt": "Complete /input/source.xlsx using Excel formulas. For every displayed year, normalize reported results by removing non-recurring expenses and gains. Begin with reported tax expense; each adjustment tax rate applies only to its own adjustment. Fill all four normalized metric rows for all years. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed."
+            },
+            {
+              "evaluation": "evaluation/weighted-portfolio",
+              "evaluationDigest": "577cea14079c73d17ba74bd12f4037cc0f6bee84bf65ba99724c394f1d46c5ec",
+              "id": "weighted-portfolio",
+              "input": "inputs/weighted-portfolio",
+              "inputDigest": "b7aa6c5034b4b3ebacd5a527504a141900e7e29cf9ac4abf20aaae800898fdf8",
+              "prompt": "Complete /input/source.xlsx using Excel formulas. Fill each segment revenue, gross profit and margin. Fill total units, revenue, gross profit and the portfolio margin. Total price and total cost per unit cells are intentionally blank; do not fill them. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed."
+            },
+            {
+              "evaluation": "evaluation/debt-rollforward",
+              "evaluationDigest": "488841ff305bc629a5938311943c0d9227e9004eabae1c4d56855fa3ad2d5b7a",
+              "id": "debt-rollforward",
+              "input": "inputs/debt-rollforward",
+              "inputDigest": "aea1a57f8fca0eb87e46300ebd3fc24533f502043477f9b2a948d31600b262dc",
+              "prompt": "Complete /input/source.xlsx using Excel formulas. Build the four-year debt schedule. Repay equal principal installments each year, based on original principal. Interest uses the same-year opening balance and rate. Fill all five schedule rows for every year. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed."
+            },
+            {
+              "evaluation": "evaluation/scenario-valuation",
+              "evaluationDigest": "f7e2b2caed7bb9f56e2e3846c7c02bc5ac9104401ed62ec039d0d9db528ec714",
+              "id": "scenario-valuation",
+              "input": "inputs/scenario-valuation",
+              "inputDigest": "dcd966db92f85238e33eee4d436d4bef91b99739c66a8d6cd9023cd1f9265008",
+              "prompt": "Complete /input/source.xlsx using Excel formulas. Use the requested case to fill all forecast revenues and EBITDA. Then calculate exit enterprise and equity value in the final year only. Earlier-year exit value cells are intentionally blank. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed."
+            }
+          ],
+          "timeoutSeconds": 300
+        }
+      }
+    },
+    "comparison": {
+      "file": "/Users/apple/code/harness-evolution-walkthrough-20261028/.evolution/user-journey/validation-study/comparison.json",
+      "sha256": "4e95387d0ff88be94aaaee7134591300729c781e405aa2311b3933bcce0f8a38",
+      "record": {
+        "boundary": "Paired descriptive results, full denominator. Repetitions share tasks; sample SD is not a confidence interval. Validation feedback must not be reused as unseen evaluation. No automatic release.",
+        "comparisons": [
+          {
+            "arm": "candidate",
+            "meanDelta": 0,
+            "pairs": [
+              {
+                "baseline": 0.25,
+                "delta": 0.75,
+                "repetition": 0,
+                "score": 1,
+                "task": "normalization"
+              },
+              {
+                "baseline": 1,
+                "delta": 0,
+                "repetition": 0,
+                "score": 1,
+                "task": "weighted-portfolio"
+              },
+              {
+                "baseline": 1,
+                "delta": 0,
+                "repetition": 0,
+                "score": 1,
+                "task": "debt-rollforward"
+              },
+              {
+                "baseline": 1,
+                "delta": -0.75,
+                "repetition": 0,
+                "score": 0.25,
+                "task": "scenario-valuation"
+              }
+            ],
+            "perTask": [
+              {
+                "meanDelta": 0.75,
+                "task": "normalization"
+              },
+              {
+                "meanDelta": 0,
+                "task": "weighted-portfolio"
+              },
+              {
+                "meanDelta": 0,
+                "task": "debt-rollforward"
+              },
+              {
+                "meanDelta": -0.75,
+                "task": "scenario-valuation"
+              }
+            ],
+            "sampleSd": 0.6123724356957945,
+            "status": "complete",
+            "strictImprovement": false
+          }
+        ],
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "registrationDigest": "dedc36819556143074e833c6785a0ae3d830e8582bc28f68b02901691cc1bb66",
+        "results": [
+          {
+            "build": {
+              "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+              "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+              "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+              "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+            },
+            "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "complete": true,
+            "constraints": [],
+            "failures": 0,
+            "id": "baseline",
+            "mean": 0.8125,
+            "samples": [
+              {
+                "phase": "scored",
+                "repetition": 0,
+                "score": 0.25,
+                "task": "normalization"
+              },
+              {
+                "phase": "scored",
+                "repetition": 0,
+                "score": 1,
+                "task": "weighted-portfolio"
+              },
+              {
+                "phase": "scored",
+                "repetition": 0,
+                "score": 1,
+                "task": "debt-rollforward"
+              },
+              {
+                "phase": "scored",
+                "repetition": 0,
+                "score": 1,
+                "task": "scenario-valuation"
+              }
+            ]
+          },
+          {
+            "build": {
+              "artifactDigest": "630427fc400e413bd354af7e614f751c776c79878e04720bfbc589a9e07586de",
+              "bundleDigest": "3cdc015c95d569efb93de8d93bef87f7942d6879af66ca5dddb8b6187052a7b2",
+              "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+              "tarballDigest": "83fb7fa36b6106beafb7bfa020ef98c6e2c96154b7610f9de07697557924308d"
+            },
+            "candidate": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+            "complete": true,
+            "constraints": [],
+            "failures": 0,
+            "id": "candidate",
+            "mean": 0.8125,
+            "samples": [
+              {
+                "phase": "scored",
+                "repetition": 0,
+                "score": 1,
+                "task": "normalization"
+              },
+              {
+                "phase": "scored",
+                "repetition": 0,
+                "score": 1,
+                "task": "weighted-portfolio"
+              },
+              {
+                "phase": "scored",
+                "repetition": 0,
+                "score": 1,
+                "task": "debt-rollforward"
+              },
+              {
+                "phase": "scored",
+                "repetition": 0,
+                "score": 0.25,
+                "task": "scenario-valuation"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "validationReports": {
+      "baseline": {
+        "experimentId": "02e8d37b-89ec-46d2-8ac4-b562ab2d2d71",
+        "specificationDigest": "4d5b3e4b9c44f21eee2718cc2b2d165b25a5dc3bba41cb9b2f97d172d6540bef",
+        "purpose": "validation",
+        "metric": {
+          "name": "formula_value_accuracy",
+          "direction": "maximize",
+          "minimum": 0,
+          "maximum": 1,
+          "failure": 0
+        },
+        "taskOrder": [
+          "normalization",
+          "weighted-portfolio",
+          "debt-rollforward",
+          "scenario-valuation"
+        ],
+        "repetitions": 1,
+        "candidateBudget": 1,
+        "candidatesConsumed": 1,
+        "pendingSubmissions": [],
+        "probes": {
+          "budget": null,
+          "consumed": 0,
+          "records": [],
+          "boundary": "Optimizer-authored behavioral experiments, not task scores or independent validation. Build and execution logs are retained under probes/<id>. No model credentials or network are supplied to probe execution."
+        },
+        "currentChampion": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+        "candidates": [
+          {
+            "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+            "ordinal": 0,
+            "phase": "champion",
+            "build": {
+              "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+              "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+              "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+              "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+            },
+            "buildError": null,
+            "qaError": null,
+            "expectedRuns": 4,
+            "observedRuns": 4,
+            "scoredRuns": 4,
+            "failedRuns": 0,
+            "complete": true,
+            "mean": 0.8125,
+            "decision": {
+              "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+              "constraints": [],
+              "constraintsSatisfied": true,
+              "denominator": 4,
+              "failureBudgetSatisfied": true,
+              "failures": 0,
+              "mean": 0.8125,
+              "previousChampion": null,
+              "promoted": true,
+              "qualityImproved": true
+            },
+            "executionElapsedMsReported": 78444,
+            "missingExecutionDurations": 0,
+            "usage": {
+              "ledgers": 4,
+              "availableLedgers": 4,
+              "unavailableLedgers": 0,
+              "reportedTotals": {
+                "started": 32,
+                "results": 32,
+                "failed": 0,
+                "unfinished": 0,
+                "inputTokensReported": 30066,
+                "outputTokensReported": 6286,
+                "missingUsage": 0,
+                "requestDurationMsSum": 60563
+              },
+              "complete": true
+            },
+            "samples": [
+              {
+                "id": "9ad4a0f2e1f80d3994cae20ee7405f2c427e9f638e600084ffb29824933824ea",
+                "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+                "task": "normalization",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 0.25,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "d8ca67530af746f8d91e77fb92cb6a777fe650622d3b37fb3dd0aa8bdb4eb89e",
+                "startedAt": "2026-10-27T19:40:29.086Z",
+                "completedAt": "2026-10-27T19:40:46.465Z",
+                "executionElapsedMs": 17379,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 7,
+                  "results": 7,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 6602,
+                  "outputTokensReported": 1288,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 12747
+                }
+              },
+              {
+                "id": "a2db94ed06f57f3d1386587c0060f9acfdaa4586ae98c8fedd30bd77157b4770",
+                "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+                "task": "weighted-portfolio",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "27eef32efe8a978780ca56c887ad9e9a89f696f542f11b84d91224eba5658967",
+                "startedAt": "2026-10-27T19:40:29.086Z",
+                "completedAt": "2026-10-27T19:40:52.054Z",
+                "executionElapsedMs": 22968,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 10,
+                  "results": 10,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 10667,
+                  "outputTokensReported": 1904,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 18303
+                }
+              },
+              {
+                "id": "73ceaab3925d7f3026eb6be34e0748edcf0dbe228bfdf7795d4d46d688182714",
+                "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+                "task": "debt-rollforward",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "49f9e107e9e3cc99be8e7215b72f55f2420f22400d9580be7b68772af0742594",
+                "startedAt": "2026-10-27T19:40:29.087Z",
+                "completedAt": "2026-10-27T19:40:46.804Z",
+                "executionElapsedMs": 17717,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 6,
+                  "results": 6,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 5094,
+                  "outputTokensReported": 1591,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 13192
+                }
+              },
+              {
+                "id": "7498e205dbec8f688a4c377e7a474db8bb480457f587a0454fd71dd32d549690",
+                "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+                "task": "scenario-valuation",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "12c3c16768be9411b8f60fc0e58fc3391d42eb384a1fd42b0e1768b6a5b6331a",
+                "startedAt": "2026-10-27T19:40:47.347Z",
+                "completedAt": "2026-10-27T19:41:07.727Z",
+                "executionElapsedMs": 20380,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 9,
+                  "results": 9,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 7703,
+                  "outputTokensReported": 1503,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 16321
+                }
+              }
+            ]
+          }
+        ],
+        "optimizer": {
+          "episodes": [],
+          "accounting": null,
+          "usage": {
+            "ledgers": 0,
+            "availableLedgers": 0,
+            "unavailableLedgers": 0,
+            "reportedTotals": null,
+            "complete": true
+          }
+        },
+        "totalUsage": {
+          "ledgers": 4,
+          "availableLedgers": 4,
+          "unavailableLedgers": 0,
+          "reportedTotals": {
+            "started": 32,
+            "results": 32,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 30066,
+            "outputTokensReported": 6286,
+            "missingUsage": 0,
+            "requestDurationMsSum": 60563
+          },
+          "complete": true
+        },
+        "monetaryCost": null,
+        "lastEvent": 26,
+        "boundary": "Full-denominator descriptive results. QA/build failures consume candidate budget but have no task score. Usage is recomputed from durable DSH adapter stream ledgers; hidden provider retries and prices are unknown. Missing ledgers and missing usage are explicit; reported totals are partial when complete=false. Request durations sum streams and are not wall time. Execution elapsed excludes grading; build/QA time is not token cost. Search selection is not independent validation or causal attribution. No inferred accuracy from optimizer narrative."
+      },
+      "candidate": {
+        "experimentId": "ef9f4df4-b4c7-457b-b144-9dbf5d4e188e",
+        "specificationDigest": "4d5b3e4b9c44f21eee2718cc2b2d165b25a5dc3bba41cb9b2f97d172d6540bef",
+        "purpose": "validation",
+        "metric": {
+          "name": "formula_value_accuracy",
+          "direction": "maximize",
+          "minimum": 0,
+          "maximum": 1,
+          "failure": 0
+        },
+        "taskOrder": [
+          "normalization",
+          "weighted-portfolio",
+          "debt-rollforward",
+          "scenario-valuation"
+        ],
+        "repetitions": 1,
+        "candidateBudget": 1,
+        "candidatesConsumed": 1,
+        "pendingSubmissions": [],
+        "probes": {
+          "budget": null,
+          "consumed": 0,
+          "records": [],
+          "boundary": "Optimizer-authored behavioral experiments, not task scores or independent validation. Build and execution logs are retained under probes/<id>. No model credentials or network are supplied to probe execution."
+        },
+        "currentChampion": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+        "candidates": [
+          {
+            "digest": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+            "ordinal": 0,
+            "phase": "champion",
+            "build": {
+              "artifactDigest": "630427fc400e413bd354af7e614f751c776c79878e04720bfbc589a9e07586de",
+              "bundleDigest": "3cdc015c95d569efb93de8d93bef87f7942d6879af66ca5dddb8b6187052a7b2",
+              "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+              "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+              "tarballDigest": "83fb7fa36b6106beafb7bfa020ef98c6e2c96154b7610f9de07697557924308d"
+            },
+            "buildError": null,
+            "qaError": null,
+            "expectedRuns": 4,
+            "observedRuns": 4,
+            "scoredRuns": 4,
+            "failedRuns": 0,
+            "complete": true,
+            "mean": 0.8125,
+            "decision": {
+              "candidate": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+              "constraints": [],
+              "constraintsSatisfied": true,
+              "denominator": 4,
+              "failureBudgetSatisfied": true,
+              "failures": 0,
+              "mean": 0.8125,
+              "previousChampion": null,
+              "promoted": true,
+              "qualityImproved": true
+            },
+            "executionElapsedMsReported": 89837,
+            "missingExecutionDurations": 0,
+            "usage": {
+              "ledgers": 4,
+              "availableLedgers": 4,
+              "unavailableLedgers": 0,
+              "reportedTotals": {
+                "started": 33,
+                "results": 33,
+                "failed": 0,
+                "unfinished": 0,
+                "inputTokensReported": 36904,
+                "outputTokensReported": 7877,
+                "missingUsage": 0,
+                "requestDurationMsSum": 70608
+              },
+              "complete": true
+            },
+            "samples": [
+              {
+                "id": "dccde37ea6d5bda92bcd782483a4378c7fdc81adf680358eee80143b8cb4445c",
+                "candidate": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+                "task": "normalization",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "97f4994cd3876886726d6b337b46e4bb1a7c25c147f89ad0d14ce2d0fa9b6a11",
+                "startedAt": "2026-10-27T19:41:09.767Z",
+                "completedAt": "2026-10-27T19:41:33.279Z",
+                "executionElapsedMs": 23512,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 9,
+                  "results": 9,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 15939,
+                  "outputTokensReported": 2052,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 18740
+                }
+              },
+              {
+                "id": "e5200d35128ed7c54ea3cfd10c6d0cc77a0fbea954a6f4da0320b29204e3eeee",
+                "candidate": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+                "task": "weighted-portfolio",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "3615ae6d85525abdd57f97ab009b22ddc2dfa659ba517bbd539a2a4da95880cf",
+                "startedAt": "2026-10-27T19:41:09.767Z",
+                "completedAt": "2026-10-27T19:41:30.326Z",
+                "executionElapsedMs": 20559,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 7,
+                  "results": 7,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 6203,
+                  "outputTokensReported": 1604,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 15813
+                }
+              },
+              {
+                "id": "cd7891e33c79ae93bb6ffa8596c1700d92224825b000f96904c45c7c9e96b0df",
+                "candidate": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+                "task": "debt-rollforward",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "preserved": 1
+                },
+                "error": null,
+                "deliveryDigest": "ebe42e1a6ddbbb40ac876eac8ba909c5a600c1fbdc4c253b48e35234df75f2d5",
+                "startedAt": "2026-10-27T19:41:09.768Z",
+                "completedAt": "2026-10-27T19:41:33.666Z",
+                "executionElapsedMs": 23898,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 9,
+                  "results": 9,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 8002,
+                  "outputTokensReported": 2260,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 18861
+                }
+              },
+              {
+                "id": "db1bd73257ef0b2eb1f224b67491dc8af651fefc5078338ba221a0995d14f0ff",
+                "candidate": "985911109c5d17bac0ae757b156ee1643fe3aca7e7c8db4e0b048b0352719dd1",
+                "task": "scenario-valuation",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 0.25,
+                "auxiliary": {
+                  "preserved": 0.9038461538461539
+                },
+                "error": null,
+                "deliveryDigest": "fc92119f8a7d43accf2943a5de3eb15b7e87285bf064764243598dc5d7597c81",
+                "startedAt": "2026-10-27T19:41:31.119Z",
+                "completedAt": "2026-10-27T19:41:52.987Z",
+                "executionElapsedMs": 21868,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 8,
+                  "results": 8,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 6760,
+                  "outputTokensReported": 1961,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 17194
+                }
+              }
+            ]
+          }
+        ],
+        "optimizer": {
+          "episodes": [],
+          "accounting": null,
+          "usage": {
+            "ledgers": 0,
+            "availableLedgers": 0,
+            "unavailableLedgers": 0,
+            "reportedTotals": null,
+            "complete": true
+          }
+        },
+        "totalUsage": {
+          "ledgers": 4,
+          "availableLedgers": 4,
+          "unavailableLedgers": 0,
+          "reportedTotals": {
+            "started": 33,
+            "results": 33,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 36904,
+            "outputTokensReported": 7877,
+            "missingUsage": 0,
+            "requestDurationMsSum": 70608
+          },
+          "complete": true
+        },
+        "monetaryCost": null,
+        "lastEvent": 26,
+        "boundary": "Full-denominator descriptive results. QA/build failures consume candidate budget but have no task score. Usage is recomputed from durable DSH adapter stream ledgers; hidden provider retries and prices are unknown. Missing ledgers and missing usage are explicit; reported totals are partial when complete=false. Request durations sum streams and are not wall time. Execution elapsed excludes grading; build/QA time is not token cost. Search selection is not independent validation or causal attribution. No inferred accuracy from optimizer narrative."
+      }
+    }
+  },
+  "contractRegression": {
+    "cases": [
+      {
+        "root": ".evolution/contract-formula-baseline-20261028",
+        "result": {
+          "file": ".evolution/contract-formula-baseline-20261028/result.json",
+          "sha256": "c3e49161f79b992470c1a041236b3cee3fb6a2c653b7697430f7e68df59891c7",
+          "record": {
+            "bundleDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+            "container": {
+              "Dead": false,
+              "Error": "",
+              "ExitCode": 1,
+              "FinishedAt": "2026-10-27T19:40:40.499341781Z",
+              "OOMKilled": false,
+              "Paused": false,
+              "Pid": 0,
+              "Restarting": false,
+              "Running": false,
+              "StartedAt": "2026-10-27T19:40:40.309050934Z",
+              "Status": "exited"
+            },
+            "environmentDigest": "e09decded8bced636708bd7397e84ca0f2c2d3c1bd4a03ddd865e27386da325c",
+            "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+            "isolation": {
+              "cpus": 2,
+              "homeMiB": 128,
+              "memoryMiB": 4096,
+              "network": {
+                "build": "bridge",
+                "egressDns": [
+                  "0.250.250.200"
+                ],
+                "egressPool": "10.230.0.0/16",
+                "evaluator": "none",
+                "executor": "controlled",
+                "optimizer": "controlled",
+                "qa": "none"
+              },
+              "pids": 256,
+              "runtime": "runc",
+              "tmpMiB": 512,
+              "user": {
+                "gid": 20,
+                "uid": 501
+              }
+            },
+            "model": {
+              "credentialEnv": [
+                "VENUS_API_KEY"
+              ],
+              "maxTokens": 32768,
+              "model": "deepseek/deepseek-v4.1-flash-1017",
+              "provider": "venus",
+              "reasoningEffort": "off"
+            },
+            "passed": false,
+            "verificationDigest": "1fc2d5df1011a5a9c15314ceb577db900f77a1448e5b5b30792a8466e748620f"
+          }
+        }
+      },
+      {
+        "root": ".evolution/contract-formula-mutation-20261028",
+        "result": {
+          "file": ".evolution/contract-formula-mutation-20261028/result.json",
+          "sha256": "80a52ff7ac64279d2f14f16b22f6214787a560fb03bbbf1270d7772d7a052b68",
+          "record": {
+            "bundleDigest": "630427fc400e413bd354af7e614f751c776c79878e04720bfbc589a9e07586de",
+            "container": {
+              "Dead": false,
+              "Error": "",
+              "ExitCode": 1,
+              "FinishedAt": "2026-10-27T19:40:41.470472156Z",
+              "OOMKilled": false,
+              "Paused": false,
+              "Pid": 0,
+              "Restarting": false,
+              "Running": false,
+              "StartedAt": "2026-10-27T19:40:41.272567245Z",
+              "Status": "exited"
+            },
+            "environmentDigest": "e09decded8bced636708bd7397e84ca0f2c2d3c1bd4a03ddd865e27386da325c",
+            "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+            "isolation": {
+              "cpus": 2,
+              "homeMiB": 128,
+              "memoryMiB": 4096,
+              "network": {
+                "build": "bridge",
+                "egressDns": [
+                  "0.250.250.200"
+                ],
+                "egressPool": "10.230.0.0/16",
+                "evaluator": "none",
+                "executor": "controlled",
+                "optimizer": "controlled",
+                "qa": "none"
+              },
+              "pids": 256,
+              "runtime": "runc",
+              "tmpMiB": 512,
+              "user": {
+                "gid": 20,
+                "uid": 501
+              }
+            },
+            "model": {
+              "credentialEnv": [
+                "VENUS_API_KEY"
+              ],
+              "maxTokens": 32768,
+              "model": "deepseek/deepseek-v4.1-flash-1017",
+              "provider": "venus",
+              "reasoningEffort": "off"
+            },
+            "passed": false,
+            "verificationDigest": "1fc2d5df1011a5a9c15314ceb577db900f77a1448e5b5b30792a8466e748620f"
+          }
+        }
+      },
+      {
+        "root": ".evolution/contract-formula-baseline-bundle-20261028",
+        "result": {
+          "file": ".evolution/contract-formula-baseline-bundle-20261028/result.json",
+          "sha256": "6b9767f4a012fe12a26ed8513e30e8d9a3937942bba51e3f06a31f89d3b9de2b",
+          "record": {
+            "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+            "container": {
+              "Dead": false,
+              "Error": "",
+              "ExitCode": 0,
+              "FinishedAt": "2026-10-27T19:40:55.253813084Z",
+              "OOMKilled": false,
+              "Paused": false,
+              "Pid": 0,
+              "Restarting": false,
+              "Running": false,
+              "StartedAt": "2026-10-27T19:40:54.467988749Z",
+              "Status": "exited"
+            },
+            "environmentDigest": "e09decded8bced636708bd7397e84ca0f2c2d3c1bd4a03ddd865e27386da325c",
+            "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+            "isolation": {
+              "cpus": 2,
+              "homeMiB": 128,
+              "memoryMiB": 4096,
+              "network": {
+                "build": "bridge",
+                "egressDns": [
+                  "0.250.250.200"
+                ],
+                "egressPool": "10.230.0.0/16",
+                "evaluator": "none",
+                "executor": "controlled",
+                "optimizer": "controlled",
+                "qa": "none"
+              },
+              "pids": 256,
+              "runtime": "runc",
+              "tmpMiB": 512,
+              "user": {
+                "gid": 20,
+                "uid": 501
+              }
+            },
+            "model": {
+              "credentialEnv": [
+                "VENUS_API_KEY"
+              ],
+              "maxTokens": 32768,
+              "model": "deepseek/deepseek-v4.1-flash-1017",
+              "provider": "venus",
+              "reasoningEffort": "off"
+            },
+            "passed": true,
+            "verificationDigest": "1fc2d5df1011a5a9c15314ceb577db900f77a1448e5b5b30792a8466e748620f"
+          }
+        },
+        "behavior": {
+          "file": ".evolution/contract-formula-baseline-bundle-20261028/work/native/behavior.json",
+          "sha256": "2c09198a91cf6bd7c46adf3137e3d0926b100cfedce1436c6c90800756815411",
+          "record": {
+            "observations": [
+              {
+                "arguments": {
+                  "destination": "/workspace/result.xlsx",
+                  "edits": [
+                    {
+                      "cell": "B1",
+                      "sheet": "Contract",
+                      "value": "=A1+10"
+                    },
+                    {
+                      "cell": "B2",
+                      "sheet": "Contract",
+                      "value": "=A2*20"
+                    },
+                    {
+                      "cell": "C2",
+                      "sheet": "Contract",
+                      "value": "=$A$1-A2"
+                    },
+                    {
+                      "cell": "C3",
+                      "sheet": "Contract",
+                      "value": 0
+                    },
+                    {
+                      "cell": "C4",
+                      "sheet": "Contract",
+                      "value": null
+                    }
+                  ],
+                  "source": "/workspace/source.xlsx"
+                },
+                "kind": "tool",
+                "name": "workbook_write",
+                "result": {
+                  "content": [
+                    {
+                      "text": "{\"saved\": \"/workspace/result.xlsx\", \"submitted_cells\": 5, \"formula_values_recalculated\": false}\n",
+                      "type": "text"
+                    }
+                  ],
+                  "isError": false,
+                  "value": "{\"saved\": \"/workspace/result.xlsx\", \"submitted_cells\": 5, \"formula_values_recalculated\": false}\n"
+                },
+                "sequence": 1
+              },
+              {
+                "arguments": {
+                  "destination": "/workspace/result.xlsx",
+                  "edits": [
+                    {
+                      "cell": "B1",
+                      "sheet": "Contract",
+                      "value": "=A1+10"
+                    },
+                    {
+                      "cell": "B1",
+                      "sheet": "Contract",
+                      "value": "=A1-5"
+                    }
+                  ],
+                  "source": "/workspace/source.xlsx"
+                },
+                "kind": "tool",
+                "name": "workbook_write",
+                "result": {
+                  "content": [
+                    {
+                      "text": "Error: Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 22, in <module>\n    raise ValueError('Duplicate target')\nValueError: Duplicate target\n",
+                      "type": "text"
+                    }
+                  ],
+                  "error": {
+                    "message": "Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 22, in <module>\n    raise ValueError('Duplicate target')\nValueError: Duplicate target\n"
+                  },
+                  "isError": true
+                },
+                "sequence": 2
+              },
+              {
+                "arguments": {
+                  "destination": "/workspace/result.xlsx",
+                  "edits": [
+                    {
+                      "cell": "B1",
+                      "sheet": "Contract",
+                      "value": "=A1+10"
+                    },
+                    {
+                      "cell": "B2",
+                      "sheet": "Missing",
+                      "value": "=A2*20"
+                    }
+                  ],
+                  "source": "/workspace/source.xlsx"
+                },
+                "kind": "tool",
+                "name": "workbook_write",
+                "result": {
+                  "content": [
+                    {
+                      "text": "Error: Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 24, in <module>\n    workbook[edit['sheet']][edit['cell']] = edit['value']\n    ~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/opt/spreadsheet/lib/python3.11/site-packages/openpyxl/workbook/workbook.py\", line 287, in __getitem__\n    raise KeyError(\"Worksheet {0} does not exist.\".format(key))\nKeyError: 'Worksheet Missing does not exist.'\n",
+                      "type": "text"
+                    }
+                  ],
+                  "error": {
+                    "message": "Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 24, in <module>\n    workbook[edit['sheet']][edit['cell']] = edit['value']\n    ~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/opt/spreadsheet/lib/python3.11/site-packages/openpyxl/workbook/workbook.py\", line 287, in __getitem__\n    raise KeyError(\"Worksheet {0} does not exist.\".format(key))\nKeyError: 'Worksheet Missing does not exist.'\n"
+                  },
+                  "isError": true
+                },
+                "sequence": 3
+              },
+              {
+                "arguments": {
+                  "destination": "/tmp/domain-contract-output.xlsx",
+                  "edits": [
+                    {
+                      "cell": "B1",
+                      "sheet": "Contract",
+                      "value": "=A1+10"
+                    },
+                    {
+                      "cell": "B2",
+                      "sheet": "Contract",
+                      "value": "=A2*20"
+                    },
+                    {
+                      "cell": "C2",
+                      "sheet": "Contract",
+                      "value": "=$A$1-A2"
+                    },
+                    {
+                      "cell": "C3",
+                      "sheet": "Contract",
+                      "value": 0
+                    },
+                    {
+                      "cell": "C4",
+                      "sheet": "Contract",
+                      "value": null
+                    }
+                  ],
+                  "source": "/workspace/source.xlsx"
+                },
+                "kind": "tool",
+                "name": "workbook_write",
+                "result": {
+                  "content": [
+                    {
+                      "text": "Error: Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 16, in <module>\n    raise ValueError('Destination must be inside /workspace')\nValueError: Destination must be inside /workspace\n",
+                      "type": "text"
+                    }
+                  ],
+                  "error": {
+                    "message": "Traceback (most recent call last):\n  File \"/candidate/workbook.py\", line 16, in <module>\n    raise ValueError('Destination must be inside /workspace')\nValueError: Destination must be inside /workspace\n"
+                  },
+                  "isError": true
+                },
+                "sequence": 4
+              }
+            ],
+            "status": "passed"
+          }
+        }
+      },
+      {
+        "root": ".evolution/contract-formula-mutation-bundle-20261028",
+        "result": {
+          "file": ".evolution/contract-formula-mutation-bundle-20261028/result.json",
+          "sha256": "f7258850ef777849271446e3b203d74e29015c855aef5a26195e1042d1f4da7e",
+          "record": {
+            "bundleDigest": "3cdc015c95d569efb93de8d93bef87f7942d6879af66ca5dddb8b6187052a7b2",
+            "container": {
+              "Dead": false,
+              "Error": "",
+              "ExitCode": 1,
+              "FinishedAt": "2026-10-27T19:40:56.529407014Z",
+              "OOMKilled": false,
+              "Paused": false,
+              "Pid": 0,
+              "Restarting": false,
+              "Running": false,
+              "StartedAt": "2026-10-27T19:40:55.916831019Z",
+              "Status": "exited"
+            },
+            "environmentDigest": "e09decded8bced636708bd7397e84ca0f2c2d3c1bd4a03ddd865e27386da325c",
+            "image": "sha256:f17a1fe2b4204b0966e4f8da345543737f178f3459030dfdbfb470f67ddf618a",
+            "isolation": {
+              "cpus": 2,
+              "homeMiB": 128,
+              "memoryMiB": 4096,
+              "network": {
+                "build": "bridge",
+                "egressDns": [
+                  "0.250.250.200"
+                ],
+                "egressPool": "10.230.0.0/16",
+                "evaluator": "none",
+                "executor": "controlled",
+                "optimizer": "controlled",
+                "qa": "none"
+              },
+              "pids": 256,
+              "runtime": "runc",
+              "tmpMiB": 512,
+              "user": {
+                "gid": 20,
+                "uid": 501
+              }
+            },
+            "model": {
+              "credentialEnv": [
+                "VENUS_API_KEY"
+              ],
+              "maxTokens": 32768,
+              "model": "deepseek/deepseek-v4.1-flash-1017",
+              "provider": "venus",
+              "reasoningEffort": "off"
+            },
+            "passed": false,
+            "verificationDigest": "1fc2d5df1011a5a9c15314ceb577db900f77a1448e5b5b30792a8466e748620f"
+          }
+        },
+        "behavior": {
+          "file": ".evolution/contract-formula-mutation-bundle-20261028/work/native/behavior.json",
+          "sha256": "b38ccb47cf6db6db0857839676949f2422a2f72b54bcfea78bd741095c34e116",
+          "record": {
+            "error": "AssertionError [ERR_ASSERTION]: {\"isError\":true,\"error\":{\"message\":\"workbook operation exited with code 1\"},\"content\":[{\"type\":\"text\",\"text\":\"Error: workbook operation exited with code 1\"}]}\n\ntrue !== false\n",
+            "observations": [
+              {
+                "arguments": {
+                  "destination": "/workspace/result.xlsx",
+                  "edits": [
+                    {
+                      "cell": "B1",
+                      "sheet": "Contract",
+                      "value": "=A1+10"
+                    },
+                    {
+                      "cell": "B2",
+                      "sheet": "Contract",
+                      "value": "=A2*20"
+                    },
+                    {
+                      "cell": "C2",
+                      "sheet": "Contract",
+                      "value": "=$A$1-A2"
+                    },
+                    {
+                      "cell": "C3",
+                      "sheet": "Contract",
+                      "value": 0
+                    },
+                    {
+                      "cell": "C4",
+                      "sheet": "Contract",
+                      "value": null
+                    }
+                  ],
+                  "source": "/workspace/source.xlsx"
+                },
+                "kind": "tool",
+                "name": "workbook_write",
+                "result": {
+                  "content": [
+                    {
+                      "text": "Error: workbook operation exited with code 1",
+                      "type": "text"
+                    }
+                  ],
+                  "error": {
+                    "message": "workbook operation exited with code 1"
+                  },
+                  "isError": true
+                },
+                "sequence": 1
+              }
+            ],
+            "status": "failed"
+          }
+        }
+      }
+    ],
+    "review": {
+      "file": "/tmp/he-candidate985-review-0zdPhP/work-exec/native/behavior.json",
+      "sha256": "59fa21a06da16344ce3dfe8ff9f534b902dfa2b2abfc17ee0df97074b5347b53",
+      "record": {
+        "observations": [
+          {
+            "arguments": {
+              "destination": "/workspace/replacement.xlsx",
+              "edits": [
+                {
+                  "cell": "B1",
+                  "sheet": "Plan",
+                  "value": "=A1+2"
+                }
+              ],
+              "source": "/workspace/source.xlsx"
+            },
+            "kind": "tool",
+            "name": "workbook_write",
+            "result": {
+              "content": [
+                {
+                  "text": "Error: workbook operation exited with code 1",
+                  "type": "text"
+                }
+              ],
+              "error": {
+                "message": "workbook operation exited with code 1"
+              },
+              "isError": true
+            },
+            "sequence": 1
+          },
+          {
+            "kind": "value",
+            "label": "explicit-formula-replacement-through-documented-value-field",
+            "sequence": 2,
+            "value": {
+              "content": [
+                {
+                  "text": "Error: workbook operation exited with code 1",
+                  "type": "text"
+                }
+              ],
+              "error": {
+                "message": "workbook operation exited with code 1"
+              },
+              "isError": true
+            }
+          },
+          {
+            "arguments": {
+              "base": "/workspace/source.xlsx",
+              "compare": "/workspace/added.xlsx"
+            },
+            "kind": "tool",
+            "name": "workbook_diff",
+            "result": {
+              "content": [
+                {
+                  "text": "{\"changes\": []}",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": "{\"changes\": []}"
+            },
+            "sequence": 3
+          },
+          {
+            "kind": "value",
+            "label": "new-sheet-with-A1-77",
+            "sequence": 4,
+            "value": {
+              "content": [
+                {
+                  "text": "{\"changes\": []}",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": "{\"changes\": []}"
+            }
+          },
+          {
+            "arguments": {
+              "destination": "/workspace/source.xlsx",
+              "edits": [
+                {
+                  "cell": "A1",
+                  "sheet": "Plan",
+                  "value": 99
+                }
+              ],
+              "source": "/workspace/source.xlsx"
+            },
+            "kind": "tool",
+            "name": "workbook_write",
+            "result": {
+              "content": [
+                {
+                  "text": "{\"saved\": \"/workspace/source.xlsx\", \"submitted_cells\": 1, \"formula_values_recalculated\": false}",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": "{\"saved\": \"/workspace/source.xlsx\", \"submitted_cells\": 1, \"formula_values_recalculated\": false}"
+            },
+            "sequence": 5
+          },
+          {
+            "kind": "value",
+            "label": "source-equals-destination-overwrites-original",
+            "sequence": 6,
+            "value": {
+              "result": {
+                "content": [
+                  {
+                    "text": "{\"saved\": \"/workspace/source.xlsx\", \"submitted_cells\": 1, \"formula_values_recalculated\": false}",
+                    "type": "text"
+                  }
+                ],
+                "isError": false,
+                "value": "{\"saved\": \"/workspace/source.xlsx\", \"submitted_cells\": 1, \"formula_values_recalculated\": false}"
+              },
+              "sourceBytesChanged": true
+            }
+          }
+        ],
+        "status": "passed"
+      }
+    },
+    "boundary": "First two commands accidentally mounted the artifact parent instead of its bundle subdirectory; both original failures retained. Corrected commands use the exact same frozen baseline/candidate bundles and new researcher fixture. Original active search contract remains unchanged. Source=destination observation is a candidate description limitation, not a new baseline rejection requirement."
+  }
+}
