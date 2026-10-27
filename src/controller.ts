@@ -14,6 +14,7 @@ import { queueProbe, executeProbe } from './probes.js';
 import type { Candidate, CandidateProposal, ExperimentSpec, TaskRun } from './contracts.js';
 import { createEgressSession, type EgressFactory, type EgressLifecycle } from './egress-session.js';
 import { prepareExecution, collectExecution, ReclamationError, settleExecutionFailure } from './execution.js';
+import { assertNotCancelled } from './cancellation-state.js';
 
 export class Controller {
   readonly owner = randomUUID();
@@ -31,6 +32,7 @@ export class Controller {
     readonly egress: EgressFactory = createEgressSession,
   ) {}
   async start(): Promise<void> {
+    assertNotCancelled(this.root);
     await fileReaderCapabilities();
     if (this.spec.researchLibrary) await this.libraryRoot();
     await this.verificationRoot();
@@ -47,6 +49,12 @@ export class Controller {
         throw new Error(`Evaluation digest mismatch: ${task.id}`);
     }
     this.store.acquire(this.owner, Date.now(), 30_000);
+    try {
+      assertNotCancelled(this.root);
+    } catch (error) {
+      this.store.release(this.owner);
+      throw error;
+    }
     this.heartbeat = setInterval(() => {
       try {
         this.store.assertLease(this.owner);
@@ -67,6 +75,7 @@ export class Controller {
     this.store.release(this.owner);
   }
   private assertOwner(): void {
+    assertNotCancelled(this.root);
     if (this.leaseError) throw this.leaseError;
     this.store.assertLease(this.owner);
   }
@@ -213,11 +222,12 @@ export class Controller {
   }
   async seed(source: string): Promise<Candidate> {
     if (this.store.candidates().length) throw new Error('Experiment already initialized');
-    await cp(source, path.join(this.root, 'drafts', 'baseline'), {
-      recursive: true,
-      errorOnExist: true,
-      force: false,
-    });
+    return await this.prepareSeed(source);
+  }
+  /** Idempotent initial-harness registration for a trusted parent recovering preparation. */
+  async prepareSeed(source: string): Promise<Candidate> {
+    this.assertOwner();
+    const sourceDigest = await treeDigest(source);
     const proposal: CandidateProposal = {
       draft: 'baseline',
       parents: [],
@@ -226,6 +236,26 @@ export class Controller {
       hypothesis: 'Establish the fixed-task baseline',
       expectedChange: 'No quality claim before evaluation',
     };
+    const existing = this.store.candidates()[0];
+    if (existing) {
+      if (
+        existing.ordinal !== 0 ||
+        existing.digest !== sourceDigest ||
+        digest(existing.proposal) !== digest(proposal)
+      )
+        throw new Error('Initial harness identity changed');
+      if ((await treeDigest(path.join(this.root, 'candidates', existing.digest))) !== sourceDigest)
+        throw new Error('Initial harness snapshot changed');
+      return existing;
+    }
+    if (
+      (await freeze(
+        source,
+        path.join(this.root, 'drafts', 'baseline'),
+        path.join(this.root, 'publications'),
+      )) !== sourceDigest
+    )
+      throw new Error('Initial harness changed before registration');
     return await this.submit(proposal);
   }
   pump(signal?: AbortSignal): Promise<void> {

@@ -1,3 +1,4 @@
+import { containerIdentity } from '../src/isolation.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, cp, readFile, access } from 'node:fs/promises';
@@ -32,6 +33,16 @@ test('isolated probes freeze both inputs, resume original execution and never af
   let builds = 0;
   const executionNames: string[] = [];
   class Driver extends Docker {
+    override async executionReference(spec: ContainerSpec) {
+      return { name: spec.name, id: spec.name, intent: containerIdentity(spec) };
+    }
+    override async create() {}
+    override async inspect() {
+      return exited;
+    }
+    override async collect(spec: ContainerSpec) {
+      return this.run(spec);
+    }
     override async run(container: ContainerSpec) {
       if (container.name.startsWith('he-build-')) {
         builds++;

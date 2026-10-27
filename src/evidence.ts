@@ -96,20 +96,33 @@ export async function materializeEvidence(controller: Controller, raw: unknown) 
   if (!reference.file) throw new Error('Materialization requires an explicit file');
   const artifact = BinaryArtifact.parse(await readEvidence(controller, reference));
   const bytes = Buffer.from(artifact.data, 'base64');
-  const sha256 = createHash('sha256').update(bytes).digest('hex');
-  const provenance = {
+  return await publishEvidenceBytes(controller.root, reference.file, bytes, {
     experimentId: controller.store.getMeta('experimentId')!,
     reference,
+  });
+}
+
+/** Trusted callers authorize the bytes first. Publication never accepts a caller-selected destination. */
+export async function publishEvidenceBytes<T extends object>(
+  root: string,
+  sourceFile: string,
+  bytes: Buffer,
+  source: T,
+) {
+  RelativePath.parse(sourceFile);
+  const sha256 = createHash('sha256').update(bytes).digest('hex');
+  const provenance = {
+    ...source,
     sha256,
     bytes: bytes.length,
   };
   const identity = digest(provenance);
-  const destination = path.join(controller.root, 'materialized', identity);
-  const file = `files/${path.basename(reference.file)}`;
+  const destination = path.join(root, 'materialized', identity);
+  const file = `files/${path.basename(sourceFile)}`;
   let operation = publishing.get(destination);
   if (!operation) {
     operation = (async () => {
-      const stagingRoot = path.join(controller.root, 'materialization-staging');
+      const stagingRoot = path.join(root, 'materialization-staging');
       await mkdir(stagingRoot, { recursive: true });
       const staging = await mkdtemp(path.join(stagingRoot, 'snapshot-'));
       try {

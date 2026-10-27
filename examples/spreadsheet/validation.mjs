@@ -22,9 +22,19 @@ try {
   await mkdir(output);
   const data = path.resolve(output, 'dataset');
   await cp(freshDataset, data, { recursive: true, force: false, errorOnExist: true });
-  for (const ref of [original.runtime.environment, original.optimizerHarness, original.candidate.qa].filter(
-    Boolean,
-  )) {
+  for (const ref of [
+    original.runtime.environment,
+    original.optimizerHarness.source,
+    ...(original.optimizerHarness.kind === 'artifact'
+      ? [
+          {
+            directory: original.optimizerHarness.artifact.directory,
+            digest: original.optimizerHarness.artifact.identity.artifactDigest,
+          },
+        ]
+      : []),
+    original.candidate.qa,
+  ].filter(Boolean)) {
     const source = confined(path.join(search, 'dataset'), ref.directory);
     if ((await treeDigest(source)) !== ref.digest)
       throw new Error(`Frozen dependency changed: ${ref.directory}`);

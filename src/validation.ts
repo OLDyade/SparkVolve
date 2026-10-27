@@ -1,25 +1,25 @@
-import { mkdir, readFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 import { Digest, Id, Experiment, BuildIdentity, type ExperimentSpec } from './contracts.js';
 import { atomicJSON, digest, freeze, treeDigest } from './artifacts.js';
-import { initialize } from './experiment.js';
+import { prepareExperiment } from './experiment.js';
 import { Controller } from './controller.js';
 import { Store } from './store.js';
 import { Docker } from './docker.js';
 import { verifyArtifact, verifyBuild } from './build.js';
 import { assessConstraints } from './constraints.js';
 
+export const FrozenValidationArm = z.strictObject({
+  id: Id,
+  source: z.string().min(1),
+  digest: Digest,
+  artifact: z.string().min(1),
+  build: BuildIdentity,
+});
+export type ValidationArm = z.infer<typeof FrozenValidationArm>;
 export const Arms = z
-  .array(
-    z.strictObject({
-      id: Id,
-      source: z.string().min(1),
-      digest: Digest,
-      artifact: z.string().min(1),
-      build: BuildIdentity,
-    }),
-  )
+  .array(FrozenValidationArm)
   .min(2)
   .refine((arms) => new Set(arms.map((arm) => arm.id)).size === arms.length, 'Duplicate arm identifiers');
 
@@ -40,7 +40,16 @@ export async function validateStudy(
     if (digest(saved) !== digest(registration)) throw new Error('Study registration changed');
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-    await mkdir(root);
+    await mkdir(root, { recursive: true });
+    const staging = await mkdtemp(path.join(root, '.registration-'));
+    try {
+      await atomicJSON(path.join(staging, 'contract.json'), registration);
+      // Fix the complete comparison before copying any arm. Recovery must honor this
+      // same registration even if interruption preceded registration.json publication.
+      await freeze(staging, path.join(root, 'registration-intent'), path.join(root, 'publications'));
+    } finally {
+      await rm(staging, { recursive: true, force: true });
+    }
     for (const arm of arms) {
       if ((await treeDigest(arm.source)) !== arm.digest) throw new Error(`Arm digest mismatch: ${arm.id}`);
       await verifyArtifact(arm.artifact, arm.digest, arm.build);
@@ -52,38 +61,91 @@ export async function validateStudy(
   for (const arm of arms) {
     const armRoot = path.join(root, 'arms', arm.id);
     await mkdir(path.dirname(armRoot), { recursive: true });
-    try {
-      await readFile(path.join(armRoot, 'experiment.json'));
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-      await initialize(armRoot, spec, dataset, path.join(root, 'sources', arm.id));
-    }
-    const store = new Store(path.join(armRoot, 'experiment.sqlite'), spec);
-    const controller = new Controller(armRoot, path.join(armRoot, 'dataset'), spec, store, docker);
-    try {
-      await controller.start();
-      const candidate = store.candidate(arm.digest);
-      if (!candidate.build) {
-        const artifact = path.join(armRoot, 'artifacts', arm.digest);
-        try {
-          await readFile(path.join(artifact, 'receipt.json'));
-        } catch (error) {
-          if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-          await freeze(path.join(root, 'artifacts', arm.id), artifact, path.join(armRoot, 'publications'));
-        }
-        await verifyBuild(armRoot, { ...candidate, build: arm.build });
-        store.transaction(() => {
-          store.updateCandidate({ ...candidate, build: arm.build });
-          store.event('candidate.build_imported', { candidate: arm.digest, build: arm.build });
-        });
-      }
-      await controller.pump();
-    } finally {
-      await controller.close();
-      store.close();
-    }
+    await validateFrozenArm(
+      armRoot,
+      spec,
+      dataset,
+      { ...arm, source: path.join(root, 'sources', arm.id), artifact: path.join(root, 'artifacts', arm.id) },
+      docker,
+    );
   }
   await writeStudyReport(root);
+}
+
+/** Validate one frozen H selected by a registered study, without rebuilding or exposing optimizer tools. */
+export async function validateFrozenArm(
+  root: string,
+  raw: ExperimentSpec,
+  dataset: string,
+  rawArm: unknown,
+  docker = new Docker(),
+  signal?: AbortSignal,
+) {
+  signal?.throwIfAborted();
+  const spec = Experiment.parse(raw),
+    arm = FrozenValidationArm.parse(rawArm);
+  if (spec.purpose !== 'validation') throw new Error('Frozen assessment requires a validation specification');
+  if ((await treeDigest(arm.source)) !== arm.digest) throw new Error(`Arm digest mismatch: ${arm.id}`);
+  await verifyArtifact(arm.artifact, arm.digest, arm.build);
+  await prepareExperiment(root, spec, dataset, arm.source, docker);
+  const store = new Store(path.join(root, 'experiment.sqlite'), spec);
+  const controller = new Controller(root, path.join(root, 'dataset'), spec, store, docker);
+  try {
+    await controller.start();
+    if (store.candidates().length !== 1)
+      throw new Error('Frozen assessment must contain exactly one candidate');
+    const candidate = store.candidate(arm.digest);
+    if (candidate.build && digest(candidate.build) !== digest(arm.build))
+      throw new Error('Assessment build identity changed');
+    if (!candidate.build) {
+      await freeze(arm.artifact, path.join(root, 'artifacts', arm.digest), path.join(root, 'publications'));
+      await verifyBuild(root, { ...candidate, build: arm.build });
+      store.transaction(() => {
+        store.updateCandidate({ ...candidate, build: arm.build });
+        store.event('candidate.build_imported', { candidate: arm.digest, build: arm.build });
+      });
+    }
+    await controller.pump(signal);
+  } finally {
+    await controller.close();
+    store.close();
+  }
+  return validationResult(root, spec, arm);
+}
+
+function validationResult(root: string, spec: ExperimentSpec, arm: ValidationArm) {
+  const store = new Store(path.join(root, 'experiment.sqlite'), spec, 'read');
+  try {
+    const candidates = store.candidates(),
+      runs = store.runs();
+    if (candidates.length !== 1 || candidates[0]!.digest !== arm.digest)
+      throw new Error(`Arm identity mismatch: ${arm.id}`);
+    if (digest(candidates[0]!.build) !== digest(arm.build))
+      throw new Error(`Arm build identity mismatch: ${arm.id}`);
+    const complete =
+      runs.length === spec.tasks.length * spec.repetitions &&
+      runs.every((r) => ['scored', 'execution_failed', 'cancelled'].includes(r.phase));
+    const samples = complete
+      ? runs.map((r) => ({
+          task: r.task,
+          repetition: r.repetition,
+          score: r.grade?.score ?? spec.metric.failure,
+          phase: r.phase,
+        }))
+      : null;
+    return {
+      id: arm.id,
+      candidate: arm.digest,
+      build: candidates[0]!.build,
+      complete,
+      failures: runs.filter((r) => r.phase !== 'scored').length,
+      mean: samples ? samples.reduce((sum, r) => sum + r.score, 0) / samples.length : null,
+      samples,
+      constraints: assessConstraints(spec.constraints, runs),
+    };
+  } finally {
+    store.close();
+  }
 }
 
 export async function writeStudyReport(root: string): Promise<void> {
@@ -92,38 +154,7 @@ export async function writeStudyReport(root: string): Promise<void> {
     arms: z.infer<typeof Arms>;
   };
   const { specification: spec, arms } = registration;
-  const results = arms.map((arm) => {
-    const store = new Store(path.join(root, 'arms', arm.id, 'experiment.sqlite'), spec);
-    try {
-      const candidates = store.candidates(),
-        runs = store.runs();
-      if (candidates.length !== 1 || candidates[0]!.digest !== arm.digest)
-        throw new Error(`Arm identity mismatch: ${arm.id}`);
-      const complete =
-        runs.length === spec.tasks.length * spec.repetitions &&
-        runs.every((r) => ['scored', 'execution_failed', 'cancelled'].includes(r.phase));
-      const samples = complete
-        ? runs.map((r) => ({
-            task: r.task,
-            repetition: r.repetition,
-            score: r.grade?.score ?? spec.metric.failure,
-            phase: r.phase,
-          }))
-        : null;
-      return {
-        id: arm.id,
-        candidate: arm.digest,
-        build: candidates[0]!.build,
-        complete,
-        failures: runs.filter((r) => r.phase !== 'scored').length,
-        mean: samples ? samples.reduce((sum, r) => sum + r.score, 0) / samples.length : null,
-        samples,
-        constraints: assessConstraints(spec.constraints, runs),
-      };
-    } finally {
-      store.close();
-    }
-  });
+  const results = arms.map((arm) => validationResult(path.join(root, 'arms', arm.id), spec, arm));
   const baseline = results[0]!;
   const comparisons = results.slice(1).map((arm) => {
     if (!baseline.samples || !arm.samples) return { arm: arm.id, status: 'incomplete', pairs: null };

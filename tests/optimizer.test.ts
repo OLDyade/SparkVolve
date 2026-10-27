@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile, rm, readFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, rm, readFile, chmod, readdir } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { optimize, optimizerLedger } from '../src/optimizer.js';
@@ -12,15 +12,13 @@ import { treeDigest } from '../src/artifacts.js';
 import { specification } from './fixtures.js';
 import type { EgressFactory } from '../src/egress-session.js';
 import { containerIdentity } from '../src/isolation.js';
+import { optimizerArtifactFixture } from './optimizer-fixture.js';
 
 test('normal session completion continues with durable feedback; restart never reruns completed episodes', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'he-optimizer-'));
   const spec = specification();
   await mkdir(path.join(root, 'drafts'));
-  const bundle = path.join(root, 'dataset', spec.optimizerHarness.directory);
-  await mkdir(bundle, { recursive: true });
-  await writeFile(path.join(bundle, 'plugins.yml'), '[]');
-  spec.optimizerHarness.digest = await treeDigest(bundle);
+  await optimizerArtifactFixture(root, spec);
   const verification = path.join(root, 'dataset/verification');
   await mkdir(verification);
   await writeFile(path.join(verification, 'check.mjs'), 'export async function probe(){}');
@@ -40,11 +38,14 @@ test('normal session completion continues with durable feedback; restart never r
     controlEndpoint: `http://127.0.0.1:${address.port}`,
   };
   class Driver extends Docker {
+    override async executionReference(spec: ContainerSpec) {
+      return { name: spec.name, id: spec.name, intent: containerIdentity(spec) };
+    }
     creations: ContainerSpec[] = [];
     collections: string[] = [];
     fail = false;
     override async create(spec: ContainerSpec): Promise<void> {
-      this.creations.push(spec);
+      if (!spec.name.startsWith('he-gqa-')) this.creations.push(spec);
     }
     override async inspect() {
       return {
@@ -57,7 +58,7 @@ test('normal session completion continues with durable feedback; restart never r
     }
     override async halt() {}
     override async collect(spec: ContainerSpec, logDir: string) {
-      this.collections.push(spec.name);
+      if (!spec.name.startsWith('he-gqa-')) this.collections.push(spec.name);
       await mkdir(logDir, { recursive: true });
       for (const file of ['isolation.json', 'isolation-final.json'])
         await writeFile(
@@ -116,6 +117,12 @@ test('normal session completion continues with durable feedback; restart never r
   } finally {
     await new Promise<void>((resolve) => server.close(() => resolve()));
     store.close();
+    const writable = async (directory: string): Promise<void> => {
+      await chmod(directory, 0o755);
+      for (const item of await readdir(directory, { withFileTypes: true }))
+        if (item.isDirectory()) await writable(path.join(directory, item.name));
+    };
+    await writable(root);
     await rm(root, { recursive: true, force: true });
   }
 });

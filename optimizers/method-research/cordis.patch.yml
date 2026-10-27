@@ -1,0 +1,13 @@
+- id: preset-optimizer-study
+  name: '@deepseek-ai/dsh-agent-preset'
+  config:
+    id: optimizer-study
+    name: Harness Optimizer Research
+    plugins:
+      - id: optimizer-study-tools
+        name: '@harness-evolution/dsh-bundle/study'
+        config:
+          endpoint: !!js process.env.EVOLUTION_ENDPOINT
+          tokenEnv: EVOLUTION_TOKEN
+      - id: optimizer-method-research
+        name: '@harness-evolution/optimizer-method-research'

@@ -39,7 +39,18 @@ The [cold-checkout walkthrough](docs/research/2026-10-28-user-journey.md) comple
 
 [Native evidence materialization](docs/evidence-access.md) gives DSH tools read-only access to authorized original files. A real model copied and hashed the exact bytes; independent race tests verified descriptor-relative reads and publication boundaries.
 
+[Optimizer Studies](docs/optimizer-studies.md) extend this protocol to the optimizer itself: separately frozen G/H bundles, common starting harnesses and budgets, development selection, then sealed final validation. A real meta-optimizer generated and ran G1; development tied and retained G0. The [research record](docs/experiments/2026-10-28-optimizer-study-results.md) preserves mechanism defects, complete usage and separate installation acceptance; no optimizer-quality gain is claimed.
+
 ## Run a real spreadsheet evolution
+
+Prefer to explore first? After cloning, open [`docs/tour.html`](docs/tour.html) in a browser. This offline historical experiment tour needs no key or Docker: inspect candidate lineage, task decisions and independent validation, and download the original record. It makes no model calls. Regenerate it with `node scripts/render-tour.mjs`.
+
+| Your goal | Start here |
+|---|---|
+| Use an evolved capability | [Install a Bundle and complete a workbook task](docs/use-capability.md) |
+| Evolve your own harness | [Full walkthrough](docs/user-journey.md) · [Bring tasks and a grader](docs/domain-adapters.md) |
+| Research the optimizer | [Optimizer Studies: evolve G and compare the H it produces](docs/optimizer-studies.md) |
+| Inspect the evidence | [Results and delivery status](docs/completion.md) |
 
 Use Node **24.16.0**, npm **12.2.0**, pnpm **12.15.0**, Python 3, Docker and a working model credential. Host Python must support Unix `dir_fd`, `O_NOFOLLOW` and `O_DIRECTORY` for descriptor-relative reads of untrusted files; missing support fails explicitly, with no path-based fallback. The supplied provider configuration uses Venus `deepseek/deepseek-v4.1-flash-1017`; other models require explicit native DSH Provider configuration. No automatic model substitution occurs.
 

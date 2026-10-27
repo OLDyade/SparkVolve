@@ -54,7 +54,7 @@ export interface EgressLifecycle {
   candidateNetwork(): Promise<NetworkSpec>;
   stop(): Promise<void>;
   release(worker: ContainerReference): Promise<void>;
-  abort(worker?: ContainerSpec): Promise<void>;
+  abort(worker?: ContainerSpec, expected?: ContainerReference): Promise<void>;
 }
 export type EgressFactory = (spec: EgressSessionSpec, docker: Docker) => EgressLifecycle;
 export const createEgressSession: EgressFactory = (spec, docker) => new EgressSession(spec, docker);
@@ -155,6 +155,14 @@ export class EgressSession {
   }
   async prepare(credentials: NodeJS.ProcessEnv): Promise<void> {
     await mkdir(path.join(this.spec.root, 'ledger'), { recursive: true });
+    const contractFile = path.join(this.spec.root, 'contract.json');
+    try {
+      await writeFile(contractFile, JSON.stringify(this.spec), { flag: 'wx', mode: 0o600 });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+      if (digest(JSON.parse(await readFile(contractFile, 'utf8'))) !== this.identity)
+        throw Error('Persisted egress contract changed');
+    }
     let intent: Intent;
     try {
       intent = await this.intent();
@@ -242,6 +250,7 @@ export class EgressSession {
     }
     await this.verifyResolver();
     if (!state) {
+      if (intent.brokerId) throw Error('Original egress broker missing; no task retry');
       const env: Record<string, string> = {};
       for (const route of this.spec.routes)
         if (route.credential) {
@@ -253,18 +262,21 @@ export class EgressSession {
       await this.docker.create(this.container(intent, env));
       state = await this.docker.inspect(intent.broker);
     }
-    verifyIsolation(this.container(intent), await this.docker.configuration(intent.broker));
-    if (state?.Status === 'created') await command('docker', ['start', intent.broker]);
+    const originalBroker = await this.docker.executionReference(this.container(intent));
+    if (intent.brokerId && intent.brokerId !== originalBroker.id)
+      throw Error('Original egress broker identity changed');
+    intent.brokerId = originalBroker.id;
+    await atomicJSON(path.join(this.spec.root, 'intent.json'), intent);
+    if (state?.Status === 'created') await command('docker', ['start', originalBroker.id]);
     const until = Date.now() + 10000;
     for (;;) {
       if (!(await this.docker.inspect(intent.broker))?.Running)
         throw Error('Egress broker exited during preparation');
-      const output = await command('docker', ['logs', intent.broker]);
+      const output = await command('docker', ['logs', originalBroker.id]);
       if (output.split('\n').some((line) => line.startsWith('{"event":"egress.ready",'))) break;
       if (Date.now() >= until) throw Error('Egress broker readiness timeout');
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
-    intent.brokerId = (await this.docker.configuration(intent.broker)).Id;
     intent.phase = 'ready';
     await atomicJSON(path.join(this.spec.root, 'intent.json'), intent);
     await this.verify(true);
@@ -304,7 +316,7 @@ export class EgressSession {
     intent.phase = 'stopping';
     await atomicJSON(path.join(this.spec.root, 'intent.json'), intent);
     if ((await this.docker.inspect(intent.broker))?.Running)
-      await command('docker', ['stop', '--time=5', intent.broker]);
+      await command('docker', ['stop', '--time=5', intent.brokerId!]);
     const result = await this.docker.collect(this.container(intent), path.join(this.spec.root, 'logs'));
     if (result.ExitCode !== 0) throw Error(`Egress broker exited ${result.ExitCode}`);
     intent.phase = 'stopped';
@@ -406,7 +418,7 @@ export class EgressSession {
     }
     await this.reclaim(release);
   }
-  async abort(worker?: ContainerSpec): Promise<void> {
+  async abort(worker?: ContainerSpec, expected?: ContainerReference): Promise<void> {
     const release = await this.releaseRecord();
     if (release) {
       await this.reclaim(release);
@@ -420,11 +432,25 @@ export class EgressSession {
       throw error;
     }
     const containers: ContainerReference[] = [];
+    if (intent.brokerId && (await this.docker.inspect(intent.broker))) {
+      if ((await this.docker.configuration(intent.broker)).Id !== intent.brokerId)
+        throw Error('Refusing to cancel a replacement egress broker');
+    }
     for (const [spec, directory] of [
       ...(worker ? [[worker, 'failure-worker'] as const] : []),
       ...(intent.brokerIP ? [[this.container(intent), 'failure-broker'] as const] : []),
     ]) {
-      const reference = await this.docker.failureEvidence(spec, path.join(this.spec.root, directory));
+      const registered =
+        directory === 'failure-worker'
+          ? expected
+          : intent.brokerId
+            ? { name: spec.name, id: intent.brokerId, intent: containerIdentity(spec) }
+            : undefined;
+      const reference = await this.docker.failureEvidence(
+        spec,
+        path.join(this.spec.root, directory),
+        registered,
+      );
       if (reference) containers.push(reference);
     }
     await this.reclaim(await this.persistRelease(intent, containers, 'failed'));

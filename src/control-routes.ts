@@ -19,6 +19,15 @@ export const controlPaths = [
 
 /** The trusted launch endpoint must explicitly name the container-reachable controller address. */
 export function controlRoutes(endpoint: string, timeoutSeconds: number): Route[] {
+  return capabilityRoutes(endpoint, timeoutSeconds, controlPaths);
+}
+
+/** Explicit capability paths, shared by experiment and optimizer-study control planes. */
+export function capabilityRoutes(
+  endpoint: string,
+  timeoutSeconds: number,
+  paths: readonly string[],
+): Route[] {
   const url = new URL(endpoint);
   const address = url.hostname.replace(/^\[|\]$/g, '');
   if (
@@ -31,8 +40,8 @@ export function controlRoutes(endpoint: string, timeoutSeconds: number): Route[]
     url.pathname !== '/'
   )
     throw Error('Controller egress endpoint requires an explicit literal IP origin');
-  return controlPaths.map((route) => ({
-    id: `controller_${route.slice(1).replaceAll('-', '_')}`,
+  return paths.map((route) => ({
+    id: `controller_${route.slice(1).replaceAll('-', '_').replaceAll('/', '_')}`,
     path: route,
     method: 'POST',
     upstream: new URL(route, url).href,

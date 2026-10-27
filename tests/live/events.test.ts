@@ -36,7 +36,9 @@ test(
     spec.evaluator.image = image;
     spec.candidate.build.image = image;
     spec.budget.optimizerSeconds = 180;
-    spec.optimizerHarness.digest = await treeDigest(path.join(dataset, 'optimizer-bundle'));
+    spec.optimizerHarness.source.digest = await treeDigest(path.join(dataset, 'optimizer-bundle'));
+    assert.equal(spec.optimizerHarness.kind, 'source');
+    if (spec.optimizerHarness.kind === 'source') spec.optimizerHarness.build = { image, timeoutSeconds: 120 };
     for (const task of spec.tasks) {
       for (const directory of [task.input, task.evaluation])
         await mkdir(path.join(dataset, directory), { recursive: true });

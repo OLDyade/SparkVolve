@@ -1,0 +1,91 @@
+{
+  "date": "2026-10-28",
+  "boundary": "Historical record replay and diagram rendering acceptance; no inference, score changes, or effectiveness claim.",
+  "tour": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "desktop",
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        },
+        "htmlBytes": 36838,
+        "overflow": false,
+        "selection": true,
+        "keyboard": true,
+        "pairedRows": 8,
+        "download": true
+      },
+      {
+        "name": "mobile",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "htmlBytes": 36838,
+        "overflow": false,
+        "selection": true,
+        "keyboard": true,
+        "pairedRows": 8,
+        "download": true
+      }
+    ],
+    "errors": [],
+    "network": [],
+    "htmlSha256": "fbf75ab19328297ce8338474164074731a9ba75599a74050806bfc4477117c21",
+    "source": "docs/evidence/2026-10-27-continuous-acceptance.json"
+  },
+  "diagrams": {
+    "passed": true,
+    "renderer": "@mermaid-js/mermaid-cli@12.0.0",
+    "source": "docs/components.md",
+    "sourceSha256": "ab54ed68c0d5fe4cf36adb00bc675754fc3ba1c7dc2adc4d88f16b59c9dfbf8f",
+    "records": [
+      {
+        "file": "components-1.svg",
+        "sha256": "2c31290388d9e3ffd9d875c19e4626f3c444ff5fdc603fa98a50032ed0c8105f",
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 1012.5,
+          "height": 1400
+        },
+        "errors": []
+      },
+      {
+        "file": "components-2.svg",
+        "sha256": "9ff5d9d036cb1cdfa83a2502448426fa7846ef571d7617ae3d7c4ef4c5816207",
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 461.5,
+          "height": 1400
+        },
+        "errors": []
+      },
+      {
+        "file": "components-3.svg",
+        "sha256": "4376bfc5a1a4774f34e1c098f59687433141e8068a42a01b1cdae018d42c8f58",
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 653.0625,
+          "height": 1400
+        },
+        "errors": []
+      },
+      {
+        "file": "components-4.svg",
+        "sha256": "7453bc71b37f24dfb604921228b69aa124f35be3fe3807783c3e5b086799b027",
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 946,
+          "height": 1400
+        },
+        "errors": []
+      }
+    ]
+  }
+}

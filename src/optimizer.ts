@@ -10,6 +10,8 @@ import { evolutionPreset, sdkPreset } from './preset.js';
 import { createEgressSession, type EgressFactory, type EgressLifecycle } from './egress-session.js';
 import { controlRoutes } from './control-routes.js';
 import { prepareExecution, collectExecution, ReclamationError, settleExecutionFailure } from './execution.js';
+import { prepareOptimizer, optimizerBundlePath } from './optimizer-harness.js';
+import { assertNotCancelled } from './cancellation-state.js';
 
 interface Episode {
   identity: string;
@@ -27,11 +29,12 @@ export async function optimize(
   signal = new AbortController().signal,
   egress: EgressFactory = createEgressSession,
 ): Promise<void> {
+  signal.throwIfAborted();
+  assertNotCancelled(root);
   if (spec.purpose !== 'search') throw new Error('Validation experiments cannot launch an optimizer');
   const { endpoint, controlEndpoint } = endpoints;
-  const bundle = confined(path.join(root, 'dataset'), spec.optimizerHarness.directory);
-  if ((await treeDigest(bundle)) !== spec.optimizerHarness.digest)
-    throw new Error('Optimizer bundle digest mismatch');
+  const prepared = await prepareOptimizer(root, path.join(root, 'dataset'), spec, docker, signal);
+  const bundle = optimizerBundlePath(root, prepared);
   const qa = spec.candidate.qa;
   const verification = qa ? confined(path.join(root, 'dataset'), qa.directory) : null;
   if (qa && verification && (await treeDigest(verification)) !== qa.digest)
@@ -39,7 +42,7 @@ export async function optimize(
   const runRoot = path.join(root, 'optimizer');
   await mkdir(runRoot, { recursive: true });
   await mkdir(path.join(root, 'materialized'), { recursive: true });
-  const identity = digest({ root: path.resolve(root), spec, endpoint });
+  const identity = digest({ root: path.resolve(root), spec, endpoint, optimizer: prepared });
   const token = await readFile(path.join(root, 'controller-token'), 'utf8');
   async function control(route: string, body: unknown): Promise<unknown> {
     const response = await fetch(new URL(route, controlEndpoint), {
@@ -55,6 +58,7 @@ export async function optimize(
   let ordinal = 0;
   for (;;) {
     signal.throwIfAborted();
+    assertNotCancelled(root);
     const episodeRoot = path.join(runRoot, String(ordinal));
     let episode: Episode | undefined;
     try {
@@ -89,7 +93,7 @@ export async function optimize(
           reason,
           episodes: ordinal,
           consumedSeconds: consumed,
-          optimizerHarness: spec.optimizerHarness.digest,
+          optimizerHarness: prepared,
         });
         return;
       }

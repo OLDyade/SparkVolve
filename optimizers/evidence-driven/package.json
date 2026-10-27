@@ -4,6 +4,9 @@
   "type": "module",
   "exports": "./index.mjs",
   "license": "Apache-2.0",
+  "scripts": {
+    "build": "node --check index.mjs"
+  },
   "files": [
     "index.mjs",
     "plugins.yml",

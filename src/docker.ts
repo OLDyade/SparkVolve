@@ -156,13 +156,25 @@ export class Docker {
     await command('docker', args, { env: { ...process.env, ...spec.env } });
     verifyIsolation(spec, await this.configuration(spec.name));
   }
-  async halt(spec: ContainerSpec): Promise<void> {
+  async halt(spec: ContainerSpec, expected?: ContainerReference): Promise<void> {
     const state = await this.inspect(spec.name);
     if (!state) return;
     const actual = await this.configuration(spec.name);
+    if (
+      expected &&
+      (actual.Id !== expected.id ||
+        expected.name !== spec.name ||
+        expected.intent !== containerIdentity(spec))
+    )
+      throw Error('Refusing to stop a replacement execution container');
     if (actual.Config.Labels['org.harness-evolution.intent'] !== containerIdentity(spec))
       throw Error('Refusing to stop a container with a different execution identity');
-    if (state.Running) await command('docker', ['stop', '--time=5', spec.name]);
+    if (state.Running) await command('docker', ['stop', '--time=5', actual.Id]);
+  }
+  async executionReference(spec: ContainerSpec): Promise<ContainerReference> {
+    const actual = await this.configuration(spec.name);
+    verifyIsolation(spec, actual);
+    return { name: spec.name, id: actual.Id, intent: containerIdentity(spec) };
   }
   async remove(reference: ContainerReference): Promise<void> {
     if (!(await this.inspect(reference.name))) return;
@@ -173,15 +185,21 @@ export class Docker {
     )
       throw Error('Refusing to remove a replacement container');
     if (actual.State.Running) throw Error('Refusing to remove an active execution');
-    await command('docker', ['rm', reference.name]);
+    await command('docker', ['rm', reference.id]);
   }
-  async failureEvidence(spec: ContainerSpec, logDir: string): Promise<ContainerReference | null> {
+  async failureEvidence(
+    spec: ContainerSpec,
+    logDir: string,
+    expected?: ContainerReference,
+  ): Promise<ContainerReference | null> {
     if (!(await this.inspect(spec.name))) return null;
-    await this.halt(spec);
+    await this.halt(spec, expected);
     const actual = await this.configuration(spec.name);
+    if (expected && actual.Id !== expected.id)
+      throw Error('Refusing to collect a replacement execution container');
     if (actual.State.Running) throw Error('Failure container termination is unconfirmed');
     const reference = { name: spec.name, id: actual.Id, intent: containerIdentity(spec) };
-    await this.logs(spec.name, logDir);
+    await this.logs(actual.Id, logDir);
     await atomicJSON(path.join(logDir, 'failure-observation.json'), {
       reference,
       state: await this.inspect(spec.name),
@@ -255,8 +273,10 @@ export class Docker {
   }
   async run(spec: ContainerSpec, logDir: string, signal?: AbortSignal): Promise<ContainerState> {
     signal?.throwIfAborted();
-    if (!(await this.inspect(spec.name))) await this.create(spec);
-    return await this.collect(spec, logDir, signal);
+    await mkdir(logDir, { recursive: true });
+    const { prepareExecution } = await import('./execution.js');
+    const execution = await prepareExecution(logDir, spec, this, null, async () => spec, {});
+    return await this.collect(execution, logDir, signal);
   }
 }
 

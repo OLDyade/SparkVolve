@@ -1,0 +1,3 @@
+# npm's root files list includes this directory; nested ignore rules exclude runtime caches.
+__pycache__/
+*.py[cod]

@@ -8,6 +8,7 @@ import { ToolCallId } from '@deepseek-ai/dsh-llm';
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
 import { BehaviorJournal } from './behavior-journal.js';
+import { scopeOf } from '@deepseek-ai/dsh-scope';
 
 export const name = 'evolution-composition-probe';
 export const inject = ['loader', 'agents', 'tools'];
@@ -32,7 +33,7 @@ export function apply(
       audit,
       presets: roster,
       compositions: presets?.inspectCompositions(agent.ctx) ?? [],
-      tools: agent.ctx.tools.schemas(),
+      tools: agent.ctx.tools.schemas(scopeOf(agent.ctx)),
       entries: [...ctx.loader.entries()].map((entry) => ({
         id: entry.id,
         module: entry.options.name,

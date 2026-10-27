@@ -1,3 +1,4 @@
+import { containerIdentity } from '../src/isolation.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, writeFile, readFile, chmod, rm, readdir, cp } from 'node:fs/promises';
@@ -20,6 +21,9 @@ const exited = {
   FinishedAt: new Date().toISOString(),
 };
 class LifecycleDriver extends Docker {
+  override async executionReference(spec: ContainerSpec) {
+    return { name: spec.name, id: spec.name, intent: containerIdentity(spec) };
+  }
   override async inspect() {
     return exited;
   }
@@ -33,11 +37,13 @@ class LifecycleDriver extends Docker {
       spec.mounts.some((m) => m.target === '/evaluation'),
       false,
     );
+    if (spec.name.startsWith('he-build-')) return;
     this.executions++;
     const work = spec.mounts.find((m) => m.target === '/workspace')!;
     await writeFile(path.join(work.source, 'delivery.txt'), 'delivery');
   }
-  override async collect(): Promise<typeof exited> {
+  override async collect(spec: ContainerSpec): Promise<typeof exited> {
+    if (spec.name.startsWith('he-build-')) return this.run(spec);
     return exited;
   }
   override async run(spec: ContainerSpec): Promise<typeof exited> {
@@ -94,7 +100,8 @@ test('controller resumes failed resource cleanup before declaring terminal failu
   await writeFile(path.join(seed, 'package-lock.json'), '{}');
   class FailedExecution extends LifecycleDriver {
     collections = 0;
-    override async collect(): Promise<typeof exited> {
+    override async collect(spec: ContainerSpec): Promise<typeof exited> {
+      if (spec.name.startsWith('he-build-')) return this.run(spec);
       this.collections++;
       throw Error('original task failed');
     }
@@ -247,7 +254,17 @@ test('build failure is terminal, retains evidence, consumes candidate budget and
   await writeFile(path.join(seed, 'package-lock.json'), '{}');
   await writeFile(path.join(seed, 'cordis.patch.yml'), '[]');
   class FailedBuilder extends Docker {
+    override async executionReference(spec: ContainerSpec) {
+      return { name: spec.name, id: spec.name, intent: containerIdentity(spec) };
+    }
     calls = 0;
+    override async create() {}
+    override async inspect() {
+      return exited;
+    }
+    override async collect(spec: ContainerSpec, logDir: string) {
+      return this.run(spec, logDir);
+    }
     override async run(spec: ContainerSpec, logDir: string) {
       assert.ok(spec.name.startsWith('he-build-'));
       this.calls++;

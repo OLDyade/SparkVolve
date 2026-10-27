@@ -11,6 +11,7 @@ import { Controller } from '../../src/controller.js';
 import { serve } from '../../src/api.js';
 import { optimize } from '../../src/optimizer.js';
 import { command } from '../../src/docker.js';
+import { prepareOptimizer, optimizerBundlePath } from '../../src/optimizer-harness.js';
 
 test(
   'optimizer container mounts the native preset and concludes through the actual controller API',
@@ -51,7 +52,9 @@ test(
       model: 'protocol',
       reasoningEffort: null,
     };
-    spec.optimizerHarness.digest = await treeDigest(path.join(dataset, 'optimizer-bundle'));
+    spec.optimizerHarness.source.digest = await treeDigest(path.join(dataset, 'optimizer-bundle'));
+    assert.equal(spec.optimizerHarness.kind, 'source');
+    if (spec.optimizerHarness.kind === 'source') spec.optimizerHarness.build = { image, timeoutSeconds: 120 };
     const token = randomBytes(32).toString('hex');
     await writeFile(path.join(root, 'controller-token'), token, { mode: 0o600 });
     const store = new Store(path.join(root, 'experiment.sqlite'), spec);
@@ -116,6 +119,49 @@ test(
       assert.equal(materialization.writeError, 'EROFS');
       assert.equal(materialization.sha256, materialization.observedSha256);
       assert.equal(materialization.reference.kind, 'run');
+      const prepared = await prepareOptimizer(root, dataset, spec);
+      assert.notEqual(optimizerBundlePath(root, prepared), path.join(dataset, 'optimizer-bundle'));
+      const qa = JSON.parse(
+        await readFile(path.join(root, 'optimizer-harness/qa/work/native/composition.json'), 'utf8'),
+      );
+      assert.equal(qa.passed, true);
+      assert.ok(qa.tools.some((tool: { name: string }) => tool.name === 'evolution_submit'));
+      assert.ok(qa.compositions.length > 0);
+      const installation = JSON.parse(
+        await readFile(path.join(optimizerBundlePath(root, prepared), 'package.json'), 'utf8'),
+      );
+      assert.equal(installation.dsh.bundle.patch, './cordis.patch.yml');
+      assert.equal(prepared.composition, 'plugins.yml');
+      const methodMount = JSON.parse(
+        await readFile(path.join(root, 'optimizer/0/isolation-final.json'), 'utf8'),
+      ).observed.mounts.find((mount: { Destination: string }) => mount.Destination === '/method');
+      assert.equal(methodMount.RW, false);
+      assert.equal(methodMount.Source, optimizerBundlePath(root, prepared));
+      // Independent studies consume exactly this G artifact; each arm loads it without a new build.
+      const reuse = path.join(root, 'artifact-consumer');
+      const reused = await prepareOptimizer(reuse, root, {
+        ...spec,
+        runtime: {
+          ...spec.runtime,
+          environment: { ...spec.runtime.environment!, directory: 'dataset/environment' },
+        },
+        optimizerHarness: {
+          kind: 'artifact',
+          source: { directory: 'dataset/optimizer-bundle', digest: prepared.sourceDigest },
+          composition: prepared.composition,
+          artifact: {
+            directory: `optimizer-harness/artifacts/${prepared.sourceDigest}`,
+            identity: prepared.build,
+          },
+        },
+      });
+      assert.deepEqual(reused, prepared);
+      await assert.rejects(
+        readFile(
+          path.join(reuse, 'optimizer-harness/builds', prepared.sourceDigest, 'execution-intent.json'),
+        ),
+        { code: 'ENOENT' },
+      );
     } finally {
       await new Promise<void>((resolve) => server.close(() => resolve()));
       await controller.close();

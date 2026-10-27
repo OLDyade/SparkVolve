@@ -1,14 +1,15 @@
+import { containerIdentity } from '../src/isolation.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile, readFile, rm, chmod, readdir, cp } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, readFile, rm, chmod, readdir, cp, unlink } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { specification } from './fixtures.js';
 import { treeDigest, fileDigest, atomicJSON } from '../src/artifacts.js';
 import { Docker, type ContainerSpec } from '../src/docker.js';
-import { validateStudy } from '../src/validation.js';
+import { validateStudy, validateFrozenArm } from '../src/validation.js';
 
-test('paired validation freezes all arms, preserves repetitions and resumes without new executions', async () => {
+test('single-arm and paired validation preserve built artifacts and resume without new executions', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'he-study-'));
   const spec = {
     ...specification(),
@@ -84,12 +85,16 @@ test('paired validation freezes all arms, preserves repetitions and resumes with
     FinishedAt: '2026-10-27T00:00:01Z',
   };
   class Driver extends Docker {
+    override async executionReference(spec: ContainerSpec) {
+      return { name: spec.name, id: spec.name, intent: containerIdentity(spec) };
+    }
     override async inspect() {
       return exited;
     }
     override async halt() {}
     creations = 0;
     override async create(spec: ContainerSpec) {
+      assert.ok(!spec.name.startsWith('he-build-'), 'Independent validation must never rebuild artifacts');
       this.creations++;
       const source = spec.mounts.find((m) => m.target === '/candidate')!.source;
       const work = spec.mounts.find((m) => m.target === '/workspace')!.source;
@@ -123,9 +128,44 @@ test('paired validation freezes all arms, preserves repetitions and resumes with
   const driver = new Driver(),
     study = path.join(root, 'study');
   try {
+    const single = path.join(root, 'single');
+    const observed = await validateFrozenArm(single, spec, dataset, arms[0], driver);
+    assert.equal(observed.mean, 0.25);
+    assert.equal(observed.complete, true);
+    assert.equal(observed.samples!.length, 4);
+    await validateFrozenArm(single, spec, dataset, arms[0], driver);
+    assert.equal(driver.creations, 4);
+    await assert.rejects(
+      validateFrozenArm(
+        single,
+        spec,
+        dataset,
+        {
+          ...arms[0],
+          build: { ...arms[0]!.build, bundleDigest: '0'.repeat(64) },
+        },
+        driver,
+      ),
+      /integrity mismatch/,
+    );
+    const stopped = new Error('Parent study interrupted');
+    await assert.rejects(
+      validateFrozenArm(
+        path.join(root, 'never-started'),
+        spec,
+        dataset,
+        arms[0],
+        driver,
+        AbortSignal.abort(stopped),
+      ),
+      (error) => error === stopped,
+    );
+    assert.equal(driver.creations, 4);
     await validateStudy(study, spec, dataset, arms, driver);
+    // The immutable intent survives a missing registration projection.
+    await unlink(path.join(study, 'registration.json'));
     await validateStudy(study, spec, dataset, arms, driver);
-    assert.equal(driver.creations, 8);
+    assert.equal(driver.creations, 12);
     const report = JSON.parse(await readFile(path.join(study, 'comparison.json'), 'utf8'));
     assert.equal(report.comparisons[0].meanDelta, 0.5);
     assert.equal(report.comparisons[0].pairs.length, 4);

@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-terminal-review",
+  "reviewDate": "2026-10-28",
+  "experimentRoot": ".evolution/optimizer-study-live-contract-corrected-20261028",
+  "registrationDigest": "89e485fe228d6bb2a8fef819eec6de286b0b6b672983cc684c2eaf3c5220335d",
+  "state": {
+    "conclusion": {
+      "at": "2026-10-27T20:44:38.352Z",
+      "reason": "Registered independent validation completed; results retained without automatic release"
+    },
+    "phase": "complete",
+    "selectedMethod": "ef3468ea3ccffee92677400b26c51ef5011c2469ef028491f56bf4ae4a751d0d"
+  },
+  "development": [
+    {
+      "method": "ef3468ea3ccffee92677400b26c51ef5011c2469ef028491f56bf4ae4a751d0d",
+      "mean": 1,
+      "denominator": 1,
+      "failures": 0,
+      "complete": true
+    },
+    {
+      "method": "842081f7351c17f6116fcf264dc4a67ab72c67dfd9d38deabd978ab3b11ecc7a",
+      "mean": 1,
+      "denominator": 1,
+      "failures": 0,
+      "complete": true
+    }
+  ],
+  "validation": [
+    {
+      "method": "ef3468ea3ccffee92677400b26c51ef5011c2469ef028491f56bf4ae4a751d0d",
+      "mean": 1,
+      "denominator": 1,
+      "failures": 0,
+      "complete": true
+    }
+  ],
+  "metric": "structured_output_accuracy",
+  "methods": [
+    {
+      "label": "G0",
+      "candidateId": "dd281884ba58f70f6965215d49e91b6ab341f356d2ed77245c823e37058dab95",
+      "methodIdentity": "ef3468ea3ccffee92677400b26c51ef5011c2469ef028491f56bf4ae4a751d0d",
+      "sourceDigest": "cd71b111e71502df8e012824f4555c4f864c999d896cc9e23684eb48224b8448",
+      "composition": "plugins.yml",
+      "build": {
+        "artifactDigest": "65d0de6e8333fe61791f5d4af01da9b62b46633bfe5cca99289372a80feda7dc",
+        "bundleDigest": "71f755e9391773b4ac9b527e68573a706d9fbd9745bbc1f71151dcfe82fb422e",
+        "image": "sha256:919839c0bf86ad018af4305b6a04af60ccb692ee341d3e2e1fcb53d1e6b6badc",
+        "lockDigest": "a21e29ad6c572a582cf5d410d8f1454646eced3d5d248db39ee54f830d2cd2b2",
+        "tarballDigest": "3dee2a10187b786b965032ebe4fb5b7b35b091f2e8e844ec29f30b2b7a8096b3"
+      }
+    },
+    {
+      "label": "G1",
+      "candidateId": "f4c60d52be96bc6f9ad3ad3869a51b24be076bc4578b940de1a2b34145f70e4c",
+      "methodIdentity": "842081f7351c17f6116fcf264dc4a67ab72c67dfd9d38deabd978ab3b11ecc7a",
+      "sourceDigest": "e7ce41101edafc1147623fad26a7eb84c269d8eace5acc5c0a31a5abc2743570",
+      "composition": "plugins.yml",
+      "build": {
+        "artifactDigest": "54c06e1fd5b55c3438d7ad9932fe97504504a4e6ebab868cca0d15d02ccc96aa",
+        "bundleDigest": "b17e0884b912021a37e689820324b9ebbb8f5a28963d665bb4599ec453a98d23",
+        "image": "sha256:919839c0bf86ad018af4305b6a04af60ccb692ee341d3e2e1fcb53d1e6b6badc",
+        "lockDigest": "a21e29ad6c572a582cf5d410d8f1454646eced3d5d248db39ee54f830d2cd2b2",
+        "tarballDigest": "a1d539c019a3dfcea1ea09477e0da98cc3dc63654391a07d14cd73b8bc985f2d"
+      }
+    }
+  ],
+  "mutation": {
+    "implementationChanged": true,
+    "compositionTopologyChanged": false,
+    "nativeToolSchemaObserved": true,
+    "dataSelfCheckNativeCalls": 0,
+    "scope": "G1 development optimizer episode 0, all terminal tool/call events",
+    "mechanismBenefitProved": false,
+    "qualityImprovementObserved": false,
+    "localSmokeUsesMockContext": true
+  },
+  "usage": {
+    "metaUsage": {
+      "activeSources": 0,
+      "availableLedgers": 1,
+      "complete": true,
+      "emptyLedgers": 0,
+      "ledgers": 1,
+      "reportedTotals": {
+        "failed": 0,
+        "inputTokensReported": 151182,
+        "missingUsage": 0,
+        "outputTokensReported": 29294,
+        "requestDurationMsSum": 322597,
+        "results": 112,
+        "started": 112,
+        "unfinished": 0
+      },
+      "unavailableLedgers": 0,
+      "unavailableSources": 0,
+      "unobservedTaskRuns": 0
+    },
+    "searchUsage": {
+      "activeSources": 0,
+      "availableLedgers": 9,
+      "complete": true,
+      "emptyLedgers": 0,
+      "ledgers": 9,
+      "reportedTotals": {
+        "failed": 0,
+        "inputTokensReported": 343802,
+        "missingUsage": 0,
+        "outputTokensReported": 61974,
+        "requestDurationMsSum": 584039,
+        "results": 203,
+        "started": 203,
+        "unfinished": 0
+      },
+      "unavailableLedgers": 0,
+      "unavailableSources": 0,
+      "unobservedTaskRuns": 0
+    },
+    "assessmentUsage": {
+      "activeSources": 0,
+      "availableLedgers": 3,
+      "complete": true,
+      "emptyLedgers": 0,
+      "ledgers": 3,
+      "reportedTotals": {
+        "failed": 0,
+        "inputTokensReported": 10252,
+        "missingUsage": 0,
+        "outputTokensReported": 1995,
+        "requestDurationMsSum": 19252,
+        "results": 10,
+        "started": 10,
+        "unfinished": 0
+      },
+      "unavailableLedgers": 0,
+      "unavailableSources": 0,
+      "unobservedTaskRuns": 0
+    },
+    "totalUsage": {
+      "activeSources": 0,
+      "availableLedgers": 13,
+      "complete": true,
+      "emptyLedgers": 0,
+      "ledgers": 13,
+      "reportedTotals": {
+        "failed": 0,
+        "inputTokensReported": 505236,
+        "missingUsage": 0,
+        "outputTokensReported": 93263,
+        "requestDurationMsSum": 925888,
+        "results": 325,
+        "started": 325,
+        "unfinished": 0
+      },
+      "unavailableLedgers": 0,
+      "unavailableSources": 0,
+      "unobservedTaskRuns": 0
+    }
+  },
+  "usageUnit": "DSH adapter stream attempts; provider-internal HTTP retries are unknown",
+  "publicLedgerRecomputation": {
+    "ledgers": 7,
+    "scope": "meta episode and both development searches only",
+    "started": 275,
+    "results": 275,
+    "failed": 0,
+    "unfinished": 0,
+    "missingUsage": 0,
+    "inputTokensReported": 430199,
+    "outputTokensReported": 78867,
+    "requestDurationMsSum": 793563,
+    "remainingAttemptsVerifiedByAuthoritativeAggregates": 50
+  },
+  "monetaryCost": null,
+  "acceptance": {
+    "originalPassed": false,
+    "originalError": "TypeError: Cannot read properties of undefined (reading phase)",
+    "originalDriverLine": 558,
+    "experimentComplete": true,
+    "installation": "passed_native_installation_without_inference",
+    "originalDriverSha256": "f1ca54d30799cf626f8e7cc2f43ab3dc87f84130e3d252fa13ee8cddccd6bc7c",
+    "separateSuccessfulInstallationReceiptObserved": true
+  },
+  "findings": [
+    {
+      "id": "method-role-mismatch",
+      "sourceLines": [
+        348,
+        356
+      ],
+      "status": "source and actual model request confirmed"
+    },
+    {
+      "id": "observer-does-not-observe-child-harness",
+      "sourceLines": [
+        112,
+        131
+      ],
+      "status": "scope wiring confirmed; no self-check native invocation"
+    },
+    {
+      "id": "read-classification-and-cache-not-raw-source",
+      "sourceLines": [
+        39,
+        39
+      ],
+      "additionalSourceLines": [
+        [
+          106,
+          131
+        ],
+        [
+          303,
+          318
+        ]
+      ],
+      "status": "static defect; invocation absent"
+    },
+    {
+      "id": "g0-write-absence-claim-contradicted",
+      "sourceLines": [
+        10,
+        14
+      ],
+      "status": "public G0 task Bash/Python file write observed"
+    },
+    {
+      "id": "silent-errors-and-jsonl-recovery",
+      "sourceLines": [
+        79,
+        98
+      ],
+      "additionalSourceLines": [
+        [
+          129,
+          131
+        ],
+        [
+          220,
+          228
+        ],
+        [
+          337,
+          341
+        ]
+      ],
+      "status": "static defect; tool registration actually succeeded"
+    },
+    {
+      "id": "branch-empty-receipt",
+      "metaTraceLines": [
+        215,
+        216
+      ],
+      "correctParentReadTraceLines": [
+        229,
+        230
+      ],
+      "status": "empty successful receipt observed; correct parent copy observed; causal link to role confusion unproved"
+    }
+  ],
+  "references": [
+    {
+      "path": "authoritative-study-report.json",
+      "sha256": "d4c3c094266f2c09260a28002666236efb63a1c76f18c4e249562e579a4f653b"
+    },
+    {
+      "path": "acceptance.json",
+      "sha256": "7f97d6e2f8bfe68f51b1ffe8b3cccfbe13cd20a00df0bc0416815abbe3431d77"
+    },
+    {
+      "path": "study/meta-optimizer/0/trace/notifications.jsonl",
+      "sha256": "4979b97e08a254c8b6027f5c9f6921986a2276c16f7203cdc9ef574a46aa5ac5"
+    },
+    {
+      "path": "study/children/acdc3e93d1731e5a44dd685dc9e6a56029b6576bec5fe73dd4c337bb2baec191/optimizer/0/trace/notifications.jsonl",
+      "sha256": "f26a7c5d9530211340429200e91b16eea0138d5a1f01b40684585ba4b9f0552a"
+    },
+    {
+      "path": "study/methods/sources/e7ce41101edafc1147623fad26a7eb84c269d8eace5acc5c0a31a5abc2743570/index.mjs",
+      "sha256": "8007c2ab9ef1ffe3441b20fc48ef67416699927ce249960cf63f09ac2ca9309a"
+    }
+  ],
+  "boundaries": [
+    "Only authoritative aggregate reports, public source and development traces inspected; no sealed task or private grading answers read.",
+    "One development search instance per method and one final validation instance; no repeated-experiment benefit or generalization established.",
+    "G1 was not selected for final validation.",
+    "Synthetic structured-output accuracy is not Spark or Excel Modif evidence.",
+    "Tool visibility, local mock success and build acceptance do not prove intended behavior.",
+    "Stream duration sums are not elapsed wall time; build, QA and evaluator resources excluded from model token cost.",
+    "Original failed driver and first installation receipts remain preserved; separate corrected installation passed without model inference or mechanism certification.",
+    "Core implementation line references describe the original frozen run and source reviewed then; subsequent working-tree fixes do not rewrite that history."
+  ],
+  "postprocessing": {
+    "firstInstallationVerification": {
+      "root": ".evolution/optimizer-study-completed-verification-20261028",
+      "passed": false,
+      "receiptSha256": "302cd2db7be482d813086ad9645f0fb860df5a62af074dceec4f120221965c1a",
+      "error": "no adapter registered for provider venus",
+      "errorEvidence": {
+        "path": ".evolution/optimizer-study-completed-verification-20261028/installation/g1/execution/stderr.log",
+        "line": 5,
+        "sha256": "4a4d2d1a9c7cd34be51051e662d71f0266285cc5895d13e687c475dd1cb3dbe7"
+      },
+      "boundary": "Installation driver used sdk-minimal instead of registered runtime profile; does not establish a frozen Bundle defect."
+    },
+    "profileCorrectedVerification": {
+      "root": ".evolution/optimizer-study-completed-verification-profile-corrected-20261028",
+      "state": "complete",
+      "passed": true,
+      "completedAt": "2026-10-27T20:50:32.731Z",
+      "receiptSha256": "57348efdf48f6255b184bc7fe498a2e700580aaa03bd2e10b7663c2f7b5cd8b8",
+      "driverSha256": "6b0e218ed55284726b558b6b7d48646f473ea74a91aae782d2ff732ec8d640fc",
+      "modelSearchRerun": false,
+      "originalEvidenceUnchanged": true,
+      "preservedFiles": [
+        {
+          "file": "acceptance.json",
+          "sha256": "7f97d6e2f8bfe68f51b1ffe8b3cccfbe13cd20a00df0bc0416815abbe3431d77"
+        },
+        {
+          "file": "authoritative-study-report.json",
+          "sha256": "d4c3c094266f2c09260a28002666236efb63a1c76f18c4e249562e579a4f653b"
+        },
+        {
+          "file": "study-report.json",
+          "sha256": "29cbf6f22c698f6e6a8d6c5dd71b438c12f43bf3a97c64d5e24f5f409a833ed2"
+        },
+        {
+          "file": "study/registration.json",
+          "sha256": "37a02bd4f7e3f04a58b57621469792478fc76fef1621042813fa467b0cf4c4aa"
+        },
+        {
+          "file": "study/study.sqlite",
+          "sha256": "9f1a8aec72992f39be4254c0f8bdc58b5b099bce361e93fb636f4d1c749379b1"
+        }
+      ],
+      "installation": [
+        {
+          "evidence": {
+            "composition": "plugins.yml",
+            "inferenceRequested": false,
+            "installed": true,
+            "nativeComposition": true,
+            "package": "@harness-evolution/optimizer-evidence-driven",
+            "profile": "sdk",
+            "tarballDigest": "a1d539c019a3dfcea1ea09477e0da98cc3dc63654391a07d14cd73b8bc985f2d"
+          },
+          "name": "g1",
+          "status": "passed"
+        },
+        {
+          "evidence": {
+            "composition": "plugins.yml",
+            "inferenceRequested": false,
+            "installed": true,
+            "nativeComposition": true,
+            "package": "@harness-evolution/optimizer-evidence-driven",
+            "profile": "sdk",
+            "tarballDigest": "3dee2a10187b786b965032ebe4fb5b7b35b091f2e8e844ec29f30b2b7a8096b3"
+          },
+          "name": "g0",
+          "status": "passed"
+        },
+        {
+          "evidence": {
+            "composition": null,
+            "inferenceRequested": false,
+            "installed": true,
+            "nativeComposition": true,
+            "package": "@harness-evolution/structured-data",
+            "profile": "sdk",
+            "tarballDigest": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c"
+          },
+          "name": "h-564c1e7c89b4",
+          "status": "passed"
+        }
+      ],
+      "frameworkInstallation": {
+        "source": ".evolution/optimizer-study-completed-verification-20261028/framework/package.tgz",
+        "tarballDigest": "f6663fab04188d4a6f270d75288c4b19857b8619d90d367ab197a1b7570ace89",
+        "boundary": "Separately identified installation support package; original experiment runtime identity remains its registered immutable image. No claim that these are the same artifact."
+      },
+      "runtimeVerification": {
+        "profile": "sdk",
+        "matchesRegisteredProfile": true,
+        "environmentMountReadOnly": true,
+        "methodEnvironment": "registered development search runtime",
+        "harnessEnvironment": "registered final assessment runtime",
+        "sealedTaskContentsInspected": false
+      },
+      "boundary": "Native installation and composition only; no inference, no recommendation of G1 and no proof of G1 self-check behavior."
+    }
+  }
+}

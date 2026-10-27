@@ -16,6 +16,13 @@ import { validateStudy } from './validation.js';
 import { catalog, importArchive } from './library.js';
 import { experimentReport } from './report.js';
 import { EventCursor } from './events.js';
+import { prepareOptimizerStudy, OptimizerStudyCoordinator } from './optimizer-study.js';
+import { OptimizerStudyStore } from './optimizer-study-store.js';
+import { OptimizerStudy } from './optimizer-study-contracts.js';
+import { evolveOptimizerStudy } from './optimizer-study-runner.js';
+import { optimizerStudyReport } from './optimizer-study-report.js';
+import { cancelOptimizerStudy } from './optimizer-study-cancel.js';
+import { cancelExperiment } from './cancellation.js';
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,
@@ -30,6 +37,8 @@ const { positionals, values } = parseArgs({
     run: { type: 'string' },
     endpoint: { type: 'string' },
     'control-endpoint': { type: 'string' },
+    'child-endpoint': { type: 'string' },
+    'child-host': { type: 'string' },
     candidate: { type: 'string' },
     output: { type: 'string' },
     arms: { type: 'string' },
@@ -52,6 +61,7 @@ validate  --root <study-directory> --spec <validation.json> --dataset <directory
 optimize  --root <directory> --endpoint <container-reachable-url> --control-endpoint <host-reachable-url>
 run       --root <directory>
 status    --root <directory>
+cancel    --root <directory>
 report    --root <directory> [--output <new-file>]
 events    --root <directory> [--cursor <cursor.json>] [--follow]
 rescore   --root <directory> --run <run-id>
@@ -61,6 +71,11 @@ library   --library <directory> [--query <literal-text>]
 import    --root <directory> --archive <research-archive> --draft <new-name>
 digest    <artifact-directory>
 doctor
+study-init   --root <new-study> --spec <study.json> --dataset <trusted-input-root>
+study-run    --root <study> --endpoint <container-reachable-url> --child-endpoint <literal-ip-origin:0> [--host 127.0.0.1] [--port 8787] [--child-host <bind-address>]
+study-status --root <study>
+study-report --root <study> [--output <new-file>]
+study-cancel --root <study>
 
 Use Node --env-file with a private file for credentials. Existing experiments are immutable.
 run reconciles original tasks; rescore reuses the original delivery; export does not publish.`);
@@ -81,7 +96,71 @@ run reconciles original tasks; rescore reuses the original delivery; export does
 } else {
   if (!values.root) throw new Error('Required: --root <experiment directory>');
   const root = path.resolve(values.root);
-  if (action === 'init') {
+  if (action === 'cancel' || action === 'study-cancel') {
+    console.log(
+      JSON.stringify(
+        await (action === 'cancel' ? cancelExperiment(root) : cancelOptimizerStudy(root)),
+        null,
+        2,
+      ),
+    );
+  } else if (action === 'study-init') {
+    if (!values.spec || !values.dataset) throw new Error('study-init requires --spec and --dataset');
+    const spec = OptimizerStudy.parse(JSON.parse(await readFile(values.spec, 'utf8')));
+    await prepareOptimizerStudy(root, spec, path.resolve(values.dataset));
+    console.log(JSON.stringify({ root, status: 'registered', methods: 1 }));
+  } else if (['study-run', 'study-status', 'study-report'].includes(action!)) {
+    const spec = OptimizerStudy.parse(
+      JSON.parse(await readFile(path.join(root, 'registration.json'), 'utf8')),
+    );
+    const store = new OptimizerStudyStore(
+      path.join(root, 'study.sqlite'),
+      spec,
+      action === 'study-run' ? 'write' : 'read',
+    );
+    const coordinator = new OptimizerStudyCoordinator(root, store);
+    try {
+      if (action === 'study-run') {
+        if (!values.endpoint || !values['child-endpoint'])
+          throw new Error('study-run requires --endpoint and --child-endpoint');
+        if (new URL(values['child-endpoint']).port !== '0')
+          throw new Error(
+            '--child-endpoint requires explicit port 0 for separately persisted child transports',
+          );
+        const abort = new AbortController();
+        const interrupt = () =>
+          abort.abort(new Error('Study observer interrupted; original descendant attempts retained'));
+        process.once('SIGINT', interrupt);
+        process.once('SIGTERM', interrupt);
+        try {
+          await evolveOptimizerStudy(coordinator, {
+            host: values.host!,
+            port: Number(values.port),
+            endpoint: values.endpoint,
+            childTransport: {
+              host: values['child-host'] ?? values.host!,
+              port: 0,
+              endpoint: values['child-endpoint'],
+            },
+            signal: abort.signal,
+          });
+        } finally {
+          process.removeListener('SIGINT', interrupt);
+          process.removeListener('SIGTERM', interrupt);
+        }
+      }
+      const result = JSON.stringify(
+        action === 'study-status' ? coordinator.status() : await optimizerStudyReport(root, store),
+        null,
+        2,
+      );
+      if (action === 'study-report' && values.output)
+        await writeFile(values.output, result + '\n', { flag: 'wx', mode: 0o600 });
+      else console.log(result);
+    } finally {
+      store.close();
+    }
+  } else if (action === 'init') {
     if (!values.spec || !values.dataset || !values.seed)
       throw new Error('init requires --spec, --dataset and --seed');
     const spec = Experiment.parse(JSON.parse(await readFile(values.spec, 'utf8')));
@@ -192,11 +271,22 @@ run reconciles original tasks; rescore reuses the original delivery; export does
           await importArchive(root, store, path.resolve(values.archive), values.draft);
         } else if (action === 'evolve') {
           if (!values.endpoint) throw new Error('evolve requires --endpoint reachable from containers');
-          await evolve(controller, {
-            endpoint: values.endpoint,
-            host: values.host!,
-            port: Number(values.port),
-          });
+          const abort = new AbortController();
+          const interrupt = () =>
+            abort.abort(new Error('Coordinator interrupted; original containers retained for resume'));
+          process.once('SIGINT', interrupt);
+          process.once('SIGTERM', interrupt);
+          try {
+            await evolve(controller, {
+              endpoint: values.endpoint,
+              host: values.host!,
+              port: Number(values.port),
+              signal: abort.signal,
+            });
+          } finally {
+            process.removeListener('SIGINT', interrupt);
+            process.removeListener('SIGTERM', interrupt);
+          }
         } else if (action === 'rescore') {
           if (!values.run) throw new Error('rescore requires --run');
           await controller.rescore(values.run);

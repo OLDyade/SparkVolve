@@ -1,0 +1,21 @@
+{
+  "name": "@harness-evolution/optimizer-method-research",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": "./index.mjs",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node --check index.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "plugins.yml",
+    "cordis.patch.yml",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

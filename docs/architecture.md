@@ -71,6 +71,7 @@ run: queued → executing → delivered → scoring → scored
 - 冠军决定存入 SQLite 后再生成 JSON 报告；中断后的报告可由事件重建。
 - 每个优化器会话有持久启动意图与唯一容器身份。重启先收集原会话；正常完成且预算未耗尽时开启下一会话，接收前一会话的只读轨迹、持久草稿和最新实验结果。服务失败直接暴露，不隐式重试失败会话。
 - `evolve` 同时管理控制 API、候选调度与优化器；`evolution_finish` 在候选收集完成后记录搜索结论。总时间预算跨会话累计。中断宿主命令保留原容器供恢复收集。
+- 控制服务的首次绑定地址持久化，恢复使用原端口；配置改变或端口占用直接暴露。明确结束实验使用 `cancel`；父级方法研究使用 `study-cancel` 回收账本注册的全部后代。取消命令需要取得租约，不能与活动宿主并行接管。
 - 冻结中断留下的 reservation 和未入库快照需要调查后显式处理；不会猜测删除或跳过完整性检查。
 
 ## 实验与研究结论
@@ -95,7 +96,9 @@ run: queued → executing → delivered → scoring → scored
 
 ## 优化器与成果也作为插件管理
 
-`optimizerHarness` 固定研究方法 Bundle 的目录、内容哈希和 `composition` 原生插件清单。Evolution Preset 将进化工具与该清单的插件树装配到会话作用域；优化器使用原生 SDK 编码基础和 Agent Loop，恢复读取 Session 已记录的 Preset。方法可版本化、替换和独立比较，实验中保持只读；执行器的候选 Bundle 与优化器方法分别记账。完整安装与机制见 [Evolution Preset](presets.md)。自动开展优化器之间的等预算搜索比较仍需研究协议，不能用一次执行器提升证明优化器自身进化有效。[G/H 自身进化研究](research/2026-10-28-optimizer-self-evolution.md)记录当前缺口与待实施方案。
+`optimizerHarness` 显式区分 `source` 与 `artifact`：前者冻结源码后执行锁定构建，后者导入已验真的源码和实际构建产物；两者统一形成 `PreparedOptimizer`，运行只装载冻结产物内的 `composition` 原生插件清单。Evolution Preset 将进化工具与该清单装配到会话作用域；优化器使用原生 SDK 编码基础和 Agent Loop，恢复读取 Session 已记录的 Preset。完整安装与机制见 [Evolution Preset](presets.md)。
+
+[Optimizer Study](optimizer-studies.md) 已接入 G/H 独立版本、同起点同预算上限搜索、开发方法选择与封闭最终验证。元优化器通过原生 DSH 工具自主提交 G；宿主协调器复用既有构建、Controller 和固定产物验证协议。真实模型整链路正在验收，不能用一次 H 提升证明 G 自身进化有效。[研究依据](research/2026-10-28-optimizer-self-evolution.md)记录生态来源和实验边界。
 
 `probes` 合同授权独立行为实验：优化器编写测试，冻结草稿与测试，原生装配后实际调用服务和工具。执行禁网、无模型凭证，不挂任务或评测材料；结果作为原始证据返回，不产生分数、自动修复或提交门。准备意图、快照和原容器可恢复；完整协议见 [行为实验台](behavioral-probes.md)。新实验必须显式声明该字段，旧冻结合同与历史数据不改写。
 

@@ -16,7 +16,7 @@ const counters = [
   'requestDurationMsSum',
 ] as const;
 
-async function usageAt(trace: string): Promise<Usage | null> {
+export async function usageAt(trace: string): Promise<Usage | null> {
   try {
     return await requestMetrics(path.join(trace, 'requests.jsonl'));
   } catch (error) {
@@ -25,7 +25,7 @@ async function usageAt(trace: string): Promise<Usage | null> {
   }
 }
 
-function sumUsage(rows: Array<Usage | null>) {
+export function sumUsage(rows: Array<Usage | null>) {
   const reported = rows.filter((row): row is Usage => row !== null);
   return {
     ledgers: rows.length,

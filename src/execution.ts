@@ -4,6 +4,30 @@ import { atomicJSON, digest, fileDigest } from './artifacts.js';
 import type { ContainerSpec, Docker, ContainerState, ContainerReference } from './docker.js';
 import type { EgressLifecycle } from './egress-session.js';
 import { containerIdentity } from './isolation.js';
+import { z } from 'zod';
+import { Digest } from './contracts.js';
+
+export const ExecutionIntent = z
+  .object({
+    identity: Digest,
+    phase: z.enum(['preparing', 'creating', 'created']),
+  })
+  .strict();
+export const ExecutionRecord = z
+  .object({
+    preparation: Digest,
+    specification: Digest,
+    reference: z.object({ name: z.string().min(1), id: z.string().min(1), intent: Digest }).strict(),
+  })
+  .strict();
+
+/** The host retains the specification digest; secret environment values never enter execution artifacts. */
+function persistedSpec(spec: ContainerSpec): ContainerSpec {
+  return {
+    ...spec,
+    env: Object.fromEntries(Object.keys(spec.env).map((key) => [key, '[private-environment]'])),
+  };
+}
 
 const logFiles = ['isolation.json', 'isolation-final.json', 'stdout.log', 'stderr.log'] as const;
 interface Completion {
@@ -123,21 +147,65 @@ export async function prepareExecution(
 ): Promise<ContainerSpec> {
   const file = path.join(root, 'execution-intent.json'),
     hash = digest(identity);
-  let intent: { identity: string; phase: 'preparing' | 'creating' | 'created' };
   try {
-    intent = JSON.parse(await readFile(file, 'utf8'));
+    await readFile(path.join(root, 'cancellation-intent.json'));
+    throw Error('Execution was explicitly cancelled; no task retry');
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+  }
+  let intent: z.infer<typeof ExecutionIntent>;
+  try {
+    intent = ExecutionIntent.parse(JSON.parse(await readFile(file, 'utf8')));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    for (const existing of [
+      'execution-spec.json',
+      'execution-record.json',
+      'execution-completion.json',
+      'isolation.json',
+      'isolation-final.json',
+      'stdout.log',
+      'stderr.log',
+    ]) {
+      try {
+        await readFile(path.join(root, existing));
+        throw Error('Execution evidence exists without its original intent; no automatic task retry');
+      } catch (existingError) {
+        if ((existingError as NodeJS.ErrnoException).code !== 'ENOENT') throw existingError;
+      }
+    }
     intent = { identity: hash, phase: 'preparing' };
     await atomicJSON(file, intent);
   }
   if (intent.identity !== hash) throw Error('Execution preparation contract changed');
   if (intent.phase === 'preparing') await gateway?.prepare(credentials);
   const spec = await specification();
+  if (intent.phase !== 'preparing') {
+    const persisted = JSON.parse(await readFile(path.join(root, 'execution-spec.json'), 'utf8'));
+    if (digest(persisted) !== digest(persistedSpec(spec)))
+      throw Error('Persisted execution specification changed');
+  }
+  let record: z.infer<typeof ExecutionRecord> | undefined;
+  try {
+    record = ExecutionRecord.parse(
+      JSON.parse(await readFile(path.join(root, 'execution-record.json'), 'utf8')),
+    );
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    if (intent.phase === 'created') throw Error('Original execution record missing');
+  }
+  if (
+    record &&
+    (record.preparation !== hash ||
+      record.specification !== digest(spec) ||
+      record.reference.name !== spec.name ||
+      record.reference.intent !== containerIdentity(spec))
+  )
+    throw Error('Original execution record does not match its contract');
   if (gateway && (await completion(root, spec))) return spec;
   if (intent.phase === 'preparing') {
     // Persist the worker contract before creation, including when later recovery verification fails.
-    await atomicJSON(path.join(root, 'execution-spec.json'), spec);
+    await atomicJSON(path.join(root, 'execution-spec.json'), persistedSpec(spec));
     intent.phase = 'creating';
     await atomicJSON(file, intent);
     try {
@@ -148,6 +216,13 @@ export async function prepareExecution(
   }
   const state = await docker.inspect(spec.name);
   if (!state) throw Error('Original execution container missing after create intent; no automatic retry');
+  const reference = await docker.executionReference(spec);
+  if (record && digest(record.reference) !== digest(reference))
+    throw Error('Original execution container identity changed');
+  if (!record) {
+    record = { preparation: hash, specification: digest(spec), reference };
+    await atomicJSON(path.join(root, 'execution-record.json'), record);
+  }
   await gateway?.verify(state.Running || state.Status === 'created');
   intent.phase = 'created';
   await atomicJSON(file, intent);

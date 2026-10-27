@@ -37,12 +37,33 @@ flowchart TB
 |---|---|---|
 | 进化 Bundle / Preset | 将进化工具与可替换方法装入选定 Agent 作用域 | [`plugin.ts`](../src/plugin.ts)、[`preset.ts`](../src/preset.ts)、[`sdk-preset.ts`](../src/sdk-preset.ts) |
 | 优化器方法 | 从证据选择父版本、机制和变异规模；可以独立版本化 | [`optimizers/evidence-driven`](../optimizers/evidence-driven) |
+| 优化器研究 | 原生元优化器修改 G，可信宿主调度同预算子搜索与封闭最终验证 | [`study-plugin.ts`](../src/study-plugin.ts)、[`optimizer-study.ts`](../src/optimizer-study.ts)、[研究协议](optimizer-studies.md) |
 | 控制器与状态 | 冻结、构建、调度、续接原容器、选择与持久事件 | [`controller.ts`](../src/controller.ts)、[`store.ts`](../src/store.ts) |
 | 构建与装配 | lock 固定依赖；运行产物冻结；审计完整原生插件树 | [`build.ts`](../src/build.ts)、[`composition.ts`](../src/composition.ts) |
 | 原生行为实验 | 自主编写机制测试；独立预算、冻结与反例证据 | [`probes.ts`](../src/probes.ts)、[使用协议](behavioral-probes.md) |
 | 执行与隔离 | 原生 DSH 会话、明确 OCI runtime 与权限、请求用量 | [`runtime/worker.ts`](../src/runtime/worker.ts)、[`docker.ts`](../src/docker.ts) |
 | 评测与研究 | 独立 grader、声明的领域约束、固定产物配对复验 | [`constraints.ts`](../src/constraints.ts)、[`validation.ts`](../src/validation.ts) |
 | 交付与复用 | 导出原构建包、保存来源、导入新草稿重新评测 | [`export.ts`](../src/export.ts)、[`library.ts`](../src/library.ts) |
+
+## 优化器研究的两层闭环
+
+```mermaid
+flowchart TB
+  Contract["研究合同 · G0/H0 · 数据分区 · 预算"] --> Study["可信 Study 协调器"]
+  Meta["原生 DSH 元优化器<br/>方法研究 Bundle"] <-->|"开发证据与事件"| API["Study 能力接口"]
+  API --> Study
+  Meta -->|"G 代码 / 配置 / 装配草稿"| Freeze["冻结 G · 实际构建 · 原生 QA"]
+  Freeze --> Study
+  Study --> Dev["开发：G0 / G1 × 固定搜索实例"]
+  Dev --> Search["既有进化引擎<br/>从共同 H0 搜索并冻结 H*"]
+  Search --> Assess["独立评分<br/>保留全部样本"]
+  Assess -->|"开发方法比较"| API
+  Assess --> Select["开发规则选择 G*<br/>关闭元优化器接口"]
+  Select --> Final["最终验证：G0 / G*<br/>新搜索 → H*<br/>独立评分"]
+  Final --> Report["配对结果 · 原始谱系<br/>元优化 / 搜索 / 复验成本"]
+```
+
+上图描述已接入代码的扩展模式，完整真实模型研究正在验收。最终验证没有返回元优化器的连线；开发质量、最终质量和工程验收分别记录。原生 G 会话证据与 H 任务轨迹均可读取，权限以注册实例和执行身份为准。
 
 ## 一个候选的生命周期
 

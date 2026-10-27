@@ -27,21 +27,14 @@
 
 ## 从这里开始
 
-| 文档 | 内容 |
+**先看一次真实进化：**克隆仓库后，在浏览器打开 [`docs/tour.html`](docs/tour.html)。无需密钥或 Docker，可切换候选、查看逐题裁决和独立复验、下载原始记录；页面离线回放历史实验，不调用模型。重生成：`node scripts/render-tour.mjs`。
+
+| 你想做什么 | 直接进入 |
 |---|---|
-| [项目全景与核心指导](11.md) | 核心思想、开放指导原则、完整 ASCII 流程与后续重构蓝图 |
-| [最新深度审校](docs/research/2026-10-27-harness-evolution-design-review.md) | 相关研究、DSH 机制、搜索方法、实验协议与贡献定位 |
-| [前期生态审校](docs/research/2026-10-09-harness-blueprint-audit.md) | 历史概念核验与架构推敲 |
-| [历史资料与同步记录](docs/research/archive/README.md) | 来源哈希、历史证据和迁移边界 |
-| [可执行架构与边界](docs/architecture.md) | 原生插件、控制服务、身份、恢复、隔离与成本 |
-| [当前实现核验](docs/research/2026-10-27-native-implementation.md) | 实际发布物、源码差异、原生验证和工程决策 |
-| [真实模型端到端验收](docs/acceptance.md) | 自主代码变异、真实评分、失败裁决和原生安装后的实际任务 |
-| [冷启动用户旅程](docs/research/2026-10-28-user-journey.md) | 干净检出、13 条公开命令、自主搜索、原包复验与安装前审查；正负结果完整保留 |
-| [原字节证据交付](docs/evidence-access.md) | 授权文件直接进入只读工具挂载，真实模型读取与复制，独立竞态复核 |
-| [连续进化与独立复验](docs/acceptance-continuous.md) | 三次真实变异、双会话接续、负结果与研究资产复用 |
-| [全景方案落实状态](docs/completion.md) | 已验证能力、尚缺的完整交付环节与研究边界 |
-| [深度评审落实账本](docs/review-ledger.md) | 全部评审项、核实结论、实现与验收进度 |
-| [组件与生命周期](docs/components.md) | 原生插件组合、实验服务、候选状态和事件接续图 |
+| 体验进化后的能力 | [安装 Bundle，完成真实工作簿任务](docs/use-capability.md) |
+| 让自己的 Harness 进化 | [完整运行旅程](docs/user-journey.md) · [接入自己的任务与裁判](docs/domain-adapters.md) |
+| 研究优化器自身 | [Optimizer Studies：改造 G，比较它产生的 H](docs/optimizer-studies.md) |
+| 检查研究结论 | [实验结果与逐项落实状态](docs/completion.md) |
 
 ## 它如何运行
 
@@ -176,6 +169,25 @@ node dist/cli.js export --root .evolution/business/search \
 研究资产也进入进化循环：研究者在合同中授权一个冻结库，优化器即可检索历史机制与负结果、检查原始源码，自主导入并改造。来源随候选保存，旧成绩不进入新实验裁决。[资产复用与授权](docs/research-assets.md)
 
 研究资产支持 `remember → library → import`：保留有效候选与负结果、谱系、来源、账本和证据哈希。导入产生新的可编辑草稿，历史分数不会转移到新实验。详见[架构](docs/architecture.md)。
+
+## 文档导航
+
+| 文档 | 内容 |
+|---|---|
+| [项目全景与核心指导](11.md) | 核心思想、开放指导原则、完整 ASCII 流程与后续重构蓝图 |
+| [最新深度审校](docs/research/2026-10-27-harness-evolution-design-review.md) | 相关研究、DSH 机制、搜索方法、实验协议与贡献定位 |
+| [前期生态审校](docs/research/2026-10-09-harness-blueprint-audit.md) | 历史概念核验与架构推敲 |
+| [历史资料与同步记录](docs/research/archive/README.md) | 来源哈希、历史证据和迁移边界 |
+| [可执行架构与边界](docs/architecture.md) | 原生插件、控制服务、身份、恢复、隔离与成本 |
+| [当前实现核验](docs/research/2026-10-27-native-implementation.md) | 实际发布物、源码差异、原生验证和工程决策 |
+| [真实模型端到端验收](docs/acceptance.md) | 自主代码变异、真实评分、失败裁决和原生安装后的实际任务 |
+| [冷启动用户旅程](docs/research/2026-10-28-user-journey.md) | 干净检出、13 条公开命令、自主搜索、原包复验与安装前审查；正负结果完整保留 |
+| [原字节证据交付](docs/evidence-access.md) | 授权文件直接进入只读工具挂载，真实模型读取与复制，独立竞态复核 |
+| [优化器自身进化](docs/optimizer-studies.md) | 真实元优化器生成并运行 G1；G/H 独立版本、同起点与预算、开发选择和封闭最终验证，保留同分与机制缺陷 |
+| [连续进化与独立复验](docs/acceptance-continuous.md) | 三次真实变异、双会话接续、负结果与研究资产复用 |
+| [全景方案落实状态](docs/completion.md) | 已验证能力、尚缺的完整交付环节与研究边界 |
+| [深度评审落实账本](docs/review-ledger.md) | 全部评审项、核实结论、实现与验收进度 |
+| [组件与生命周期](docs/components.md) | 原生插件组合、实验服务、候选状态和事件接续图 |
 
 ## 可靠性与证据
 

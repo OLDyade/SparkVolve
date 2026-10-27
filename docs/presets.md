@@ -12,7 +12,14 @@ SDK Profile：Agent Loop / 模型 / 文件 / Shell / 原生压缩
          原生模型请求 → 工具执行 → 独立实验 API
 ```
 
-`evolve` 自动装配 `evolution` Preset。合同中的 `optimizerHarness` 指定研究方法目录、内容哈希和 `composition` 原生条目清单；`optimizers/evidence-driven/plugins.yml` 是默认实现。清单由原生 Include 在 Preset 作用域加载，支持插件实现、配置和组合；实验开始后目录只读。执行器继续使用其冻结候选，与优化器的方法和控制权限分开。
+`evolve` 自动装配 `evolution` Preset。合同中的 `optimizerHarness` 指定来源及 `composition` 原生条目清单；`optimizers/evidence-driven/plugins.yml` 是默认实现。方法先准备为验真的冻结构建包，清单由原生 Include 在 Preset 作用域加载。执行器继续使用其冻结候选，与优化器的方法和控制权限分开。
+
+| 输入种类 | 必填身份 | 准备行为 |
+|---|---|---|
+| `kind: source` | `source: {directory, digest}`、`composition`、`build: {image, timeoutSeconds}` | 冻结源码、依赖锁定、实际构建、原生 QA |
+| `kind: artifact` | `source: {directory, digest}`、`artifact: {directory, identity}`、`composition` | 验真并导入原构建包、原生 QA；不重新构建 |
+
+`PreparedOptimizer` 固定源码摘要、完整 `BuildIdentity` 与装配入口，位于实验的 `optimizer-harness/prepared.json`。恢复沿用原准备意图及构建容器；已有产物缺失或被修改会直接失败。活动会话挂载构建包为只读目录，不加载可变输入源码。
 
 ## 在已有 DSH 中安装
 

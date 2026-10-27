@@ -44,7 +44,12 @@ export function specification(): ExperimentSpec {
     egress: { optimizer: [], executor: [] },
     executor: model,
     optimizer: model,
-    optimizerHarness: { directory: 'optimizer-bundle', digest: hash, composition: 'plugins.yml' },
+    optimizerHarness: {
+      kind: 'source',
+      source: { directory: 'optimizer-bundle', digest: hash },
+      composition: 'plugins.yml',
+      build: { image: `sha256:${hash}`, timeoutSeconds: 60 },
+    },
     researchLibrary: null,
     evaluator: { image: `sha256:${hash}`, command: ['node', '/grader.js'], timeoutSeconds: 10 },
     candidate: {

@@ -116,9 +116,10 @@ try {
     executor: model,
     optimizer: model,
     optimizerHarness: {
-      directory: 'method',
-      digest: await treeDigest(path.join(dataset, 'method')),
+      kind: 'source',
+      source: { directory: 'method', digest: await treeDigest(path.join(dataset, 'method')) },
       composition: 'plugins.yml',
+      build: { image, timeoutSeconds: 60 },
     },
     researchLibrary: null,
     candidate: { patch: 'cordis.patch.yml', build: { image, timeoutSeconds: 60 }, qa: null },

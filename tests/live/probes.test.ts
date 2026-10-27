@@ -67,7 +67,9 @@ parameters:{a:{type:'number',required:true},b:{type:'number',required:true}},out
     await configureLiveModel(dataset, spec);
     spec.evaluator.image = image;
     spec.candidate = { patch: 'cordis.patch.yml', build: { image, timeoutSeconds: 60 }, qa: null };
-    spec.optimizerHarness.digest = await treeDigest(path.join(dataset, 'optimizer-bundle'));
+    spec.optimizerHarness.source.digest = await treeDigest(path.join(dataset, 'optimizer-bundle'));
+    assert.equal(spec.optimizerHarness.kind, 'source');
+    if (spec.optimizerHarness.kind === 'source') spec.optimizerHarness.build = { image, timeoutSeconds: 120 };
     spec.budget = { candidates: 1, optimizerSeconds: 240 };
     spec.probes = { limit: 1, timeoutSeconds: 30 };
     for (const task of spec.tasks) {

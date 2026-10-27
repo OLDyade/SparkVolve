@@ -25,6 +25,26 @@ export const BuildIdentity = z.strictObject({
   lockDigest: Digest,
   image: Image,
 });
+export const BuildContract = z.strictObject({ image: Image, timeoutSeconds: z.number().int().positive() });
+export const OptimizerHarness = z.discriminatedUnion('kind', [
+  z.strictObject({
+    kind: z.literal('source'),
+    source: z.strictObject({ directory: RelativePath, digest: Digest }),
+    composition: RelativePath,
+    build: BuildContract,
+  }),
+  z.strictObject({
+    kind: z.literal('artifact'),
+    source: z.strictObject({ directory: RelativePath, digest: Digest }),
+    composition: RelativePath,
+    artifact: z.strictObject({ directory: RelativePath, identity: BuildIdentity }),
+  }),
+]);
+export const PreparedOptimizer = z.strictObject({
+  sourceDigest: Digest,
+  build: BuildIdentity,
+  composition: RelativePath,
+});
 export const Model = z.strictObject({
   provider: z.string().min(1),
   model: z.string().min(1),
@@ -115,7 +135,7 @@ export const Experiment = z
     }),
     executor: Model,
     optimizer: Model,
-    optimizerHarness: z.strictObject({ directory: RelativePath, digest: Digest, composition: RelativePath }),
+    optimizerHarness: OptimizerHarness,
     researchLibrary: z.strictObject({ directory: RelativePath, digest: Digest }).nullable(),
     evaluator: z.strictObject({
       image: Image,
@@ -124,10 +144,7 @@ export const Experiment = z
     }),
     candidate: z.strictObject({
       patch: RelativePath,
-      build: z.strictObject({
-        image: Image,
-        timeoutSeconds: z.number().int().positive(),
-      }),
+      build: BuildContract,
       qa: z.strictObject({ directory: RelativePath, digest: Digest, entry: RelativePath }).nullable(),
     }),
     tasks: z.array(Task).min(1),
@@ -200,7 +217,8 @@ export const Experiment = z
       ctx.addIssue({ code: 'custom', message: 'Validation does not authorize optimizer probes' });
     const publicRoots = [
       ...spec.tasks.map((t) => t.input),
-      spec.optimizerHarness.directory,
+      spec.optimizerHarness.source.directory,
+      ...(spec.optimizerHarness.kind === 'artifact' ? [spec.optimizerHarness.artifact.directory] : []),
       ...(spec.researchLibrary ? [spec.researchLibrary.directory] : []),
       ...(spec.runtime.environment ? [spec.runtime.environment.directory] : []),
       ...(spec.candidate.qa ? [spec.candidate.qa.directory] : []),

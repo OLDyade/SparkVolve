@@ -54,9 +54,13 @@ const spec = Experiment.parse({
   optimizer: model,
   researchLibrary: null,
   optimizerHarness: {
-    directory: 'optimizer-bundle',
-    digest: await treeDigest(path.join(dataset, 'optimizer-bundle')),
+    kind: 'source',
+    source: {
+      directory: 'optimizer-bundle',
+      digest: await treeDigest(path.join(dataset, 'optimizer-bundle')),
+    },
     composition: 'plugins.yml',
+    build: { image, timeoutSeconds: 300 },
   },
   evaluator: { image, command: ['python3', '/evaluation/grade.py'], timeoutSeconds: 120 },
   candidate: {

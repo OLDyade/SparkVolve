@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-28",
+  "boundary": "Local engineering and exact-package installation evidence. This is not a public release, cloud CI success, or optimizer-quality gain.",
+  "checks": {
+    "repositoryCheck": {
+      "command": "npm run check",
+      "unitTests": 159,
+      "nativeTests": 17,
+      "failures": 0,
+      "format": "passed",
+      "typecheck": "passed",
+      "offlineTourConsistency": "passed"
+    },
+    "driverRegression": {
+      "command": "node --import tsx --test tests/optimizer-study-driver.test.mjs",
+      "tests": 6,
+      "failures": 0,
+      "includedInNpmTest": true
+    },
+    "exactPackageInstallation": {
+      "command": "HE_INSTALL_PACKAGE=<frozen archive> npm run test:install",
+      "tests": 1,
+      "failures": 0,
+      "nativeCapabilityInvoked": true,
+      "modelInferenceRequested": false
+    }
+  },
+  "distribution": {
+    "localEvidence": ".evolution/distribution-study-cache-corrected-20261028",
+    "sourceCommit": "f3f5af71de0164699a3dc4252596063d959e6f31",
+    "workingTreeDirty": true,
+    "archive": "harness-evolution-dsh-bundle-0.0.0-development.tgz",
+    "sha256": "60789655c2dc43dd3c2c9badecafc4f7bae482388d7f2e5bd689b4ed4bd63942",
+    "files": 307,
+    "sbomComponents": 627,
+    "preservedFailure": ".evolution/distribution-study-20261028",
+    "failureReason": "Python bytecode cache included by npm's explicit examples directory allowlist; distribution guard rejected it.",
+    "correction": "Nested examples/.npmignore excludes bytecode cache while retaining example sources. The study generator also invokes Python with -B. Original cache and failed archive remain available."
+  },
+  "protectedBlueprintSha256": "46ecb1cf793756ceae7e9c881f51fa56cc3a960ddd2906a12c16808db84b1a44",
+  "independentReviews": [
+    "Native branch receipt, replay and finish semantics",
+    "Completed-study verification, original evidence preservation and registered installation profiles",
+    "Tour consistency check with a deliberately stale fixture",
+    "Package exclusion and required example-source preservation",
+    "Documentation direction and result boundaries"
+  ]
+}
