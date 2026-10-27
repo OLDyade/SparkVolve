@@ -67,6 +67,44 @@ test(
     );
     await run('standard', 'sdk');
 
+    const suite = path.join(root, 'suite.mjs');
+    await writeFile(
+      suite,
+      `import assert from 'node:assert/strict';
+export async function probe({ctx, call}) {
+  assert.equal(ctx.get('qaEvidence').value, 7);
+  const result = await call('nonexistent_probe_tool', {});
+  assert.equal(result.isError, true);
+}`,
+    );
+    const behavioral = (directory: string) =>
+      checkComposition({
+        profile: 'sdk-minimal',
+        model: {
+          ...specification().executor,
+          provider: 'evolution-fixture',
+          model: 'protocol-test',
+          reasoningEffort: null,
+        },
+        patches: [patch],
+        directory: path.join(root, directory),
+        processCwd: process.cwd(),
+        workspace: root,
+        timeoutSeconds: 20,
+        behaviorModule: suite,
+      });
+    await behavioral('observed');
+    const observed = JSON.parse(await readFile(path.join(root, 'observed/behavior.json'), 'utf8'));
+    assert.equal(observed.status, 'passed');
+    assert.equal(observed.observations[0].result.isError, true);
+    await writeFile(
+      suite,
+      `import assert from 'node:assert/strict'; export async function probe({ctx}) { assert.equal(ctx.get('qaEvidence').value, 8); }`,
+    );
+    await assert.rejects(behavioral('refuted'), /7 !== 8/);
+    const refuted = JSON.parse(await readFile(path.join(root, 'refuted/behavior.json'), 'utf8'));
+    assert.equal(refuted.status, 'failed');
+
     await writeFile(patch, stringify([{ insert: [fixture, { id: 'consumer', name: consumer }] }]));
     await assert.rejects(run('missing-service'), /composition QA failed/);
     const failed = JSON.parse(await readFile(path.join(root, 'missing-service/composition.json'), 'utf8'));

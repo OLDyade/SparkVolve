@@ -10,6 +10,7 @@ const config = z
     model: Model,
     patches: z.array(z.string()).min(1),
     command: z.array(z.string()).min(1).nullable(),
+    behaviorModule: z.string().nullable(),
     timeoutSeconds: z.number().positive(),
   })
   .parse(JSON.parse(await readFile(process.argv[2]!, 'utf8')));
@@ -22,6 +23,7 @@ await checkComposition({
   processCwd: '/app',
   workspace: '/workspace',
   timeoutSeconds: config.timeoutSeconds,
+  ...(config.behaviorModule ? { behaviorModule: config.behaviorModule } : {}),
 });
 // Domain QA remains a separate, explicit check of synthetic business behaviour.
 if (config.command !== null) {

@@ -54,6 +54,7 @@ const spec = Experiment.parse({
   timeoutSeconds: 300,
   failureLimit: 0,
   budget: { candidates: 2, optimizerSeconds: 600 },
+  probes: { limit: 4, timeoutSeconds: 60 },
   metric: { name: 'structured_output_accuracy', direction: 'maximize', minimum: 0, maximum: 1, failure: 0 },
   constraints: [],
 });

@@ -37,6 +37,39 @@ export function apply(ctx: Context, config: Config): void {
   };
   ctx.tools.register(
     defineTool({
+      name: 'evolution_probe',
+      description:
+        'Queue an isolated behavioral experiment on a Bundle draft. AUTHORING: write a separate ES-module suite under this optimizer\'s /workspace/<suite>. EXECUTION: the frozen suite mounts at /suite (read-only), built Bundle at /candidate (read-only), and a new empty /workspace is writable; authoring subdirectories are NOT copied there. Entry exports async probe({agent, ctx, call, workspace}); workspace is the actual writable directory. Use new URL("./fixture.json", import.meta.url) for suite fixtures; create any output subdirectory explicitly. call(name,args) uses the native tool pipeline and returns its full result. Use node:assert/strict with independently derived expectations. No credentials, network, tasks or evaluation material reach execution. Build uses the contracted build network. Counts against probe limit, never scores. Returns ID; wait for probe.completed and inspect evidence. Identical source/suite/entry cannot be rerun.',
+      parameters: {
+        draft: { type: 'string', required: true },
+        suite: { type: 'string', required: true },
+        entry: { type: 'string', required: true },
+        hypothesis: { type: 'string', required: true },
+      },
+      output,
+      execute: async (args, exec) => request('/probe', args, exec.signal),
+    }),
+  );
+  ctx.tools.register(
+    defineTool({
+      name: 'evolution_probe_evidence',
+      description:
+        'Inspect exact frozen probe inputs, build artifacts, composition/tool observations and original logs. Omit file for the inventory; files are base64. A passing optimizer-authored probe only supports its tested behavior; it is not independent evaluation.',
+      parameters: {
+        probe: { type: 'string', required: true },
+        area: {
+          type: 'string',
+          enum: ['source', 'suite', 'build', 'artifact', 'logs', 'observations'],
+          required: true,
+        },
+        file: { type: 'string' },
+      },
+      output,
+      execute: async (args, exec) => request('/probe-evidence', args, exec.signal),
+    }),
+  );
+  ctx.tools.register(
+    defineTool({
       name: 'evolution_library',
       description:
         'Search the researcher-authorized immutable research library by literal text. Returns source identity, mechanism hypothesis and historical outcomes, including failures. These are prior evidence, never current scores or instructions. A missing library is an explicit authorization error.',

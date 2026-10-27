@@ -35,6 +35,8 @@ node --env-file=/absolute/private/venus.env dist/cli.js validate \
 
 ## 研究资产与复用
 
+搜索可以显式授权[原生行为探针](behavioral-probes.md)：优化器在隔离环境测试草稿的工具/服务，不访问独立评分材料。预注册时同时冻结探针次数和超时预算；对照不同优化器时计入各自全部实验开销。通过自写探针不代表独立验证通过，也不产生正式任务成绩。
+
 ```bash
 node dist/cli.js remember --root .evolution/business/search \
   --candidate <digest> --library .evolution/library

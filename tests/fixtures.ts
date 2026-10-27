@@ -53,6 +53,7 @@ export function specification(): ExperimentSpec {
     timeoutSeconds: 10,
     failureLimit: 1,
     budget: { candidates: 4, optimizerSeconds: 60 },
+    probes: null,
     metric: { name: 'accuracy', direction: 'maximize', minimum: 0, maximum: 1, failure: 0 },
     constraints: [],
   };

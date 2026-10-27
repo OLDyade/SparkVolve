@@ -41,6 +41,7 @@ try {
     tasks,
     repetitions: Number(repeats),
     budget: { ...original.budget, candidates: 1 },
+    probes: null,
   });
   const arms = [baseline, selected].map((entry, i) => ({
     id: i ? 'candidate' : 'baseline',

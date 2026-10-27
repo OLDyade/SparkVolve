@@ -95,7 +95,9 @@ run: queued → executing → delivered → scoring → scored
 
 ## 优化器与成果也作为插件管理
 
-`optimizerHarness` 固定研究方法 Bundle 的目录、内容哈希和 `composition` 原生插件清单。Evolution Preset 将十项进化工具与该清单的插件树装配到会话作用域；优化器使用原生 SDK 编码基础和 Agent Loop，恢复读取 Session 已记录的 Preset。方法可版本化、替换和独立比较，实验中保持只读；执行器的候选 Bundle 与优化器方法分别记账。完整安装与机制见 [Evolution Preset](presets.md)。自动开展优化器之间的等预算搜索比较仍需研究协议，不能用一次执行器提升证明优化器自身进化有效。
+`optimizerHarness` 固定研究方法 Bundle 的目录、内容哈希和 `composition` 原生插件清单。Evolution Preset 将十二项进化工具与该清单的插件树装配到会话作用域；优化器使用原生 SDK 编码基础和 Agent Loop，恢复读取 Session 已记录的 Preset。方法可版本化、替换和独立比较，实验中保持只读；执行器的候选 Bundle 与优化器方法分别记账。完整安装与机制见 [Evolution Preset](presets.md)。自动开展优化器之间的等预算搜索比较仍需研究协议，不能用一次执行器提升证明优化器自身进化有效。
+
+`probes` 合同授权独立行为实验：优化器编写测试，冻结草稿与测试，原生装配后实际调用服务和工具。执行禁网、无模型凭证，不挂任务或评测材料；结果作为原始证据返回，不产生分数、自动修复或提交门。准备意图、快照和原容器可恢复；完整协议见 [行为实验台](behavioral-probes.md)。新实验必须显式声明该字段，旧冻结合同与历史数据不改写。
 
 状态快照携带持久事件游标；`evolution_wait` 在提交事件到达时返回，由原生工具循环唤醒模型。控制器和宿主接续器在空闲时等待同一日志，恢复时补读事件并收集原容器，不创建新 attempt。[事件与恢复协议](events.md)明确分页、取消、重连和部署地址。
 

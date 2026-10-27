@@ -105,6 +105,13 @@ export async function experimentReport(root: string, store: Store) {
     repetitions: store.spec.repetitions,
     candidateBudget: store.spec.budget.candidates,
     candidatesConsumed: candidates.length,
+    probes: {
+      budget: store.spec.probes,
+      consumed: store.probes().length,
+      records: store.probes(),
+      boundary:
+        'Optimizer-authored behavioral experiments, not task scores or independent validation. Build and execution logs are retained under probes/<id>. No model credentials or network are supplied to probe execution.',
+    },
     currentChampion: store.getMeta('champion') ?? null,
     candidates: candidates.map((candidate) => {
       const selected = samples.filter((run) => run.candidate === candidate.digest);

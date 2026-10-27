@@ -101,6 +101,9 @@ export const Experiment = z
       candidates: z.number().int().positive(),
       optimizerSeconds: z.number().int().positive(),
     }),
+    probes: z
+      .strictObject({ limit: z.number().int().positive(), timeoutSeconds: z.number().int().positive() })
+      .nullable(),
     metric: z.strictObject({
       name: Id,
       direction: z.enum(['maximize', 'minimize']),
@@ -128,6 +131,8 @@ export const Experiment = z
         code: 'custom',
         message: 'Validation admits one frozen candidate and exposes no optimizer feedback endpoint',
       });
+    if (spec.purpose === 'validation' && spec.probes !== null)
+      ctx.addIssue({ code: 'custom', message: 'Validation does not authorize optimizer probes' });
     const publicRoots = [
       ...spec.tasks.map((t) => t.input),
       spec.optimizerHarness.directory,
@@ -162,6 +167,25 @@ export const Grade = z.strictObject({
   metrics: z.record(z.string(), z.number().finite()),
   feedback: z.string(),
 });
+export const ProbeRequest = z.strictObject({
+  draft: Id,
+  suite: Id,
+  entry: RelativePath,
+  hypothesis: z.string().min(1),
+});
+export interface Probe {
+  id: string;
+  request: z.infer<typeof ProbeRequest>;
+  sourceDigest: string;
+  suiteDigest: string;
+  phase: 'queued' | 'passed' | 'failed';
+  queuedAt: string;
+  completedAt?: string;
+  build?: z.infer<typeof BuildIdentity>;
+  error?: string;
+  exitCode?: number;
+  executionMilliseconds?: number;
+}
 export type ExperimentSpec = z.infer<typeof Experiment>;
 export type ModelSpec = z.infer<typeof Model>;
 export type TaskSpec = z.infer<typeof Task>;

@@ -59,7 +59,10 @@ export async function optimize(
       let state = (await control('/status', {})) as ReturnType<Controller['status']>;
       if (digest(state.specification) !== digest(spec))
         throw new Error('Controller experiment contract mismatch');
-      while (state.candidates.some((c) => c.phase === 'frozen' || c.phase === 'running')) {
+      while (
+        state.candidates.some((c) => c.phase === 'frozen' || c.phase === 'running') ||
+        state.probes.some((probe) => probe.phase === 'queued')
+      ) {
         if (state.runs.some((r) => r.phase === 'scoring_failed'))
           throw new Error('Scoring failed; resolve original deliveries before continuing search');
         await control('/events', { cursor: state.cursor });
@@ -115,7 +118,7 @@ export async function optimize(
           `Episode ${ordinal}; ${episode.seconds.toFixed(3)} total optimizer seconds remain. Read the actual experiment state.`,
           ordinal
             ? 'Previous native session results and traces are read-only under /previous; editable drafts persist under /workspace. Continue from actual feedback, without resubmitting identical candidates.'
-            : 'Begin with the completed baseline evidence.',
+            : 'Begin with the actual experiment state and available baseline evidence.',
         ].join('\n'),
         timeoutSeconds: episode.seconds,
       });

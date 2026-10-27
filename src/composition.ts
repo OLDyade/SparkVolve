@@ -14,6 +14,7 @@ export interface CompositionOptions {
   processCwd: string;
   workspace: string;
   timeoutSeconds: number;
+  behaviorModule?: string;
 }
 
 /** Exercise the same native profile and patch stack used by execution, without inference. */
@@ -30,7 +31,11 @@ export async function checkComposition(options: CompositionOptions): Promise<voi
           {
             id: 'evolution-composition-probe',
             name: fileURLToPath(new URL('./composition-probe.js', import.meta.url)),
-            config: { report },
+            config: {
+              report,
+              workspace: options.workspace,
+              ...(options.behaviorModule ? { behaviorModule: options.behaviorModule } : {}),
+            },
           },
         ],
       },

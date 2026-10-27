@@ -47,6 +47,33 @@ export async function serve(
       const body: unknown = JSON.parse(Buffer.concat(chunks).toString());
       let result: unknown;
       switch (req.url) {
+        case '/probe':
+          result = await controller.probe(body);
+          break;
+        case '/probe-evidence': {
+          const args = z
+            .strictObject({
+              probe: Digest,
+              area: z.enum(['source', 'suite', 'build', 'artifact', 'logs', 'observations']),
+              file: RelativePath.optional(),
+            })
+            .parse(body);
+          const probe = controller.store.probes().find((probe) => probe.id === args.probe);
+          if (!probe) throw new Error('Unknown probe');
+          const areas = {
+            source: `candidates/${probe.sourceDigest}`,
+            suite: 'suite',
+            build: `builds/${probe.sourceDigest}/logs`,
+            artifact: `artifacts/${probe.sourceDigest}`,
+            logs: 'logs',
+            observations: 'work',
+          };
+          result = await artifact(
+            path.join(controller.root, 'probes', args.probe, areas[args.area]),
+            args.file,
+          );
+          break;
+        }
         case '/library': {
           const args = z.strictObject({ query: z.string().default('') }).parse(body);
           result = await controller.library(args.query);

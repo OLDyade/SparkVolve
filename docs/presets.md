@@ -6,7 +6,7 @@ SDK Profile：Agent Loop / 模型 / 文件 / Shell / 原生压缩
                   Agent Preset Registry
                     ┌────┴────┐
              evolution       其他 Preset
-             十项进化工具     各自能力
+             十二项进化工具   各自能力
              冻结研究方法     无进化工具、无研究方法
                     │
          原生模型请求 → 工具执行 → 独立实验 API
@@ -16,7 +16,7 @@ SDK Profile：Agent Loop / 模型 / 文件 / Shell / 原生压缩
 
 ## 在已有 DSH 中安装
 
-打包本仓库，使用原生 `dsh plugin --profile <目标 Profile> add <tarball>` 安装。启动前设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，指向一个实际 `search` 实验控制服务。安装提供名为 **Harness Evolution**、ID 为 `evolution` 的原生 Preset；有 Preset 注册表和选择界面的部署可直接选择它。不会把十项工具注册到所有会话。
+打包本仓库，使用原生 `dsh plugin --profile <目标 Profile> add <tarball>` 安装。启动前设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，指向一个实际 `search` 实验控制服务。安装提供名为 **Harness Evolution**、ID 为 `evolution` 的原生 Preset；有 Preset 注册表和选择界面的部署可直接选择它。不会把十二项工具注册到所有会话。
 
 研究方法也可独立打包安装：
 

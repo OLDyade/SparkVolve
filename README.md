@@ -62,6 +62,8 @@ DSH 优化器 ── 真实证据 ──► 改写插件配置 / 实现 / 组合
 
 优化器沿用 DSH Agent Loop 和编码工具，依据反馈选择改动。控制器只执行实验合同：冻结、调度、记账、评分与选择。框架没有预置题目答案或逐题变异脚本。
 
+[原生行为实验台](docs/behavioral-probes.md)让优化器在提交前检验自己的机制假设：编写测试、冻结草稿、在真实 DSH 组合中调用工具与服务，留下成功与反例。实验使用独立预算，正式评分继续独立进行。
+
 ```mermaid
 flowchart LR
   A["任务与固定合同"] --> B["DSH 优化器"]
@@ -149,7 +151,7 @@ node dist/cli.js export --root .evolution/business/search \
 dsh plugin --profile sdk add /absolute/new-export-directory/bundle.tgz
 ```
 
-进化设施自身同样可安装：`npm pack` 后通过原生命令装入目标 Profile，设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，再选择 **Harness Evolution** Preset。十项进化工具和研究方法只对选择该组合的会话可见。`evolve` 自动完成装配；独立使用 `sdk/sdk-minimal` 时，需加载[原生注册表与选择桥配置](docs/presets.md#sdk-的明确接入)。方法 Bundle 可单独替换，内容哈希写入实验合同。
+进化设施自身同样可安装：`npm pack` 后通过原生命令装入目标 Profile，设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，再选择 **Harness Evolution** Preset。十二项进化工具和研究方法只对选择该组合的会话可见。`evolve` 自动完成装配；独立使用 `sdk/sdk-minimal` 时，需加载[原生注册表与选择桥配置](docs/presets.md#sdk-的明确接入)。方法 Bundle 可单独替换，内容哈希写入实验合同。
 
 提交候选后，优化器通过 `evolution_wait` 等待已提交事件。持久游标支持断线补读，控制器恢复时收集原容器；无须反复空查，也不会因等待超时重跑任务。[事件与恢复协议](docs/events.md)
 

@@ -1,7 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
 import { randomUUID } from 'node:crypto';
 import { canonical, digest } from './artifacts.js';
-import type { Candidate, ExperimentSpec, RunPhase, TaskRun } from './contracts.js';
+import type { Candidate, ExperimentSpec, RunPhase, TaskRun, Probe } from './contracts.js';
 import { Grade } from './contracts.js';
 import { EventCursor } from './events.js';
 import type { EventPage } from './events.js';
@@ -34,6 +34,7 @@ export class Store {
       CREATE TABLE IF NOT EXISTS metadata(key TEXT PRIMARY KEY, value TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS candidates(id TEXT PRIMARY KEY, body TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS runs(id TEXT PRIMARY KEY, body TEXT NOT NULL);
+      CREATE TABLE IF NOT EXISTS probes(id TEXT PRIMARY KEY, body TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, type TEXT NOT NULL, body TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS lease(id INTEGER PRIMARY KEY CHECK(id=1), owner TEXT NOT NULL, expires INTEGER NOT NULL);`);
     const old = this.getMeta('spec');
@@ -207,6 +208,29 @@ export class Store {
       .prepare('SELECT body FROM candidates ORDER BY rowid')
       .all()
       .map((row) => JSON.parse(row.body as string) as Candidate);
+  }
+  probes(): Probe[] {
+    return this.db
+      .prepare('SELECT body FROM probes ORDER BY rowid')
+      .all()
+      .map((row) => JSON.parse(String(row.body)) as Probe);
+  }
+  addProbe(probe: Probe): void {
+    this.transaction(() => {
+      if (this.spec.purpose !== 'search' || !this.spec.probes || this.getMeta('searchConclusion'))
+        throw new Error('Probes are not authorized for this experiment');
+      if (this.probes().length >= this.spec.probes.limit) throw new Error('Probe budget exhausted');
+      this.db.prepare('INSERT INTO probes VALUES (?,?)').run(probe.id, canonical(probe));
+      this.event('probe.queued', probe);
+    });
+  }
+  updateProbe(probe: Probe): void {
+    this.transaction(() => {
+      const old = this.probes().find((item) => item.id === probe.id);
+      if (!old || old.phase !== 'queued') throw new Error('Probe is not pending');
+      this.db.prepare('UPDATE probes SET body=? WHERE id=?').run(canonical(probe), probe.id);
+      this.event(probe.phase === 'queued' ? 'probe.built' : 'probe.completed', probe);
+    });
   }
   candidate(id: string): Candidate {
     const row = this.db.prepare('SELECT body FROM candidates WHERE id=?').get(id);

@@ -33,6 +33,8 @@ flowchart LR
 
 The optimizer chooses mechanisms from original inputs, traces, deliveries and independent feedback. The experiment service enforces fixed models, data permissions, budgets and selection. It does not contain task-answer patches or a prescribed list of successful mutations. Business spreadsheets are the first domain; task and evaluator adapters remain separate from the engine.
 
+[Native behavioral probes](docs/behavioral-probes.md) let the optimizer test a mechanism before submitting a scored candidate. Authored suites exercise actual tools and services inside the contracted DSH composition, with frozen inputs, a separate budget and retained counterexamples. Probe outcomes do not replace independent task evaluation.
+
 ## Run a real spreadsheet evolution
 
 Use Node **24.16.0**, npm **12.2.0**, pnpm **12.15.0**, Docker and a working model credential. The supplied provider configuration uses Venus `deepseek/deepseek-v4.1-flash-1017`; other models require explicit native DSH Provider configuration. No automatic model substitution occurs.

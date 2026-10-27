@@ -9,6 +9,7 @@ import { Grade, Proposal, Digest } from './contracts.js';
 import { catalog, inspectAsset, importArchive, draftOrigin } from './library.js';
 import { collectRequestMetrics } from './metrics.js';
 import { buildCandidate, bundlePath, verifyBuild } from './build.js';
+import { queueProbe, executeProbe } from './probes.js';
 import type { Candidate, CandidateProposal, ExperimentSpec, TaskRun } from './contracts.js';
 
 export class Controller {
@@ -63,6 +64,7 @@ export class Controller {
       champion: this.store.getMeta('champion') ?? null,
       candidates: this.store.candidates(),
       runs: this.store.runs(),
+      probes: this.store.probes(),
       importedDrafts: this.store.events().filter((event) => event.type === 'draft.imported'),
       conclusion: this.store.getMeta('searchConclusion')
         ? JSON.parse(this.store.getMeta('searchConclusion')!)
@@ -144,8 +146,14 @@ export class Controller {
     this.store.addCandidate(candidate);
     return candidate;
   }
+  async probe(raw: unknown) {
+    this.assertOwner();
+    return await queueProbe(this.root, this.store, raw);
+  }
   finish(reason: string): void {
     this.assertOwner();
+    if (this.store.probes().some((probe) => probe.phase === 'queued'))
+      throw new Error('Wait for pending probes before concluding');
     if (this.store.candidates().some((c) => c.phase === 'frozen' || c.phase === 'running'))
       throw new Error('Wait for pending candidates before concluding');
     this.store.transaction(() => {
@@ -193,11 +201,28 @@ export class Controller {
         throw new Error('Scoring failure; rescore original delivery explicitly');
       // A candidate may have been submitted while the previous pump was finishing.
       const cursor = this.store.cursor();
-      if (this.store.candidates().some((c) => c.phase === 'frozen' || c.phase === 'running')) continue;
+      if (
+        this.store.candidates().some((c) => c.phase === 'frozen' || c.phase === 'running') ||
+        this.store.probes().some((probe) => probe.phase === 'queued')
+      )
+        continue;
       await this.store.wait(cursor, { signal });
     }
   }
   private async advance(): Promise<void> {
+    for (const probe of this.store.probes().filter((item) => item.phase === 'queued')) {
+      this.assertOwner();
+      await executeProbe({
+        root: this.root,
+        dataset: this.dataset,
+        spec: this.spec,
+        store: this.store,
+        docker: this.docker,
+        probe,
+        assertOwner: () => this.assertOwner(),
+        ...(this.activeSignal ? { signal: this.activeSignal } : {}),
+      });
+    }
     for (const candidate of this.store.candidates()) {
       this.assertOwner();
       if (candidate.phase === 'frozen') {
@@ -293,6 +318,7 @@ export class Controller {
         `/candidate/${this.spec.candidate.patch}`,
       ],
       command: this.spec.candidate.qa,
+      behaviorModule: null,
       timeoutSeconds: this.spec.timeoutSeconds,
     });
     const result = await this.docker.run(

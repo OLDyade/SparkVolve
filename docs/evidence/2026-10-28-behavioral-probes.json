@@ -1,0 +1,247 @@
+{
+  "name": "Native behavioral probe integration",
+  "recordedOn": "2026-10-28",
+  "boundary": "Synthetic deliberately faulty plugin; engineering integration only, no benchmark scores or quality improvement claim. Original failed run retained. The second run follows a changed workspace API and tool description.",
+  "sourceBaseCommit": "d4df07e877706149095a784fe3164ee77cf4cd96",
+  "checks": {
+    "unit": 36,
+    "native": 8,
+    "runcContainer": 7,
+    "nativePackageInstall": 1,
+    "passed": true
+  },
+  "review": "Readonly direction_review passed after fault-injection recovery repair; three focused recovery tests passed.",
+  "retainedLocalDirectory": ".evolution/behavioral-probes-20261028",
+  "runs": [
+    {
+      "name": "author-path-failure",
+      "passed": false,
+      "specificationDigest": "1d65eada39c7759849dd272046830ce0d2e6511205f72f66206dd3490ec527a1",
+      "image": "sha256:4eb8496927e2820015a5ba2a299e549e8b06cad199e716706c1bc3597d8ddc02",
+      "probe": {
+        "build": {
+          "artifactDigest": "70c35e89a9be788726574ee43e493d5ff61ffa35c77cdb2096687de8d6d9c7cf",
+          "bundleDigest": "fa08edda1cfd084851d06f0cc2b2d3035cca534f1b35dadae5e44b1a9279ee85",
+          "image": "sha256:4eb8496927e2820015a5ba2a299e549e8b06cad199e716706c1bc3597d8ddc02",
+          "lockDigest": "67364454662d4a9eca263166c95896e0763ca69eb65ca52593380aeb0fe76c0f",
+          "tarballDigest": "effe22a6b6882b07e7267adae6072a44285d698228348d699228a7e5a20083fa"
+        },
+        "completedAt": "2026-10-27T16:49:14.268Z",
+        "error": "Probe container exited 1; inspect original logs",
+        "executionMilliseconds": 468,
+        "exitCode": 1,
+        "id": "9fc973d3092c729ab9334fe31d67cc0bab749fdb7e4dce32083ba5a843428c29",
+        "phase": "failed",
+        "queuedAt": "2026-10-27T16:49:12.386Z",
+        "request": {
+          "draft": "distance",
+          "entry": "suite.mjs",
+          "hypothesis": "The draft's number_distance executes b - a (signed difference), not a real-line distance. Independent boundary property: a distance must be symmetric, so d(5,2) must equal d(2,5)=3. The native call for a=5,b=2 should return -3, causing the assert.equal symmetry check to fail.",
+          "suite": "distance-suite"
+        },
+        "sourceDigest": "96a148052df18a29feb25c290c0076a01f4848937d58316b1abcb1b471b2c3b3",
+        "suiteDigest": "e6ee5ad17410608beb27148fddeccd72b8aba93a74fc767b1aecd02691f7a3df"
+      },
+      "behavior": {
+        "error": "Error: ENOENT: no such file or directory, open '/workspace/distance-suite/observations.json'",
+        "observations": [
+          {
+            "arguments": {
+              "a": 2,
+              "b": 5
+            },
+            "name": "number_distance",
+            "result": {
+              "content": [
+                {
+                  "text": "3",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": 3
+            },
+            "sequence": 1
+          },
+          {
+            "arguments": {
+              "a": 5,
+              "b": 2
+            },
+            "name": "number_distance",
+            "result": {
+              "content": [
+                {
+                  "text": "-3",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": -3
+            },
+            "sequence": 2
+          }
+        ],
+        "status": "failed"
+      },
+      "optimizer": {
+        "episodes": [
+          {
+            "episode": 0,
+            "usage": {
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+              "started": 10,
+              "results": 10,
+              "failed": 0,
+              "unfinished": 0,
+              "inputTokensReported": 20477,
+              "outputTokensReported": 2416,
+              "missingUsage": 0,
+              "requestDurationMsSum": 22367
+            }
+          }
+        ],
+        "accounting": {
+          "consumedSeconds": 23.358,
+          "episodes": 1,
+          "optimizerHarness": "1dc1cfce2181b47e9783b99f3339decf522d0bbe2ec8984b5330591136fad03f",
+          "reason": "optimizer_concluded"
+        },
+        "usage": {
+          "ledgers": 1,
+          "availableLedgers": 1,
+          "unavailableLedgers": 0,
+          "reportedTotals": {
+            "started": 10,
+            "results": 10,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 20477,
+            "outputTokensReported": 2416,
+            "missingUsage": 0,
+            "requestDurationMsSum": 22367
+          },
+          "complete": true
+        }
+      },
+      "candidateCount": 0,
+      "taskRunCount": 0,
+      "conclusion": "{\"reason\":\"Protocol integration acceptance completed with the intended failed-probe outcome. Probe ID: 9fc973d3092c729ab9334fe31d67cc0bab749fdb7e4dce32083ba5a843428c29 (exactly one probe run). Existing draft /workspace/distance was inspected (execute: ({a,b})=>b-a) and left unmodified; no candidates submitted, no model calls, no benchmark tasks. Independent boundary property: a distance on the real line must be symmetric, d(a,b)=d(b,a), non-negative, zero iff a=b. The separate suite /workspace/distance-suite/suite.mjs exports async probe({agent,ctx,call}) and asserts equality of native calls through the real tool pipeline. Observed counterexample in observations/native/behavior.json: number_distance(a=2,b=5) returned {isError:false, content:[{type:'text',text:'3'}], value:3}, while number_distance(a=5,b=2) returned {isError:false, content:[{type:'text',text:'-3'}], value:-3}; the symmetry assertion assert.equal(rev, fwd) would fail with \\\"distance must be symmetric: d(5,2)=-3 but d(2,5)=3\\\". Probe phase=failed, exitCode=1, executionMilliseconds=468; original stderr.log shows the suite aborted with ENOENT on the diagnostic write to /workspace/distance-suite/observations.json before reaching the assertion (suite artifact defect, not a pass), so the released assertion itself was not the terminating frame — the counterexample is evidenced by the recorded native observations rather than an assertion stack. Limitations: the 30s probe limit and single-probe budget left no allowance to rerun a corrected suite that drops the filesystem write, so an explicit assertion-stack failure is inferred from the native values, not directly logged; probe results are optimizer-authored evidence and do not certify business correctness.\",\"at\":\"2026-10-27T16:49:23.317Z\",\"champion\":null}"
+    },
+    {
+      "name": "workspace-contract",
+      "passed": true,
+      "specificationDigest": "459821620a87442fde49c77f54e960a48fcf255bbb621563d97a44e63571e473",
+      "image": "sha256:3d5ffa2ee99494661fd1b7588a311bb08bf4d2ce8b4f53e4d1ebde55e37bcc38",
+      "probe": {
+        "build": {
+          "artifactDigest": "70c35e89a9be788726574ee43e493d5ff61ffa35c77cdb2096687de8d6d9c7cf",
+          "bundleDigest": "fa08edda1cfd084851d06f0cc2b2d3035cca534f1b35dadae5e44b1a9279ee85",
+          "image": "sha256:3d5ffa2ee99494661fd1b7588a311bb08bf4d2ce8b4f53e4d1ebde55e37bcc38",
+          "lockDigest": "67364454662d4a9eca263166c95896e0763ca69eb65ca52593380aeb0fe76c0f",
+          "tarballDigest": "effe22a6b6882b07e7267adae6072a44285d698228348d699228a7e5a20083fa"
+        },
+        "completedAt": "2026-10-27T16:50:25.437Z",
+        "error": "Probe container exited 1; inspect original logs",
+        "executionMilliseconds": 457,
+        "exitCode": 1,
+        "id": "a11b65716756a19ea88aa6d97da7ba7e47b503946ebcacbc39ac13d5dc5a1975",
+        "phase": "failed",
+        "queuedAt": "2026-10-27T16:50:23.665Z",
+        "request": {
+          "draft": "distance",
+          "entry": "boundary.mjs",
+          "hypothesis": "The draft defines number_distance as b-a. A mathematically valid distance on finite reals must be non-negative and equal |a-b|, so calling number_distance(a=3,b=2) through the native pipeline should return -1 instead of 1, causing the non-negativity assertion to fail.",
+          "suite": "distance-suite"
+        },
+        "sourceDigest": "96a148052df18a29feb25c290c0076a01f4848937d58316b1abcb1b471b2c3b3",
+        "suiteDigest": "c7a9cf76ed7047531b6674432ac42711715f2c287efccf42362974a8390c08af"
+      },
+      "behavior": {
+        "error": "AssertionError [ERR_ASSERTION]: distance must be non-negative: d(3,2) = -1, expected 1",
+        "observations": [
+          {
+            "arguments": {
+              "a": 1,
+              "b": 2
+            },
+            "name": "number_distance",
+            "result": {
+              "content": [
+                {
+                  "text": "1",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": 1
+            },
+            "sequence": 1
+          },
+          {
+            "arguments": {
+              "a": 3,
+              "b": 2
+            },
+            "name": "number_distance",
+            "result": {
+              "content": [
+                {
+                  "text": "-1",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": -1
+            },
+            "sequence": 2
+          }
+        ],
+        "status": "failed"
+      },
+      "optimizer": {
+        "episodes": [
+          {
+            "episode": 0,
+            "usage": {
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+              "started": 11,
+              "results": 11,
+              "failed": 0,
+              "unfinished": 0,
+              "inputTokensReported": 21839,
+              "outputTokensReported": 2497,
+              "missingUsage": 0,
+              "requestDurationMsSum": 24196
+            }
+          }
+        ],
+        "accounting": {
+          "consumedSeconds": 25.182,
+          "episodes": 1,
+          "optimizerHarness": "0306e8bd61d1951e6823289f664437897661b4c5d3f8115527a169213037eca6",
+          "reason": "optimizer_concluded"
+        },
+        "usage": {
+          "ledgers": 1,
+          "availableLedgers": 1,
+          "unavailableLedgers": 0,
+          "reportedTotals": {
+            "started": 11,
+            "results": 11,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 21839,
+            "outputTokensReported": 2497,
+            "missingUsage": 0,
+            "requestDurationMsSum": 24196
+          },
+          "complete": true
+        }
+      },
+      "candidateCount": 0,
+      "taskRunCount": 0,
+      "conclusion": "{\"reason\":\"Protocol integration acceptance completed with the intended single probe (ID a11b65716756a19ea88aa6d97da7ba7e47b503946ebcacbc39ac13d5dc5a1975, phase failed, exit code 1). The draft /workspace/distance was inspected unmodified and tested through the real native tool pipeline with a separate suite at /workspace/distance-suite/boundary.mjs (node:assert/strict). Independent boundary property: any distance between finite reals must satisfy d(a,b) >= 0 and d(a,b) = |a-b|. Observations in native/behavior.json: call number_distance(a=1,b=2) returned {isError:false, content:[{type:'text', text:'1'}]}, and call number_distance(a=3,b=2) returned {isError:false, content:[{type:'text', text:'-1'}]} because the implementation computes b-a instead of |a-b|. The retained AssertionError (recorded in behavior.json and stderr.log) was 'distance must be non-negative: d(3,2) = -1, expected 1' — the intended counterexample, not a task score. No candidates were submitted, no models were called, no benchmark tasks were run. Limitations: only one probe ran (per contract), only two input pairs were checked, and the probe result is optimizer-authored evidence that does not certify business correctness of the draft.\",\"at\":\"2026-10-27T16:50:33.676Z\",\"champion\":null}"
+    }
+  ]
+}

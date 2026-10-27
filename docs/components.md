@@ -23,6 +23,8 @@ flowchart TB
   Contract --> Controller
   Optimizer <-->|"状态与持久游标"| API
   Controller -->|"冻结 Bundle"| Executor
+  Controller --> Probe["原生行为实验<br/>冻结草稿 + 独立测试 · 禁网"]
+  Probe -->|"机制观察，不计任务分数"| Store
   Executor --> Delivery["不可变交付 + Session 轨迹"]
   Delivery --> Grader["独立评分容器<br/>私有评测材料 · 禁网"]
   Grader --> Store
@@ -37,6 +39,7 @@ flowchart TB
 | 优化器方法 | 从证据选择父版本、机制和变异规模；可以独立版本化 | [`optimizers/evidence-driven`](../optimizers/evidence-driven) |
 | 控制器与状态 | 冻结、构建、调度、续接原容器、选择与持久事件 | [`controller.ts`](../src/controller.ts)、[`store.ts`](../src/store.ts) |
 | 构建与装配 | lock 固定依赖；运行产物冻结；审计完整原生插件树 | [`build.ts`](../src/build.ts)、[`composition.ts`](../src/composition.ts) |
+| 原生行为实验 | 自主编写机制测试；独立预算、冻结与反例证据 | [`probes.ts`](../src/probes.ts)、[使用协议](behavioral-probes.md) |
 | 执行与隔离 | 原生 DSH 会话、明确 OCI runtime 与权限、请求用量 | [`runtime/worker.ts`](../src/runtime/worker.ts)、[`docker.ts`](../src/docker.ts) |
 | 评测与研究 | 独立 grader、声明的领域约束、固定产物配对复验 | [`constraints.ts`](../src/constraints.ts)、[`validation.ts`](../src/validation.ts) |
 | 交付与复用 | 导出原构建包、保存来源、导入新草稿重新评测 | [`export.ts`](../src/export.ts)、[`library.ts`](../src/library.ts) |
