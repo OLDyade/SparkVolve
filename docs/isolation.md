@@ -24,9 +24,24 @@
 ```bash
 # 使用当前非 root 用户身份，显式选择已注册运行时；不改变 daemon 配置。
 node examples/isolation.mjs runc > isolation.json
-# 在独立 Linux 宿主注册并验证 runsc 后，可明确选择该运行时。
-node examples/isolation.mjs runsc > isolation.json
+# 在专用 Linux Docker 宿主安装固定版本，再显式选择。
+bash scripts/install-runsc.sh
+node examples/isolation.mjs he-runsc-20261019 > isolation.json
 ```
+
+安装脚本固定 gVisor `20261019.0` 与各架构 SHA256，将完整 runsc/sidecar 发行包安装到独立目录，注册 `he-runsc-20261019`，使用 systrap；不替换已有运行时或默认值。宿主需具备 Docker、systemd、sudo、tar、bzip2、sha256sum，在线安装还需 curl。仅支持 Linux x86_64/aarch64。已存在的安装目录或同名注册直接拒绝覆盖。
+
+隔离主机可先传入官方发行包，再执行 `bash scripts/install-runsc.sh /absolute/path/gvisor-aarch64.tar.bz2`。离线模式仍核对同一固定摘要，不联网下载或切换运行时。安装涉及宿主配置，应在研究者管理的专用 Docker 主机执行。
+
+同一套验收覆盖两个运行时，必须声明 `HE_TEST_RUNTIME`，缺失直接失败：
+
+```bash
+HE_TEST_RUNTIME=he-runsc-20261019 \
+  HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}') \
+  npm run test:container
+```
+
+GitHub Actions 分别运行 runc 和固定 gVisor，将测试日志与各角色隔离回执保留 14 天。远端任务当前被账户账单限制阻止启动，矩阵配置不代表云端验收通过。
 
 生成器提供可编辑的工作站配置。框架不补缺失字段、不自动选择默认运行时、不在运行失败后回退。`prepare.mjs` 第五参数必须为此 JSON；冻结后修改合同需要新实验。UID/GID 必须能访问挂载目录，框架不会修改宿主目录权限。远端 Docker 的挂载路径必须真实存在于 daemon 宿主；本地路径不会自动上传。
 
@@ -47,9 +62,9 @@ node examples/isolation.mjs runsc > isolation.json
 | 环境 | 隔离边界 | 当前验收 |
 |---|---|---|
 | Linux Docker / OrbStack 的 runc | namespaces/cgroups，共享 Linux 内核 | 已实测非 root、禁网、只读、漂移拒绝及完整 DSH 链路 |
-| gVisor/runsc | 用户态 Sentry 处理应用系统调用 | 调研完成；本机未注册，完整链路待实测 |
+| gVisor/runsc 20261019.0 · systrap · Linux ARM64 | 用户态 Sentry 处理应用系统调用 | 专用 Debian 13 Docker daemon 实测构建、原生 DSH、评分、恢复、安装及真实模型事件接续；见 [验收证据](evidence/2026-10-27-gvisor-acceptance.json) |
 | Firecracker | KVM 驱动独立 guest kernel；还需生产宿主和网络配置 | 调研完成；尚无 MicroVM 执行后端 |
 
-回执依赖可信 daemon，无法对抗宿主管理员，不属于加密远程证明。OrbStack VM 承载多个容器，不能宣称每题独立微虚拟机。bridge 没有域名白名单；同进程插件可读模型凭证。工作目录和日志尚无磁盘配额；内存/PID 限制不解决磁盘耗尽。当前候选应在专用研究宿主运行。更强隔离与受控出口仍需继续实施。
+回执依赖可信 daemon，无法对抗宿主管理员，不属于加密远程证明。本次 gVisor 实验机关闭 Mac 文件共享与宿主/其他机器网络访问，但 OrbStack 机器仍共享 Linux 内核，不能宣称每题独立微虚拟机。可信控制器持有专用 daemon socket，候选容器不挂载该 socket。bridge 没有域名白名单；同进程插件可读模型凭证。工作目录和日志尚无磁盘配额；内存/PID 限制不解决磁盘耗尽。当前候选应在专用研究宿主运行。受控出口、磁盘配额与 MicroVM 后端仍需继续实施。
 
 来源及验收见 [运行隔离研究](research/2026-10-27-runtime-isolation.md)。

@@ -1,0 +1,243 @@
+{
+  "date": "2026-10-27",
+  "sourceBase": "e1cf63b36acdc820fab357a2b23f2133d36e392a",
+  "image": "sha256:2eff5055a8006398c279766e8145a4638608a331f025e3e62f00cd5336a586b9",
+  "environment": {
+    "machine": "he-runsc-lab",
+    "os": "Debian 13",
+    "architecture": "aarch64",
+    "kernel": "7.2.9-orbstack-00391-g2b298d05fbd4",
+    "docker": "29.9.2",
+    "gvisor": "20261019.0",
+    "platform": "systrap",
+    "hostFilesystemSharing": false,
+    "hostNetworkAccess": false,
+    "boundary": "Dedicated Docker daemon inside an OrbStack isolated machine. OrbStack machines share a Linux kernel; this is not a per-task microVM."
+  },
+  "installer": {
+    "archiveSha256": "5790f89dc94b091b5aa0f0b6596aa4391606b3fe5f069e68f440576f3388abd8",
+    "runtime": "he-runsc-20261019",
+    "runscSha256": "c771292129c7ff96e83c5074485e3d33cfc938652dc70682bb792a66842d4de2",
+    "scriptSha256": "682082db455660c1e6f647f356dc2c4468254c5d09b159ea3300818991b4dd8c",
+    "mode": "Explicit offline archive with pinned digest. Complete archive retains sidecar binaries; no runtime fallback."
+  },
+  "acceptance": {
+    "aptRuntime": {
+      "name": "he-runsc-acceptance-group",
+      "id": "d159f0d63d83e6f9266669818a1a3f9ea1e109f75b07690c220683e5c9461438",
+      "state": {
+        "Status": "exited",
+        "ExitCode": 0,
+        "StartedAt": "2026-10-27T15:23:42.559511671Z",
+        "FinishedAt": "2026-10-27T15:24:13.7923378Z"
+      },
+      "logSha256": "fc5be3807a368d8d095714328dc86e7295c24cccb0066203184c1e6aa2ef490f"
+    },
+    "pinnedInstallerRuntime": {
+      "name": "he-runsc-pinned-acceptance",
+      "id": "a7decbdf235675d76750a7973497932c56eaeaa32c3d031576cb959b6a02c5cc",
+      "state": {
+        "Status": "exited",
+        "ExitCode": 0,
+        "StartedAt": "2026-10-27T15:30:27.668519945Z",
+        "FinishedAt": "2026-10-27T15:30:59.066685009Z"
+      },
+      "logSha256": "7b571b0dea7ff4923ebcd30a6bc318677ea4d958084bafea5468d9422cb95dd0"
+    },
+    "testsPerRuntime": 4,
+    "failures": 0,
+    "coverage": [
+      "locked TypeScript build and bundled dependencies",
+      "native DSH delivery and independent grading",
+      "original container recovery",
+      "offline installed bundle invocation",
+      "non-root, read-only and network isolation probe",
+      "configuration drift refusal",
+      "optimizer preset and actual controller API"
+    ],
+    "pinnedRuntimeReceipts": [
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-compiled-build-ozEqET/builds/eb144febfe266e42f1233c088a74d6d0776de1f52ee71d6c290697839a57c160/logs/isolation-final.json",
+        "sha256": "b6d01e99fad05337178f2969602959f0040a4772b33da0ed128eb6c064d25290",
+        "containerId": "3b9666a0a3c0a99916b6130c237d31a1cd097fe11fc642b3326194b027ed1419",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "bridge"
+      },
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-compiled-build-ozEqET/consume-log/isolation-final.json",
+        "sha256": "d9b37895ffe0209251e2022f396b6bd37bd86b7ae8791d8ed291168e05983127",
+        "containerId": "a661395471bff5ae33b699f15d1ba026af9005d96ae32b2761677ac71c06035f",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "none"
+      },
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-compiled-build-ozEqET/install-log/isolation-final.json",
+        "sha256": "a12f5fb26d5b35ffdf4fe8f6d97c82663ae30680f12977b8aae55ffec942ea0f",
+        "containerId": "0f51c3b06247ec54b124d18388053360a0d0af394709d7fca9c4f42847d2c8f9",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "none"
+      },
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-compiled-build-ozEqET/installed-run-log/isolation-final.json",
+        "sha256": "be3fed23a5dbbaf67da40dfe24cdba9b7937238db215a68fe7d3133999a0bc7a",
+        "containerId": "eeeebdbf22be80c24db1f536ba2a52f945a1a0f880fd9b58dd0d904e18988eb1",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "none"
+      },
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-container-FS0Q9T/builds/660b82d2280dbcb1f9eb78e3eeb99be66327f1e542bec36386cafe92831f32bf/logs/isolation-final.json",
+        "sha256": "55d932c1e22b6d2deadce6bf69b3043e90078221c2ebeb4a7b67cd9859148ecd",
+        "containerId": "63d29811a056001c4468564c90d43f1748f5f62d1a72049523e76777c46276c9",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "none"
+      },
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-container-FS0Q9T/qa/660b82d2280dbcb1f9eb78e3eeb99be66327f1e542bec36386cafe92831f32bf/isolation-final.json",
+        "sha256": "ea1cf78d73b4e8f1742e3d4cb5076fca049c8af10555e5518b2e77dba9dac3bc",
+        "containerId": "d519fbb063dbfff20bf650f341e13470e51af20115a4b4bba47d46a45d815df7",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "none"
+      },
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-container-FS0Q9T/runs/684f914d6535653b5b9d719162958d1739db347d21ed26444123e538d4279578/execution/isolation-final.json",
+        "sha256": "651cbe3ecb7f042784db4a5f3bc8204e912e5e45f6c3877350b45fa72d8784fb",
+        "containerId": "1bf6d212810e3d6e3eaeaec1615413d48bc589252797cb2d6ab231d794df6ea7",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "bridge"
+      },
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-container-FS0Q9T/runs/684f914d6535653b5b9d719162958d1739db347d21ed26444123e538d4279578/grading-0/isolation-final.json",
+        "sha256": "3c3851f4b67d5644915de3432110f0ccf03625ec6f99b66d3e2816d4b04a331d",
+        "containerId": "a8a22edc40c19f11e823094100ee86d0913c3e358152a79608aeab6a18a313e5",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "none"
+      },
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-container-FS0Q9T/runs/284ae0f082cb85d5ba5be9911564b57969231e7bef9c66f6b38825f985c1298c/execution/isolation-final.json",
+        "sha256": "35d1df459be2cac1ac45331dd61d117fa4c85c4fc207d929329822ad865e7af3",
+        "containerId": "cf7f2ae0af2eb12b0abb9592df80e6b4ddeac59c46e60be685e3bf863a4ee878",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "bridge"
+      },
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-container-FS0Q9T/runs/284ae0f082cb85d5ba5be9911564b57969231e7bef9c66f6b38825f985c1298c/grading-0/isolation-final.json",
+        "sha256": "569b536e809e7fdbeced4f9dc009ef8af3f51c0f2c82ed1936780759c802a872",
+        "containerId": "7fa744662145f8425f59c843f4162c3f1e7f8ce08eef9b643420cf3aa2ab1f2d",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "none"
+      },
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-isolation-9SP0kR/log/isolation-final.json",
+        "sha256": "aa0b834725fa53ec4810aab76f1430b4aa8d426b50136254648f452b60604d06",
+        "containerId": "fd6c0eae8c6940eb435d29e8e634962b09d20bf6222055750f994fed9edcb064",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "none"
+      },
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-isolation-9SP0kR/recovery/isolation-final.json",
+        "sha256": "b9f1a62cacffb6c947c56a94cd29b2a696e60ae44017663972bd88fd22ad332f",
+        "containerId": "fd6c0eae8c6940eb435d29e8e634962b09d20bf6222055750f994fed9edcb064",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "none"
+      },
+      {
+        "path": "/home/apple/harness-evolution/.tmp/he-preset-container-TMFdvX/optimizer/0/isolation-final.json",
+        "sha256": "d903d9b046142bd260e2f6419672070085cb4f86431e5d9894178935f1a0cb57",
+        "containerId": "b205da57fc2989ddd08a23ec3805912a8922f58a6f4a84adc741a11d9730e9fa",
+        "runtime": "he-runsc-20261019",
+        "user": "501:501",
+        "network": "bridge"
+      }
+    ]
+  },
+  "realModel": {
+    "controller": {
+      "name": "he-runsc-live",
+      "id": "548c59e4df5a7199f301cc6f1931edc7f88846f6f88dd874e12dd7b1e99f812b",
+      "state": {
+        "Status": "exited",
+        "ExitCode": 0,
+        "StartedAt": "2026-10-27T15:25:34.828479851Z",
+        "FinishedAt": "2026-10-27T15:25:44.76312334Z"
+      },
+      "logSha256": "693f61614506dcded465e033dbede6759af2959a5f975a0af0678b9018c088f4"
+    },
+    "runtime": "runsc",
+    "model": "deepseek/deepseek-v4.1-flash-1017",
+    "acceptance": {
+      "evidenceBoundary": "Real model lifecycle only; no task score or quality gain.",
+      "nonce": "e1fcc8497d6e0b86",
+      "passed": true,
+      "summary": {
+        "consumedSeconds": 9.303,
+        "episodes": 1,
+        "optimizerHarness": "4702cae12dc9b90ede598a21b70090792b9e95fcb975704f2772ae115171ea2a",
+        "reason": "optimizer_concluded"
+      },
+      "waits": 1
+    },
+    "usage": {
+      "failed": 0,
+      "inputTokensReported": 3990,
+      "missingUsage": 0,
+      "outputTokensReported": 686,
+      "requestDurationMsSum": 8211,
+      "results": 4,
+      "started": 4,
+      "unfinished": 0,
+      "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+    },
+    "containerId": "5890364ed218db9b96e3c86b2b151e9c9acf3a856c899f554f90985d4be384d3",
+    "settings": {
+      "CapAdd": null,
+      "CapDrop": [
+        "ALL"
+      ],
+      "DeviceRequests": null,
+      "Devices": [],
+      "Init": true,
+      "IpcMode": "private",
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "bridge",
+      "PidMode": "",
+      "PidsLimit": 256,
+      "Privileged": false,
+      "ReadonlyRootfs": true,
+      "Runtime": "runsc",
+      "SecurityOpt": [
+        "no-new-privileges"
+      ],
+      "Tmpfs": {
+        "/home/node": "rw,nosuid,nodev,size=128m,uid=501,gid=501,mode=700",
+        "/tmp": "rw,exec,nosuid,nodev,size=512m,uid=501,gid=501,mode=1777"
+      }
+    },
+    "user": "501:501",
+    "receiptSha256": "d574042ae8682142c23e45e2d2d96a51c73a01c949c56cfb49485e702e11d84f"
+  },
+  "preservedSetupFailures": [
+    "Host proxy was unreachable from isolated machine; direct TLS and SSH reverse forwarding also failed. Signed APT indexes and checksum-verified packages were imported offline without opening host access.",
+    "First test controller had incorrect Docker supplemental group 994; permission failure occurred before workload creation. Correct observed group 989 was used; original failed controller he-runsc-acceptance remains.",
+    "Pinned installer first encountered missing bzip2 before extraction. Empty destination was removed, signed bzip2 package installed, and dependency preflight added. This was installation acceptance, not a quality-task retry."
+  ],
+  "limits": [
+    "Engineering and real-model lifecycle acceptance only; no measured quality improvement.",
+    "No escape-resistance proof, microVM backend, domain egress policy or disk quota.",
+    "Linux x86_64 GitHub jobs have not run because account billing blocks job startup.",
+    "Docker socket is available only to the trusted test controller, never to candidate containers."
+  ]
+}

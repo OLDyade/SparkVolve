@@ -1,5 +1,12 @@
 import type { Candidate, ExperimentSpec, TaskRun } from '../src/contracts.js';
 export const hash = 'a'.repeat(64);
+export function containerSpecification(): ExperimentSpec {
+  const runtime = process.env.HE_TEST_RUNTIME;
+  if (!runtime) throw new Error('HE_TEST_RUNTIME must explicitly select a registered Docker runtime');
+  const spec = specification();
+  spec.isolation.runtime = runtime;
+  return spec;
+}
 export function specification(): ExperimentSpec {
   const model = {
     provider: 'test',

@@ -12,7 +12,7 @@ import { Store } from '../../src/store.js';
 import { treeDigest, fileDigest } from '../../src/artifacts.js';
 import { command } from '../../src/docker.js';
 import { exportCandidate } from '../../src/export.js';
-import { specification } from '../fixtures.js';
+import { containerSpecification as specification } from '../fixtures.js';
 
 test(
   'real containers: native DSH → immutable delivery → private grade → strict decision → installable archive',

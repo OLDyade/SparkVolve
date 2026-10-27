@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, cp, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { randomBytes } from 'node:crypto';
-import { specification } from '../fixtures.js';
+import { containerSpecification as specification } from '../fixtures.js';
 import { libraryFixture } from '../library-fixture.js';
 import { atomicJSON, treeDigest } from '../../src/artifacts.js';
 import { Store } from '../../src/store.js';

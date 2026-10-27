@@ -52,6 +52,8 @@ DSH 优化器 ── 真实证据 ──► 改写插件配置 / 实现 / 组合
 
 运行前显式生成[隔离合同](docs/isolation.md)：五类角色使用声明的运行时、非 root 身份和资源预算。原容器恢复时重新核验权限，运行时缺失直接报错。
 
+支持显式选择 runc 或 gVisor；gVisor 已完成插件构建、原生 DSH 执行、独立评分、恢复及真实模型接续验收。[固定版本安装与测试矩阵](docs/isolation.md)提供可复现入口。
+
 需要 Node **24.16.0**、npm **12.2.0**、pnpm **12.15.0** 和运行中的 Docker。示例采用用户指定的 Venus 模型快照；其他模型通过原生 DSH Provider 配置接入。没有自动模型降级。
 
 ```bash
@@ -121,7 +123,7 @@ dsh plugin --profile sdk add /absolute/new-export-directory/bundle.tgz
 - 类型检查、原生 SDK 子进程、容器执行、独立评分、恢复与安装分别验收。
 
 ```bash
-HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}') npm run test:container
+HE_TEST_RUNTIME=runc HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}') npm run test:container
 npm audit --audit-level=moderate
 ```
 

@@ -6,7 +6,7 @@ import os from 'node:os';
 import { buildCandidate, bundlePath, verifyBuild } from '../../src/build.js';
 import { freeze, treeDigest, fileDigest, digest } from '../../src/artifacts.js';
 import { Docker, command } from '../../src/docker.js';
-import { candidate, specification } from '../fixtures.js';
+import { candidate, containerSpecification as specification } from '../fixtures.js';
 
 test(
   'locked TypeScript build bundles runtime dependencies; recovery reuses original container; tampering fails',

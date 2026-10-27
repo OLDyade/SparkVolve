@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { Docker, command, type ContainerSpec } from '../../src/docker.js';
-import { specification } from '../fixtures.js';
+import { containerSpecification as specification } from '../fixtures.js';
 
 test(
   'real isolation: non-root, read-only source/root, offline network, bounded resources and refusal of drift',
