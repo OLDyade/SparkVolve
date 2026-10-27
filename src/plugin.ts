@@ -37,6 +37,30 @@ export function apply(ctx: Context, config: Config): void {
   };
   ctx.tools.register(
     defineTool({
+      name: 'evolution_finish',
+      description:
+        'Conclude search with an evidence-based reason and remaining limitations. Pending evaluations must settle first. This records a stop decision; it does not publish or certify a capability.',
+      parameters: { reason: { type: 'string', required: true } },
+      output,
+      execute: async (args, exec) => request('/finish', args, exec.signal),
+    }),
+  );
+  ctx.tools.register(
+    defineTool({
+      name: 'evolution_candidate',
+      description:
+        'Inspect an exact frozen candidate source file or its actual QA logs; omit file to list paths and hashes. Useful for comparing parents and diagnosing plugin activation failures. Files return base64.',
+      parameters: {
+        candidate: { type: 'string', required: true },
+        area: { type: 'string', enum: ['source', 'qa'], required: true },
+        file: { type: 'string' },
+      },
+      output,
+      execute: async (args, exec) => request('/candidate', args, exec.signal),
+    }),
+  );
+  ctx.tools.register(
+    defineTool({
       name: 'evolution_status',
       description:
         'Read the frozen experiment contract, candidate lineage, complete task results and champion. Quality claims require independent evaluation.',

@@ -1,0 +1,17 @@
+name: Research proposal
+description: A mechanism, task adapter or reproducible experiment
+body:
+  - type: textarea
+    id: mechanism
+    attributes:
+      label: Mechanism and evidence
+      description: What changes in plugin configuration, code or composition? What observed behavior motivates it?
+    validations:
+      required: true
+  - type: textarea
+    id: evaluation
+    attributes:
+      label: Evaluation protocol
+      description: Fixed models, task access, baseline, repetitions, budget, metrics and negative results.
+    validations:
+      required: true

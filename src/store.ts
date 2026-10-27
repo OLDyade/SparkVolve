@@ -64,6 +64,17 @@ export class Store {
       .prepare('INSERT INTO events(at,type,body) VALUES (?,?,?)')
       .run(new Date().toISOString(), type, canonical(body));
   }
+  events(): Array<{ sequence: number; at: string; type: string; body: unknown }> {
+    return this.db
+      .prepare('SELECT seq,at,type,body FROM events ORDER BY seq')
+      .all()
+      .map((row) => ({
+        sequence: Number(row.seq),
+        at: String(row.at),
+        type: String(row.type),
+        body: JSON.parse(String(row.body)) as unknown,
+      }));
+  }
   decision(candidate: string): unknown {
     const row = this.db
       .prepare(

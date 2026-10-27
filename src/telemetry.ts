@@ -50,14 +50,25 @@ export function apply(ctx: Context, config: Config): void {
     });
     let usage: TokenUsage | null = null;
     let finished = false;
+    let failure: unknown = null;
     try {
       for await (const chunk of next()) {
         if (chunk.type === 'usage') usage = chunk.usage;
-        if (chunk.type === 'finish') finished = true;
+        if (chunk.type === 'finish') {
+          finished = true;
+          if (chunk.reason.kind === 'error' || chunk.reason.kind === 'aborted')
+            failure = chunk.reason.failure;
+        }
         yield chunk;
       }
       if (!finished) throw new Error('Model stream ended without a finish event');
-      record({ id, kind: 'result', durationMs: Date.now() - started, usage });
+      record({
+        id,
+        kind: failure ? 'failed' : 'result',
+        durationMs: Date.now() - started,
+        usage,
+        ...(failure ? { error: failure } : {}),
+      });
     } catch (error) {
       record({ id, kind: 'failed', durationMs: Date.now() - started, usage, error: String(error) });
       throw error;

@@ -5,10 +5,14 @@ import path from 'node:path';
 export async function command(
   program: string,
   args: string[],
-  options: { env?: NodeJS.ProcessEnv; timeoutMs?: number } = {},
+  options: { env?: NodeJS.ProcessEnv; timeoutMs?: number; signal?: AbortSignal } = {},
 ): Promise<string> {
   return await new Promise((resolve, reject) => {
-    const child = spawn(program, args, { stdio: ['ignore', 'pipe', 'pipe'], env: options.env });
+    const child = spawn(program, args, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: options.env,
+      ...(options.signal ? { signal: options.signal } : {}),
+    });
     const stdout: Buffer[] = [],
       stderr: Buffer[] = [];
     child.stdout.on('data', (chunk: Buffer) => stdout.push(chunk));
@@ -95,7 +99,8 @@ export class Docker {
     args.push(spec.image, ...spec.command);
     await command('docker', args, { env: { ...process.env, ...spec.env } });
   }
-  async collect(spec: ContainerSpec, logDir: string): Promise<ContainerState> {
+  async collect(spec: ContainerSpec, logDir: string, signal?: AbortSignal): Promise<ContainerState> {
+    signal?.throwIfAborted();
     let state = await this.inspect(spec.name);
     if (!state) throw new Error(`Execution intent has no container: ${spec.name}; no automatic task retry`);
     if (state.Status === 'created') {
@@ -115,7 +120,10 @@ export class Docker {
         });
         try {
           await Promise.race([
-            command('docker', ['wait', spec.name], { timeoutMs: remaining + 30_000 }),
+            command('docker', ['wait', spec.name], {
+              timeoutMs: remaining + 30_000,
+              ...(signal ? { signal } : {}),
+            }),
             deadline,
           ]);
         } finally {
@@ -142,9 +150,10 @@ export class Docker {
     if (!final || final.Running) throw new Error('Container termination is unconfirmed');
     return final;
   }
-  async run(spec: ContainerSpec, logDir: string): Promise<ContainerState> {
+  async run(spec: ContainerSpec, logDir: string, signal?: AbortSignal): Promise<ContainerState> {
+    signal?.throwIfAborted();
     if (!(await this.inspect(spec.name))) await this.create(spec);
-    return await this.collect(spec, logDir);
+    return await this.collect(spec, logDir, signal);
   }
 }
 

@@ -1,113 +1,215 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { setTimeout as delay } from 'node:timers/promises';
 import { stringify } from 'yaml';
-import { z } from 'zod';
-import { atomicJSON, digest, confined } from './artifacts.js';
+import { atomicJSON, digest, confined, treeDigest } from './artifacts.js';
 import { Docker } from './docker.js';
 import type { ExperimentSpec } from './contracts.js';
 import { collectRequestMetrics } from './metrics.js';
+import { Store } from './store.js';
 
-/** Launch the optimizer in DSH; search decisions live in its plugins and model, never in a canned mutation script. */
+interface Episode {
+  identity: string;
+  name: string;
+  ordinal: number;
+  seconds: number;
+}
+
+/** Each episode is a native DSH session. The experiment owns progression, never model tool execution. */
 export async function optimize(
   root: string,
   spec: ExperimentSpec,
   endpoint: string,
   docker = new Docker(),
+  signal = new AbortController().signal,
 ): Promise<void> {
   if (spec.purpose !== 'search') throw new Error('Validation experiments cannot launch an optimizer');
+  const bundle = confined(path.join(root, 'dataset'), spec.optimizerHarness.directory);
+  if ((await treeDigest(bundle)) !== spec.optimizerHarness.digest)
+    throw new Error('Optimizer bundle digest mismatch');
   const runRoot = path.join(root, 'optimizer');
-  await mkdir(path.join(runRoot, 'trace'), { recursive: true });
+  await mkdir(runRoot, { recursive: true });
   const identity = digest({ root: path.resolve(root), spec, endpoint });
-  const name = `he-optimizer-${identity.slice(0, 40)}`;
-  const intentPath = path.join(runRoot, 'intent.json');
-  let resumed = false;
-  try {
-    const intent = z
-      .strictObject({ identity: z.string(), name: z.string() })
-      .parse(JSON.parse(await readFile(intentPath, 'utf8')));
-    if (intent.identity !== identity || intent.name !== name)
-      throw new Error('Optimizer launch contract changed');
-    resumed = true;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-  }
+  const store = new Store(path.join(root, 'experiment.sqlite'), spec);
   const token = await readFile(path.join(root, 'controller-token'), 'utf8');
-  const env: Record<string, string> = resumed ? {} : { EVOLUTION_TOKEN: token };
-  for (const key of resumed ? [] : spec.optimizer.credentialEnv) {
-    const value = process.env[key];
-    if (!value) throw new Error(`Missing optimizer credential ${key}`);
-    env[key] = value;
+  try {
+    let consumed = 0;
+    let ordinal = 0;
+    for (;;) {
+      signal.throwIfAborted();
+      const episodeRoot = path.join(runRoot, String(ordinal));
+      let episode: Episode | undefined;
+      try {
+        episode = JSON.parse(await readFile(path.join(episodeRoot, 'intent.json'), 'utf8')) as Episode;
+        if (episode.identity !== identity || episode.ordinal !== ordinal)
+          throw new Error('Optimizer launch contract changed');
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+      }
+      if (!episode) {
+        while (store.candidates().some((c) => c.phase === 'frozen' || c.phase === 'running')) {
+          if (store.runs().some((r) => r.phase === 'scoring_failed'))
+            throw new Error('Scoring failed; resolve original deliveries before continuing search');
+          await delay(500, undefined, { signal });
+        }
+        const reason = store.getMeta('searchConclusion')
+          ? 'optimizer_concluded'
+          : store.candidates().length >= spec.budget.candidates
+            ? 'candidate_budget_exhausted'
+            : consumed >= spec.budget.optimizerSeconds
+              ? 'optimizer_budget_exhausted'
+              : null;
+        if (reason) {
+          await atomicJSON(path.join(runRoot, 'summary.json'), {
+            reason,
+            episodes: ordinal,
+            consumedSeconds: consumed,
+            optimizerHarness: spec.optimizerHarness.digest,
+          });
+          return;
+        }
+        episode = {
+          identity,
+          name: `he-opt-${identity.slice(0, 32)}-${ordinal}`,
+          ordinal,
+          seconds: spec.budget.optimizerSeconds - consumed,
+        };
+        await mkdir(path.join(episodeRoot, 'trace'), { recursive: true });
+        const environment = spec.runtime.environment;
+        await writeFile(
+          path.join(episodeRoot, 'cordis.patch.yml'),
+          stringify([
+            {
+              insert: [
+                {
+                  id: 'harness-evolution',
+                  name: '/app/dist/plugin.js',
+                  config: { endpoint, tokenEnv: 'EVOLUTION_TOKEN' },
+                },
+              ],
+            },
+          ]),
+        );
+        await atomicJSON(path.join(episodeRoot, 'launch.json'), {
+          profile: 'sdk',
+          model: spec.optimizer,
+          patch: '/optimizer.patch.yml',
+          methodPatch: `/method/${spec.optimizerHarness.patch}`,
+          environmentPatch: environment ? `/environment/${environment.patch}` : null,
+          prompt: [
+            `Researcher objective: ${spec.objective}`,
+            `Episode ${ordinal}; ${episode.seconds.toFixed(3)} total optimizer seconds remain. Read the actual experiment state.`,
+            ordinal
+              ? 'Previous native session results and traces are read-only under /previous; editable drafts persist under /workspace. Continue from actual feedback, without resubmitting identical candidates.'
+              : 'Begin with the completed baseline evidence.',
+          ].join('\n'),
+          timeoutSeconds: episode.seconds,
+        });
+        await writeFile(path.join(episodeRoot, 'intent.json'), JSON.stringify(episode), {
+          flag: 'wx',
+          mode: 0o600,
+        });
+        await docker.create(await launch(episode, episodeRoot, true));
+      }
+      const result = await docker.collect(await launch(episode, episodeRoot, false), episodeRoot, signal);
+      await atomicJSON(path.join(episodeRoot, 'container-result.json'), result);
+      await collectRequestMetrics(path.join(episodeRoot, 'trace'));
+      if (result.ExitCode !== 0)
+        throw new Error(
+          `Optimizer episode ${ordinal} failed with exit ${result.ExitCode}; no automatic retry`,
+        );
+      const duration = (Date.parse(result.FinishedAt) - Date.parse(result.StartedAt)) / 1000;
+      if (!Number.isFinite(duration) || duration < 0)
+        throw new Error('Optimizer container has invalid timestamps');
+      consumed += duration;
+      ordinal++;
+    }
+  } finally {
+    store.close();
   }
-  if (!resumed)
-    await writeFile(
-      path.join(runRoot, 'cordis.patch.yml'),
-      stringify([
+
+  async function launch(
+    episode: Episode,
+    episodeRoot: string,
+    fresh: boolean,
+  ): Promise<import('./docker.js').ContainerSpec> {
+    const env: Record<string, string> = fresh ? { EVOLUTION_TOKEN: token } : {};
+    if (fresh)
+      for (const key of spec.optimizer.credentialEnv) {
+        const value = process.env[key];
+        if (!value) throw new Error(`Missing optimizer credential ${key}`);
+        env[key] = value;
+      }
+    const environment = spec.runtime.environment;
+    return {
+      name: episode.name,
+      image: spec.runtime.image,
+      command: ['node', '/app/dist/runtime/worker.js', '/launch.json'],
+      network: 'bridge',
+      env,
+      timeoutSeconds: episode.seconds,
+      mounts: [
+        ...(environment
+          ? [
+              {
+                source: confined(path.join(root, 'dataset'), environment.directory),
+                target: '/environment',
+                writable: false,
+              },
+            ]
+          : []),
+        { source: bundle, target: '/method', writable: false },
+        ...(episode.ordinal
+          ? [
+              {
+                source: path.join(runRoot, String(episode.ordinal - 1), 'trace'),
+                target: '/previous',
+                writable: false,
+              },
+            ]
+          : []),
+        { source: path.join(root, 'drafts'), target: '/workspace', writable: true },
+        { source: path.join(episodeRoot, 'trace'), target: '/trace', writable: true },
+        { source: path.join(episodeRoot, 'launch.json'), target: '/launch.json', writable: false },
         {
-          insert: [
-            {
-              id: 'harness-evolution',
-              name: '/app/dist/plugin.js',
-              config: { endpoint, tokenEnv: 'EVOLUTION_TOKEN' },
-            },
-          ],
+          source: path.join(episodeRoot, 'cordis.patch.yml'),
+          target: '/optimizer.patch.yml',
+          writable: false,
         },
-      ]),
-    );
-  const prompt = [
-    'Evolve the Harness, Not the Model.',
-    `Researcher objective: ${spec.objective}`,
-    'You are the optimizer of a plugin-based harness evolution experiment. Read evolution_status first.',
-    'Choose mechanisms and parent candidates from original task evidence, native traces, actual deliveries and independent scores.',
-    'Use evolution_branch to create an editable bundle under /workspace. Inspect its code and the installed DSH implementation.',
-    'You may enable, disable, tune, replace, compose and author plugin implementations, configurations and composition structures; coordinate cross-plugin changes when justified.',
-    'Research uncertain APIs. Use ordinary DSH tools to implement, build and test your draft. Submit only genuine changed candidates with evidence and a falsifiable mechanism hypothesis.',
-    'The controller evaluates the complete fixed manifest. It owns the model contract, isolation, grader, budget and champion. Do not modify or circumvent these boundaries.',
-    'Distinguish runtime failures from wrong business outcomes. A single improvement does not establish causality or transfer.',
-    'Wait for pending experiments using normal tools; inspect new results and continue evidence-driven search until the contracted budget is exhausted or you can justify stopping.',
-    'The runtime exposes elapsed wall-clock budget. Plan implementation and tests within it. Submitted experiments continue under the controller after your session ends; do not spend the entire budget without submitting a tested candidate.',
-    'Never embed task answers, access evaluator-private data, change model weights, silently substitute dependencies, or run identical candidates to resample scores.',
-  ].join('\n');
-  const environment = spec.runtime.environment;
-  if (!resumed)
-    await atomicJSON(path.join(runRoot, 'launch.json'), {
-      profile: 'sdk',
-      model: spec.optimizer,
-      patch: '/optimizer.patch.yml',
-      environmentPatch: environment ? `/environment/${environment.patch}` : null,
-      prompt,
-      timeoutSeconds: spec.budget.optimizerSeconds,
-    });
-  const launch = {
-    name,
-    image: spec.runtime.image,
-    command: ['node', '/app/dist/runtime/worker.js', '/launch.json'],
-    network: 'bridge',
-    env,
-    timeoutSeconds: spec.budget.optimizerSeconds,
-    mounts: [
-      ...(environment
-        ? [
-            {
-              source: confined(path.join(root, 'dataset'), environment.directory),
-              target: '/environment',
-              writable: false,
-            },
-          ]
-        : []),
-      { source: path.join(root, 'drafts'), target: '/workspace', writable: true },
-      { source: path.join(runRoot, 'trace'), target: '/trace', writable: true },
-      { source: path.join(runRoot, 'launch.json'), target: '/launch.json', writable: false },
-      { source: path.join(runRoot, 'cordis.patch.yml'), target: '/optimizer.patch.yml', writable: false },
-    ],
-  } satisfies import('./docker.js').ContainerSpec;
-  if (!resumed) {
-    await writeFile(intentPath, JSON.stringify({ identity, name }), { flag: 'wx', mode: 0o600 });
-    await docker.create(launch);
+      ],
+    };
   }
-  // Recovery attaches to the recorded container. An absent container is an exposed infrastructure failure.
-  const result = await docker.collect(launch, runRoot);
-  await atomicJSON(path.join(runRoot, 'container-result.json'), result);
-  await collectRequestMetrics(path.join(runRoot, 'trace'));
-  if (result.ExitCode !== 0)
-    throw new Error(`Optimizer failed with container exit ${result.ExitCode}; artifacts retained`);
+}
+
+export async function optimizerLedger(root: string): Promise<unknown[]> {
+  const directory = path.join(root, 'optimizer');
+  let names: string[];
+  try {
+    names = await readdir(directory);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
+    throw error;
+  }
+  return await Promise.all(
+    names
+      .filter((name) => /^\d+$/.test(name))
+      .sort((a, b) => +a - +b)
+      .map(async (name) => {
+        const result: Record<string, unknown> = { episode: Number(name) };
+        for (const [key, file] of [
+          ['intent', 'intent.json'],
+          ['container', 'container-result.json'],
+          ['receipt', 'trace/receipt.json'],
+          ['usage', 'trace/metrics.json'],
+        ]) {
+          try {
+            result[key!] = JSON.parse(await readFile(path.join(directory, name, file!), 'utf8'));
+          } catch (error) {
+            if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+            result[key!] = null;
+          }
+        }
+        return result;
+      }),
+  );
 }

@@ -1,5 +1,7 @@
 # 真实模型端到端验收
 
+后续验收已扩展到连续变异、真实双会话接续、独立配对复验和研究资产复用，详见[完整产品闭环验收](acceptance-continuous.md)。以下保留此前一次运行的原结果与失败记录。
+
 2026-10-27，使用 Venus `deepseek/deepseek-v4.1-flash-1017`、thinking off，完成原生 DSH 自主变异、独立执行与评分、负结果裁决，以及 Bundle 安装后的真实任务。实验使用仓库生成的公开合成 XLSX，不代表历史 SpreadsheetBench 成绩。
 
 机器可读记录：[运行身份、逐题结果、调用与包哈希](evidence/2026-10-27-real-acceptance.json)。实现提交：`f3042c6`；DSH 实际发布版本：`0.2.1-rc.4`。

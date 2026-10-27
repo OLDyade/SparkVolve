@@ -41,6 +41,29 @@ export async function serve(
       const body: unknown = JSON.parse(Buffer.concat(chunks).toString());
       let result: unknown;
       switch (req.url) {
+        case '/finish': {
+          const args = z.strictObject({ reason: z.string().min(1) }).parse(body);
+          controller.finish(args.reason);
+          result = controller.status();
+          break;
+        }
+        case '/candidate': {
+          const args = z
+            .strictObject({
+              candidate: Digest,
+              area: z.enum(['source', 'qa']),
+              file: RelativePath.optional(),
+            })
+            .parse(body);
+          controller.store.candidate(args.candidate);
+          const root = path.join(
+            controller.root,
+            args.area === 'source' ? 'candidates' : 'qa',
+            args.candidate,
+          );
+          result = await artifact(root, args.file);
+          break;
+        }
         case '/status':
           result = controller.status();
           break;
@@ -68,20 +91,10 @@ export async function serve(
             args.area === 'input'
               ? confined(controller.dataset, task.input)
               : path.join(controller.root, 'runs', run.id, args.area);
-          if (args.file === undefined) {
-            result = await inventory(root);
-            break;
-          }
-          const resolved = await realpath(confined(root, args.file));
-          if (!resolved.startsWith(`${await realpath(root)}${path.sep}`))
-            throw new Error('Artifact escapes authorized area');
-          const bytes = await readFile(resolved);
           result = {
             run: run.id,
             area: args.area,
-            file: args.file,
-            encoding: 'base64',
-            data: bytes.toString('base64'),
+            artifact: await artifact(root, args.file),
           };
           break;
         }
@@ -101,4 +114,12 @@ export async function serve(
     server.listen(port, host, resolve);
   });
   return server;
+}
+
+async function artifact(root: string, file?: string): Promise<unknown> {
+  if (file === undefined) return await inventory(root);
+  const resolved = await realpath(confined(root, file));
+  if (!resolved.startsWith(`${await realpath(root)}${path.sep}`))
+    throw new Error('Artifact escapes authorized area');
+  return { file, encoding: 'base64', data: (await readFile(resolved)).toString('base64') };
 }

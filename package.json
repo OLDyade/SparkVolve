@@ -2,7 +2,7 @@
   "name": "@harness-evolution/dsh-bundle",
   "version": "0.0.0-development",
   "description": "Native DSH plugins for evidence-driven harness evolution",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/OLDyade/spark-harness-evolution.git"
@@ -25,7 +25,11 @@
     "README.md",
     "11.md",
     "SECURITY.md",
-    "docs/architecture.md"
+    "LICENSE",
+    "NOTICE",
+    "optimizers",
+    "examples",
+    "docs"
   ],
   "dsh": {
     "bundle": {
@@ -35,13 +39,14 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.tests.json",
-    "format": "prettier --write src tests examples .github package.json tsconfig.json tsconfig.tests.json cordis.patch.yml",
-    "format:check": "prettier --check src tests examples .github package.json tsconfig.json tsconfig.tests.json cordis.patch.yml",
+    "format": "prettier --write src tests examples optimizers .github package.json tsconfig.json tsconfig.tests.json cordis.patch.yml",
+    "format:check": "prettier --check src tests examples optimizers .github package.json tsconfig.json tsconfig.tests.json cordis.patch.yml",
     "test": "node --import tsx --test tests/*.test.ts",
     "test:native": "npm run build && node --import tsx --test tests/native/*.test.ts",
     "test:container": "npm run build && node --import tsx --test tests/container/*.test.ts",
     "check": "npm run format:check && npm run typecheck && npm test && npm run test:native",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "test:install": "npm run build && node --test tests/install.test.mjs"
   },
   "dependencies": {
     "@deepseek-ai/cordis": "4.0.5",
@@ -75,5 +80,16 @@
     "undici": "8.12.2",
     "fflate": "0.8.3",
     "@modelcontextprotocol/client": "2.3.0"
-  }
+  },
+  "homepage": "https://github.com/OLDyade/spark-harness-evolution#readme",
+  "bugs": {
+    "url": "https://github.com/OLDyade/spark-harness-evolution/issues"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "harness-evolution",
+    "agent",
+    "benchmark"
+  ]
 }

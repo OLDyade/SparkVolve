@@ -1,0 +1,13 @@
+Harness Evolution
+Copyright 2026 Harness Evolution contributors
+
+This project builds on DeepSeek Harness and Cordis.
+DeepSeek Harness: https://github.com/deepseek-ai/deepseek-harness
+Dependencies retain their own copyright notices and licenses.
+
+Repository presentation and contributor experience were informed by:
+https://github.com/XHToken/dsh-intelligent-router
+No router implementation or model-routing policy is incorporated.
+
+Historical research documents retain their original sources and attribution.
+Generated example data is synthetic and contains no customer or benchmark answers.

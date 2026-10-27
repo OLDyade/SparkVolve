@@ -10,6 +10,13 @@ export function apply(ctx) {
     }
     async *stream(options) {
       options.signal?.throwIfAborted();
+      if (process.env.HE_FIXTURE_FINISH_ERROR) {
+        yield {
+          type: 'finish',
+          reason: { kind: 'error', failure: { code: 'TRANSPORT', message: 'Fixture connection error' } },
+        };
+        return;
+      }
       appendFileSync(
         process.env.HE_FIXTURE_REQUESTS,
         JSON.stringify({ model: options.model, tools: options.tools, messages: options.messages }) + '\n',

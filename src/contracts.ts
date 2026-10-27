@@ -28,6 +28,7 @@ export const Task = z.strictObject({
   evaluation: RelativePath,
   evaluationDigest: Digest,
 });
+export const BundleRef = z.strictObject({ directory: RelativePath, digest: Digest, patch: RelativePath });
 export const Experiment = z
   .strictObject({
     name: Id,
@@ -43,6 +44,7 @@ export const Experiment = z
     }),
     executor: Model,
     optimizer: Model,
+    optimizerHarness: BundleRef,
     evaluator: z.strictObject({
       image: Image,
       command: z.array(z.string()).min(1),
@@ -84,6 +86,7 @@ export const Experiment = z
       });
     const publicRoots = [
       ...spec.tasks.map((t) => t.input),
+      spec.optimizerHarness.directory,
       ...(spec.runtime.environment ? [spec.runtime.environment.directory] : []),
     ];
     if (

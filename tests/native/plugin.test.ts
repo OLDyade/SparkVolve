@@ -32,7 +32,14 @@ test('native Cordis registers, executes and disposes evolution capabilities', as
         .schemas()
         .map((s) => s.name)
         .sort(),
-      ['evolution_branch', 'evolution_evidence', 'evolution_status', 'evolution_submit'],
+      [
+        'evolution_branch',
+        'evolution_candidate',
+        'evolution_evidence',
+        'evolution_finish',
+        'evolution_status',
+        'evolution_submit',
+      ],
     );
     const result = await ctx.tools.execute({
       callId: ToolCallId('native-call'),

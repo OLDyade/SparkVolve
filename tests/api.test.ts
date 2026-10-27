@@ -45,8 +45,8 @@ test('optimizer API enforces capability, authorized areas and realpath boundarie
     );
     assert.equal((await request('/evidence', { run: run.id, area: 'input', file: 'escape' })).status, 400);
     const response = await request('/evidence', { run: run.id, area: 'input', file: 'public.txt' });
-    const body = (await response.json()) as { data: string };
-    assert.equal(Buffer.from(body.data, 'base64').toString(), 'public');
+    const body = (await response.json()) as { artifact: { data: string } };
+    assert.equal(Buffer.from(body.artifact.data, 'base64').toString(), 'public');
     const validation = new Controller(root, root, { ...spec, purpose: 'validation' }, store);
     await assert.rejects(serve(validation, token, 0, '127.0.0.1'), /no optimizer API/);
     const overlap = specification();

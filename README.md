@@ -23,6 +23,7 @@
 | [可执行架构与边界](docs/architecture.md) | 原生插件、控制服务、身份、恢复、隔离与成本 |
 | [当前实现核验](docs/research/2026-10-27-native-implementation.md) | 实际发布物、源码差异、原生验证和工程决策 |
 | [真实模型端到端验收](docs/acceptance.md) | 自主代码变异、真实评分、失败裁决和原生安装后的实际任务 |
+| [连续进化与独立复验](docs/acceptance-continuous.md) | 三次真实变异、双会话接续、负结果与研究资产复用 |
 
 ## 它如何运行
 
@@ -71,16 +72,12 @@ node dist/cli.js init --root .evolution/business/search \
   --seed examples/spreadsheet/seed
 ```
 
-将密钥写入仓库外权限为 `0600` 的环境文件，变量名为 `VENUS_API_KEY`。下面两个终端使用同一实验目录；端口需空闲，Docker 必须能到达控制服务。macOS Docker Desktop / OrbStack 可通过 `host.docker.internal` 到达宿主回环服务；Linux 需明确配置可达接口与防火墙。
+将密钥写入仓库外权限为 `0600` 的环境文件，变量名为 `VENUS_API_KEY`。一条命令管理控制服务、执行、评分和优化器会话。端口需空闲，Docker 必须能到达控制服务。macOS Docker Desktop / OrbStack 可通过 `host.docker.internal` 到达宿主；Linux 需明确配置可达接口与防火墙。
 
 ```bash
-# 终端 A：运行控制服务、基线和后续候选，持久化全部阶段
-node --env-file=/absolute/private/venus.env dist/cli.js serve \
-  --root .evolution/business/search --host 127.0.0.1 --port 18948
-
-# 终端 B：启动真实 DSH 优化器，自主研究并修改候选插件
-node --env-file=/absolute/private/venus.env dist/cli.js optimize \
-  --root .evolution/business/search --endpoint http://host.docker.internal:18948
+node --env-file=/absolute/private/venus.env dist/cli.js evolve \
+  --root .evolution/business/search --host 127.0.0.1 --port 18948 \
+  --endpoint http://host.docker.internal:18948
 
 # 查看真实产物与裁决
 node dist/cli.js status --root .evolution/business/search
@@ -90,7 +87,7 @@ node dist/cli.js status --root .evolution/business/search
 
 ## 复验与安装
 
-从 `status` 取得冻结候选 digest。使用新 `purpose: "validation"` 规格、新目录和预注册任务独立复验；validation 不开放优化器 API。发布决策由研究证据支持，搜索冠军不会自动变成公开版本。
+从 `status` 取得冻结候选 digest。[独立复验指南](docs/research-protocol.md)用同一预注册协议运行基线与候选，记录逐题、重复和配对差异；validation 不开放优化器 API。发布决策由研究证据支持，搜索冠军不会自动变成公开版本。
 
 ```bash
 node dist/cli.js export --root .evolution/business/search \
@@ -100,7 +97,9 @@ node dist/cli.js export --root .evolution/business/search \
 dsh plugin --profile sdk add /absolute/new-export-directory/<bundle>.tgz
 ```
 
-进化设施自身同样可安装：`npm pack` 后通过上述原生命令装入 Profile，设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，即可贡献 `evolution_status`、`evolution_branch`、`evolution_submit`、`evolution_evidence` 工具。控制服务、模型配置和权限需要按实际部署提供。
+进化设施自身同样可安装：`npm pack` 后通过上述原生命令装入 Profile，设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，即可贡献状态、分支、提交、证据、候选源码和结束搜索六项工具。优化器的研究方法也由独立、冻结的原生 Bundle 提供；模型自主选择变异，框架管理实验生命周期。
+
+研究资产支持 `remember → library → import`：保留有效候选与负结果、谱系、来源、账本和证据哈希。导入产生新的可编辑草稿，历史分数不会转移到新实验。详见[架构](docs/architecture.md)。
 
 ## 可靠性与证据
 
@@ -115,6 +114,8 @@ HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}')
 npm audit --audit-level=moderate
 ```
 
-当前能力和未验证边界明确记录于[架构](docs/architecture.md)与[安全说明](SECURITY.md)。参与开发见 [CONTRIBUTING.md](CONTRIBUTING.md)。仓库保持私有，公开许可证与正式研究发布另行确定。
+当前能力和未验证边界明确记录于[架构](docs/architecture.md)与[安全说明](SECURITY.md)。参与开发见 [CONTRIBUTING.md](CONTRIBUTING.md)，接入新任务见[领域适配](docs/domain-adapters.md)，运行版本见[兼容性](docs/compatibility.md)。
+
+采用 [Apache-2.0](LICENSE)，引用信息见 [CITATION.cff](CITATION.cff)，第三方归属见 [NOTICE](NOTICE)。仓库当前保持私有；许可证选择不代表已经公开发布。
 
 通用框架优先，商业 Excel 是首个场景。架构承接 DeepSeek Harness / Cordis 原生插件生态，研究归属与引用见调研文档。

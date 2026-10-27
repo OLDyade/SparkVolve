@@ -1,0 +1,787 @@
+{
+  "date": "2026-10-27",
+  "kind": "product-acceptance-and-negative-quality-results",
+  "model": {
+    "credentialEnv": [
+      "VENUS_API_KEY"
+    ],
+    "maxTokens": 32768,
+    "model": "deepseek/deepseek-v4.1-flash-1017",
+    "provider": "venus",
+    "reasoningEffort": "off"
+  },
+  "runtime": {
+    "dshVersion": "0.2.1-rc.4",
+    "environment": {
+      "digest": "e8b8bd9dc56ebab84a5f7ec8a57a66e5106adb39986d7d5d3fa3115ec1c95442",
+      "directory": "runtime",
+      "patch": "cordis.patch.yml"
+    },
+    "image": "sha256:532ceaa51d5bc0bbfe48b328c75f726e555d7557c228e0b908d07f96e595e9fc",
+    "profile": "sdk"
+  },
+  "optimizerHarness": {
+    "digest": "666f13e24e6970ab3fecd9702b7adbb994c1f9101e38ab5ecc88549b604c29b3",
+    "directory": "optimizer-bundle",
+    "patch": "cordis.patch.yml"
+  },
+  "search": {
+    "localEvidence": ".evolution/continuous-native-verified/search",
+    "summary": {
+      "consumedSeconds": 925.547,
+      "episodes": 1,
+      "optimizerHarness": "666f13e24e6970ab3fecd9702b7adbb994c1f9101e38ab5ecc88549b604c29b3",
+      "reason": "optimizer_concluded"
+    },
+    "candidates": [
+      {
+        "digest": "090461bf3ef71cb602163b6f100a24662ba7f004b6d05c67008e044959a1a366",
+        "ordinal": 0,
+        "parents": [],
+        "actions": [
+          "compose"
+        ],
+        "phase": "champion",
+        "mean": 1,
+        "denominator": 3,
+        "failures": 0,
+        "runs": [
+          {
+            "task": "operating-plan",
+            "repetition": 0,
+            "phase": "scored",
+            "score": 1,
+            "metrics": {
+              "preserved": 1
+            },
+            "deliveryDigest": "3512a296885a14841c6be7badf7d3f3d716d37179374bd6c7ee87624dac2ad48"
+          },
+          {
+            "task": "regional-plan",
+            "repetition": 0,
+            "phase": "scored",
+            "score": 1,
+            "metrics": {
+              "preserved": 1
+            },
+            "deliveryDigest": "86415dd548f8bbf4cab15c0f720a54efd70a1db13eda3f29ae294ec94cfbeff4"
+          },
+          {
+            "task": "stress-plan",
+            "repetition": 0,
+            "phase": "scored",
+            "score": 1,
+            "metrics": {
+              "preserved": 0.9615384615384616
+            },
+            "deliveryDigest": "ab5d4e04be4f4f29bb9a0670e14a468ac6f9c953bd1e136f5add6866a3331f22"
+          }
+        ],
+        "usage": {
+          "started": 28,
+          "results": 28,
+          "failed": 0,
+          "unfinished": 0,
+          "missingUsage": 0,
+          "inputTokensReported": 27969,
+          "outputTokensReported": 6538,
+          "requestDurationMsSum": 122588
+        },
+        "metricsFiles": 3
+      },
+      {
+        "digest": "8c6ad26087d66eb7d657269da3852f31a654599dea13379692c28b893548758d",
+        "ordinal": 1,
+        "parents": [
+          "090461bf3ef71cb602163b6f100a24662ba7f004b6d05c67008e044959a1a366"
+        ],
+        "actions": [
+          "author",
+          "tune"
+        ],
+        "phase": "rejected",
+        "mean": 1,
+        "denominator": 3,
+        "failures": 0,
+        "runs": [
+          {
+            "task": "operating-plan",
+            "repetition": 0,
+            "phase": "scored",
+            "score": 1,
+            "metrics": {
+              "preserved": 1
+            },
+            "deliveryDigest": "d3e2458aaecde37dcfbf2ca20f7e1f90e5a0c5c1101a612b192d3b6a03be9986"
+          },
+          {
+            "task": "regional-plan",
+            "repetition": 0,
+            "phase": "scored",
+            "score": 1,
+            "metrics": {
+              "preserved": 1
+            },
+            "deliveryDigest": "6c2348ad649b37a8c85986b4d999cacd38e119de097ea5d5a0c893186d3ee96a"
+          },
+          {
+            "task": "stress-plan",
+            "repetition": 0,
+            "phase": "scored",
+            "score": 1,
+            "metrics": {
+              "preserved": 1
+            },
+            "deliveryDigest": "81fca6cbc78739a060a783a38be7092cc2ce7dd4d26dca3261d631d42f42fd49"
+          }
+        ],
+        "usage": {
+          "started": 12,
+          "results": 12,
+          "failed": 0,
+          "unfinished": 0,
+          "missingUsage": 0,
+          "inputTokensReported": 15488,
+          "outputTokensReported": 3156,
+          "requestDurationMsSum": 36114
+        },
+        "metricsFiles": 3
+      },
+      {
+        "digest": "b326c7793c4732331b22e13ab24c422540afeb6dc9d1101dd6952eb2d84b9c13",
+        "ordinal": 2,
+        "parents": [
+          "8c6ad26087d66eb7d657269da3852f31a654599dea13379692c28b893548758d"
+        ],
+        "actions": [
+          "author",
+          "compose"
+        ],
+        "phase": "rejected",
+        "mean": 0.9047619047619048,
+        "denominator": 3,
+        "failures": 0,
+        "runs": [
+          {
+            "task": "operating-plan",
+            "repetition": 0,
+            "phase": "scored",
+            "score": 1,
+            "metrics": {
+              "preserved": 1
+            },
+            "deliveryDigest": "58ff6182fd7c919da10d97dcf6705bd7147b9159f0894fe46c1526c6141145d8"
+          },
+          {
+            "task": "regional-plan",
+            "repetition": 0,
+            "phase": "scored",
+            "score": 1,
+            "metrics": {
+              "preserved": 1
+            },
+            "deliveryDigest": "aa24ea881bcfc8d8535ae1b71e3cec42cb7cb78bc7a9e4361c93c5ded89b9bd5"
+          },
+          {
+            "task": "stress-plan",
+            "repetition": 0,
+            "phase": "scored",
+            "score": 0.7142857142857143,
+            "metrics": {
+              "preserved": 1
+            },
+            "deliveryDigest": "982ba9e67d7743ae2101136669ff428f1aaca6fd0aae861956286f9627d225bf"
+          }
+        ],
+        "usage": {
+          "started": 14,
+          "results": 14,
+          "failed": 0,
+          "unfinished": 0,
+          "missingUsage": 0,
+          "inputTokensReported": 18574,
+          "outputTokensReported": 3504,
+          "requestDurationMsSum": 51371
+        },
+        "metricsFiles": 3
+      },
+      {
+        "digest": "8918fdbec52669a2aaf905a785e013d064a0dc59eb871aa21f1f0035e5bb0bb7",
+        "ordinal": 3,
+        "parents": [
+          "8c6ad26087d66eb7d657269da3852f31a654599dea13379692c28b893548758d"
+        ],
+        "actions": [
+          "tune",
+          "author"
+        ],
+        "phase": "rejected",
+        "mean": 1,
+        "denominator": 3,
+        "failures": 0,
+        "runs": [
+          {
+            "task": "operating-plan",
+            "repetition": 0,
+            "phase": "scored",
+            "score": 1,
+            "metrics": {
+              "preserved": 1
+            },
+            "deliveryDigest": "05a1c1473080f0ba855590006d8e9a9ec56cfb028d80b7bba368788750a68ab3"
+          },
+          {
+            "task": "regional-plan",
+            "repetition": 0,
+            "phase": "scored",
+            "score": 1,
+            "metrics": {
+              "preserved": 1
+            },
+            "deliveryDigest": "14ca8232e4570aa35c703f7625203f0ed002fa0218e88f3f75e450ff7130d03d"
+          },
+          {
+            "task": "stress-plan",
+            "repetition": 0,
+            "phase": "scored",
+            "score": 1,
+            "metrics": {
+              "preserved": 1
+            },
+            "deliveryDigest": "68365a9b220b1c1f89425019b34eeeee9bbee69c59c92b94c753f6730ee5cabb"
+          }
+        ],
+        "usage": {
+          "started": 12,
+          "results": 12,
+          "failed": 0,
+          "unfinished": 0,
+          "missingUsage": 0,
+          "inputTokensReported": 18501,
+          "outputTokensReported": 2450,
+          "requestDurationMsSum": 27992
+        },
+        "metricsFiles": 3
+      }
+    ],
+    "optimizerUsage": {
+      "failed": 0,
+      "inputTokensReported": 311631,
+      "missingUsage": 0,
+      "outputTokensReported": 36517,
+      "requestDurationMsSum": 582242,
+      "results": 121,
+      "started": 121,
+      "unfinished": 0,
+      "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+    },
+    "scope": "3 mechanism mutations in one native session; not evidence of multi-session mutation search or topology-search gains."
+  },
+  "validation": {
+    "localEvidence": ".evolution/continuous-native-verified/validation-study",
+    "selection": {
+      "candidate": "8c6ad26087d66eb7d657269da3852f31a654599dea13379692c28b893548758d",
+      "rule": "Highest completed changed-candidate search mean, earliest ordinal on ties. Selected mean is metric maximum, so remaining candidates cannot displace it under this rule.",
+      "tasks": 4,
+      "repetitions": 2,
+      "purpose": "Independent paired execution protocol acceptance, not proof of transfer or gain."
+    },
+    "comparison": {
+      "boundary": "Paired descriptive results, full denominator. Repetitions share tasks; sample SD is not a confidence interval. Validation feedback must not be reused as unseen evaluation. No automatic release.",
+      "comparisons": [
+        {
+          "arm": "candidate",
+          "meanDelta": -0.25,
+          "pairs": [
+            {
+              "baseline": 1,
+              "delta": -0.75,
+              "repetition": 0,
+              "score": 0.25,
+              "task": "normalization"
+            },
+            {
+              "baseline": 0.25,
+              "delta": 0.75,
+              "repetition": 1,
+              "score": 1,
+              "task": "normalization"
+            },
+            {
+              "baseline": 1,
+              "delta": 0,
+              "repetition": 0,
+              "score": 1,
+              "task": "weighted-portfolio"
+            },
+            {
+              "baseline": 1,
+              "delta": 0,
+              "repetition": 1,
+              "score": 1,
+              "task": "weighted-portfolio"
+            },
+            {
+              "baseline": 1,
+              "delta": 0,
+              "repetition": 0,
+              "score": 1,
+              "task": "debt-rollforward"
+            },
+            {
+              "baseline": 1,
+              "delta": -1,
+              "repetition": 1,
+              "score": 0,
+              "task": "debt-rollforward"
+            },
+            {
+              "baseline": 1,
+              "delta": -1,
+              "repetition": 0,
+              "score": 0,
+              "task": "scenario-valuation"
+            },
+            {
+              "baseline": 0,
+              "delta": 0,
+              "repetition": 1,
+              "score": 0,
+              "task": "scenario-valuation"
+            }
+          ],
+          "perTask": [
+            {
+              "meanDelta": 0,
+              "task": "normalization"
+            },
+            {
+              "meanDelta": 0,
+              "task": "weighted-portfolio"
+            },
+            {
+              "meanDelta": -0.5,
+              "task": "debt-rollforward"
+            },
+            {
+              "meanDelta": -0.5,
+              "task": "scenario-valuation"
+            }
+          ],
+          "sampleSd": 0.6123724356957945,
+          "status": "complete",
+          "strictImprovement": false
+        }
+      ],
+      "order": [
+        "baseline",
+        "candidate"
+      ],
+      "registrationDigest": "a7c623b77d2307d59d9d766210e157fba441c09d7d4445940ac409f73984e4fc",
+      "results": [
+        {
+          "candidate": "090461bf3ef71cb602163b6f100a24662ba7f004b6d05c67008e044959a1a366",
+          "complete": true,
+          "failures": 0,
+          "id": "baseline",
+          "mean": 0.78125,
+          "samples": [
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "normalization"
+            },
+            {
+              "phase": "scored",
+              "repetition": 1,
+              "score": 0.25,
+              "task": "normalization"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "weighted-portfolio"
+            },
+            {
+              "phase": "scored",
+              "repetition": 1,
+              "score": 1,
+              "task": "weighted-portfolio"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "debt-rollforward"
+            },
+            {
+              "phase": "scored",
+              "repetition": 1,
+              "score": 1,
+              "task": "debt-rollforward"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "scenario-valuation"
+            },
+            {
+              "phase": "scored",
+              "repetition": 1,
+              "score": 0,
+              "task": "scenario-valuation"
+            }
+          ]
+        },
+        {
+          "candidate": "8c6ad26087d66eb7d657269da3852f31a654599dea13379692c28b893548758d",
+          "complete": true,
+          "failures": 3,
+          "id": "candidate",
+          "mean": 0.53125,
+          "samples": [
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 0.25,
+              "task": "normalization"
+            },
+            {
+              "phase": "scored",
+              "repetition": 1,
+              "score": 1,
+              "task": "normalization"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "weighted-portfolio"
+            },
+            {
+              "phase": "scored",
+              "repetition": 1,
+              "score": 1,
+              "task": "weighted-portfolio"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "debt-rollforward"
+            },
+            {
+              "phase": "execution_failed",
+              "repetition": 1,
+              "score": 0,
+              "task": "debt-rollforward"
+            },
+            {
+              "phase": "cancelled",
+              "repetition": 0,
+              "score": 0,
+              "task": "scenario-valuation"
+            },
+            {
+              "phase": "cancelled",
+              "repetition": 1,
+              "score": 0,
+              "task": "scenario-valuation"
+            }
+          ]
+        }
+      ]
+    },
+    "armRecords": {
+      "baseline": [
+        {
+          "digest": "090461bf3ef71cb602163b6f100a24662ba7f004b6d05c67008e044959a1a366",
+          "ordinal": 0,
+          "parents": [],
+          "actions": [
+            "compose"
+          ],
+          "phase": "champion",
+          "mean": 0.78125,
+          "denominator": 8,
+          "failures": 0,
+          "runs": [
+            {
+              "task": "normalization",
+              "repetition": 0,
+              "phase": "scored",
+              "score": 1,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "d0c8032b69da4eca3ea86f6e059d0a8fff95afd2b6068a9691f9ce023d24b0db"
+            },
+            {
+              "task": "normalization",
+              "repetition": 1,
+              "phase": "scored",
+              "score": 0.25,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "1e9ad96909b35ffa963f7828a8f780788c65ec6a12289272eed74028c66f14ce"
+            },
+            {
+              "task": "weighted-portfolio",
+              "repetition": 0,
+              "phase": "scored",
+              "score": 1,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "19657680cb2e4df82c58e93d4c138ad172500f36f39470b70792dee7e6eb354b"
+            },
+            {
+              "task": "weighted-portfolio",
+              "repetition": 1,
+              "phase": "scored",
+              "score": 1,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "c22e25350e64e018c819cdaa936d9b33b1cb7907a4feaf8ba736ac2ee8976949"
+            },
+            {
+              "task": "debt-rollforward",
+              "repetition": 0,
+              "phase": "scored",
+              "score": 1,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "fccf8940a11a9495f63fb18060d924857f6623d6d16ef4aec84e20ae011a6d0e"
+            },
+            {
+              "task": "debt-rollforward",
+              "repetition": 1,
+              "phase": "scored",
+              "score": 1,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "1e12418d4fef40c018f8b2e2e868d7580b18b4c34efa2105af1285826d7acff9"
+            },
+            {
+              "task": "scenario-valuation",
+              "repetition": 0,
+              "phase": "scored",
+              "score": 1,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "eaf058bbf0dcad556f46bb35c1829d2aa4867dedd56a35ea521ddc4ac2cfc48e"
+            },
+            {
+              "task": "scenario-valuation",
+              "repetition": 1,
+              "phase": "scored",
+              "score": 0,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "fe796852fc34692402817298f35d83b816ca08b2067a98d993d8508edb82f95d"
+            }
+          ],
+          "usage": {
+            "started": 61,
+            "results": 61,
+            "failed": 0,
+            "unfinished": 0,
+            "missingUsage": 0,
+            "inputTokensReported": 53875,
+            "outputTokensReported": 13821,
+            "requestDurationMsSum": 177213
+          },
+          "metricsFiles": 8
+        }
+      ],
+      "candidate": [
+        {
+          "digest": "8c6ad26087d66eb7d657269da3852f31a654599dea13379692c28b893548758d",
+          "ordinal": 0,
+          "parents": [],
+          "actions": [
+            "compose"
+          ],
+          "phase": "rejected",
+          "mean": 0.53125,
+          "denominator": 8,
+          "failures": 3,
+          "runs": [
+            {
+              "task": "normalization",
+              "repetition": 0,
+              "phase": "scored",
+              "score": 0.25,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "a5da2e7333c93889e1893eebde6ae00c54f3226b711ee95d3f0ce63aa4901529"
+            },
+            {
+              "task": "normalization",
+              "repetition": 1,
+              "phase": "scored",
+              "score": 1,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "3189cbab6da9ff5d962893b091c0ad66b4543ef7b04995ea8133e70e7b5b3ed2"
+            },
+            {
+              "task": "weighted-portfolio",
+              "repetition": 0,
+              "phase": "scored",
+              "score": 1,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "c1f024daed043e421ed2fb95c1ccdc3d35b4932297e0c1fb62e8b6f66d285f28"
+            },
+            {
+              "task": "weighted-portfolio",
+              "repetition": 1,
+              "phase": "scored",
+              "score": 1,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "7c621a7a681bdc8db276c80670ae87f64b17a5c2b7ac3865a6dc230afbb66997"
+            },
+            {
+              "task": "debt-rollforward",
+              "repetition": 0,
+              "phase": "scored",
+              "score": 1,
+              "metrics": {
+                "preserved": 1
+              },
+              "deliveryDigest": "997d3a61dc16b08e3ee6a40e86ce78e715873f69eaaba052a60103740a95db7a"
+            },
+            {
+              "task": "debt-rollforward",
+              "repetition": 1,
+              "phase": "execution_failed",
+              "score": null,
+              "metrics": null,
+              "deliveryDigest": null
+            },
+            {
+              "task": "scenario-valuation",
+              "repetition": 0,
+              "phase": "cancelled",
+              "score": null,
+              "metrics": null,
+              "deliveryDigest": null
+            },
+            {
+              "task": "scenario-valuation",
+              "repetition": 1,
+              "phase": "cancelled",
+              "score": null,
+              "metrics": null,
+              "deliveryDigest": null
+            }
+          ],
+          "usage": {
+            "started": 31,
+            "results": 30,
+            "failed": 1,
+            "unfinished": 0,
+            "missingUsage": 0,
+            "inputTokensReported": 23151,
+            "outputTokensReported": 7341,
+            "requestDurationMsSum": 93876
+          },
+          "metricsFiles": 6
+        }
+      ]
+    },
+    "executionFailure": "One candidate TRANSPORT Connection error; zero failure budget then cancelled 2 samples. No retries."
+  },
+  "nativeSessionContinuity": {
+    "localEvidence": ".evolution/native-session-handoff/search",
+    "summary": {
+      "consumedSeconds": 17.685000000000002,
+      "episodes": 2,
+      "optimizerHarness": "666f13e24e6970ab3fecd9702b7adbb994c1f9101e38ab5ecc88549b604c29b3",
+      "reason": "optimizer_concluded"
+    },
+    "episodes": [
+      {
+        "ordinal": 0,
+        "receipt": {
+          "startedAt": "2026-10-27T09:40:13.216Z",
+          "endedAt": "2026-10-27T09:40:18.010Z",
+          "sessionId": "session-a3ba99bf846742e1b3cd895d8197ddca",
+          "status": "completed"
+        },
+        "usage": {
+          "failed": 0,
+          "inputTokensReported": 2452,
+          "missingUsage": 0,
+          "outputTokensReported": 177,
+          "requestDurationMsSum": 4352,
+          "results": 2,
+          "started": 2,
+          "unfinished": 0,
+          "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+        }
+      },
+      {
+        "ordinal": 1,
+        "receipt": {
+          "startedAt": "2026-10-27T09:40:18.462Z",
+          "endedAt": "2026-10-27T09:40:31.057Z",
+          "sessionId": "session-f99017dabfd145e3bec198e146ef56b0",
+          "status": "completed"
+        },
+        "usage": {
+          "failed": 0,
+          "inputTokensReported": 3970,
+          "missingUsage": 0,
+          "outputTokensReported": 593,
+          "requestDurationMsSum": 12073,
+          "results": 3,
+          "started": 3,
+          "unfinished": 0,
+          "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+        }
+      }
+    ],
+    "scope": "Real-model lifecycle acceptance only; no mutation or quality claim."
+  },
+  "archive": {
+    "packageSha256": "a335c0e934f9143315e24f619e33910327a5a3e3d12822087765352c84771cfb",
+    "recordSha256": "cf5472c058688305c737497320f7a472d91bf7ef2548646bb3db1241f9062396",
+    "candidate": "8c6ad26087d66eb7d657269da3852f31a654599dea13379692c28b893548758d",
+    "importedDigest": "8c6ad26087d66eb7d657269da3852f31a654599dea13379692c28b893548758d",
+    "importedScores": 0
+  },
+  "engineering": {
+    "unitTests": 17,
+    "nativeTests": 5,
+    "nativeDistributionTests": 1,
+    "containerTests": 1,
+    "typecheck": "passed",
+    "format": "passed",
+    "dependencyAuditVulnerabilities": 0,
+    "runtimeJavaScriptFilesMatchedToImage": 16,
+    "cloudCI": "Not started: GitHub account billing/spending limit. No cloud pass claimed."
+  },
+  "blueprintSha256": "46ecb1cf793756ceae7e9c881f51fa56cc3a960ddd2906a12c16808db84b1a44",
+  "boundaries": [
+    "Public synthetic data, not SpreadsheetBench scores.",
+    "Rejected candidates are experimental artifacts, not recommended default policies.",
+    "No stable accuracy gain established.",
+    "One first search failed on upstream TRANSPORT before mutation. Original telemetry report retained; 14 starts include 13 results and 1 failure under corrected semantics."
+  ]
+}

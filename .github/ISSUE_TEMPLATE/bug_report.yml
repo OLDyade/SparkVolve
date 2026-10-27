@@ -1,0 +1,21 @@
+name: Bug report
+description: A reproducible runtime, experiment or installation defect
+body:
+  - type: textarea
+    id: environment
+    attributes:
+      label: Runtime identity
+      description: Commit, Node, Docker, DSH version, OS and relevant image digest. Never include credentials.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction and expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Actual evidence
+      description: Sanitized errors and stage/attempt identity. Distinguish wrong answers from execution or grading failures.

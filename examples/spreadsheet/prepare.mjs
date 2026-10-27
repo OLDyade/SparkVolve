@@ -13,6 +13,15 @@ await cp(new URL('../venus/', import.meta.url), path.join(dataset, 'runtime'), {
   force: false,
   errorOnExist: true,
 });
+await cp(
+  new URL('../../optimizers/evidence-driven/', import.meta.url),
+  path.join(dataset, 'optimizer-bundle'),
+  {
+    recursive: true,
+    force: false,
+    errorOnExist: true,
+  },
+);
 const tasks = JSON.parse(await readFile(path.join(dataset, 'tasks.json'), 'utf8'));
 for (const task of tasks) {
   task.inputDigest = await treeDigest(path.join(dataset, task.input));
@@ -35,6 +44,11 @@ const spec = Experiment.parse({
   },
   executor: model,
   optimizer: model,
+  optimizerHarness: {
+    directory: 'optimizer-bundle',
+    digest: await treeDigest(path.join(dataset, 'optimizer-bundle')),
+    patch: 'cordis.patch.yml',
+  },
   evaluator: { image, command: ['python3', '/evaluation/grade.py'], timeoutSeconds: 120 },
   candidate: {
     patch: 'cordis.patch.yml',
@@ -45,7 +59,7 @@ const spec = Experiment.parse({
   concurrency: 3,
   timeoutSeconds: 300,
   failureLimit: 0,
-  budget: { candidates: 2, optimizerSeconds: 1800 },
+  budget: { candidates: 4, optimizerSeconds: 1800 },
   metric: { name: 'formula_value_accuracy', direction: 'maximize', minimum: 0, maximum: 1, failure: 0 },
 });
 await writeFile(output, JSON.stringify(spec, null, 2));

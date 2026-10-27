@@ -12,6 +12,7 @@ import type { Candidate, CandidateProposal, ExperimentSpec, TaskRun } from './co
 export class Controller {
   readonly owner = randomUUID();
   private active: Promise<void> | undefined;
+  private activeSignal: AbortSignal | undefined;
   private heartbeat?: ReturnType<typeof setInterval>;
   private leaseError?: Error;
   constructor(
@@ -58,6 +59,10 @@ export class Controller {
       champion: this.store.getMeta('champion') ?? null,
       candidates: this.store.candidates(),
       runs: this.store.runs(),
+      importedDrafts: this.store.events().filter((event) => event.type === 'draft.imported'),
+      conclusion: this.store.getMeta('searchConclusion')
+        ? JSON.parse(this.store.getMeta('searchConclusion')!)
+        : null,
     };
   }
   async draft(parent: string, name: string): Promise<void> {
@@ -84,6 +89,7 @@ export class Controller {
   }
   async submit(raw: unknown): Promise<Candidate> {
     this.assertOwner();
+    if (this.store.getMeta('searchConclusion')) throw new Error('Search has concluded');
     const proposal = Proposal.parse(raw);
     const source = confined(path.join(this.root, 'drafts'), proposal.draft);
     const hash = await treeDigest(source);
@@ -108,6 +114,21 @@ export class Controller {
     this.store.addCandidate(candidate);
     return candidate;
   }
+  finish(reason: string): void {
+    this.assertOwner();
+    if (this.store.candidates().some((c) => c.phase === 'frozen' || c.phase === 'running'))
+      throw new Error('Wait for pending candidates before concluding');
+    this.store.transaction(() => {
+      if (this.store.getMeta('searchConclusion')) throw new Error('Search already concluded');
+      const conclusion = {
+        reason,
+        at: new Date().toISOString(),
+        champion: this.store.getMeta('champion') ?? null,
+      };
+      this.store.setMeta('searchConclusion', JSON.stringify(conclusion));
+      this.store.event('search.concluded', conclusion);
+    });
+  }
   async seed(source: string): Promise<Candidate> {
     if (this.store.candidates().length) throw new Error('Experiment already initialized');
     await cp(source, path.join(this.root, 'drafts', 'baseline'), {
@@ -125,10 +146,12 @@ export class Controller {
     };
     return await this.submit(proposal);
   }
-  pump(): Promise<void> {
+  pump(signal?: AbortSignal): Promise<void> {
     if (this.active) return this.active;
+    this.activeSignal = signal;
     this.active = this.advance().finally(() => {
       this.active = undefined;
+      this.activeSignal = undefined;
     });
     return this.active;
   }
@@ -203,6 +226,7 @@ export class Controller {
         timeoutSeconds: this.spec.timeoutSeconds,
       },
       root,
+      this.activeSignal,
     );
     this.assertOwner();
     this.store.event('candidate.qa', { candidate: candidate.digest, ...result });
@@ -302,7 +326,11 @@ export class Controller {
       }
     }
     try {
-      const result = await this.docker.collect(spec, path.join(this.root, 'runs', run.id, 'execution'));
+      const result = await this.docker.collect(
+        spec,
+        path.join(this.root, 'runs', run.id, 'execution'),
+        this.activeSignal,
+      );
       await collectRequestMetrics(path.join(this.root, 'runs', run.id, 'trace'));
       this.assertOwner();
       this.store.event('run.exit', { id: run.id, ...result });
@@ -323,6 +351,7 @@ export class Controller {
         completedAt: new Date().toISOString(),
       });
     } catch (error) {
+      this.activeSignal?.throwIfAborted();
       this.assertOwner();
       this.store.transition(run.id, 'executing', 'execution_failed', {
         error: String(error),
@@ -356,6 +385,7 @@ export class Controller {
           timeoutSeconds: this.spec.evaluator.timeoutSeconds,
         },
         path.join(root, `grading-${run.gradeAttempt}`),
+        this.activeSignal,
       );
       if (result.ExitCode !== 0) throw new Error(`Evaluator exited ${result.ExitCode}`);
       const grade = Grade.parse(await readJSON(path.join(gradeDir, 'result.json')));
@@ -364,6 +394,7 @@ export class Controller {
       this.assertOwner();
       this.store.transition(run.id, 'scoring', 'scored', { grade });
     } catch (error) {
+      this.activeSignal?.throwIfAborted();
       this.assertOwner();
       this.store.transition(run.id, 'scoring', 'scoring_failed', { error: String(error) });
     }

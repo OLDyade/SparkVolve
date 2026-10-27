@@ -1,0 +1,3 @@
+- insert:
+    - id: evolution-research-method
+      name: ./index.mjs
