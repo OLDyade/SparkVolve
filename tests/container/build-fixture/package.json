@@ -1,0 +1,23 @@
+{
+  "name": "@harness-evolution/compiled-fixture",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --module nodenext --target es2022 --outDir dist src/index.ts"
+  },
+  "dependencies": {
+    "is-number": "7.0.0"
+  },
+  "files": [
+    "dist",
+    "cordis.patch.yml"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "devDependencies": {
+    "@types/is-number": "7.0.5"
+  }
+}

@@ -18,7 +18,7 @@
 │  │ 配置 × 插件实现 × 装配结构         │                        │
 │  └──────────────┬─────────────────────┘                        │
 │                 ▼                                             │
-│  草稿 → 内容冻结 → 独立 QA → 固定任务清单 × repetitions        │
+│  草稿 → 源码冻结 → 构建产物冻结 → QA → 完整任务 × repetitions  │
 │                                  │                            │
 │                    ┌─────────────┼────────────┐               │
 │                    ▼             ▼            ▼               │
@@ -42,19 +42,21 @@
 |---|---|---|
 | 实验合同 | `contracts.ts` | 严格 schema；未知字段报错；目标、模型、镜像、任务、哈希、失败分值和预算显式定义 |
 | 候选 | `artifacts.ts` / `controller.ts` | 源文件内容、相对路径和可执行位组成 SHA-256；禁止 symlink；冻结后只读挂载 |
+| 构建 | `build.ts` / `runtime/build.ts` | lock、构建镜像、原容器和包身份可追溯；QA、执行、复验、导出复用同一产物 |
 | 运行 | `store.ts` | experiment + spec + candidate + task + repetition + attempt；一份任务不混多个 attempt |
 | 控制服务 | `api.ts` / `plugin.ts` | 原生工具提供状态、分支、提交、授权证据；评分私有内容不提供 API |
 | 运行基础 | `runtime/worker.ts` | 直接使用官方 SDK / Agent Loop；环境覆盖、候选覆盖、观测插件按序装配 |
 | 选优 | `store.ts` | 全部任务终态才能裁决；失败按规格计入；同分拒绝；冠军更新和事件同事务 |
-| 交付 | `export.ts` | 冻结字节校验、离线 npm pack、完整本地研究档案；无自动公网发布 |
+| 交付 | `export.ts` | 复制已受测 tarball、独立源码和产物快照、完整本地研究档案；无自动公网发布 |
 
 框架没有按题目 ID 编写变异、重算或答案逻辑。变异的六类动作是描述空间，具体实现由优化器结合反馈决定。候选提交须携带父版本、证据、假设与预期变化；这些声明不被当成正确证明。
 
 ## 状态与恢复
 
 ```text
-candidate: frozen → QA → running → champion / rejected
-                    └→ qa_failed
+candidate: frozen → Build → QA → running → champion / rejected
+                      │     └→ qa_failed
+                      └→ build_failed
 
 run: queued → executing → delivered → scoring → scored
        │          └→ execution_failed    └→ scoring_failed

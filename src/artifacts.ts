@@ -54,6 +54,11 @@ export async function inventory(
 export async function treeDigest(root: string): Promise<string> {
   return digest(await inventory(root));
 }
+export async function fileDigest(file: string): Promise<string> {
+  return createHash('sha256')
+    .update(await readFile(file))
+    .digest('hex');
+}
 export async function freeze(source: string, destination: string): Promise<string> {
   const before = await inventory(source);
   const staging = `${destination}.${randomUUID()}.staging`;

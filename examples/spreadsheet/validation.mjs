@@ -44,8 +44,10 @@ try {
   });
   const arms = [baseline, selected].map((entry, i) => ({
     id: i ? 'candidate' : 'baseline',
-    bundle: path.resolve(search, 'candidates', entry.digest),
+    source: path.resolve(search, 'candidates', entry.digest),
     digest: entry.digest,
+    artifact: path.resolve(search, 'artifacts', entry.digest),
+    build: entry.build,
   }));
   await writeFile(path.join(output, 'spec.json'), JSON.stringify(spec, null, 2));
   await writeFile(path.join(output, 'arms.json'), JSON.stringify(arms, null, 2));

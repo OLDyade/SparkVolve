@@ -27,7 +27,11 @@ export async function command(
     child.on('close', (code, signal) => {
       clearTimeout(timer);
       if (code !== 0)
-        reject(new Error(`${program} failed (${code ?? signal}): ${Buffer.concat(stderr).toString()}`));
+        reject(
+          new Error(
+            `${program} failed (${code ?? signal}): ${Buffer.concat(stdout).toString()}\n${Buffer.concat(stderr).toString()}`,
+          ),
+        );
       else resolve(Buffer.concat(stdout).toString().trim());
     });
   });

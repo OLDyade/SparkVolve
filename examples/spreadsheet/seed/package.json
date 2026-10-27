@@ -2,6 +2,9 @@
   "name": "@harness-evolution/spreadsheet",
   "version": "0.1.0",
   "type": "module",
+  "scripts": {
+    "build": "node --check index.mjs"
+  },
   "peerDependencies": {
     "@deepseek-ai/dsh-tools": "0.2.1-rc.4"
   },

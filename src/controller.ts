@@ -7,6 +7,7 @@ import { Docker, readJSON } from './docker.js';
 import type { ContainerSpec } from './docker.js';
 import { Grade, Proposal } from './contracts.js';
 import { collectRequestMetrics } from './metrics.js';
+import { buildCandidate, bundlePath, verifyBuild } from './build.js';
 import type { Candidate, CandidateProposal, ExperimentSpec, TaskRun } from './contracts.js';
 
 export class Controller {
@@ -104,6 +105,7 @@ export class Controller {
     };
     if (pkg.dsh?.bundle?.patch?.replace(/^\.\//, '') !== this.spec.candidate.patch)
       throw new Error('Candidate must be a native DSH Bundle with the contracted patch');
+    await stat(path.join(source, 'package-lock.json'));
     await freeze(source, path.join(this.root, 'candidates', hash));
     const candidate: Candidate = {
       digest: hash,
@@ -158,12 +160,43 @@ export class Controller {
   private async advance(): Promise<void> {
     for (const candidate of this.store.candidates()) {
       this.assertOwner();
-      if (candidate.phase === 'frozen') await this.qa(candidate);
-      if (this.store.candidate(candidate.digest).phase === 'running') await this.evaluate(candidate);
+      if (candidate.phase === 'frozen') {
+        if (!candidate.build) {
+          try {
+            const build = await buildCandidate(
+              this.root,
+              this.store.getMeta('experimentId')!,
+              this.spec,
+              candidate,
+              this.docker,
+              this.activeSignal,
+            );
+            this.assertOwner();
+            this.store.transaction(() => {
+              this.store.updateCandidate({ ...candidate, build });
+              this.store.event('candidate.built', { candidate: candidate.digest, build });
+            });
+          } catch (error) {
+            this.activeSignal?.throwIfAborted();
+            this.assertOwner();
+            this.store.transaction(() => {
+              this.store.updateCandidate({ ...candidate, phase: 'build_failed', buildError: String(error) });
+              this.store.event('candidate.build_failed', {
+                candidate: candidate.digest,
+                error: String(error),
+              });
+            });
+            continue;
+          }
+        }
+        await this.qa(this.store.candidate(candidate.digest));
+      }
+      if (this.store.candidate(candidate.digest).phase === 'running')
+        await this.evaluate(this.store.candidate(candidate.digest));
     }
     // Reports are projections of committed state. Rebuild even after a crash between decision and file write.
     for (const candidate of this.store.candidates()) {
-      if (candidate.phase === 'champion' || candidate.phase === 'rejected')
+      if (['champion', 'rejected', 'build_failed', 'qa_failed'].includes(candidate.phase))
         await this.report(candidate.digest);
     }
   }
@@ -197,7 +230,9 @@ export class Controller {
     await atomicJSON(path.join(this.root, 'reports', `${id}.json`), {
       specificationDigest: digest(this.spec),
       candidate: this.store.candidate(id),
-      decision: this.store.decision(id),
+      decision: ['champion', 'rejected'].includes(this.store.candidate(id).phase)
+        ? this.store.decision(id)
+        : null,
       runs,
       usage,
       paired,
@@ -206,6 +241,7 @@ export class Controller {
     });
   }
   private async qa(candidate: Candidate): Promise<void> {
+    await verifyBuild(this.root, candidate);
     const root = path.join(this.root, 'qa', candidate.digest);
     await mkdir(path.join(root, 'work'), { recursive: true });
     const environment = this.spec.runtime.environment;
@@ -235,7 +271,7 @@ export class Controller {
               ]
             : []),
           {
-            source: path.join(this.root, 'candidates', candidate.digest),
+            source: bundlePath(this.root, candidate),
             target: '/candidate',
             writable: false,
           },
@@ -294,6 +330,8 @@ export class Controller {
     );
   }
   private async executionSpec(run: TaskRun): Promise<ContainerSpec> {
+    const candidate = this.store.candidate(run.candidate);
+    await verifyBuild(this.root, candidate);
     const task = this.spec.tasks.find((t) => t.id === run.task);
     if (!task) throw new Error('Task identity missing');
     const runRoot = path.join(this.root, 'runs', run.id);
@@ -323,7 +361,7 @@ export class Controller {
               },
             ]
           : []),
-        { source: path.join(this.root, 'candidates', run.candidate), target: '/candidate', writable: false },
+        { source: bundlePath(this.root, candidate), target: '/candidate', writable: false },
         { source: confined(this.dataset, task.input), target: '/input', writable: false },
         { source: path.join(runRoot, 'work'), target: '/workspace', writable: true },
         { source: path.join(runRoot, 'trace'), target: '/trace', writable: true },

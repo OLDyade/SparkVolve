@@ -25,6 +25,7 @@
 | [真实模型端到端验收](docs/acceptance.md) | 自主代码变异、真实评分、失败裁决和原生安装后的实际任务 |
 | [连续进化与独立复验](docs/acceptance-continuous.md) | 三次真实变异、双会话接续、负结果与研究资产复用 |
 | [全景方案落实状态](docs/completion.md) | 已验证能力、尚缺的完整交付环节与研究边界 |
+| [深度评审落实账本](docs/review-ledger.md) | 全部评审项、核实结论、实现与验收进度 |
 
 ## 它如何运行
 
@@ -35,7 +36,7 @@
 DSH 优化器 ── 真实证据 ──► 改写插件配置 / 实现 / 组合
       ▲                              │
       │                              ▼
-      │                      冻结 Bundle → 独立 QA
+      │                    冻结源码 → 构建 Bundle → 独立 QA
       │                              │
       │                              ▼
       │                    DSH 执行器 × 固定任务清单
@@ -95,7 +96,7 @@ node dist/cli.js export --root .evolution/business/search \
   --candidate <digest> --output /absolute/new-export-directory
 
 # 导出的 capability Bundle 可直接装入 DSH 的目标 Profile
-dsh plugin --profile sdk add /absolute/new-export-directory/<bundle>.tgz
+dsh plugin --profile sdk add /absolute/new-export-directory/bundle.tgz
 ```
 
 进化设施自身同样可安装：`npm pack` 后通过上述原生命令装入 Profile，设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，即可贡献状态、分支、提交、证据、候选源码和结束搜索六项工具。优化器的研究方法也由独立、冻结的原生 Bundle 提供；模型自主选择变异，框架管理实验生命周期。
@@ -105,6 +106,7 @@ dsh plugin --profile sdk add /absolute/new-export-directory/<bundle>.tgz
 ## 可靠性与证据
 
 - 状态机与单写租约，唯一任务身份，断点接回原容器。
+- 候选 lock 与构建镜像固定；QA、执行、复验和分发使用同一冻结构建产物，源码单独保留供继续变异。
 - 固定题集、完整分母、独立评分；同分拒绝，失败与负结果保留。
 - 评分故障可以对同一冻结交付 `rescore`；不会重做任务刷分。
 - 原生请求账本区分成功、失败、未完成与缺失用量，优化器和执行器分别记账。

@@ -13,6 +13,13 @@ export const RelativePath = z
     'Expected a confined relative path',
   );
 export const Image = z.string().regex(/^(sha256:[a-f0-9]{64}|[^\s]+@sha256:[a-f0-9]{64})$/);
+export const BuildIdentity = z.strictObject({
+  artifactDigest: Digest,
+  bundleDigest: Digest,
+  tarballDigest: Digest,
+  lockDigest: Digest,
+  image: Image,
+});
 export const Model = z.strictObject({
   provider: z.string().min(1),
   model: z.string().min(1),
@@ -50,7 +57,15 @@ export const Experiment = z
       command: z.array(z.string()).min(1),
       timeoutSeconds: z.number().positive(),
     }),
-    candidate: z.strictObject({ patch: RelativePath, qa: z.array(z.string()).min(1) }),
+    candidate: z.strictObject({
+      patch: RelativePath,
+      build: z.strictObject({
+        image: Image,
+        network: z.enum(['none', 'bridge']),
+        timeoutSeconds: z.number().int().positive(),
+      }),
+      qa: z.array(z.string()).min(1),
+    }),
     tasks: z.array(Task).min(1),
     repetitions: z.number().int().positive(),
     concurrency: z.number().int().positive(),
@@ -150,8 +165,10 @@ export interface TaskRun {
 export interface Candidate {
   digest: string;
   proposal: CandidateProposal;
-  phase: 'frozen' | 'qa_failed' | 'running' | 'rejected' | 'champion';
+  phase: 'frozen' | 'build_failed' | 'qa_failed' | 'running' | 'rejected' | 'champion';
   ordinal: number;
+  build?: z.infer<typeof BuildIdentity>;
+  buildError?: string;
   qaError?: string;
   mean?: number;
 }

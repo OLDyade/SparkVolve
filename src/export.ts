@@ -1,7 +1,7 @@
-import { mkdir, readFile } from 'node:fs/promises';
+import { mkdir, readFile, copyFile } from 'node:fs/promises';
 import path from 'node:path';
 import { atomicJSON, treeDigest, inventory, freeze, digest } from './artifacts.js';
-import { Docker } from './docker.js';
+import { bundlePath, verifyBuild } from './build.js';
 import type { Store } from './store.js';
 import { optimizerLedger } from './optimizer.js';
 
@@ -14,7 +14,6 @@ export async function exportCandidate(
   store: Store,
   id: string,
   destination: string,
-  docker = new Docker(),
 ): Promise<void> {
   const candidate = store.candidate(id);
   if (candidate.phase === 'frozen' || candidate.phase === 'running')
@@ -22,31 +21,12 @@ export async function exportCandidate(
   const source = path.join(root, 'candidates', id);
   if ((await treeDigest(source)) !== id) throw new Error('Candidate integrity mismatch');
   await mkdir(destination);
-  await freeze(source, path.join(destination, 'bundle'));
-  const result = await docker.run(
-    {
-      name: `he-pack-${id.slice(0, 24)}-${Date.now()}`,
-      image: store.spec.runtime.image,
-      command: [
-        'npm',
-        'pack',
-        '/candidate',
-        '--ignore-scripts',
-        '--pack-destination',
-        '/workspace',
-        '--json',
-      ],
-      mounts: [
-        { source, target: '/candidate', writable: false },
-        { source: destination, target: '/workspace', writable: true },
-      ],
-      env: { npm_config_cache: '/tmp/npm-cache' },
-      network: 'none',
-      timeoutSeconds: 120,
-    },
-    path.join(destination, 'pack-log'),
-  );
-  if (result.ExitCode !== 0) throw new Error('Native npm bundle packing failed');
+  await freeze(source, path.join(destination, 'source'));
+  if (candidate.build) {
+    await verifyBuild(root, candidate);
+    await freeze(path.join(root, 'artifacts', id), path.join(destination, 'artifact'));
+    await copyFile(path.join(root, 'artifacts', id, 'bundle.tgz'), path.join(destination, 'bundle.tgz'));
+  }
   const ancestors = new Set<string>();
   const visit = (hash: string) => {
     if (ancestors.has(hash)) return;
@@ -90,7 +70,8 @@ export async function exportCandidate(
     lineage,
     events: store.events(),
     optimizer: await optimizerLedger(root),
-    bundleFiles: await inventory(source),
+    sourceFiles: await inventory(source),
+    bundleFiles: candidate.build ? await inventory(bundlePath(root, candidate)) : null,
     evidencePolicy:
       'Evidence manifests contain paths and hashes, not raw inputs, model traces, credentials or evaluation-private data. Review model-authored hypotheses before public distribution.',
     claim:

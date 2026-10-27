@@ -1,9 +1,10 @@
 import { readdir, readFile, mkdir, cp, chmod } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
-import { Digest, Id } from './contracts.js';
+import { Digest, Id, BuildIdentity } from './contracts.js';
 import { confined, inventory, treeDigest } from './artifacts.js';
 import type { Store } from './store.js';
+import { verifyArtifact } from './build.js';
 
 const Archive = z.object({
   format: z.literal('harness-evolution-research-archive'),
@@ -12,6 +13,7 @@ const Archive = z.object({
     digest: Digest,
     phase: z.string(),
     mean: z.number().optional(),
+    build: BuildIdentity.optional(),
     proposal: z.object({ hypothesis: z.string(), actions: z.array(z.string()) }),
   }),
   specification: z.object({ name: z.string(), objective: z.string() }),
@@ -45,9 +47,11 @@ export async function importArchive(
   const record = Archive.parse(
     JSON.parse(await readFile(path.join(archive, 'research-record.json'), 'utf8')),
   );
-  const source = path.join(archive, 'bundle');
+  const source = path.join(archive, 'source');
   if ((await treeDigest(source)) !== record.candidate.digest)
-    throw new Error('Imported bundle digest mismatch');
+    throw new Error('Imported source digest mismatch');
+  if (record.candidate.build)
+    await verifyArtifact(path.join(archive, 'artifact'), record.candidate.digest, record.candidate.build);
   const target = confined(path.join(root, 'drafts'), draft);
   await mkdir(path.dirname(target), { recursive: true });
   await cp(source, target, { recursive: true, force: false, errorOnExist: true });

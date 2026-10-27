@@ -51,15 +51,16 @@ export async function serve(
           const args = z
             .strictObject({
               candidate: Digest,
-              area: z.enum(['source', 'qa']),
+              area: z.enum(['source', 'build', 'artifact', 'qa']),
               file: RelativePath.optional(),
             })
             .parse(body);
           controller.store.candidate(args.candidate);
           const root = path.join(
             controller.root,
-            args.area === 'source' ? 'candidates' : 'qa',
+            { source: 'candidates', build: 'builds', artifact: 'artifacts', qa: 'qa' }[args.area],
             args.candidate,
+            ...(args.area === 'build' ? ['logs'] : []),
           );
           result = await artifact(root, args.file);
           break;

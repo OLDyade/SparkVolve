@@ -9,7 +9,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { Experiment } from '../../src/contracts.js';
 import { Controller } from '../../src/controller.js';
 import { Store } from '../../src/store.js';
-import { treeDigest } from '../../src/artifacts.js';
+import { treeDigest, fileDigest } from '../../src/artifacts.js';
 import { command } from '../../src/docker.js';
 import { exportCandidate } from '../../src/export.js';
 import { specification } from '../fixtures.js';
@@ -35,8 +35,18 @@ test(
         name: '@harness-evolution/protocol-fixture',
         version: '1.0.0',
         type: 'module',
+        scripts: { build: 'node --check fixture.mjs' },
         files: ['fixture.mjs', 'cordis.patch.yml'],
         dsh: { bundle: { patch: './cordis.patch.yml' } },
+      }),
+    );
+    await writeFile(
+      path.join(seed, 'package-lock.json'),
+      JSON.stringify({
+        name: '@harness-evolution/protocol-fixture',
+        version: '1.0.0',
+        lockfileVersion: 3,
+        packages: { '': { name: '@harness-evolution/protocol-fixture', version: '1.0.0' } },
       }),
     );
     await writeFile(path.join(seed, 'cordis.patch.yml'), '- insert:\n    - name: ./fixture.mjs\n');
@@ -77,7 +87,11 @@ await writeFile('/workspace/result.json', JSON.stringify({ score: Number(actual 
       tasks,
       timeoutSeconds: 60,
       evaluator: { image, command: ['node', '/evaluation/grade.mjs'], timeoutSeconds: 30 },
-      candidate: { patch: 'cordis.patch.yml', qa: ['node', '--check', '/candidate/fixture.mjs'] },
+      candidate: {
+        patch: 'cordis.patch.yml',
+        build: { image, network: 'none', timeoutSeconds: 60 },
+        qa: ['node', '--check', '/candidate/fixture.mjs'],
+      },
     });
     const store = new Store(path.join(root, 'experiment.sqlite'), spec);
     let controller = new Controller(root, dataset, spec, store);
@@ -168,6 +182,15 @@ await writeFile('/workspace/result.json', JSON.stringify({ score: Number(actual 
       assert.equal((await readdir(output)).filter((file) => file.endsWith('.tgz')).length, 1);
       const record = JSON.parse(await readFile(path.join(output, 'research-record.json'), 'utf8'));
       assert.equal(record.runs.length, 2);
+      assert.equal(
+        await fileDigest(path.join(output, 'bundle.tgz')),
+        store.candidate(candidate.digest).build!.tarballDigest,
+      );
+      assert.equal(
+        await treeDigest(path.join(output, 'artifact/bundle')),
+        store.candidate(candidate.digest).build!.bundleDigest,
+      );
+      assert.equal(await treeDigest(path.join(output, 'source')), candidate.digest);
     } finally {
       await controller.close();
       store.close();

@@ -17,7 +17,11 @@ export function specification(): ExperimentSpec {
     optimizer: model,
     optimizerHarness: { directory: 'optimizer-bundle', digest: hash, patch: 'cordis.patch.yml' },
     evaluator: { image: `sha256:${hash}`, command: ['node', '/grader.js'], timeoutSeconds: 10 },
-    candidate: { patch: 'cordis.patch.yml', qa: ['node', '/candidate/qa.js'] },
+    candidate: {
+      patch: 'cordis.patch.yml',
+      build: { image: `sha256:${hash}`, network: 'none', timeoutSeconds: 10 },
+      qa: ['node', '/candidate/qa.js'],
+    },
     tasks: ['one', 'two'].map((id) => ({
       id,
       prompt: id,

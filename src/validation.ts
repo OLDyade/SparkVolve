@@ -1,15 +1,24 @@
 import { mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
-import { Digest, Id, Experiment, type ExperimentSpec } from './contracts.js';
+import { Digest, Id, Experiment, BuildIdentity, type ExperimentSpec } from './contracts.js';
 import { atomicJSON, digest, freeze, treeDigest } from './artifacts.js';
 import { initialize } from './experiment.js';
 import { Controller } from './controller.js';
 import { Store } from './store.js';
 import { Docker } from './docker.js';
+import { verifyArtifact, verifyBuild } from './build.js';
 
 export const Arms = z
-  .array(z.strictObject({ id: Id, bundle: z.string().min(1), digest: Digest }))
+  .array(
+    z.strictObject({
+      id: Id,
+      source: z.string().min(1),
+      digest: Digest,
+      artifact: z.string().min(1),
+      build: BuildIdentity,
+    }),
+  )
   .min(2)
   .refine((arms) => new Set(arms.map((arm) => arm.id)).size === arms.length, 'Duplicate arm identifiers');
 
@@ -32,8 +41,10 @@ export async function validateStudy(
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
     await mkdir(root);
     for (const arm of arms) {
-      if ((await treeDigest(arm.bundle)) !== arm.digest) throw new Error(`Arm digest mismatch: ${arm.id}`);
-      await freeze(arm.bundle, path.join(root, 'bundles', arm.id));
+      if ((await treeDigest(arm.source)) !== arm.digest) throw new Error(`Arm digest mismatch: ${arm.id}`);
+      await verifyArtifact(arm.artifact, arm.digest, arm.build);
+      await freeze(arm.source, path.join(root, 'sources', arm.id));
+      await freeze(arm.artifact, path.join(root, 'artifacts', arm.id));
     }
     await atomicJSON(path.join(root, 'registration.json'), registration);
   }
@@ -44,12 +55,27 @@ export async function validateStudy(
       await readFile(path.join(armRoot, 'experiment.json'));
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-      await initialize(armRoot, spec, dataset, path.join(root, 'bundles', arm.id));
+      await initialize(armRoot, spec, dataset, path.join(root, 'sources', arm.id));
     }
     const store = new Store(path.join(armRoot, 'experiment.sqlite'), spec);
     const controller = new Controller(armRoot, path.join(armRoot, 'dataset'), spec, store, docker);
     try {
       await controller.start();
+      const candidate = store.candidate(arm.digest);
+      if (!candidate.build) {
+        const artifact = path.join(armRoot, 'artifacts', arm.digest);
+        try {
+          await readFile(path.join(artifact, 'receipt.json'));
+        } catch (error) {
+          if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+          await freeze(path.join(root, 'artifacts', arm.id), artifact);
+        }
+        await verifyBuild(armRoot, { ...candidate, build: arm.build });
+        store.transaction(() => {
+          store.updateCandidate({ ...candidate, build: arm.build });
+          store.event('candidate.build_imported', { candidate: arm.digest, build: arm.build });
+        });
+      }
       await controller.pump();
     } finally {
       await controller.close();
@@ -86,6 +112,7 @@ export async function writeStudyReport(root: string): Promise<void> {
       return {
         id: arm.id,
         candidate: arm.digest,
+        build: candidates[0]!.build,
         complete,
         failures: runs.filter((r) => r.phase !== 'scored').length,
         mean: samples ? samples.reduce((sum, r) => sum + r.score, 0) / samples.length : null,

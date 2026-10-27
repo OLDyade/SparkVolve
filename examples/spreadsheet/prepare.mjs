@@ -52,6 +52,7 @@ const spec = Experiment.parse({
   evaluator: { image, command: ['python3', '/evaluation/grade.py'], timeoutSeconds: 120 },
   candidate: {
     patch: 'cordis.patch.yml',
+    build: { image, network: 'bridge', timeoutSeconds: 300 },
     qa: ['node', '/app/spreadsheet-qa.mjs', '/candidate/index.mjs'],
   },
   tasks,

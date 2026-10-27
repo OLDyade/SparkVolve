@@ -1,14 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, writeFile, chmod, rm, readdir } from 'node:fs/promises';
+import { mkdir, mkdtemp, writeFile, readFile, chmod, rm, readdir, cp } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { Controller } from '../src/controller.js';
 import { Docker } from '../src/docker.js';
 import type { ContainerSpec } from '../src/docker.js';
 import { Store } from '../src/store.js';
-import { treeDigest } from '../src/artifacts.js';
+import { treeDigest, fileDigest, atomicJSON } from '../src/artifacts.js';
 import { specification } from './fixtures.js';
+import { exportCandidate } from '../src/export.js';
 
 const exited = {
   Status: 'exited',
@@ -19,6 +20,7 @@ const exited = {
 };
 class LifecycleDriver extends Docker {
   executions = 0;
+  builds = 0;
   grades = 0;
   failGrading = false;
   override async create(spec: ContainerSpec): Promise<void> {
@@ -34,6 +36,21 @@ class LifecycleDriver extends Docker {
     return exited;
   }
   override async run(spec: ContainerSpec): Promise<typeof exited> {
+    if (spec.name.startsWith('he-build-')) {
+      this.builds++;
+      const source = spec.mounts.find((m) => m.target === '/source')!.source;
+      const output = path.join(spec.mounts.find((m) => m.target === '/workspace')!.source, 'output');
+      await mkdir(output);
+      await cp(source, path.join(output, 'bundle'), { recursive: true });
+      await writeFile(path.join(output, 'bundle.tgz'), 'fixture archive');
+      await atomicJSON(path.join(output, 'receipt.json'), {
+        sourceDigest: await treeDigest(source),
+        lockDigest: await fileDigest(path.join(source, 'package-lock.json')),
+        bundleDigest: await treeDigest(path.join(output, 'bundle')),
+        tarballDigest: await fileDigest(path.join(output, 'bundle.tgz')),
+      });
+      return exited;
+    }
     if (spec.name.startsWith('he-qa-')) return exited;
     this.grades++;
     assert.equal(spec.network, 'none');
@@ -66,6 +83,7 @@ test('controller restarts, rescores preserved deliveries, and never reruns compl
     JSON.stringify({ name: 'fixture', dsh: { bundle: { patch: './cordis.patch.yml' } } }),
   );
   await writeFile(path.join(seed, 'cordis.patch.yml'), '[]');
+  await writeFile(path.join(seed, 'package-lock.json'), '{}');
   const driver = new LifecycleDriver();
   driver.failGrading = true;
   let store = new Store(path.join(root, 'state.sqlite'), spec);
@@ -75,6 +93,7 @@ test('controller restarts, rescores preserved deliveries, and never reruns compl
   try {
     await controller.pump();
     assert.equal(driver.executions, 2);
+    assert.equal(driver.builds, 1);
     assert.equal(store.getMeta('champion'), undefined);
     assert.equal(store.runs().filter((r) => r.phase === 'scoring_failed').length, 2);
     await controller.close();
@@ -92,9 +111,70 @@ test('controller restarts, rescores preserved deliveries, and never reruns compl
   } finally {
     await controller.close();
     store.close();
-    await chmod(path.join(root, 'candidates', initial.digest), 0o755);
-    for (const run of await readdir(path.join(root, 'runs')))
-      await chmod(path.join(root, 'runs', run, 'delivery'), 0o755);
+    const writable = async (dir: string): Promise<void> => {
+      await chmod(dir, 0o755);
+      for (const item of await readdir(dir, { withFileTypes: true }))
+        if (item.isDirectory()) await writable(path.join(dir, item.name));
+    };
+    await writable(root);
     await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('build failure is terminal, retains evidence, consumes candidate budget and never enters QA or tasks', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'he-build-failure-'));
+  const spec = specification();
+  for (const task of spec.tasks) {
+    for (const folder of [task.input, task.evaluation])
+      await mkdir(path.join(root, 'dataset', folder), { recursive: true });
+    task.inputDigest = await treeDigest(path.join(root, 'dataset', task.input));
+    task.evaluationDigest = await treeDigest(path.join(root, 'dataset', task.evaluation));
+  }
+  const seed = path.join(root, 'seed');
+  await mkdir(seed);
+  await writeFile(
+    path.join(seed, 'package.json'),
+    JSON.stringify({
+      name: 'failure',
+      scripts: { build: 'exit 7' },
+      dsh: { bundle: { patch: './cordis.patch.yml' } },
+    }),
+  );
+  await writeFile(path.join(seed, 'package-lock.json'), '{}');
+  await writeFile(path.join(seed, 'cordis.patch.yml'), '[]');
+  class FailedBuilder extends Docker {
+    calls = 0;
+    override async run(spec: ContainerSpec, logDir: string) {
+      assert.ok(spec.name.startsWith('he-build-'));
+      this.calls++;
+      await mkdir(logDir, { recursive: true });
+      assert.equal(
+        spec.mounts.some((mount) => ['/input', '/evaluation', '/var/run/docker.sock'].includes(mount.target)),
+        false,
+      );
+      await writeFile(path.join(logDir, 'stderr.log'), 'compile failure');
+      return { ...exited, ExitCode: 7 };
+    }
+  }
+  const driver = new FailedBuilder(),
+    store = new Store(path.join(root, 'state.sqlite'), spec);
+  const controller = new Controller(root, path.join(root, 'dataset'), spec, store, driver);
+  await controller.start();
+  try {
+    const record = await controller.seed(seed);
+    await controller.pump();
+    await controller.pump();
+    assert.equal(driver.calls, 1);
+    assert.equal(store.candidate(record.digest).phase, 'build_failed');
+    assert.equal(store.candidates().length, 1);
+    assert.deepEqual(store.runs(), []);
+    assert.equal(store.getMeta('champion'), undefined);
+    const report = JSON.parse(await readFile(path.join(root, 'reports', `${record.digest}.json`), 'utf8'));
+    assert.equal(report.decision, null);
+    await exportCandidate(root, store, record.digest, path.join(root, 'archive'));
+    assert.equal((await readdir(path.join(root, 'archive'))).includes('bundle.tgz'), false);
+  } finally {
+    await controller.close();
+    store.close();
   }
 });

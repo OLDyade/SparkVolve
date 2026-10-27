@@ -49,10 +49,10 @@ export function apply(ctx: Context, config: Config): void {
     defineTool({
       name: 'evolution_candidate',
       description:
-        'Inspect an exact frozen candidate source file or its actual QA logs; omit file to list paths and hashes. Useful for comparing parents and diagnosing plugin activation failures. Files return base64.',
+        'Inspect frozen source, build logs, built artifact or QA logs; omit file to list paths and hashes. Every submitted native Bundle needs package-lock.json and scripts.build. QA, execution and export use one frozen build. Files return base64.',
       parameters: {
         candidate: { type: 'string', required: true },
-        area: { type: 'string', enum: ['source', 'qa'], required: true },
+        area: { type: 'string', enum: ['source', 'build', 'artifact', 'qa'], required: true },
         file: { type: 'string' },
       },
       output,

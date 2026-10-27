@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile, readFile, rm, chmod, readdir } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, readFile, rm, chmod, readdir, cp } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { specification } from './fixtures.js';
-import { treeDigest } from '../src/artifacts.js';
+import { treeDigest, fileDigest, atomicJSON } from '../src/artifacts.js';
 import { Docker, type ContainerSpec } from '../src/docker.js';
 import { validateStudy } from '../src/validation.js';
 
@@ -37,8 +37,35 @@ test('paired validation freezes all arms, preserves repetitions and resumes with
       JSON.stringify({ name: id, dsh: { bundle: { patch: './cordis.patch.yml' } } }),
     );
     await writeFile(path.join(bundle, 'cordis.patch.yml'), '[]');
-    await writeFile(path.join(bundle, 'score.txt'), String(score));
-    arms.push({ id, bundle, digest: await treeDigest(bundle) });
+    await writeFile(path.join(bundle, 'package-lock.json'), '{}');
+    await writeFile(path.join(bundle, 'score.txt'), '-1');
+    const sourceDigest = await treeDigest(bundle);
+    const artifact = path.join(root, `built-${id}`);
+    await mkdir(artifact);
+    await cp(bundle, path.join(artifact, 'bundle'), { recursive: true });
+    await writeFile(path.join(artifact, 'bundle/score.txt'), String(score));
+    await writeFile(path.join(artifact, 'bundle/build-nonce.txt'), String(Date.now()));
+    await writeFile(path.join(artifact, 'bundle.tgz'), `archive-${id}`);
+    const receipt = {
+      sourceDigest,
+      lockDigest: await fileDigest(path.join(bundle, 'package-lock.json')),
+      bundleDigest: await treeDigest(path.join(artifact, 'bundle')),
+      tarballDigest: await fileDigest(path.join(artifact, 'bundle.tgz')),
+    };
+    await atomicJSON(path.join(artifact, 'receipt.json'), receipt);
+    arms.push({
+      id,
+      source: bundle,
+      digest: sourceDigest,
+      artifact,
+      build: {
+        artifactDigest: await treeDigest(artifact),
+        bundleDigest: receipt.bundleDigest,
+        tarballDigest: receipt.tarballDigest,
+        lockDigest: receipt.lockDigest,
+        image: spec.candidate.build.image,
+      },
+    });
   }
   const exited = {
     Status: 'exited',
@@ -59,6 +86,9 @@ test('paired validation freezes all arms, preserves repetitions and resumes with
       return exited;
     }
     override async run(spec: ContainerSpec) {
+      if (spec.name.startsWith('he-build-')) {
+        throw new Error('Independent validation must never rebuild selected artifacts');
+      }
       if (spec.name.startsWith('he-qa-')) return exited;
       assert.equal(spec.network, 'none');
       assert.deepEqual(spec.env, {});
