@@ -1,6 +1,6 @@
 # 受控出口：让可变插件使用服务，凭证留在边界之外
 
-出口组件已实现并完成真实 DSH 模型调用验收。**正式实验 Controller 的自动装配、持久恢复尚未接入**；现有实验合同中的 `bridge` 权限不会因安装此组件自动变成受控网络。
+出口组件已接入 Controller 和优化器会话；合同显式声明各自路由，执行器网络为 `controlled` 或 `none`，优化器使用 `controlled`，QA/评分禁网。真实 Controller 已完成模型 → 工具 → 私有评分，并在宿主等待中断后接回同一 worker 和 broker。有限地址池、成功/失败终态归档和可恢复回收已通过 runc 验收；正式 gVisor 出口链与磁盘配额仍需补齐。
 
 ```text
 冻结路由：方法 / 本地路径 / 上游 / 地址范围 / 模型 / 输出额度
@@ -37,7 +37,7 @@ HTTP `cancelled` 表示消费者关闭连接，不能单独判定模型任务失
 
 ## 验收与复现
 
-`npm run check` 当前通过 46 项单测、9 项原生测试；另通过 7 项 runc 容器回归和实际 npm 包原生安装调用。新增测试覆盖固定路由、模型/输出范围、注入认证、完整 DNS 答案、流式首事件、取消、超时、重定向、不重试、账本故障，以及真实 HTTPS 子进程中的不受信证书拒绝和流式 SIGTERM。TLS 测试使用临时自签测试证书，开发环境需安装 OpenSSL。
+`npm run check` 当前通过 51 项单测、9 项原生测试；另通过 12 项 runc 容器回归。测试覆盖固定路由、模型/输出范围、注入认证、完整 DNS 答案、流式首事件、取消、超时、重定向、不重试、账本故障，以及真实 HTTPS 子进程中的不受信证书拒绝和流式 SIGTERM。TLS 测试使用临时自签测试证书，开发环境需安装 OpenSSL。
 
 以下脚本使用真实模型，有调用费用。凭证文件仅在可信启动器读取；输出目录必须全新。Docker 镜像需来自仓库 Dockerfile 的实际构建，Node 原生依赖与当前架构匹配。
 
@@ -54,6 +54,51 @@ HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}')
 
 最终实测：2 次模型请求、2 次原生结果、0 失败/未完成；工具写出 `{"sum":55}`；3 条 HTTP 请求都有终态（含一次拒绝路径探测），代理退出码 0。镜像固定，新增编译文件以只读挂载运行，源码与实际编译文件摘要分别记录。[机读证据](evidence/2026-10-28-egress-native-transport.json)同时保留早期验收脚本的 tmpfs 与 SSE 断言问题。该结果证明传输与接线，不作为正确率增益。
 
-正式接入还需要：将路由纳入实验身份、按 execution intent 持久装配代理/网络、恢复时核验原拓扑和剩余期限、冻结优化器控制 API 路由，并在原生 gVisor 运行链复验。目前 gVisor 的出口证据仍是[HTTP 夹具架构实验](research/2026-10-28-controlled-egress.md)。磁盘配额、MicroVM 后端另见[完成标准](completion.md)，未由本项代替。
+### Controller / 优化器接线验收
+
+- `Experiment.egress` 冻结两类外部路由；控制 API 的固定路径由可信启动器产生，禁止外部路由覆盖控制能力。
+- `execution-intent.json` 区分准备、已发出创建意图、已创建。准备阶段中断可继续同一网络/代理；创建意图之后原 worker 缺失即失败，不生成替代任务。
+- 每个运行保留网络 ID、代理容器 ID、原配置、实际隔离回执和请求账本。恢复校验实际 Docker 状态，外来网络成员或原代理丢失会拒绝。
+- `tests/container/egress-session.test.ts` 使用真实 Docker：验证凭证替换、直连拒绝、准备阶段中断、原容器恢复、停止幂等、外来网络成员和原容器丢失。原生优化器通过代理完成控制 API 生命周期。
+- `scripts/verify-controlled-controller.mjs` 使用真实模型和正式 Controller，主动中断宿主等待，然后接续原容器；本次独立评分为 1，attempt=0，4 次模型请求均有结果，完成后再次 pump 不增加请求。这是工程接线验收，不是质量收益实验。首次验收夹具缺少 `scripts.build`，构建失败原记录保留，未发起模型请求。
+
+首次方向审查发现默认地址池容量不足和终态网络积累，原始发现与前一轮回执保留在[接线证据](evidence/2026-10-28-controlled-controller-integration.json)。现已以明确地址分配和可恢复回收修复，详见[资源生命周期证据](evidence/2026-10-28-egress-resource-lifecycle.json)。
+
+### 有限资源与证据归档
+
+```text
+冻结 egressPool → Docker IPAM 原子租用两个 /29 → 原 worker / broker
+                          │                         │
+                    准备中断接续               宿主中断接回
+                                                    │
+                              ┌─────────────────────┴─────────────────────┐
+                              ▼                                           ▼
+                    保存终态、隔离回执、日志                  保存失败原因与原 worker 合同
+                              │                                           │
+                    execution-completion.json               停止原进程、收集失败原始证据
+                              └─────────────────────┬─────────────────────┘
+                                                    ▼
+                                      release.json 记录 ID 与证据摘要
+                                                    │
+                                     删除原容器 → 删除网络 → released
+                                             中断后只接续清理
+```
+
+- `isolation.network.egressPool` 必须由部署方预留；每运行两个 `/29`，30 执行器加一个优化器需 62 个。合同拒绝容量不足；实际分配排除 daemon 已用 CIDR，Docker IPAM 裁决跨进程竞争。不会增大宿主默认池。
+- 成功回执持久化后才删除容器。恢复读取原容器 ID、合同身份和完整日志摘要；归档被改动直接报错。失败原因先落盘，清理失败保持可接续状态，禁止重新准备或执行任务。
+- 真容器验证 62 个独立网段；8 个进程同时申请相同首选网段后得到 8 个不同租约；耗尽明确失败。成功/失败回收均注入删除中断，恢复后原任务没有重跑。
+- 正式 Controller 真实模型复验：3 次调用全部返回、独立评分 1、attempt=0；宿主中断后恢复原 worker/broker，完成归档回收，再次 pump 无新增请求。该算术任务验证工程链路，不支持质量收益结论。
+
+正式 Controller 复现（需先 build）：
+
+```bash
+HE_TEST_RUNTIME=runc HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}') \
+  node --env-file=/absolute/private/venus.env --import tsx \
+  scripts/verify-controlled-controller.mjs .evolution/controller-resource-acceptance
+```
+
+还需完成原生 gVisor 正式链复验。目前 gVisor 的出口证据仍是[HTTP 夹具架构实验](research/2026-10-28-controlled-egress.md)。磁盘配额、MicroVM 后端另见[完成标准](completion.md)，未由本项代替。
+
+网络接线核对了 Docker [多网络和默认网关](https://docs.docker.com/engine/network/)、[bridge 管理和连接解除](https://docs.docker.com/engine/network/drivers/bridge/)及 [IPAM 配置](https://docs.docker.com/reference/compose-file/networks/#ipam)。Docker 29.8.2 实测支持多次 `--network name=...,gw-priority=...,ip=...`；文档明确要求移除网络前解除容器连接，不能仅凭容器停止就视为网络已回收。
 
 设计依据：Node 24 [连接与地址族](https://nodejs.org/docs/latest-v24.x/api/net.html#socketconnectoptions-connectlistener)、[HTTPS](https://nodejs.org/docs/latest-v24.x/api/https.html)、[流式取消](https://nodejs.org/docs/latest-v24.x/api/stream.html#streampipelinesource-transforms-destination-options)；地址分类采用精确依赖 [ipaddr.js 2.5.0](https://github.com/whitequark/ipaddr.js)。部署与凭证边界的行业依据、版本和社区线索见[受控出口研究](research/2026-10-28-controlled-egress.md)。

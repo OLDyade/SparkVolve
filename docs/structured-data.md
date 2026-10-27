@@ -34,7 +34,7 @@ npm ci
 npm run check
 docker build -t harness-evolution:local .
 mkdir -p .evolution/data
-node examples/isolation.mjs runc > .evolution/data/isolation.json
+node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" > .evolution/data/isolation.json
 python3 examples/structured-data/generate.py .evolution/data/dataset
 node examples/structured-data/prepare.mjs .evolution/data/dataset \
   "$(docker image inspect harness-evolution:local --format '{{.Id}}')" \
@@ -44,11 +44,11 @@ node dist/cli.js init --root .evolution/data/search \
   --seed examples/structured-data/seed
 node --env-file=/absolute/private/venus.env dist/cli.js evolve \
   --root .evolution/data/search --host 0.0.0.0 --port 18949 \
-  --endpoint http://host.docker.internal:18949
+  --endpoint "http://${HE_CONTROLLER_IP}:18949"
 node dist/cli.js report --root .evolution/data/search --output .evolution/data/report.json
 ```
 
-`host.docker.internal` 按本地 Docker 网络配置使用；Linux 主机需提供实际可达地址。数据目录、合同和报告均要求新路径；停止后恢复原实验使用相同 `evolve` 命令，不能重建目录伪装重试。通过 `export` 输出冻结候选后，可沿用[原生能力入口](use-capability.md)安装，把工作簿输入换成对应 JSON 数据与任务即可。
+`HE_CONTROLLER_IP` 必须是代理容器可达的明确 IP；可通过 README 的 `scripts/controller-address.mjs` 读取 Docker 已配置的宿主映射，或指定已配置的可达接口。数据目录、合同和报告均要求新路径；停止后恢复原实验使用相同 `evolve` 命令，不能重建目录伪装重试。通过 `export` 输出冻结候选后，可沿用[原生能力入口](use-capability.md)安装，把工作簿输入换成对应 JSON 数据与任务即可。
 
 ## 实现依据
 

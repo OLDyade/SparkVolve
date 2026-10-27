@@ -26,7 +26,8 @@ test('spreadsheet preparation and independent validation retain the same frozen 
     await writeFile(path.join(base, 'tasks.json'), JSON.stringify(tasks));
   }
   const defaults = specification();
-  await writeFile(path.join(root, 'model.json'), JSON.stringify(defaults.executor));
+  await writeFile(path.join(root, 'model.json'), await readFile('examples/venus/model.json'));
+  defaults.isolation.network.executor = 'controlled';
   await writeFile(path.join(root, 'isolation.json'), JSON.stringify(defaults.isolation));
   await execute(process.execPath, [
     'examples/spreadsheet/prepare.mjs',

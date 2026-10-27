@@ -30,7 +30,7 @@
 harness-evolve serve --root ./experiment --host 0.0.0.0 --port 8787
 harness-evolve optimize --root ./experiment \
   --control-endpoint http://127.0.0.1:8787 \
-  --endpoint http://host.docker.internal:8787
+  --endpoint "http://${HE_CONTROLLER_IP}:8787"
 ```
 
 `control-endpoint` 供宿主接续器访问，`endpoint` 写入优化器容器的 Preset。地址应与实际部署网络匹配。`evolve` 自动从监听地址构造宿主入口，仍由用户提供容器入口。

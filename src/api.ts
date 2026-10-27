@@ -9,6 +9,7 @@ import { Digest, Id, RelativePath } from './contracts.js';
 import { confined, inventory } from './artifacts.js';
 import { EventCursor } from './events.js';
 import { draftOrigin } from './library.js';
+import { controlPaths } from './control-routes.js';
 
 export async function serve(
   controller: Controller,
@@ -32,6 +33,10 @@ export async function serve(
       }
       if (req.method !== 'POST') {
         res.writeHead(405).end();
+        return;
+      }
+      if (!controlPaths.some((route) => route === req.url)) {
+        res.writeHead(404).end();
         return;
       }
       const chunks: Buffer[] = [];

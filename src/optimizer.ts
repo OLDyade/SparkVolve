@@ -2,11 +2,14 @@ import { mkdir, readFile, writeFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { stringify } from 'yaml';
 import { atomicJSON, digest, confined, treeDigest } from './artifacts.js';
-import { Docker } from './docker.js';
+import { Docker, type ContainerSpec } from './docker.js';
 import type { ExperimentSpec } from './contracts.js';
 import { collectRequestMetrics } from './metrics.js';
 import type { Controller } from './controller.js';
 import { evolutionPreset, sdkPreset } from './preset.js';
+import { createEgressSession, type EgressFactory, type EgressLifecycle } from './egress-session.js';
+import { controlRoutes } from './control-routes.js';
+import { prepareExecution, collectExecution, ReclamationError, settleExecutionFailure } from './execution.js';
 
 interface Episode {
   identity: string;
@@ -22,6 +25,7 @@ export async function optimize(
   endpoints: { endpoint: string; controlEndpoint: string },
   docker = new Docker(),
   signal = new AbortController().signal,
+  egress: EgressFactory = createEgressSession,
 ): Promise<void> {
   if (spec.purpose !== 'search') throw new Error('Validation experiments cannot launch an optimizer');
   const { endpoint, controlEndpoint } = endpoints;
@@ -104,7 +108,7 @@ export async function optimize(
               ...sdkPreset('evolution', '/app/dist/sdk-preset.js'),
               evolutionPreset({
                 plugin: '/app/dist/plugin.js',
-                endpoint,
+                endpoint: 'http://evolution-egress:8080',
                 tokenEnv: 'EVOLUTION_TOKEN',
                 composition: `/method/${spec.optimizerHarness.composition}`,
               }),
@@ -130,9 +134,39 @@ export async function optimize(
         flag: 'wx',
         mode: 0o600,
       });
-      await docker.create(await launch(episode, episodeRoot, true));
     }
-    const result = await docker.collect(await launch(episode, episodeRoot, false), episodeRoot, signal);
+    const gateway = egress(
+      {
+        root: path.join(episodeRoot, 'egress'),
+        execution: episode.name,
+        image: spec.runtime.image,
+        isolation: spec.isolation,
+        timeoutSeconds: episode.seconds,
+        routes: [...controlRoutes(endpoint, episode.seconds), ...spec.egress.optimizer],
+      },
+      docker,
+    );
+    let execution: ContainerSpec | undefined;
+    let result;
+    const pendingFailure = await settleExecutionFailure(episodeRoot, docker, gateway);
+    if (pendingFailure !== null)
+      throw Error(`Optimizer episode ${ordinal} failed; ${pendingFailure}; no automatic retry`);
+    try {
+      execution = await prepareExecution(
+        episodeRoot,
+        { identity, episode },
+        docker,
+        gateway,
+        () => launch(episode!, episodeRoot, gateway),
+        { ...process.env, EVOLUTION_TOKEN: token },
+      );
+      result = await collectExecution(episodeRoot, execution, episodeRoot, docker, gateway, signal);
+    } catch (error) {
+      signal.throwIfAborted();
+      if (error instanceof ReclamationError) throw error;
+      await settleExecutionFailure(episodeRoot, docker, gateway, error);
+      throw new Error(`Optimizer episode ${ordinal} failed; no automatic retry`, { cause: error });
+    }
     await atomicJSON(path.join(episodeRoot, 'container-result.json'), result);
     await collectRequestMetrics(path.join(episodeRoot, 'trace'));
     if (result.ExitCode !== 0)
@@ -147,22 +181,18 @@ export async function optimize(
   async function launch(
     episode: Episode,
     episodeRoot: string,
-    fresh: boolean,
+    gateway: EgressLifecycle,
   ): Promise<import('./docker.js').ContainerSpec> {
-    const env: Record<string, string> = fresh ? { EVOLUTION_TOKEN: token } : {};
-    if (fresh)
-      for (const key of spec.optimizer.credentialEnv) {
-        const value = process.env[key];
-        if (!value) throw new Error(`Missing optimizer credential ${key}`);
-        env[key] = value;
-      }
+    const env: Record<string, string> = Object.fromEntries(
+      ['EVOLUTION_TOKEN', ...spec.optimizer.credentialEnv].map((key) => [key, 'egress-client-placeholder']),
+    );
     const environment = spec.runtime.environment;
     return {
       name: episode.name,
       image: spec.runtime.image,
       command: ['node', '/app/dist/runtime/worker.js', '/launch.json'],
       isolation: spec.isolation,
-      network: spec.isolation.network.optimizer,
+      network: await gateway.candidateNetwork(),
       env,
       timeoutSeconds: episode.seconds,
       mounts: [

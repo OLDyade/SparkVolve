@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { EgressRoute } from './egress.js';
+import { controlPaths } from './control-routes.js';
+import { EgressPool, poolCapacity } from './ip-pool.js';
 
 export const Digest = z.string().regex(/^[a-f0-9]{64}$/);
 export const Id = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,95}$/);
@@ -45,8 +48,9 @@ export const Isolation = z.strictObject({
   tmpMiB: z.number().int().positive().max(1_048_576),
   homeMiB: z.number().int().positive().max(1_048_576),
   network: z.strictObject({
-    optimizer: z.enum(['bridge', 'none']),
-    executor: z.enum(['bridge', 'none']),
+    egressPool: EgressPool,
+    optimizer: z.literal('controlled'),
+    executor: z.enum(['controlled', 'none']),
     build: z.enum(['bridge', 'none']),
     qa: z.literal('none'),
     evaluator: z.literal('none'),
@@ -67,6 +71,7 @@ export const Experiment = z
     objective: z.string().min(1),
     purpose: z.enum(['search', 'validation']),
     isolation: Isolation,
+    egress: z.strictObject({ optimizer: z.array(EgressRoute), executor: z.array(EgressRoute) }),
     runtime: z.strictObject({
       image: Image,
       dshVersion: z.literal('0.2.1-rc.4'),
@@ -114,6 +119,33 @@ export const Experiment = z
     constraints: z.array(OutcomeConstraint),
   })
   .superRefine((spec, ctx) => {
+    const slots = 2 * (1 + (spec.isolation.network.executor === 'controlled' ? spec.concurrency : 0));
+    if (poolCapacity(spec.isolation.network.egressPool) < slots)
+      ctx.addIssue({
+        code: 'custom',
+        message: `Egress pool needs at least ${slots} /29 leases for executor concurrency plus optimizer`,
+      });
+    for (const role of ['optimizer', 'executor'] as const) {
+      const routes = spec.egress[role];
+      if (
+        new Set(routes.map((r) => r.id)).size !== routes.length ||
+        new Set(routes.map((r) => `${r.method} ${r.path}`)).size !== routes.length
+      )
+        ctx.addIssue({ code: 'custom', message: `Duplicate ${role} egress route` });
+      const credentials = new Set(routes.flatMap((r) => (r.credential ? [r.credential.env] : [])));
+      if (spec[role].credentialEnv.some((key) => !credentials.has(key)))
+        ctx.addIssue({ code: 'custom', message: `${role} credential has no trusted egress route` });
+    }
+    if (
+      spec.egress.optimizer.some(
+        (r) => controlPaths.some((p) => p === r.path) || r.credential?.env === 'EVOLUTION_TOKEN',
+      )
+    )
+      ctx.addIssue({ code: 'custom', message: 'Optimizer routes cannot shadow the controller capability' });
+    if (spec.isolation.network.executor === 'controlled' && !spec.egress.executor.length)
+      ctx.addIssue({ code: 'custom', message: 'Controlled executor requires explicit egress routes' });
+    if (spec.isolation.network.executor === 'none' && spec.egress.executor.length)
+      ctx.addIssue({ code: 'custom', message: 'Offline executor cannot declare egress routes' });
     if (new Set(spec.tasks.map((t) => t.id)).size !== spec.tasks.length)
       ctx.addIssue({ code: 'custom', message: 'Duplicate task IDs' });
     if (new Set(spec.constraints.map((c) => c.id)).size !== spec.constraints.length)

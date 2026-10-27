@@ -10,6 +10,7 @@ import { Store } from '../../src/store.js';
 import { Controller } from '../../src/controller.js';
 import { serve } from '../../src/api.js';
 import { optimize } from '../../src/optimizer.js';
+import { command } from '../../src/docker.js';
 
 test(
   'optimizer container mounts the native preset and concludes through the actual controller API',
@@ -65,8 +66,20 @@ test(
     try {
       const address = server.address();
       assert.ok(address && typeof address !== 'string');
+      const hostIP = (
+        await command('docker', [
+          'run',
+          '--rm',
+          '--network=bridge',
+          '--add-host=host.docker.internal:host-gateway',
+          image,
+          'getent',
+          'ahostsv4',
+          'host.docker.internal',
+        ])
+      ).split(/\s+/)[0]!;
       await optimize(root, spec, {
-        endpoint: `http://host.docker.internal:${address.port}`,
+        endpoint: `http://${hostIP}:${address.port}`,
         controlEndpoint: `http://127.0.0.1:${address.port}`,
       });
       assert.match(store.getMeta('searchConclusion')!, /Protocol lifecycle acceptance completed/);

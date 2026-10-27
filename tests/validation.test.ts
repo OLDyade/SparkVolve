@@ -84,6 +84,10 @@ test('paired validation freezes all arms, preserves repetitions and resumes with
     FinishedAt: '2026-10-27T00:00:01Z',
   };
   class Driver extends Docker {
+    override async inspect() {
+      return exited;
+    }
+    override async halt() {}
     creations = 0;
     override async create(spec: ContainerSpec) {
       this.creations++;

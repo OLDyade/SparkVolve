@@ -2,6 +2,7 @@ import path from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { digest } from './artifacts.js';
 import type { ContainerSpec } from './docker.js';
+import { verifyNetwork, type NetworkInspection } from './network.js';
 
 /** The label binds a durable intent. Actual Docker settings are checked separately. */
 export function containerIdentity(spec: ContainerSpec): string {
@@ -23,7 +24,7 @@ export function temporaryFilesystems(spec: ContainerSpec): Record<string, string
   };
 }
 
-export interface InspectedContainer {
+export interface InspectedContainer extends NetworkInspection {
   Id: string;
   Image: string;
   Config: {
@@ -48,6 +49,8 @@ export interface InspectedContainer {
     NanoCpus: number;
     PidsLimit: number;
     NetworkMode: string;
+    Dns: string[] | null;
+    ExtraHosts: string[] | null;
     PidMode: string;
     IpcMode: string;
     Devices: unknown[];
@@ -78,7 +81,8 @@ export function verifyIsolation(spec: ContainerSpec, actual: InspectedContainer)
   );
   check(host.NanoCpus === Math.round(spec.isolation.cpus * 1e9), 'cpu');
   check(host.PidsLimit === spec.isolation.pids, 'pids');
-  check(host.NetworkMode === spec.network && host.PidMode === '' && host.IpcMode === 'private', 'namespaces');
+  check(host.PidMode === '' && host.IpcMode === 'private', 'namespaces');
+  verifyNetwork(spec.network, actual);
   check(!host.Devices.length && !host.DeviceRequests?.length, 'devices');
   check(isDeepStrictEqual(host.Tmpfs, temporaryFilesystems(spec)), 'tmpfs');
   const bind = actual.Mounts.filter((mount) => mount.Type === 'bind');
@@ -115,38 +119,45 @@ export function isolationReceipt(spec: ContainerSpec, actual: InspectedContainer
     declared: spec.isolation,
     network: spec.network,
     host,
-    observed: {
-      user: actual.Config.User,
-      settings: Object.fromEntries(
-        [
-          'Runtime',
-          'Privileged',
-          'ReadonlyRootfs',
-          'CapDrop',
-          'CapAdd',
-          'SecurityOpt',
-          'Init',
-          'Memory',
-          'MemorySwap',
-          'NanoCpus',
-          'PidsLimit',
-          'NetworkMode',
-          'PidMode',
-          'IpcMode',
-          'Devices',
-          'DeviceRequests',
-          'Tmpfs',
-        ].map((key) => [key, actual.HostConfig[key as keyof InspectedContainer['HostConfig']]]),
-      ),
-      mounts: actual.Mounts.map(({ Type, Source, Destination, RW, Propagation }) => ({
-        Type,
-        Source,
-        Destination,
-        RW,
-        Propagation,
-      })),
-    },
+    observed: isolationObservation(actual),
     boundary:
       'Docker daemon attestation of configuration; not cryptographic runtime attestation or escape-proof isolation.',
+  };
+}
+/** Raw, credential-free observation; callers must not present this alone as a passed attestation. */
+export function isolationObservation(actual: InspectedContainer) {
+  return {
+    user: actual.Config.User,
+    settings: Object.fromEntries(
+      [
+        'Runtime',
+        'Privileged',
+        'ReadonlyRootfs',
+        'CapDrop',
+        'CapAdd',
+        'SecurityOpt',
+        'Init',
+        'Memory',
+        'MemorySwap',
+        'NanoCpus',
+        'PidsLimit',
+        'NetworkMode',
+        'Dns',
+        'ExtraHosts',
+        'PidMode',
+        'IpcMode',
+        'Devices',
+        'DeviceRequests',
+        'Tmpfs',
+      ].map((key) => [key, actual.HostConfig[key as keyof InspectedContainer['HostConfig']]]),
+    ),
+    mounts: actual.Mounts.map(({ Type, Source, Destination, RW, Propagation }) => ({
+      Type,
+      Source,
+      Destination,
+      RW,
+      Propagation,
+    })),
+    interfaces: actual.NetworkSettings.Networks,
   };
 }

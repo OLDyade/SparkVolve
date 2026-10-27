@@ -3,6 +3,7 @@ import { readFile, writeFile, cp } from 'node:fs/promises';
 import path from 'node:path';
 import { treeDigest } from '../../dist/artifacts.js';
 import { Experiment } from '../../dist/contracts.js';
+import { configureEgress } from '../venus/egress.mjs';
 
 const [dataset, image, modelFile, output, isolationFile] = process.argv.slice(2);
 if (!dataset || !image || !modelFile || !output || !isolationFile)
@@ -33,6 +34,7 @@ for (const task of tasks) {
   task.evaluationDigest = await treeDigest(path.join(dataset, task.evaluation));
 }
 const spec = Experiment.parse({
+  egress: await configureEgress(path.join(dataset, 'runtime'), model),
   name: 'spreadsheet-business-search',
   purpose: 'search',
   isolation: JSON.parse(await readFile(isolationFile, 'utf8')),

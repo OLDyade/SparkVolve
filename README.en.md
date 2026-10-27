@@ -39,6 +39,8 @@ The optimizer chooses mechanisms from original inputs, traces, deliveries and in
 
 Use Node **24.16.0**, npm **12.2.0**, pnpm **12.15.0**, Docker and a working model credential. The supplied provider configuration uses Venus `deepseek/deepseek-v4.1-flash-1017`; other models require explicit native DSH Provider configuration. No automatic model substitution occurs.
 
+Set `HE_EGRESS_POOL` to an operator-reserved private IPv4 CIDR that does not overlap host, LAN or VPN routes. Each controlled execution leases two `/29` subnets; 30 executors plus one optimizer need 62, while a `/23` supplies 64. The frozen contract rejects insufficient capacity. Terminal evidence is archived before resources are reclaimed.
+
 ```bash
 npm ci
 npm run check
@@ -47,7 +49,7 @@ docker build --build-arg HARNESS_IMAGE=harness-evolution:local \
   -f examples/spreadsheet/Dockerfile -t harness-evolution-spreadsheet:local .
 
 mkdir -p .evolution/business
-node examples/isolation.mjs runc > .evolution/business/isolation.json
+node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" > .evolution/business/isolation.json
 node examples/spreadsheet/verify-image.mjs \
   "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')" \
   .evolution/business/isolation.json .evolution/business/image-check
@@ -71,14 +73,16 @@ Before `init`, inspect the generated contract. It freezes the task manifest, mod
 Store `VENUS_API_KEY` in a private environment file outside the repository, with permissions `0600`. Start one coordinator:
 
 ```bash
+HE_CONTROLLER_IP=$(node scripts/controller-address.mjs \
+  "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')")
 node --env-file=/absolute/private/venus.env dist/cli.js evolve \
   --root .evolution/business/search --host 0.0.0.0 --port 18948 \
-  --endpoint http://host.docker.internal:18948
+  --endpoint "http://${HE_CONTROLLER_IP}:18948"
 
 node dist/cli.js status --root .evolution/business/search
 ```
 
-The container endpoint must reach the chosen host interface. `host.docker.internal` is available in the documented macOS Docker Desktop / OrbStack setup; configure an explicit reachable interface and firewall on Linux. The control API uses a per-experiment capability token. Select an installed runtime explicitly: [isolation contracts and gVisor acceptance](docs/isolation.md).
+The control endpoint requires an explicit container-reachable IP. The helper reads Docker's configured `host-gateway` mapping; a separately configured reachable interface is also valid. Configure the host firewall accordingly. Real model credentials and the per-experiment controller capability remain in the trusted broker; agent containers receive local placeholders. Select an installed runtime explicitly: [isolation contracts and gVisor acceptance](docs/isolation.md).
 
 The example creates public synthetic XLSX tasks and grades actual files through independent LibreOffice recalculation. It is an engineering experience. For research, `research.py` supplies four business-mechanism task families; preregister task roles, repetitions and budgets before execution. See the [concrete joint-plugin study registration](docs/experiments/2026-10-27-joint-plugin-development.json). Private historical benchmarks and answers are excluded from this repository.
 

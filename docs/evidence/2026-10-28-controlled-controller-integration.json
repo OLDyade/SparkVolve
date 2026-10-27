@@ -1,0 +1,30 @@
+{
+  "scope": "Formal Controller and native optimizer controlled-egress integration; acceptance only, no quality gain claim",
+  "status": "in_progress_not_merged",
+  "baseCommit": "174a702e1b9d156cbb1f4d320a0424891358a50b",
+  "runtimeImage": "sha256:cd7c6b4c25cce774a6df7d4d2ed0170859d4cd7b4c0efcdf773f515aaf27c7cc",
+  "runtime": "runc",
+  "checks": {"unit": 48, "native": 9, "container": 8},
+  "formalController": {
+    "artifact": ".evolution/controlled-controller-native-20261028-build-contract/acceptance.json",
+    "passed": true,
+    "score": 1,
+    "attempt": 0,
+    "sameWorkerRecovered": true,
+    "sameBrokerRecovered": true,
+    "completedResumeAddsRequests": false,
+    "modelRequests": {"started": 4, "results": 4, "failed": 0, "unfinished": 0,
+      "inputTokens": 1977, "outputTokens": 229, "durationMsSum": 4676},
+    "httpRequests": {"started": 4, "finished": 4}
+  },
+  "retainedFailure": {
+    "artifact": ".evolution/controlled-controller-native-20261028/acceptance.json",
+    "stage": "fixture build",
+    "cause": "Acceptance seed omitted required scripts.build; original build_failed evidence retained",
+    "modelCalls": 0
+  },
+  "directionReview": {
+    "resolved": "Independent re-review confirmed: preparation interruption resumes the same infrastructure before worker creation; original missing worker is never recreated; no new blocker in this item",
+    "open": ["Two bridge networks per run exceed observed default address-pool capacity at 30 concurrency", "Terminal networks need recoverable reclamation"]
+  }
+}

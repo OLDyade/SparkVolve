@@ -11,6 +11,8 @@ import { collectRequestMetrics } from './metrics.js';
 import { buildCandidate, bundlePath, verifyBuild } from './build.js';
 import { queueProbe, executeProbe } from './probes.js';
 import type { Candidate, CandidateProposal, ExperimentSpec, TaskRun } from './contracts.js';
+import { createEgressSession, type EgressFactory, type EgressLifecycle } from './egress-session.js';
+import { prepareExecution, collectExecution, ReclamationError, settleExecutionFailure } from './execution.js';
 
 export class Controller {
   readonly owner = randomUUID();
@@ -24,6 +26,7 @@ export class Controller {
     readonly spec: ExperimentSpec,
     readonly store: Store,
     readonly docker = new Docker(),
+    readonly egress: EgressFactory = createEgressSession,
   ) {}
   async start(): Promise<void> {
     if (this.spec.researchLibrary) await this.libraryRoot();
@@ -403,16 +406,7 @@ export class Controller {
       throw new Error('Domain QA entry must be a regular file');
     return directory;
   }
-  private credentials(names: string[]): Record<string, string> {
-    return Object.fromEntries(
-      names.map((name) => {
-        const value = process.env[name];
-        if (!value) throw new Error(`Missing credential environment: ${name}`);
-        return [name, value];
-      }),
-    );
-  }
-  private async executionSpec(run: TaskRun): Promise<ContainerSpec> {
+  private async executionSpec(run: TaskRun, gateway: EgressLifecycle | null): Promise<ContainerSpec> {
     const candidate = this.store.candidate(run.candidate);
     await verifyBuild(this.root, candidate);
     const task = this.spec.tasks.find((t) => t.id === run.task);
@@ -450,28 +444,59 @@ export class Controller {
         { source: path.join(runRoot, 'trace'), target: '/trace', writable: true },
         { source: path.join(runRoot, 'launch.json'), target: '/launch.json', writable: false },
       ],
-      env: run.phase === 'queued' ? this.credentials(this.spec.executor.credentialEnv) : {},
+      env: Object.fromEntries(
+        this.spec.executor.credentialEnv.map((key) => [key, 'egress-client-placeholder']),
+      ),
       isolation: this.spec.isolation,
-      network: this.spec.isolation.network.executor,
+      network: gateway ? await gateway.candidateNetwork() : 'none',
       timeoutSeconds: this.spec.timeoutSeconds,
     };
   }
   private async execute(run: TaskRun): Promise<void> {
-    const spec = await this.executionSpec(run);
+    const gateway =
+      this.spec.isolation.network.executor === 'controlled'
+        ? this.egress(
+            {
+              root: path.join(this.root, 'runs', run.id, 'egress'),
+              execution: run.container,
+              image: this.spec.runtime.image,
+              isolation: this.spec.isolation,
+              routes: this.spec.egress.executor,
+              timeoutSeconds: this.spec.timeoutSeconds,
+            },
+            this.docker,
+          )
+        : null;
+    let spec: ContainerSpec | undefined;
     if (run.phase === 'queued') {
       this.assertOwner();
       this.store.transition(run.id, 'queued', 'executing', { startedAt: new Date().toISOString() });
-      // Write intent before create. A lost create acknowledgement is reconciled by its unique name.
-      try {
-        await this.docker.create(spec);
-      } catch (error) {
-        if (!(await this.docker.inspect(spec.name))) throw error;
-      }
+    }
+    const runRoot = path.join(this.root, 'runs', run.id);
+    const pendingFailure = await settleExecutionFailure(runRoot, this.docker, gateway);
+    if (pendingFailure !== null) {
+      this.assertOwner();
+      this.store.transition(run.id, 'executing', 'execution_failed', {
+        error: pendingFailure,
+        completedAt: new Date().toISOString(),
+      });
+      return;
     }
     try {
-      const result = await this.docker.collect(
+      spec = await prepareExecution(
+        path.join(this.root, 'runs', run.id),
+        { specification: this.spec, execution: run.id },
+        this.docker,
+        gateway,
+        () => this.executionSpec(run, gateway),
+        process.env,
+      );
+      const result = await collectExecution(
+        path.join(this.root, 'runs', run.id),
         spec,
         path.join(this.root, 'runs', run.id, 'execution'),
+        this.docker,
+        gateway,
         this.activeSignal,
       );
       await collectRequestMetrics(path.join(this.root, 'runs', run.id, 'trace'));
@@ -495,9 +520,14 @@ export class Controller {
       });
     } catch (error) {
       this.activeSignal?.throwIfAborted();
+      if (error instanceof ReclamationError) {
+        this.store.event('run.reclamation_failed', { id: run.id, error: String(error.cause) });
+        throw error;
+      }
+      const failure = await settleExecutionFailure(runRoot, this.docker, gateway, error);
       this.assertOwner();
       this.store.transition(run.id, 'executing', 'execution_failed', {
-        error: String(error),
+        error: failure!,
         completedAt: new Date().toISOString(),
       });
     }

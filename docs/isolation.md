@@ -23,10 +23,10 @@
 
 ```bash
 # 使用当前非 root 用户身份，显式选择已注册运行时；不改变 daemon 配置。
-node examples/isolation.mjs runc > isolation.json
+node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" > isolation.json
 # 在专用 Linux Docker 宿主安装固定版本，再显式选择。
 bash scripts/install-runsc.sh
-node examples/isolation.mjs he-runsc-20261019 > isolation.json
+node examples/isolation.mjs he-runsc-20261019 "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" > isolation.json
 ```
 
 安装脚本固定 gVisor `20261019.0` 与各架构 SHA256，将完整 runsc/sidecar 发行包安装到独立目录，注册 `he-runsc-20261019`，使用 systrap；不替换已有运行时或默认值。宿主需具备 Docker、systemd、sudo、tar、bzip2、sha256sum，在线安装还需 curl。仅支持 Linux x86_64/aarch64。已存在的安装目录或同名注册直接拒绝覆盖。
@@ -51,7 +51,8 @@ GitHub Actions 分别运行 runc 和固定 gVisor，将测试日志与各角色�
 | `user.uid/gid` | 明确的非 root 用户，五类角色共用 |
 | `memoryMiB` / `cpus` / `pids` | 每容器内存、CPU、进程上限；swap 总限额等于内存上限 |
 | `tmpMiB` / `homeMiB` | 临时文件系统大小及用户所有权；`/tmp` 允许 DSH 动态库执行 |
-| `network` | build/optimizer/executor 选择 none 或 bridge；QA/grader 固定 none |
+| `network` | build 为 none 或 bridge；optimizer 为 controlled，executor 为 controlled 或 none；QA/grader 固定 none |
+| `network.egressPool` | 部署方预留的私有 IPv4 CIDR；每个受控执行占用两个 `/29`，包括优化器；合同检查并发所需容量 |
 
 固定清空 capabilities、禁止提权、只读根文件系统、私有 IPC；镜像入口被显式命令替代。核验用户、资源、网络、挂载读写、运行时及命令，拒绝镜像隐式 volumes。恢复沿用原容器，权限变化不触发任务重跑。
 
@@ -65,10 +66,10 @@ GitHub Actions 分别运行 runc 和固定 gVisor，将测试日志与各角色�
 | gVisor/runsc 20261019.0 · systrap · Linux ARM64 | 用户态 Sentry 处理应用系统调用 | 专用 Debian 13 Docker daemon 实测构建、原生 DSH、评分、恢复、安装及真实模型事件接续；见 [验收证据](evidence/2026-10-27-gvisor-acceptance.json) |
 | Firecracker | KVM 驱动独立 guest kernel；还需生产宿主和网络配置 | 调研完成；尚无 MicroVM 执行后端 |
 
-回执依赖可信 daemon，无法对抗宿主管理员，不属于加密远程证明。本次 gVisor 实验机关闭 Mac 文件共享与宿主/其他机器网络访问，但 OrbStack 机器仍共享 Linux 内核，不能宣称每题独立微虚拟机。可信控制器持有专用 daemon socket，候选容器不挂载该 socket。bridge 没有域名白名单；同进程插件可读模型凭证。工作目录和日志尚无磁盘配额；内存/PID 限制不解决磁盘耗尽。当前候选应在专用研究宿主运行。受控出口、磁盘配额与 MicroVM 后端仍需继续实施。
+回执依赖可信 daemon，无法对抗宿主管理员，不属于加密远程证明。本次 gVisor 实验机关闭 Mac 文件共享与宿主/其他机器网络访问，但 OrbStack 机器仍共享 Linux 内核，不能宣称每题独立微虚拟机。可信控制器持有专用 daemon socket，候选容器不挂载该 socket。受控执行的真实凭证留在独立出口代理，插件使用占位值；独立进程边界仍依赖所选容器运行时。工作目录和日志尚无磁盘配额；内存/PID 限制不解决磁盘耗尽。当前候选应在专用研究宿主运行。磁盘配额与 MicroVM 后端仍需继续实施。
 
 来源及验收见 [运行隔离研究](research/2026-10-27-runtime-isolation.md)。
 
-[受控出口架构实验](research/2026-10-28-controlled-egress.md)已在 runc/gVisor 验证 internal + isolated 网络、代理进程外凭证、显式 DNS/hosts 与代理停止失败。该实验使用独立 HTTP 夹具，正式 Controller/Provider 路由与恢复接线仍待实现；不改变上述现有 bridge 权限说明。
+[受控出口架构实验](research/2026-10-28-controlled-egress.md)已在 runc/gVisor 验证 internal + isolated 网络、代理进程外凭证、显式 DNS/hosts 与代理停止失败。该实验使用独立 HTTP 夹具。
 
-[受控出口组件](controlled-egress.md)已进一步完成固定路由、TLS、流式取消和持久账本，并在 runc 容器中使用真实 DSH Provider 完成模型→工具→交付。正式 Controller 自动装配和恢复仍未接入，现有实验权限边界保持上述说明。
+[受控出口组件](controlled-egress.md)已接入正式 Controller 与优化器；runc 真实模型完成中断恢复、独立评分、证据归档与资源释放。显式有限地址池覆盖 62 个网络及跨进程竞争；失败回收也持久化，恢复只继续清理。部署方必须预留不与宿主/LAN/VPN 冲突的地址段，框架只核对 Docker IPAM 已占用网段，不能替代部署网络规划。正式 gVisor 出口链尚需复验。

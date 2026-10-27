@@ -3,9 +3,11 @@ import { open, mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { Isolation, type IsolationSpec } from './contracts.js';
 import { atomicJSON } from './artifacts.js';
+import { networkArgs, type NetworkSpec } from './network.js';
 import {
   containerIdentity,
   isolationReceipt,
+  isolationObservation,
   temporaryFilesystems,
   verifyIsolation,
   type InspectedContainer,
@@ -50,20 +52,25 @@ export interface ContainerSpec {
   image: string;
   command: string[];
   mounts: Array<{ source: string; target: string; writable: boolean }>;
-  network: 'bridge' | 'none';
+  network: NetworkSpec;
   env: Record<string, string>;
   timeoutSeconds: number;
   isolation: IsolationSpec;
 }
-interface ContainerState {
+export interface ContainerState {
   Status: string;
   Running: boolean;
   ExitCode: number;
   StartedAt: string;
   FinishedAt: string;
 }
+export interface ContainerReference {
+  name: string;
+  id: string;
+  intent: string;
+}
 
-/** Containers remain after completion so recovery can distinguish absent, created, running and exited. */
+/** Container lifecycle primitives; controlled executions reclaim only after durable terminal evidence. */
 export class Docker {
   async host(runtime: string): Promise<unknown> {
     const info = JSON.parse(await command('docker', ['info', '--format', '{{json .}}'])) as {
@@ -89,7 +96,7 @@ export class Docker {
       registration: info.Runtimes[runtime],
     };
   }
-  private async configuration(name: string): Promise<InspectedContainer> {
+  async configuration(name: string): Promise<InspectedContainer> {
     const [actual] = JSON.parse(await command('docker', ['inspect', name])) as InspectedContainer[];
     if (!actual) throw new Error(`Container missing: ${name}`);
     return actual;
@@ -129,14 +136,12 @@ export class Docker {
       `--memory-swap=${spec.isolation.memoryMiB}m`,
       `--cpus=${spec.isolation.cpus}`,
       '--ipc=private',
-      '--network',
-      spec.network,
+      ...networkArgs(spec.network),
       '--workdir',
       '/workspace',
     ];
     for (const [target, options] of Object.entries(temporaryFilesystems(spec)))
       args.push('--tmpfs', `${target}:${options}`);
-    if (spec.network === 'bridge') args.push('--add-host', 'host.docker.internal:host-gateway');
     for (const mount of spec.mounts) {
       if (mount.source.includes(',') || mount.target.includes(','))
         throw new Error('Docker mount paths cannot contain commas');
@@ -150,6 +155,40 @@ export class Docker {
     args.push(spec.image, ...spec.command);
     await command('docker', args, { env: { ...process.env, ...spec.env } });
     verifyIsolation(spec, await this.configuration(spec.name));
+  }
+  async halt(spec: ContainerSpec): Promise<void> {
+    const state = await this.inspect(spec.name);
+    if (!state) return;
+    const actual = await this.configuration(spec.name);
+    if (actual.Config.Labels['org.harness-evolution.intent'] !== containerIdentity(spec))
+      throw Error('Refusing to stop a container with a different execution identity');
+    if (state.Running) await command('docker', ['stop', '--time=5', spec.name]);
+  }
+  async remove(reference: ContainerReference): Promise<void> {
+    if (!(await this.inspect(reference.name))) return;
+    const actual = await this.configuration(reference.name);
+    if (
+      actual.Id !== reference.id ||
+      actual.Config.Labels['org.harness-evolution.intent'] !== reference.intent
+    )
+      throw Error('Refusing to remove a replacement container');
+    if (actual.State.Running) throw Error('Refusing to remove an active execution');
+    await command('docker', ['rm', reference.name]);
+  }
+  async failureEvidence(spec: ContainerSpec, logDir: string): Promise<ContainerReference | null> {
+    if (!(await this.inspect(spec.name))) return null;
+    await this.halt(spec);
+    const actual = await this.configuration(spec.name);
+    if (actual.State.Running) throw Error('Failure container termination is unconfirmed');
+    const reference = { name: spec.name, id: actual.Id, intent: containerIdentity(spec) };
+    await this.logs(spec.name, logDir);
+    await atomicJSON(path.join(logDir, 'failure-observation.json'), {
+      reference,
+      state: await this.inspect(spec.name),
+      observed: isolationObservation(actual),
+      validation: 'failure observation, not an isolation acceptance',
+    });
+    return reference;
   }
   async collect(spec: ContainerSpec, logDir: string, signal?: AbortSignal): Promise<ContainerState> {
     signal?.throwIfAborted();
@@ -188,12 +227,22 @@ export class Docker {
         }
       }
     }
+    await this.logs(spec.name, logDir);
+    const final = await this.inspect(spec.name);
+    if (!final || final.Running) throw new Error('Container termination is unconfirmed');
+    await atomicJSON(
+      path.join(logDir, 'isolation-final.json'),
+      isolationReceipt(spec, await this.configuration(spec.name), host),
+    );
+    return final;
+  }
+  private async logs(name: string, logDir: string): Promise<void> {
     await mkdir(logDir, { recursive: true });
     const out = await open(path.join(logDir, 'stdout.log'), 'w', 0o600);
     const err = await open(path.join(logDir, 'stderr.log'), 'w', 0o600);
     try {
       await new Promise<void>((resolve, reject) => {
-        const proc = spawn('docker', ['logs', spec.name], { stdio: ['ignore', out.fd, err.fd] });
+        const proc = spawn('docker', ['logs', name], { stdio: ['ignore', out.fd, err.fd] });
         proc.on('error', reject);
         proc.on('close', (code) =>
           code === 0 ? resolve() : reject(new Error(`docker logs exited ${code}`)),
@@ -203,13 +252,6 @@ export class Docker {
       await out.close();
       await err.close();
     }
-    const final = await this.inspect(spec.name);
-    if (!final || final.Running) throw new Error('Container termination is unconfirmed');
-    await atomicJSON(
-      path.join(logDir, 'isolation-final.json'),
-      isolationReceipt(spec, await this.configuration(spec.name), host),
-    );
-    return final;
   }
   async run(spec: ContainerSpec, logDir: string, signal?: AbortSignal): Promise<ContainerState> {
     signal?.throwIfAborted();

@@ -84,6 +84,8 @@ flowchart LR
 
 需要 Node **24.16.0**、npm **12.2.0**、pnpm **12.15.0** 和运行中的 Docker。示例采用用户指定的 Venus 模型快照；其他模型通过原生 DSH Provider 配置接入。没有自动模型降级。
 
+将 `HE_EGRESS_POOL` 设为部署方已预留、与宿主/LAN/VPN 不冲突的私有 IPv4 CIDR。每个受控执行占两个 `/29` 网段，30 执行器加 1 优化器需要至少 62 个；一个 `/23` 提供 64 个。地址池进入合同，容量不足直接拒绝，终态归档后释放。
+
 ```bash
 npm ci
 npm run check
@@ -92,7 +94,7 @@ docker build --build-arg HARNESS_IMAGE=harness-evolution:local \
   -f examples/spreadsheet/Dockerfile -t harness-evolution-spreadsheet:local .
 
 mkdir -p .evolution/business
-node examples/isolation.mjs runc > .evolution/business/isolation.json
+node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" > .evolution/business/isolation.json
 node examples/spreadsheet/verify-image.mjs \
   "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')" \
   .evolution/business/isolation.json .evolution/business/image-check
@@ -111,12 +113,14 @@ node dist/cli.js init --root .evolution/business/search \
   --seed examples/spreadsheet/seed
 ```
 
-将密钥写入仓库外权限为 `0600` 的环境文件，变量名为 `VENUS_API_KEY`。一条命令管理控制服务、执行、评分和优化器会话。端口需空闲，Docker 必须能到达控制服务。macOS Docker Desktop / OrbStack 可通过 `host.docker.internal` 到达宿主；Linux 需明确配置可达接口与防火墙。
+将密钥写入仓库外权限为 `0600` 的环境文件，变量名为 `VENUS_API_KEY`。真实凭证仅交给可信出口代理；优化器和执行器使用本地占位值。一条命令管理控制服务、执行、评分和优化器会话。控制地址使用容器可达的明确 IP，下面的辅助命令读取 Docker 的 `host-gateway` 映射；Linux 主机也可明确指定已配置的可达接口。端口需空闲，防火墙需允许代理访问。
 
 ```bash
+HE_CONTROLLER_IP=$(node scripts/controller-address.mjs \
+  "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')")
 node --env-file=/absolute/private/venus.env dist/cli.js evolve \
   --root .evolution/business/search --host 0.0.0.0 --port 18948 \
-  --endpoint http://host.docker.internal:18948
+  --endpoint "http://${HE_CONTROLLER_IP}:18948"
 
 # 查看真实产物与裁决
 node dist/cli.js status --root .evolution/business/search

@@ -10,6 +10,7 @@ import { Store } from '../src/store.js';
 import { treeDigest, fileDigest, atomicJSON } from '../src/artifacts.js';
 import { specification } from './fixtures.js';
 import { exportCandidate } from '../src/export.js';
+import { ReclamationError } from '../src/execution.js';
 
 const exited = {
   Status: 'exited',
@@ -19,6 +20,10 @@ const exited = {
   FinishedAt: new Date().toISOString(),
 };
 class LifecycleDriver extends Docker {
+  override async inspect() {
+    return exited;
+  }
+  override async halt() {}
   executions = 0;
   builds = 0;
   grades = 0;
@@ -65,6 +70,78 @@ class LifecycleDriver extends Docker {
     return exited;
   }
 }
+
+test('controller resumes failed resource cleanup before declaring terminal failure, without rerunning', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'he-controller-failed-cleanup-'));
+  const spec = specification();
+  spec.tasks = spec.tasks.slice(0, 1);
+  spec.isolation.network.executor = 'controlled';
+  for (const task of spec.tasks) {
+    for (const directory of [task.input, task.evaluation]) {
+      await mkdir(path.join(root, 'dataset', directory), { recursive: true });
+      await writeFile(path.join(root, 'dataset', directory, 'data.txt'), directory);
+    }
+    task.inputDigest = await treeDigest(path.join(root, 'dataset', task.input));
+    task.evaluationDigest = await treeDigest(path.join(root, 'dataset', task.evaluation));
+  }
+  const seed = path.join(root, 'seed');
+  await mkdir(seed);
+  await writeFile(
+    path.join(seed, 'package.json'),
+    JSON.stringify({ name: 'fixture', dsh: { bundle: { patch: './cordis.patch.yml' } } }),
+  );
+  await writeFile(path.join(seed, 'cordis.patch.yml'), '[]');
+  await writeFile(path.join(seed, 'package-lock.json'), '{}');
+  class FailedExecution extends LifecycleDriver {
+    collections = 0;
+    override async collect(): Promise<typeof exited> {
+      this.collections++;
+      throw Error('original task failed');
+    }
+  }
+  const driver = new FailedExecution();
+  let cleanups = 0;
+  const egress = () => ({
+    prepare: async () => {},
+    verify: async () => {},
+    candidateNetwork: async () => 'none' as const,
+    stop: async () => {},
+    release: async () => {},
+    abort: async (worker?: ContainerSpec) => {
+      assert.ok(worker, 'Cleanup must recover the persisted worker contract');
+      if (++cleanups === 1) throw Error('cleanup interrupted');
+    },
+  });
+  const store = new Store(path.join(root, 'state.sqlite'), spec);
+  let controller = new Controller(root, path.join(root, 'dataset'), spec, store, driver, egress);
+  try {
+    await controller.start();
+    await controller.seed(seed);
+    await assert.rejects(
+      controller.pump(),
+      (error) =>
+        error instanceof AggregateError &&
+        error.errors.length === 1 &&
+        error.errors[0] instanceof ReclamationError,
+    );
+    assert.equal(store.runs()[0]!.phase, 'executing');
+    await controller.close();
+    controller = new Controller(root, path.join(root, 'dataset'), spec, store, driver, egress);
+    await controller.start();
+    await controller.pump();
+    assert.equal(store.runs()[0]!.phase, 'execution_failed');
+    assert.match(store.runs()[0]!.error!, /original task failed/);
+    assert.equal(cleanups, 2);
+    assert.equal(driver.executions, 1);
+    assert.equal(driver.collections, 1);
+    await controller.pump();
+    assert.equal(driver.executions, 1);
+    assert.equal(cleanups, 2);
+  } finally {
+    await controller.close();
+    store.close();
+  }
+});
 test('controller restarts, rescores preserved deliveries, and never reruns completed tasks', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'he-controller-'));
   const spec = specification();

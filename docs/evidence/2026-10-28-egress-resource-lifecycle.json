@@ -1,0 +1,84 @@
+{
+  "scope": "Formal controlled egress, bounded subnet allocation, original execution recovery and durable success/failure resource reclamation; engineering acceptance only",
+  "baseCommit": "174a702e1b9d156cbb1f4d320a0424891358a50b",
+  "runtime": "runc",
+  "runtimeImage": "sha256:d0beef875f4fa2860926f136cee9b83e8a5bdd53cbc146009fd33a49d12dd608",
+  "checks": {
+    "unit": 51,
+    "native": 9,
+    "container": 12
+  },
+  "sourceSha256": {
+    "src/contracts.ts": "30ae62226cb2f3de6e81a2ac37e0bb0bc04812e63fc55cf5ec584de0ba8f971f",
+    "src/network.ts": "01347ec3d5ab17c59200d25e7ce0743094643b04ed286d956523d82fbfa580a6",
+    "src/network-pool.ts": "92558e4e3685e9e7f53bee1a801d739c8fd606c45705460281f84dd2a1da02b2",
+    "src/ip-pool.ts": "10859772f32eca48e5cb462cdc2281f7b879875c81a55004b0a846a65df16810",
+    "src/egress-session.ts": "432c3c0870cb9a88955d794575c0865ffaef36cea7a37c1564bb9b8492e3767e",
+    "src/execution.ts": "e261f96096d72c77fee9b57c679e17514f0fd0860e909ecc84674eed399dd6bf",
+    "src/controller.ts": "543fb26e1224107b701e007d2adbdc2d505659d3ac170e460fc1d50c67fcc35c",
+    "src/optimizer.ts": "fac2a395ca017637ee33fed7d416c3c9cec6aa9e0e94e7f7006bf065defef805",
+    "src/docker.ts": "2d2167c08639c9172d595b672d06cf34b2006b82c6f7d3a23a0178e990bef140",
+    "src/isolation.ts": "e038d97d4c7601a9fc40b8cb35f5d1c4d01a9533f3a02e2d7fb823afffe087dd",
+    "tests/container/egress-release.test.ts": "faae75d5459d8fa3565386b7c429f8666f815df96666743df82bf9fcf6447340",
+    "tests/container/network-pool.test.ts": "d4c4c9aa4170485d7a687af6311c534c10ef3b6bdd36f65451fe1d79bac735bd",
+    "tests/controller.test.ts": "6038a4d989146cde507952bf84f42a41323914a6f5de4059611c09d90bfbb5c2",
+    "scripts/verify-controlled-controller.mjs": "bb4ec04ab5ca8ab7339aa5930efa9b8d3521e1b53f237ba9ce875645c96f8571"
+  },
+  "capacity": {
+    "leasePrefix": 29,
+    "simultaneousNetworks": 62,
+    "poolPrefix": 23,
+    "independentContentionProcesses": 8,
+    "sameFirstChoiceForced": true,
+    "distinctCommittedLeases": true,
+    "exhaustionRejected": true
+  },
+  "interruptionCoverage": [
+    "host wait interrupted; same worker and broker recovered",
+    "terminal archive before removal; interruption after worker removal resumes only reclamation",
+    "running worker verification failure resolves persisted original worker contract",
+    "failure cleanup interrupted; pending failure resumes cleanup before terminal phase",
+    "Controller pump recovery: create=1, collect=1, cleanup=2"
+  ],
+  "formalController": {
+    "artifact": ".evolution/controlled-controller-resource-recovery-20261028/acceptance.json",
+    "passed": true,
+    "image": "sha256:d0beef875f4fa2860926f136cee9b83e8a5bdd53cbc146009fd33a49d12dd608",
+    "startedAt": "2026-10-27T18:27:49.247Z",
+    "workerID": "347a9363da1e01bcc7439066cfd7ca7c5a4afe4cc57ab0ce8bff430eac70d551",
+    "brokerID": "c66633342d4387312a6d752dfb3876ead9ded4c8090bed97ea970823d90d2eef",
+    "score": 1,
+    "taskAttempt": 0,
+    "sameContainersRecovered": true,
+    "terminalEvidenceArchived": true,
+    "originalContainersReclaimed": true,
+    "noExtraRequestsOnCompletedResume": true,
+    "usage": {
+      "failed": 0,
+      "inputTokensReported": 1244,
+      "missingUsage": 0,
+      "outputTokensReported": 205,
+      "requestDurationMsSum": 4500,
+      "results": 3,
+      "started": 3,
+      "unfinished": 0,
+      "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+    },
+    "httpStarted": 3,
+    "httpFinished": 3
+  },
+  "independentReview": {
+    "resolved": [
+      "failure cleanup became terminal too early",
+      "worker contract lost on recovery verification exception"
+    ],
+    "result": "No new critical blocker found in recovery and resource reclamation scope"
+  },
+  "remaining": [
+    "native gVisor formal controlled-egress chain",
+    "bounded persistent disk",
+    "MicroVM backend",
+    "stable quality and independent research validation"
+  ],
+  "claimBoundary": "Does not establish quality improvement, sandbox immunity, or whole-project completion"
+}
