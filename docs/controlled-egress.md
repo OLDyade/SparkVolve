@@ -37,7 +37,7 @@ HTTP `cancelled` 表示消费者关闭连接，不能单独判定模型任务失
 
 ## 验收与复现
 
-`npm run check` 当前通过 51 项单测、9 项原生测试；另通过 12 项 runc 容器回归。测试覆盖固定路由、模型/输出范围、注入认证、完整 DNS 答案、流式首事件、取消、超时、重定向、不重试、账本故障，以及真实 HTTPS 子进程中的不受信证书拒绝和流式 SIGTERM。TLS 测试使用临时自签测试证书，开发环境需安装 OpenSSL。
+`npm run check` 当前通过 53 项单测、9 项原生测试；同一最终镜像分别通过 12 项 runc 和 12 项 gVisor 容器回归。测试覆盖固定路由、模型/输出范围、注入认证、完整 DNS 答案、流式首事件、取消、超时、重定向、不重试、账本故障，以及真实 HTTPS 子进程中的不受信证书拒绝和流式 SIGTERM。TLS 测试使用临时自签测试证书，开发环境需安装 OpenSSL。
 
 以下脚本使用真实模型，有调用费用。凭证文件仅在可信启动器读取；输出目录必须全新。Docker 镜像需来自仓库 Dockerfile 的实际构建，Node 原生依赖与当前架构匹配。
 
@@ -85,6 +85,7 @@ HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}')
 ```
 
 - `isolation.network.egressPool` 必须由部署方预留；每运行两个 `/29`，30 执行器加一个优化器需 62 个。合同拒绝容量不足；实际分配排除 daemon 已用 CIDR，Docker IPAM 裁决跨进程竞争。不会增大宿主默认池。
+- `isolation.network.egressDns` 冻结可信 broker 使用的 1–3 个显式 IPv4 resolver；无公共 DNS 默认值，不允许与地址池重叠。部署发现只提供候选列表，最终受控网络还需实际解析验收，详见[出口 DNS](isolation.md#出口-dns)。
 - 成功回执持久化后才删除容器。恢复读取原容器 ID、合同身份和完整日志摘要；归档被改动直接报错。失败原因先落盘，清理失败保持可接续状态，禁止重新准备或执行任务。
 - 真容器验证 62 个独立网段；8 个进程同时申请相同首选网段后得到 8 个不同租约；耗尽明确失败。成功/失败回收均注入删除中断，恢复后原任务没有重跑。
 - 正式 Controller 真实模型复验：3 次调用全部返回、独立评分 1、attempt=0；宿主中断后恢复原 worker/broker，完成归档回收，再次 pump 无新增请求。该算术任务验证工程链路，不支持质量收益结论。
@@ -93,6 +94,7 @@ HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}')
 
 ```bash
 HE_TEST_RUNTIME=runc HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}') \
+  HE_TEST_DNS="${HE_TEST_DNS:?Set approved IPv4 DNS servers}" \
   node --env-file=/absolute/private/venus.env --import tsx \
   scripts/verify-controlled-controller.mjs .evolution/controller-resource-acceptance
 ```

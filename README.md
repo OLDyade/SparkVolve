@@ -86,6 +86,8 @@ flowchart LR
 
 将 `HE_EGRESS_POOL` 设为部署方已预留、与宿主/LAN/VPN 不冲突的私有 IPv4 CIDR。每个受控执行占两个 `/29` 网段，30 执行器加 1 优化器需要至少 62 个；一个 `/23` 提供 64 个。地址池进入合同，容量不足直接拒绝，终态归档后释放。
 
+将 `HE_TEST_DNS` 设为部署方确认可达的 IPv4 DNS 列表，以逗号分隔。可按[部署发现说明](docs/isolation.md#出口-dns)从同一镜像和运行时的 default bridge 获取候选地址；框架不内置公共 DNS，发现记录不代表最终受控网络已通过解析验收。
+
 ```bash
 npm ci
 npm run check
@@ -94,7 +96,8 @@ docker build --build-arg HARNESS_IMAGE=harness-evolution:local \
   -f examples/spreadsheet/Dockerfile -t harness-evolution-spreadsheet:local .
 
 mkdir -p .evolution/business
-node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" > .evolution/business/isolation.json
+node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
+  "${HE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > .evolution/business/isolation.json
 node examples/spreadsheet/verify-image.mjs \
   "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')" \
   .evolution/business/isolation.json .evolution/business/image-check
@@ -186,7 +189,8 @@ dsh plugin --profile sdk add /absolute/new-export-directory/bundle.tgz
 Actions 徽章显示真实远端状态。当前云端运行曾因账户账单/额度限制无法启动；本地通过记录单独保留。完整交付范围及尚未完成项见[落实状态](docs/completion.md)。
 
 ```bash
-HE_TEST_RUNTIME=runc HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}') npm run test:container
+HE_TEST_RUNTIME=runc HE_TEST_DNS="${HE_TEST_DNS:?Set approved IPv4 DNS servers}" \
+  HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}') npm run test:container
 npm audit --audit-level=moderate
 ```
 

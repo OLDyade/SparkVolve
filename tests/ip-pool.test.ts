@@ -1,8 +1,36 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { availableSubnets, EgressPool, poolCapacity } from '../src/ip-pool.js';
-import { Experiment } from '../src/contracts.js';
+import { Experiment, Isolation } from '../src/contracts.js';
 import { specification } from './fixtures.js';
+
+test('broker DNS is explicit, unique, routable and outside the reserved egress pool', () => {
+  const policy = specification().isolation;
+  assert.equal(Isolation.safeParse(policy).success, true);
+  assert.equal(
+    Isolation.safeParse({ ...policy, network: { ...policy.network, egressDns: ['0.250.250.200'] } }).success,
+    true,
+    'An explicitly deployed resolver can use an environment-specific address',
+  );
+  for (const addresses of [
+    [],
+    ['192.0.2.1', '192.0.2.2', '192.0.2.3', '192.0.2.4'],
+    ['127.0.0.11'],
+    ['0.0.0.0'],
+    ['224.0.0.1'],
+    ['::1'],
+    ['10.230.0.53'],
+    ['192.0.2.53', '192.0.2.53'],
+  ]) {
+    assert.equal(
+      Isolation.safeParse({ ...policy, network: { ...policy.network, egressDns: addresses } }).success,
+      false,
+      JSON.stringify(addresses),
+    );
+  }
+  const { egressDns: _removed, ...network } = policy.network;
+  assert.equal(Isolation.safeParse({ ...policy, network }).success, false);
+});
 
 test('bounded IPv4 pool subtracts exact overlapping CIDRs without address guessing', () => {
   assert.equal(poolCapacity('10.230.0.0/23'), 64);

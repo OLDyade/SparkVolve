@@ -29,12 +29,15 @@
 
 在仓库根目录执行；依赖版本和凭证配置沿用主 README。镜像直接使用通用基础镜像，不安装表格依赖。
 
+`HE_TEST_DNS` 使用部署方确认的 IPv4 resolver 列表；发现方法与实际解析验收边界见[出口 DNS](isolation.md#出口-dns)。
+
 ```bash
 npm ci
 npm run check
 docker build -t harness-evolution:local .
 mkdir -p .evolution/data
-node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" > .evolution/data/isolation.json
+node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
+  "${HE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > .evolution/data/isolation.json
 python3 examples/structured-data/generate.py .evolution/data/dataset
 node examples/structured-data/prepare.mjs .evolution/data/dataset \
   "$(docker image inspect harness-evolution:local --format '{{.Id}}')" \

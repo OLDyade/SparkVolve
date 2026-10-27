@@ -113,6 +113,13 @@ export class EgressSession {
     if (!intent.brokerIP) throw Error('Egress address is not allocated');
     return EgressConfig.parse({ bindAddress: intent.brokerIP, port: 8080, routes: this.spec.routes });
   }
+  private resolverConfiguration(): string {
+    return this.spec.isolation.network.egressDns.map((address) => `nameserver ${address}\n`).join('');
+  }
+  private async verifyResolver(): Promise<void> {
+    if ((await readFile(path.join(this.spec.root, 'resolv.conf'), 'utf8')) !== this.resolverConfiguration())
+      throw Error('Egress resolver configuration changed');
+  }
   private container(intent: Intent, credentials: Record<string, string> = {}): ContainerSpec {
     if (!intent.brokerIP) throw Error('Egress address is not allocated');
     return {
@@ -121,6 +128,7 @@ export class EgressSession {
       command: ['node', '/app/dist/runtime/egress.js', '/egress-config.json', '/ledger/requests.jsonl'],
       mounts: [
         { source: path.join(this.spec.root, 'config.json'), target: '/egress-config.json', writable: false },
+        { source: path.join(this.spec.root, 'resolv.conf'), target: '/etc/resolv.conf', writable: false },
         { source: path.join(this.spec.root, 'ledger'), target: '/ledger', writable: true },
       ],
       isolation: this.spec.isolation,
@@ -216,8 +224,23 @@ export class EgressSession {
       }
       await atomicJSON(path.join(this.spec.root, 'intent.json'), intent);
     }
-    await atomicJSON(path.join(this.spec.root, 'config.json'), this.configuration(intent));
     let state = await this.docker.inspect(intent.broker);
+    const files = {
+      'config.json': JSON.stringify(this.configuration(intent), null, 2) + '\n',
+      'resolv.conf': this.resolverConfiguration(),
+    };
+    for (const [name, contents] of Object.entries(files)) {
+      if (!state) {
+        try {
+          await writeFile(path.join(this.spec.root, name), contents, { flag: 'wx', mode: 0o600 });
+        } catch (error) {
+          if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+        }
+      }
+      if ((await readFile(path.join(this.spec.root, name), 'utf8')) !== contents)
+        throw Error(`Egress ${name} configuration changed`);
+    }
+    await this.verifyResolver();
     if (!state) {
       const env: Record<string, string> = {};
       for (const route of this.spec.routes)
@@ -248,6 +271,7 @@ export class EgressSession {
   }
   async verify(active: boolean): Promise<void> {
     const intent = await this.intent();
+    await this.verifyResolver();
     if (intent.phase === 'preparing' || !intent.brokerId) throw Error('Egress intent is incomplete');
     if (active && intent.phase !== 'ready') throw Error('Egress broker is already stopping or stopped');
     if (
@@ -298,9 +322,16 @@ export class EgressSession {
   }
   private async evidence(): Promise<Record<string, string | null>> {
     const result: Record<string, string | null> = {};
-    for (const entry of ['config.json', 'logs', 'ledger', 'failure-worker', 'failure-broker']) {
+    for (const entry of [
+      'config.json',
+      'resolv.conf',
+      'logs',
+      'ledger',
+      'failure-worker',
+      'failure-broker',
+    ]) {
       try {
-        result[entry] = await (entry.endsWith('.json') ? fileDigest : treeDigest)(
+        result[entry] = await (['config.json', 'resolv.conf'].includes(entry) ? fileDigest : treeDigest)(
           path.join(this.spec.root, entry),
         );
       } catch (error) {

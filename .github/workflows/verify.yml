@@ -45,6 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HE_TEST_RUNTIME: ${{ matrix.runtime }}
+      HE_EGRESS_POOL: 10.230.0.0/16
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -61,6 +62,15 @@ jobs:
         if: matrix.runtime == 'he-runsc-20261019'
         run: bash scripts/install-runsc.sh
       - run: docker build -t harness-evolution:test .
+      - name: Discover explicit DNS servers on the declared runtime
+        run: |
+          set -euo pipefail
+          npm run build
+          node scripts/egress-dns.mjs \
+            "$(docker image inspect harness-evolution:test --format '{{.Id}}')" \
+            "$HE_TEST_RUNTIME" > "$TMPDIR/egress-dns.json"
+          HE_TEST_DNS=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).servers.join(","))' "$TMPDIR/egress-dns.json")
+          printf 'HE_TEST_DNS=%s\n' "$HE_TEST_DNS" >> "$GITHUB_ENV"
       - name: Verify controlled-egress architecture against the actual runtime
         run: |
           set -euo pipefail
@@ -72,7 +82,7 @@ jobs:
           docker build --build-arg HARNESS_IMAGE=harness-evolution:test \
             -f examples/spreadsheet/Dockerfile -t harness-evolution-spreadsheet:test .
           npm run build
-          node examples/isolation.mjs "$HE_TEST_RUNTIME" > "$TMPDIR/spreadsheet-isolation.json"
+          node examples/isolation.mjs "$HE_TEST_RUNTIME" "$HE_EGRESS_POOL" "$HE_TEST_DNS" > "$TMPDIR/spreadsheet-isolation.json"
           node examples/spreadsheet/verify-image.mjs \
             "$(docker image inspect harness-evolution-spreadsheet:test --format '{{.Id}}')" \
             "$TMPDIR/spreadsheet-isolation.json" "$TMPDIR/spreadsheet-image"
@@ -88,6 +98,7 @@ jobs:
           name: runtime-${{ matrix.runtime }}-${{ github.run_attempt }}
           path: |
             ${{ runner.temp }}/harness-evolution/acceptance.log
+            ${{ runner.temp }}/harness-evolution/egress-dns.json
             ${{ runner.temp }}/harness-evolution/**/isolation*.json
             ${{ runner.temp }}/harness-evolution/spreadsheet-image/work/*.json
             ${{ runner.temp }}/harness-evolution/spreadsheet-image/logs/*.log

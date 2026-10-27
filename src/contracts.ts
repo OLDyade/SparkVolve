@@ -1,7 +1,9 @@
 import { z } from 'zod';
+import { isIP } from 'node:net';
+import ipaddr from 'ipaddr.js';
 import { EgressRoute } from './egress.js';
 import { controlPaths } from './control-routes.js';
-import { EgressPool, poolCapacity } from './ip-pool.js';
+import { EgressPool, poolCapacity, ipv4Range } from './ip-pool.js';
 
 export const Digest = z.string().regex(/^[a-f0-9]{64}$/);
 export const Id = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,95}$/);
@@ -39,23 +41,54 @@ export const Task = z.strictObject({
   evaluationDigest: Digest,
 });
 export const BundleRef = z.strictObject({ directory: RelativePath, digest: Digest, patch: RelativePath });
-export const Isolation = z.strictObject({
-  runtime: Id,
-  user: z.strictObject({ uid: z.number().int().positive(), gid: z.number().int().nonnegative() }),
-  memoryMiB: z.number().int().positive().max(1_048_576),
-  cpus: z.number().positive().max(1024).multipleOf(0.001),
-  pids: z.number().int().positive().max(1_048_576),
-  tmpMiB: z.number().int().positive().max(1_048_576),
-  homeMiB: z.number().int().positive().max(1_048_576),
-  network: z.strictObject({
-    egressPool: EgressPool,
-    optimizer: z.literal('controlled'),
-    executor: z.enum(['controlled', 'none']),
-    build: z.enum(['bridge', 'none']),
-    qa: z.literal('none'),
-    evaluator: z.literal('none'),
-  }),
-});
+export const EgressDns = z
+  .array(
+    z
+      .string()
+      .refine(
+        (value) =>
+          isIP(value) === 4 &&
+          value !== '0.0.0.0' &&
+          !['loopback', 'multicast', 'broadcast'].includes(ipaddr.parse(value).range()),
+        'DNS requires a literal IPv4 server outside loopback, unspecified, multicast and broadcast ranges',
+      ),
+  )
+  .min(1)
+  .max(3, 'The Linux system resolver supports at most three nameservers')
+  .refine((servers) => new Set(servers).size === servers.length, 'Duplicate DNS server');
+export const Isolation = z
+  .strictObject({
+    runtime: Id,
+    user: z.strictObject({ uid: z.number().int().positive(), gid: z.number().int().nonnegative() }),
+    memoryMiB: z.number().int().positive().max(1_048_576),
+    cpus: z.number().positive().max(1024).multipleOf(0.001),
+    pids: z.number().int().positive().max(1_048_576),
+    tmpMiB: z.number().int().positive().max(1_048_576),
+    homeMiB: z.number().int().positive().max(1_048_576),
+    network: z.strictObject({
+      egressPool: EgressPool,
+      egressDns: EgressDns,
+      optimizer: z.literal('controlled'),
+      executor: z.enum(['controlled', 'none']),
+      build: z.enum(['bridge', 'none']),
+      qa: z.literal('none'),
+      evaluator: z.literal('none'),
+    }),
+  })
+  .superRefine((spec, ctx) => {
+    if (!EgressPool.safeParse(spec.network.egressPool).success) return;
+    const pool = ipv4Range(spec.network.egressPool);
+    for (const server of spec.network.egressDns) {
+      if (isIP(server) !== 4) continue;
+      const address = ipv4Range(`${server}/32`).first;
+      if (address >= pool.first && address <= pool.last)
+        ctx.addIssue({
+          code: 'custom',
+          path: ['network', 'egressDns'],
+          message: 'DNS server overlaps the egress address pool',
+        });
+    }
+  });
 export type IsolationSpec = z.infer<typeof Isolation>;
 export const OutcomeConstraint = z.strictObject({
   id: Id,

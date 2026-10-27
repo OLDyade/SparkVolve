@@ -4,7 +4,6 @@ import { mkdtemp, writeFile, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { fileURLToPath } from 'node:url';
 import { allocateNetwork } from '../../src/network-pool.js';
 import { command } from '../../src/docker.js';
 import { availableSubnets } from '../../src/ip-pool.js';
@@ -73,7 +72,7 @@ test(
     const pool = '10.232.0.0/26';
     const names = Array.from({ length: 8 }, (_, i) => `${prefix}-${i}`);
     const allocator = new URL('../../src/network-pool.ts', import.meta.url).href;
-    const loader = fileURLToPath(new URL('../../node_modules/tsx/dist/loader.mjs', import.meta.url));
+    const loader = import.meta.resolve('tsx');
     const script = path.join(root, 'allocate.mjs');
     await writeFile(
       script,
@@ -96,13 +95,18 @@ await allocateNetwork(pool,name,['--internal','--label','he-test='+prefix],async
 });
 `,
     );
+    let childFailure: unknown;
     const jobs = names.map((name) =>
-      command(process.execPath, ['--import', loader, script, root, name, pool, prefix]),
+      command(process.execPath, ['--import', loader, script, root, name, pool, prefix]).catch((error) => {
+        childFailure ??= error;
+        throw error;
+      }),
     );
     const settled = Promise.allSettled(jobs);
     try {
       const deadline = Date.now() + 20000;
       while (true) {
+        if (childFailure) throw childFailure;
         const ready = await Promise.all(
           names.map(async (name) => {
             try {
@@ -145,7 +149,19 @@ await allocateNetwork(pool,name,['--internal','--label','he-test='+prefix],async
       console.log(`Cross-process contention evidence retained: ${root}`);
     } finally {
       await writeFile(path.join(root, 'go'), '');
-      await settled;
+      const outcomes = await settled;
+      await writeFile(
+        path.join(root, 'children.json'),
+        JSON.stringify(
+          outcomes.map((result) =>
+            result.status === 'fulfilled'
+              ? { status: result.status, output: result.value }
+              : { status: result.status, error: String(result.reason) },
+          ),
+          null,
+          2,
+        ),
+      );
       const ids = (
         await command('docker', [
           'network',

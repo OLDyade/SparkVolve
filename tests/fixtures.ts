@@ -5,6 +5,9 @@ export function containerSpecification(): ExperimentSpec {
   if (!runtime) throw new Error('HE_TEST_RUNTIME must explicitly select a registered Docker runtime');
   const spec = specification();
   spec.isolation.runtime = runtime;
+  const dns = process.env.HE_TEST_DNS;
+  if (!dns) throw new Error('HE_TEST_DNS must explicitly select reachable broker IPv4 resolvers');
+  spec.isolation.network.egressDns = dns.split(',');
   return spec;
 }
 export function specification(): ExperimentSpec {
@@ -29,6 +32,7 @@ export function specification(): ExperimentSpec {
       homeMiB: 128,
       network: {
         egressPool: '10.230.0.0/16',
+        egressDns: ['192.0.2.53'], // Documentation address: unit contract only, never a live default.
         optimizer: 'controlled',
         executor: 'none',
         build: 'none',

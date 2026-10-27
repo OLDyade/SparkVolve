@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { Experiment } from '../dist/contracts.js';
 import { Controller } from '../dist/controller.js';
 import { Store } from '../dist/store.js';
-import { treeDigest } from '../dist/artifacts.js';
+import { treeDigest, fileDigest } from '../dist/artifacts.js';
 import { containerSpecification } from '../tests/fixtures.ts';
 import { configureEgress } from '../examples/venus/egress.mjs';
 
@@ -89,6 +89,12 @@ try {
   const intent=JSON.parse(await readFile(path.join(runRoot,'egress/intent.json'),'utf8'));
   const release=JSON.parse(await readFile(path.join(runRoot,'egress/release.json'),'utf8'));
   assert.equal(release.phase,'released');
+  const resolverFile=path.join(runRoot,'egress/resolv.conf');
+  assert.equal(await readFile(resolverFile,'utf8'),spec.isolation.network.egressDns.map(ip=>`nameserver ${ip}\n`).join(''));
+  assert.equal(release.evidence['resolv.conf'],await fileDigest(resolverFile));
+  const brokerObserved=JSON.parse(await readFile(path.join(runRoot,'egress/observed.json'),'utf8'));
+  assert.equal(brokerObserved.observed.settings.Runtime,spec.isolation.runtime);
+  assert.equal(brokerObserved.observed.mounts.find(m=>m.Destination==='/etc/resolv.conf')?.RW,false);
   assert.equal(release.containers.find(c=>c.name===intent.broker)?.id,brokerID);
   assert.equal(await controller.docker.inspect(run.container),undefined);
   assert.equal(await controller.docker.inspect(intent.broker),undefined);
@@ -96,12 +102,25 @@ try {
   const usage=JSON.parse(await readFile(path.join(root,'runs',run.id,'trace/metrics.json'),'utf8'));
   const ledger=(await readFile(path.join(root,'runs',run.id,'egress/ledger/requests.jsonl'),'utf8')).trim().split('\n').map(JSON.parse);
   const starts=ledger.filter(e=>e.phase==='started').length;
+  assert.ok(starts>0);
+  const finished=ledger.filter(e=>e.phase==='finished');
+  assert.equal(finished.length,starts);
+  const startedIds=ledger.filter(e=>e.phase==='started').map(e=>e.id);
+  assert.equal(new Set(startedIds).size,starts);
+  for(const id of startedIds) assert.equal(finished.filter(e=>e.id===id).length,1);
+  assert.ok(finished.every(e=>e.address && e.upstreamStatus===200), 'Every request reached its authenticated upstream');
+  assert.equal(usage.failed,0);
+  assert.ok(usage.started>0);
+  assert.equal(usage.unfinished,0);
+  assert.equal(usage.results,usage.started);
   await controller.pump();
   assert.equal((await readFile(path.join(root,'runs',run.id,'egress/ledger/requests.jsonl'),'utf8')).trim().split('\n').map(JSON.parse).filter(e=>e.phase==='started').length, starts);
   Object.assign(receipt,{passed:true,workerID,brokerID,score:run.grade.score,taskAttempt:run.attempt,
     sameContainersRecovered:true,terminalEvidenceArchived:true,originalContainersReclaimed:true,
-    noExtraRequestsOnCompletedResume:true,usage,httpStarted:starts,
-    httpFinished:ledger.filter(e=>e.phase==='finished').length});
+    noExtraRequestsOnCompletedResume:true,resolverContractVerified:true,brokerRuntime:spec.isolation.runtime,
+    brokerDns:spec.isolation.network.egressDns,usage,httpStarted:starts,
+    httpFinished:finished.length,
+    httpOutcomes:Object.fromEntries([...new Set(finished.map(e=>e.outcome))].map(outcome=>[outcome,finished.filter(e=>e.outcome===outcome).length]))});
 } catch(error) {
   receipt.error=String(error); throw error;
 } finally {

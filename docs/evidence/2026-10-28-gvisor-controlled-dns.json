@@ -1,0 +1,153 @@
+{
+  "recordedAt": "2026-10-27T18:49:56.701175+00:00",
+  "scope": "Engineering acceptance of controlled egress, native DSH task, independent grade and recovery; not a quality-improvement experiment.",
+  "environment": {
+    "machine": "he-runsc-lab",
+    "architecture": "linux/arm64",
+    "runtime": "he-runsc-20261019",
+    "platform": "systrap",
+    "isolationBoundary": "gVisor Sentry on dedicated Debian13 Docker daemon; OrbStack shared Linux kernel, not per-task MicroVM."
+  },
+  "acceptance": {
+    "passed": true,
+    "image": "sha256:6708cd91fdfb6a802432f20f4a97bff3ca2dfb47116cbbf3c520e00eaa9f3cf3",
+    "startedAt": "2026-10-27T18:49:02.062Z",
+    "workerID": "f1c1e21be17ad25f83e86598345e00025c18df72add548576d580b4dd459287c",
+    "brokerID": "18ff85bc82d398c82f52b516cf626916337478fa3dbaabcdece47d65af943c0b",
+    "score": 1,
+    "taskAttempt": 0,
+    "sameContainersRecovered": true,
+    "terminalEvidenceArchived": true,
+    "originalContainersReclaimed": true,
+    "noExtraRequestsOnCompletedResume": true,
+    "resolverContractVerified": true,
+    "brokerRuntime": "he-runsc-20261019",
+    "brokerDns": [
+      "0.250.250.200"
+    ],
+    "usage": {
+      "failed": 0,
+      "inputTokensReported": 1571,
+      "missingUsage": 0,
+      "outputTokensReported": 283,
+      "requestDurationMsSum": 5461,
+      "results": 4,
+      "started": 4,
+      "unfinished": 0,
+      "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+    },
+    "httpStarted": 4,
+    "httpFinished": 4,
+    "httpOutcomes": {
+      "completed": 3,
+      "cancelled": 1
+    }
+  },
+  "runId": "9ea9e1df4e0dbe5e1e5a1d7eeed4cb142a9475ee777fbeda804885cdebcc14a2",
+  "artifactSha256": {
+    "egress/resolv.conf": "c933199fbb5c653e58b9b5c43e46a11659fcc64508d0eb72eaa3212207e416fd",
+    "egress/release.json": "b73ded830d6d9cc97f7d9d0191ecc5e0c4a5afa0a6a7118e9e04889fd1f37496",
+    "egress/observed.json": "783cbdeccb387d961bf223f5b4595e1edae9db3a1cac08702bb19adf052f5c5c",
+    "egress/ledger/requests.jsonl": "88e1ab4db2c5d35fe269d4efe27000d8a129ae62791c83d1b5d0b7eccef27598",
+    "execution-completion.json": "70c39a4f40f56be95137d654008f28140623b996770dfc7e34fc62e274b28733",
+    "trace/metrics.json": "3d6b5bea3fd1139be9d886d6be94b33882b4e517edf6d3d9adc650c261044a90",
+    "execution-intent.json": "97869f4e19f916aba76391e90fa8d6f131ad230a5d835f380f7aa89711ca071e"
+  },
+  "actualResolver": "nameserver 0.250.250.200\n",
+  "workerAndBrokerAbsent": true,
+  "originalNetworksAbsent": true,
+  "httpUuidPairingVerified": true,
+  "modelUsageNonemptyVerified": true,
+  "controller": {
+    "id": "1f499ec162fb6a3f7b16c3cd2e1f77a76109c5712ac0bb2eb6c3bbcc3f86611b",
+    "exitCode": 0,
+    "running": false,
+    "logSha256": "97eb1a0efff390a143a223a2834c435e3cf7c2f129f3f761d5424d8cdfbf91b1",
+    "tail": [
+      "{\"passed\":true,\"image\":\"sha256:6708cd91fdfb6a802432f20f4a97bff3ca2dfb47116cbbf3c520e00eaa9f3cf3\",\"startedAt\":\"2026-10-27T18:49:02.062Z\",\"workerID\":\"f1c1e21be17ad25f83e86598345e00025c18df72add548576d580b4dd459287c\",\"brokerID\":\"18ff85bc82d398c82f52b516cf626916337478fa3dbaabcdece47d65af943c0b\",\"score\":1,\"taskAttempt\":0,\"sameContainersRecovered\":true,\"terminalEvidenceArchived\":true,\"originalContainersReclaimed\":true,\"noExtraRequestsOnCompletedResume\":true,\"resolverContractVerified\":true,\"brokerRuntime\":\"he-runsc-20261019\",\"brokerDns\":[\"0.250.250.200\"],\"usage\":{\"failed\":0,\"inputTokensReported\":1571,\"missingUsage\":0,\"outputTokensReported\":283,\"requestDurationMsSum\":5461,\"results\":4,\"started\":4,\"unfinished\":0,\"unit\":\"DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable\"},\"httpStarted\":4,\"httpFinished\":4,\"httpOutcomes\":{\"completed\":3,\"cancelled\":1}}"
+    ]
+  },
+  "containerSuite": {
+    "id": "9f60395585462bcbfaf57c4518d5bcd3b08d189683a34a0eceb89df224dfd126",
+    "exitCode": 0,
+    "running": false,
+    "logSha256": "1579997a8e4a94235618c18a8d41417f97fc2a690405c14e3582e53b1a095c9c",
+    "tail": [
+      "Probe container evidence retained: /home/apple/he-egress-explicit-dns-final/.tmp/he-native-probes-RfCII7",
+      "✔ native behavioral probes exercise real composed services and tools in isolated containers (23953.805046ms)",
+      "Domain QA evidence retained: /home/apple/he-egress-explicit-dns-final/.tmp/he-domain-qa-8nCGxH",
+      "✔ explicit domain QA failure remains terminal after successful native assembly (11828.775799ms)",
+      "ℹ tests 12",
+      "ℹ suites 0",
+      "ℹ pass 12",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0",
+      "ℹ duration_ms 42307.17274"
+    ]
+  },
+  "retainedFailures": [
+    {
+      "scope": "original real model run before explicit DNS",
+      "receipt": {
+        "passed": false,
+        "image": "sha256:d0beef875f4fa2860926f136cee9b83e8a5bdd53cbc146009fd33a49d12dd608",
+        "startedAt": "2026-10-27T18:34:55.715Z",
+        "error": "AssertionError [ERR_ASSERTION]: Error: Executor exited 1\n+ actual - expected\n\n+ 'execution_failed'\n- 'scored'\n"
+      },
+      "receiptSha256": "2068c4dcb9d15f21e0050b31cd48ebe9fcc9d2f84818ec5d5d9c0d782b9140e5"
+    },
+    {
+      "scope": "final image successful task rejected by overly strict HTTP-completed-only acceptance assertion",
+      "receipt": {
+        "passed": false,
+        "image": "sha256:6708cd91fdfb6a802432f20f4a97bff3ca2dfb47116cbbf3c520e00eaa9f3cf3",
+        "startedAt": "2026-10-27T18:46:17.832Z",
+        "error": "AssertionError [ERR_ASSERTION]: false == true"
+      },
+      "receiptSha256": "62d5f5248e6f3bb876b1d1ab6f111f11597c1887a47e93dec5da2713a49b60c2"
+    }
+  ],
+  "diagnostic": {
+    "id": "e79cc4ce1caf18707a3446c91439c3062e120d71dd7b189de1315545bf721b23",
+    "exitCode": 0,
+    "running": false,
+    "logSha256": "33b1abb5033e4bde32a9b768708d2c3d7a02ee9996ea457519d05223546717fc",
+    "tail": [
+      "# has been modified.",
+      "",
+      "nameserver 127.0.0.11",
+      "search .",
+      "options edns0 ndots:0",
+      "",
+      "# Based on host file: '/etc/resolv.conf' (internal resolver)",
+      "# ExtServers: [host(0.250.250.200)]",
+      "# Overrides: []",
+      "# Option ndots from: internal",
+      "",
+      "{\"error\":\"EAI_AGAIN\",\"syscall\":\"getaddrinfo\"}"
+    ]
+  },
+  "sources": [
+    "https://gvisor.dev/docs/user_guide/faq/#docker-bridge",
+    "https://man7.org/linux/man-pages/man5/resolv.conf.5.html",
+    "https://github.com/openai/openai-node/blob/main/src/core/streaming.ts"
+  ],
+  "compiledImageHashes": {
+    "contracts.js": "ff94f2b7b58e8e77eb17e48689f5e1197fbe9728a12e3d1a3ccead99d0ae0883",
+    "egress-session.js": "04c561df7003c2a7a8b771a49c4f15caac3847d6244e1da1a37c37241b8c83c1",
+    "egress.js": "1a1e92e5d6f7ffe6d89cb6c837f32a82f41218c9358ae6db67aad807c792318e"
+  },
+  "localValidation": {
+    "unit": 53,
+    "native": 9,
+    "runcContainer": 12,
+    "gvisorContainer": 12,
+    "install": 1
+  },
+  "acceptanceAssertionsRecheckedOnOriginalArtifacts": [
+    "unique started UUIDs each have exactly one finished record",
+    "nonempty successful model ledger"
+  ]
+}

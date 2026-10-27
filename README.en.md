@@ -41,6 +41,8 @@ Use Node **24.16.0**, npm **12.2.0**, pnpm **12.15.0**, Docker and a working mod
 
 Set `HE_EGRESS_POOL` to an operator-reserved private IPv4 CIDR that does not overlap host, LAN or VPN routes. Each controlled execution leases two `/29` subnets; 30 executors plus one optimizer need 62, while a `/23` supplies 64. The frozen contract rejects insufficient capacity. Terminal evidence is archived before resources are reclaimed.
 
+Set `HE_TEST_DNS` to operator-approved, reachable IPv4 DNS servers separated by commas. The [deployment discovery helper](docs/isolation.md#出口-dns) observes candidate resolvers on the declared image/runtime default bridge. No public DNS is supplied by default; discovery does not establish resolution on the final controlled network.
+
 ```bash
 npm ci
 npm run check
@@ -49,7 +51,8 @@ docker build --build-arg HARNESS_IMAGE=harness-evolution:local \
   -f examples/spreadsheet/Dockerfile -t harness-evolution-spreadsheet:local .
 
 mkdir -p .evolution/business
-node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" > .evolution/business/isolation.json
+node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
+  "${HE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > .evolution/business/isolation.json
 node examples/spreadsheet/verify-image.mjs \
   "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')" \
   .evolution/business/isolation.json .evolution/business/image-check
@@ -142,6 +145,7 @@ The evolution machinery is also a native Bundle. Run `npm pack`, install it into
 
 ```bash
 HE_TEST_RUNTIME=runc \
+HE_TEST_DNS="${HE_TEST_DNS:?Set approved IPv4 DNS servers}" \
 HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}') \
   npm run test:container
 npm run test:install

@@ -72,6 +72,28 @@ test(
       intent = JSON.parse(await readFile(path.join(sessionSpec.root, 'intent.json'), 'utf8'));
       assert.ok(intent);
       const brokerID = (await docker.configuration(intent.broker)).Id;
+      const resolverFile = path.join(sessionSpec.root, 'resolv.conf');
+      const resolver = await readFile(resolverFile, 'utf8');
+      assert.equal(resolver, isolation.network.egressDns.map((ip) => `nameserver ${ip}\n`).join(''));
+      const resolverMount = (await docker.configuration(intent.broker)).Mounts.find(
+        (mount) => mount.Destination === '/etc/resolv.conf',
+      );
+      assert.equal(resolverMount?.RW, false);
+      assert.equal(resolverMount?.Source, resolverFile);
+      assert.equal(
+        await command('docker', [
+          'exec',
+          intent.broker,
+          'node',
+          '-e',
+          'process.stdout.write(require("node:fs").readFileSync("/etc/resolv.conf","utf8"))',
+        ]),
+        resolver.trim(),
+      );
+      await writeFile(resolverFile, 'nameserver 192.0.2.99\n');
+      await assert.rejects(new EgressSession(sessionSpec).prepare({}), /resolver configuration changed/);
+      assert.equal(await readFile(resolverFile, 'utf8'), 'nameserver 192.0.2.99\n');
+      await writeFile(resolverFile, resolver); // End the explicit drift injection, preserving the same broker.
       await mkdir(path.join(root, 'work'));
       const worker: ContainerSpec = {
         name: execution,

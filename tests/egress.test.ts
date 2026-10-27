@@ -81,6 +81,21 @@ function post(base: string, data = body, path = '/v1/chat/completions') {
   });
 }
 
+test('resolver failure records its native code and stage without leaking exception contents', async (t) => {
+  const provider = await upstream(t, (_req, res) => res.end('unexpected'));
+  const service = await broker(t, [route(provider)], {
+    resolve: async () => {
+      throw Object.assign(Error('private request and credential'), { code: 'EAI_AGAIN' });
+    },
+  });
+  assert.equal((await post(service.base)).status, 502);
+  const event = await service.finished;
+  assert.equal(event.outcome, 'upstream_error');
+  assert.deepEqual(event.failure, { stage: 'resolve', code: 'EAI_AGAIN' });
+  assert.equal(event.address, undefined);
+  assert.equal(JSON.stringify(service.events).includes('private request'), false);
+});
+
 test(
   'egress uses the exact route, pinned DNS address and broker credential without altering request bytes',
   { timeout: 10000 },

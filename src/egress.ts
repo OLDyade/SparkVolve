@@ -4,6 +4,7 @@ import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
 import { randomUUID } from 'node:crypto';
 import { pipeline } from 'node:stream/promises';
+import { getSystemErrorMap } from 'node:util';
 import ipaddr from 'ipaddr.js';
 import { z } from 'zod';
 
@@ -73,9 +74,20 @@ export interface EgressEvent {
   outcome?: 'completed' | 'denied' | 'upstream_error' | 'cancelled' | 'timeout';
   upstreamStatus?: number;
   address?: string;
+  failure?: { stage: 'request' | 'resolve' | 'connect' | 'response'; code?: string };
 }
 export type EgressServer = http.Server & { shutdown: () => Promise<void> };
 class Denied extends Error {}
+// Record native identifiers only; exception messages can contain URLs or sensitive payloads.
+const errorCodes = new Set([
+  ...[...getSystemErrorMap().values()].map(([name]) => name),
+  'ENOTFOUND',
+  'ERR_TLS_CERT_ALTNAME_INVALID',
+  'ERR_STREAM_PREMATURE_CLOSE',
+  'CERT_HAS_EXPIRED',
+  'DEPTH_ZERO_SELF_SIGNED_CERT',
+  'UNABLE_TO_VERIFY_LEAF_SIGNATURE',
+]);
 
 function normalized(address: string): string {
   return ipaddr.process(address).toString();
@@ -236,9 +248,12 @@ export async function serveEgress(
     res.on('close', closed);
     let address: Address | undefined, upstreamStatus: number | undefined;
     let outcome: EgressEvent['outcome'] = 'upstream_error';
+    let stage: NonNullable<EgressEvent['failure']>['stage'] = 'request';
+    let failure: EgressEvent['failure'];
     try {
       if (!route) throw new Denied('Route not permitted');
       const body = await readBody(req, route, abort.signal);
+      stage = 'resolve';
       address = await abortable(resolveEgressAddress(route, resolve), abort.signal);
       abort.signal.throwIfAborted();
       const url = new URL(route.upstream);
@@ -250,6 +265,7 @@ export async function serveEgress(
       const credential = secrets.get(route.id);
       if (credential) headers[credential.header] = credential.value;
       const pinned = address;
+      stage = 'connect';
       const response = await new Promise<http.IncomingMessage>((resolve, reject) => {
         const request = (url.protocol === 'https:' ? https : http).request(
           url,
@@ -271,6 +287,7 @@ export async function serveEgress(
         request.end(body);
       });
       upstreamStatus = response.statusCode;
+      stage = 'response';
       res.statusCode = upstreamStatus ?? 502;
       for (const name of ['content-type', 'content-encoding', 'retry-after']) {
         const value = response.headers[name];
@@ -280,6 +297,8 @@ export async function serveEgress(
       await pipeline(response, res, { signal: abort.signal });
       outcome = 'completed';
     } catch (error) {
+      const code = (error as NodeJS.ErrnoException)?.code;
+      failure = { stage, ...(code && errorCodes.has(code) ? { code } : {}) };
       outcome = timedOut
         ? 'timeout'
         : error instanceof Denied
@@ -303,6 +322,7 @@ export async function serveEgress(
         outcome,
         ...(address ? { address: address.address } : {}),
         ...(upstreamStatus !== undefined ? { upstreamStatus } : {}),
+        ...(failure ? { failure } : {}),
       });
     }
   }
