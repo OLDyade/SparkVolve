@@ -1,0 +1,25 @@
+{
+  "name": "@harness-evolution/structured-data",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "node --check index.mjs"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.4"
+  },
+  "overrides": {
+    "zod": "4.6.7"
+  },
+  "files": [
+    "index.mjs",
+    "cordis.patch.yml",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,130 @@
+{
+  "registeredAt": "2026-10-27T16:25:07.876Z",
+  "purpose": "public-synthetic-cross-domain-engineering-acceptance",
+  "source": "examples/structured-data",
+  "seedDigest": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+  "adapterDigest": "8c2146e2852fc01f63f2b21d299a097d5582f1e9c85f2218b964ad962828a89c",
+  "implementationBase": "586b10efe32a08b582e945e26a03c8733548b668",
+  "contract": {
+    "name": "structured-data-native-evolution",
+    "objective": "Evolve the general structured-data capability bundle using observed task evidence. Perform a substantive plugin implementation or composition experiment, then evaluate the frozen candidate. You may introduce general data operations, replace tools, or compose services; choose the mechanism from actual evidence. Do not encode task IDs, fixture values or expected answers, repair outputs heuristically, or change the evaluator. Retain exact input evidence and explicit caller intent. A tie or negative result is valid; do not resample. This is a public synthetic development acceptance, not a claim of unseen-data gain.",
+    "purpose": "search",
+    "isolation": {
+      "runtime": "runc",
+      "user": {
+        "uid": 501,
+        "gid": 20
+      },
+      "memoryMiB": 4096,
+      "cpus": 2,
+      "pids": 256,
+      "tmpMiB": 512,
+      "homeMiB": 128,
+      "network": {
+        "optimizer": "bridge",
+        "executor": "bridge",
+        "build": "bridge",
+        "qa": "none",
+        "evaluator": "none"
+      }
+    },
+    "runtime": {
+      "image": "sha256:6949d52c5b52f5f5bc2aadd71f9cc7b1fa10e00ffa225d9fad4bb2e50ac549ab",
+      "dshVersion": "0.2.1-rc.4",
+      "profile": "sdk",
+      "environment": {
+        "directory": "runtime",
+        "digest": "e8b8bd9dc56ebab84a5f7ec8a57a66e5106adb39986d7d5d3fa3115ec1c95442",
+        "patch": "cordis.patch.yml"
+      }
+    },
+    "executor": {
+      "provider": "venus",
+      "model": "deepseek/deepseek-v4.1-flash-1017",
+      "reasoningEffort": "off",
+      "maxTokens": 32768,
+      "credentialEnv": [
+        "VENUS_API_KEY"
+      ]
+    },
+    "optimizer": {
+      "provider": "venus",
+      "model": "deepseek/deepseek-v4.1-flash-1017",
+      "reasoningEffort": "off",
+      "maxTokens": 32768,
+      "credentialEnv": [
+        "VENUS_API_KEY"
+      ]
+    },
+    "optimizerHarness": {
+      "directory": "optimizer-bundle",
+      "digest": "4702cae12dc9b90ede598a21b70090792b9e95fcb975704f2772ae115171ea2a",
+      "composition": "plugins.yml"
+    },
+    "researchLibrary": null,
+    "evaluator": {
+      "image": "sha256:6949d52c5b52f5f5bc2aadd71f9cc7b1fa10e00ffa225d9fad4bb2e50ac549ab",
+      "command": [
+        "python3",
+        "/evaluation/grade.py"
+      ],
+      "timeoutSeconds": 30
+    },
+    "candidate": {
+      "patch": "cordis.patch.yml",
+      "build": {
+        "image": "sha256:6949d52c5b52f5f5bc2aadd71f9cc7b1fa10e00ffa225d9fad4bb2e50ac549ab",
+        "timeoutSeconds": 300
+      },
+      "qa": null
+    },
+    "tasks": [
+      {
+        "id": "revision-events",
+        "prompt": "Read /input/events.jsonl. Deduplicate identical event_id records, then choose the greatest integer revision independently for each entity, regardless of file order. A latest delete is a tombstone; an upsert after a delete restores the entity. Empty strings and null are real values. Write /workspace/result.json with exactly: entities (array of {entity, revision, value}, ordered by entity), tombstones (array of entity strings, sorted), unique_event_count (integer count after event_id deduplication).",
+        "input": "inputs/revision-events",
+        "inputDigest": "452885f4bb2c30cddd6774e2c26a61536d36677dca7ffa34b0392424c1887a06",
+        "evaluation": "evaluation/revision-events",
+        "evaluationDigest": "20e9e8eb3ae54abc8bb4d8b118fb4be016025f63b94006acc2722782622fd5f5"
+      },
+      {
+        "id": "request-logs",
+        "prompt": "Read /input/requests.jsonl. Each line is one request. Group by the exact pair (method,path); do not combine different methods. Errors have status >=500 (404 is not an error). Per group calculate count, errors, mean_ms as a string with exactly two decimal places rounded half up, and p95_ms using nearest rank: sorted latency at 1-based ceil(0.95*count). Include zero latencies. Write /workspace/result.json with exactly: groups (array of {method,path,count,errors,mean_ms,p95_ms} ordered by method then path), total_requests (integer), server_errors (integer).",
+        "input": "inputs/request-logs",
+        "inputDigest": "7b6ad38dfc03ca1699a821ade4fb0990bdf98adcdc028c3420d537607735c521",
+        "evaluation": "evaluation/request-logs",
+        "evaluationDigest": "69fc4aa84eb9cd19fcb1ef8ed9358c1518db7f7458ee4489ffe6fcdb54f7ef3d"
+      },
+      {
+        "id": "dependency-join",
+        "prompt": "Read /input/inventory.json. Join each advisory to installed packages by exact name AND exact version (no range or version inference). An exception suppresses only the exact (advisory id, name, version) triple. Write /workspace/result.json with exactly: findings (unsuppressed matches as {advisory,name,version}, sorted by advisory/name/version), suppressed (suppressed matches in the same shape/order), unmatched_advisories (sorted IDs with no installed exact match). This is synthetic inventory data, not an external vulnerability lookup.",
+        "input": "inputs/dependency-join",
+        "inputDigest": "e93429889e7ced3374e679cf9ea950d736c2bf137ae8275416c05a4632ce7934",
+        "evaluation": "evaluation/dependency-join",
+        "evaluationDigest": "d4369244c7885f107c4085d12aa6a9e62c1dcc867f6a9d75a90955ae065f6c31"
+      }
+    ],
+    "repetitions": 1,
+    "concurrency": 3,
+    "timeoutSeconds": 300,
+    "failureLimit": 0,
+    "budget": {
+      "candidates": 2,
+      "optimizerSeconds": 600
+    },
+    "metric": {
+      "name": "structured_output_accuracy",
+      "direction": "maximize",
+      "minimum": 0,
+      "maximum": 1,
+      "failure": 0
+    },
+    "constraints": []
+  },
+  "decisions": [
+    "Fixed three tasks; full denominator; baseline plus one autonomous candidate.",
+    "No service retry, supplementary task or unchanged candidate resampling.",
+    "Record ties and negative outcomes; this public fixture study does not establish generalization.",
+    "Inspect original input, frozen candidate code, actual deliveries, costs and installation identity before acceptance."
+  ]
+}
