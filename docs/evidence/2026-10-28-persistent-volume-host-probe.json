@@ -1,0 +1,32 @@
+{
+  "scope": "Host capability probe only; no production volume backend implemented and no container capacity test reached.",
+  "machine": "he-runsc-lab",
+  "filesystem": "ext4 filesystem images on OrbStack-managed btrfs",
+  "attempts": [
+    {
+      "passed": false,
+      "root": "/home/apple/he-volume-boundary-l52483_2",
+      "startedAt": "2026-10-27T18:53:06.340997+00:00",
+      "capacityBytes": 67108864,
+      "tests": [],
+      "filesystemUuid": "2e7767d8-d72d-4ec1-8cf5-17d8db2afe82",
+      "error": "Command '('/usr/sbin/losetup', '--find', '--show', '--nooverlap', '/home/apple/he-volume-boundary-l52483_2/volume.ext4')' returned non-zero exit status 1.",
+      "imageBytes": 67108864
+    },
+    {
+      "passed": false,
+      "root": "/home/apple/he-volume-boundary-jebu95me",
+      "startedAt": "2026-10-27T18:53:23.013342+00:00",
+      "capacityBytes": 67108864,
+      "tests": [],
+      "filesystemUuid": "116914b5-868f-4899-b041-fdf738af8672",
+      "error": "Command '('/usr/sbin/losetup', '--find', '--show', '--nooverlap', '/home/apple/he-volume-boundary-jebu95me/volume.ext4')' returned non-zero exit status 1.",
+      "commandOutput": "losetup: /home/apple/he-volume-boundary-jebu95me/volume.ext4: failed to set up loop device: Operation not permitted\n",
+      "imageBytes": 67108864
+    }
+  ],
+  "observedAfter": {
+    "loopdevices": []
+  },
+  "result": "Fixed-size image allocation and formatting work; loop association is denied with EPERM. No fallback or host-global reconfiguration attempted."
+}
