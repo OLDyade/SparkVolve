@@ -1,0 +1,270 @@
+{
+  "kind": "real-model-product-acceptance",
+  "date": "2026-10-27",
+  "implementationCommit": "f3042c6",
+  "runtime": {
+    "dshVersion": "0.2.1-rc.4",
+    "environment": {
+      "digest": "e8b8bd9dc56ebab84a5f7ec8a57a66e5106adb39986d7d5d3fa3115ec1c95442",
+      "directory": "runtime",
+      "patch": "cordis.patch.yml"
+    },
+    "image": "sha256:b3929ada6305ebd2e0c54a6651bf671d73de95b7e3244f3dd5b80555d6effa26",
+    "profile": "sdk"
+  },
+  "model": {
+    "maxTokens": 32768,
+    "model": "deepseek/deepseek-v4.1-flash-1017",
+    "provider": "venus",
+    "reasoningEffort": "off"
+  },
+  "taskCount": 3,
+  "candidates": [
+    {
+      "digest": "65774c6dea452150f19344f6c1dd9918e718297f589f216d4a05e5b1ab6daff5",
+      "ordinal": 0,
+      "phase": "champion",
+      "actions": ["compose"],
+      "decision": {
+        "candidate": "65774c6dea452150f19344f6c1dd9918e718297f589f216d4a05e5b1ab6daff5",
+        "denominator": 3,
+        "failures": 0,
+        "mean": 1,
+        "previousChampion": null,
+        "promoted": true
+      },
+      "runs": [
+        {
+          "task": "operating-plan",
+          "runId": "131af4849d825ee716be2f486ecb5c1efd4ecd1951c86ef6be9fb768579bcf75",
+          "score": 1,
+          "preserved": 1,
+          "formulaCellsInDelivery": 14,
+          "taskSeconds": 16.479,
+          "toolCalls": {
+            "workbook_inspect": 1,
+            "workbook_write": 1,
+            "bash": 3
+          },
+          "usage": {
+            "failed": 0,
+            "inputTokensReported": 4982,
+            "missingUsage": 0,
+            "outputTokensReported": 1145,
+            "requestDurationMsSum": 15357,
+            "results": 6,
+            "started": 6,
+            "unfinished": 0,
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+          },
+          "deliveryDigest": "6473ac8c12566e36f93fe87494d02740a26b1fe6bd5d98a0794f5a3eda95c703"
+        },
+        {
+          "task": "regional-plan",
+          "runId": "04573db22e5d8f1cebbf03a87c9b80ae3a16caf2a280545bcdd12afb16c15ba0",
+          "score": 1,
+          "preserved": 1,
+          "formulaCellsInDelivery": 14,
+          "taskSeconds": 21.269,
+          "toolCalls": {
+            "workbook_inspect": 1,
+            "bash": 5
+          },
+          "usage": {
+            "failed": 0,
+            "inputTokensReported": 7614,
+            "missingUsage": 0,
+            "outputTokensReported": 1447,
+            "requestDurationMsSum": 20124,
+            "results": 7,
+            "started": 7,
+            "unfinished": 0,
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+          },
+          "deliveryDigest": "441fd9bae2f7dd59f658c0636a3bb28cb31b43b2663ed8c94db9ba15fe347f40"
+        },
+        {
+          "task": "stress-plan",
+          "runId": "a0b04c370b0e5dd51f41976f124e2cb7e408ef5d2186ce87faebe362e129a44e",
+          "score": 1,
+          "preserved": 1,
+          "formulaCellsInDelivery": 14,
+          "taskSeconds": 16.037,
+          "toolCalls": {
+            "workbook_inspect": 1,
+            "bash": 4
+          },
+          "usage": {
+            "failed": 0,
+            "inputTokensReported": 6313,
+            "missingUsage": 0,
+            "outputTokensReported": 1088,
+            "requestDurationMsSum": 14871,
+            "results": 6,
+            "started": 6,
+            "unfinished": 0,
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+          },
+          "deliveryDigest": "a72334151717f0532e6873fcdd87b69a7c0084ce5afc7dd019361cc662fd4bf6"
+        }
+      ]
+    },
+    {
+      "digest": "8d1338a3f16bd517eea067cfed609f65beb2edf360111d91b99187d61bc7b115",
+      "ordinal": 1,
+      "phase": "rejected",
+      "actions": ["author", "compose", "tune"],
+      "decision": {
+        "candidate": "8d1338a3f16bd517eea067cfed609f65beb2edf360111d91b99187d61bc7b115",
+        "denominator": 3,
+        "failures": 0,
+        "mean": 0,
+        "previousChampion": "65774c6dea452150f19344f6c1dd9918e718297f589f216d4a05e5b1ab6daff5",
+        "promoted": false
+      },
+      "runs": [
+        {
+          "task": "operating-plan",
+          "runId": "ae603f824b4c09369504e93478032cbee4ee77e3d818e1e42a14a85ff37a40a0",
+          "score": 0,
+          "preserved": 1,
+          "formulaCellsInDelivery": 0,
+          "taskSeconds": 11.547,
+          "toolCalls": {
+            "workbook_inspect": 1,
+            "workbook_write": 1,
+            "workbook_recalculate": 1
+          },
+          "usage": {
+            "failed": 0,
+            "inputTokensReported": 9033,
+            "missingUsage": 0,
+            "outputTokensReported": 813,
+            "requestDurationMsSum": 10548,
+            "results": 4,
+            "started": 4,
+            "unfinished": 0,
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+          },
+          "deliveryDigest": "ae88d1d39d0f57607b6b9cda65df8de52b97e7b86079dd9d7b9cc60f3a3c494a"
+        },
+        {
+          "task": "regional-plan",
+          "runId": "96bccc89fb8ff6c06fa6b927442822b57c16fd04eea69ada68bdf342fa2486e7",
+          "score": 0,
+          "preserved": 1,
+          "formulaCellsInDelivery": 0,
+          "taskSeconds": 11.557,
+          "toolCalls": {
+            "workbook_inspect": 1,
+            "bash": 1,
+            "workbook_recalculate": 1
+          },
+          "usage": {
+            "failed": 0,
+            "inputTokensReported": 2480,
+            "missingUsage": 0,
+            "outputTokensReported": 620,
+            "requestDurationMsSum": 10549,
+            "results": 4,
+            "started": 4,
+            "unfinished": 0,
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+          },
+          "deliveryDigest": "b395b32113674caaf35df57d66c00a8530198d43e9c5f58201f82eee854fac82"
+        },
+        {
+          "task": "stress-plan",
+          "runId": "871ac9ee8fec894792519d440f7afe74e07494af7e1784cf906d012299fa50c7",
+          "score": 0,
+          "preserved": 1,
+          "formulaCellsInDelivery": 0,
+          "taskSeconds": 12.881,
+          "toolCalls": {
+            "workbook_inspect": 2,
+            "workbook_write": 1,
+            "workbook_recalculate": 1
+          },
+          "usage": {
+            "failed": 0,
+            "inputTokensReported": 3507,
+            "missingUsage": 0,
+            "outputTokensReported": 882,
+            "requestDurationMsSum": 11847,
+            "results": 5,
+            "started": 5,
+            "unfinished": 0,
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+          },
+          "deliveryDigest": "4cca1f17c0a419019413e07077efc22625ad2805c5a6001cf0da2f4968295f50"
+        }
+      ]
+    }
+  ],
+  "optimizer": {
+    "receipt": {
+      "startedAt": "2026-10-27T09:00:43.143Z",
+      "endedAt": "2026-10-27T09:07:07.164Z",
+      "sessionId": "session-d758085184da4f899fee3ef634cd3bf2",
+      "status": "completed"
+    },
+    "usage": {
+      "failed": 0,
+      "inputTokensReported": 130072,
+      "missingUsage": 0,
+      "outputTokensReported": 30891,
+      "requestDurationMsSum": 376616,
+      "results": 69,
+      "started": 69,
+      "unfinished": 0,
+      "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+    },
+    "correctedDraftEvaluated": false,
+    "stopReason": "candidate budget exhausted; no extra admission or resampling"
+  },
+  "installedCapability": {
+    "installedPackage": "@harness-evolution/spreadsheet",
+    "task": "operating-plan",
+    "score": 1,
+    "preserved": 1,
+    "toolCalls": ["workbook_inspect", "workbook_write", "workbook_inspect"],
+    "usage": {
+      "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+      "started": 4,
+      "results": 4,
+      "failed": 0,
+      "unfinished": 0,
+      "inputTokensReported": 4064,
+      "outputTokensReported": 958,
+      "missingUsage": 0,
+      "requestDurationMsSum": 10484
+    }
+  },
+  "archives": {
+    "baseline-export": {
+      "filename": "harness-evolution-spreadsheet-0.1.0.tgz",
+      "sha256": "9fed0d23cea802b8ea75d712019db504f6171412290bd341d6f9a5ea52c82570"
+    },
+    "rejected-export": {
+      "filename": "harness-evolution-spreadsheet-0.1.0.tgz",
+      "sha256": "cd557f2dee61b35b1d9a7b9266b5a150ffc8158e1601a4628f24d778348fee88"
+    }
+  },
+  "verification": {
+    "unitTests": 14,
+    "nativeTests": 3,
+    "containerTests": 1,
+    "controllerSigkillRecovery": true,
+    "originalContainerIdentityPreserved": true,
+    "githubActions": "blocked before execution: account payments/spending limit",
+    "blueprintSha256": "46ecb1cf793756ceae7e9c881f51fa56cc3a960ddd2906a12c16808db84b1a44"
+  },
+  "limitations": [
+    "Public synthetic acceptance tasks; not historical SpreadsheetBench scores",
+    "Baseline perfect on three tasks; no demonstrated quality improvement",
+    "Adapter stream attempts are not exact provider HTTP calls",
+    "inputTokensReported retains provider inputTokens semantics; cached input is recorded separately in raw traces",
+    "Native installation test is a separate acceptance task, not included in search scores",
+    "Rejected candidate was archived and not adopted; its formulas were overwritten with constants"
+  ]
+}

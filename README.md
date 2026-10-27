@@ -22,6 +22,7 @@
 | [历史资料与同步记录](docs/research/archive/README.md) | 来源哈希、历史证据和迁移边界 |
 | [可执行架构与边界](docs/architecture.md) | 原生插件、控制服务、身份、恢复、隔离与成本 |
 | [当前实现核验](docs/research/2026-10-27-native-implementation.md) | 实际发布物、源码差异、原生验证和工程决策 |
+| [真实模型端到端验收](docs/acceptance.md) | 自主代码变异、真实评分、失败裁决和原生安装后的实际任务 |
 
 ## 它如何运行
 
