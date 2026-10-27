@@ -74,11 +74,13 @@ output:{schema:{type:'number'},render:(_args,value)=>[{type:'text',text:String(v
     await writeFile(
       path.join(suite, 'probe.mjs'),
       `import assert from 'node:assert/strict'; import {access,writeFile} from 'node:fs/promises';
-export async function probe({call,ctx}) {
+export async function probe({call,ctx,observe}) {
   for(const file of ['/evaluation','/input','/var/run/docker.sock']) await assert.rejects(access(file),{code:'ENOENT'});
   assert.equal(process.env.VENUS_API_KEY,undefined); assert.equal(process.env.EVOLUTION_TOKEN,undefined);
   await assert.rejects(writeFile('/candidate/injected','x'));
-  assert.equal(ctx.get('probeMath').double(4),8);
+  const actual=ctx.get('probeMath').double(4);
+  await observe('native service return', {input:4, actual});
+  assert.equal(actual,8);
   const result=await call('probe_double',{value:4});
   assert.equal(result.isError,false); assert.equal(result.content[0].text,'8');
   const invalid=await call('probe_double',{value:'bad'}); assert.equal(invalid.isError,true);
@@ -110,8 +112,14 @@ export async function probe({call,ctx}) {
       const observation = JSON.parse(
         await readFile(path.join(root, 'probes', first.id, 'work/native/behavior.json'), 'utf8'),
       );
-      assert.equal(observation.observations.length, 2);
-      assert.equal(observation.observations[1].result.isError, true);
+      assert.equal(observation.observations.length, 3);
+      assert.deepEqual(observation.observations[0], {
+        sequence: 1,
+        kind: 'value',
+        label: 'native service return',
+        value: { input: 4, actual: 8 },
+      });
+      assert.equal(observation.observations[2].result.isError, true);
       const evidence = await fetch(`http://127.0.0.1:${address.port}/probe-evidence`, {
         method: 'POST',
         headers: { authorization: `Bearer ${'a'.repeat(64)}` },
@@ -126,6 +134,11 @@ export async function probe({call,ctx}) {
       const second = await controller.probe(request);
       await controller.pump();
       assert.equal(store.probes()[1]!.phase, 'failed');
+      const refuted = JSON.parse(
+        await readFile(path.join(root, 'probes', second.id, 'work/native/behavior.json'), 'utf8'),
+      );
+      assert.equal(refuted.status, 'failed');
+      assert.equal(refuted.observations[0].value.actual, 12);
       assert.match(
         await readFile(path.join(root, 'probes', second.id, 'work/native/behavior.json'), 'utf8'),
         /12 !== 8/,

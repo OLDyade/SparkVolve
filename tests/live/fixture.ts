@@ -1,0 +1,29 @@
+import assert from 'node:assert/strict';
+import { isIP } from 'node:net';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import type { ExperimentSpec } from '../../src/contracts.js';
+import { treeDigest } from '../../src/artifacts.js';
+
+/** Use the shipped provider recipe; freeze the environment only after routing is configured. */
+export async function configureLiveModel(dataset: string, spec: ExperimentSpec): Promise<void> {
+  const { configureEgress } = await import(new URL('../../examples/venus/egress.mjs', import.meta.url).href);
+  spec.optimizer = JSON.parse(await readFile('examples/venus/model.json', 'utf8'));
+  spec.executor = spec.optimizer;
+  const directory = path.join(dataset, 'environment');
+  spec.egress = await configureEgress(directory, spec.optimizer);
+  spec.runtime.environment = {
+    directory: 'environment',
+    patch: 'cordis.patch.yml',
+    digest: await treeDigest(directory),
+  };
+}
+
+export function liveControllerEndpoint(port: number): string {
+  const address = process.env.HE_TEST_CONTROLLER_IP;
+  assert.ok(
+    address && isIP(address) === 4,
+    'HE_TEST_CONTROLLER_IP must be an explicit broker-reachable IPv4 address',
+  );
+  return `http://${address}:${port}`;
+}

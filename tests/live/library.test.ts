@@ -11,6 +11,7 @@ import { Store } from '../../src/store.js';
 import { Controller } from '../../src/controller.js';
 import { serve } from '../../src/api.js';
 import { optimize } from '../../src/optimizer.js';
+import { configureLiveModel, liveControllerEndpoint } from './fixture.js';
 
 test(
   'real model selects, inspects and imports an authorized negative research asset',
@@ -39,14 +40,8 @@ test(
     spec.objective =
       'This is a research-library product acceptance, not a benchmark or quality search. Find the prior evidence-oriented research-method asset in the authorized library. Inspect its research record and original implementation source using native evolution tools, explain the prior failure limitation, and import the relevant source as one editable draft whose name you choose. Do not import the unrelated image-thumbnail asset. Do not submit candidates or execute evaluation tasks. Finally call evolution_finish with the chosen archive ID and an explicit statement that old scores were not imported. Choose your own retrieval query and tool sequence.';
     spec.runtime.image = image;
-    spec.runtime.environment = {
-      directory: 'environment',
-      patch: 'cordis.patch.yml',
-      digest: await treeDigest(path.join(dataset, 'environment')),
-    };
     spec.researchLibrary = { directory: 'library', digest: await treeDigest(path.join(dataset, 'library')) };
-    spec.optimizer = JSON.parse(await readFile('examples/venus/model.json', 'utf8'));
-    spec.executor = spec.optimizer;
+    await configureLiveModel(dataset, spec);
     spec.evaluator.image = image;
     spec.candidate.build.image = image;
     spec.budget.optimizerSeconds = 180;
@@ -74,7 +69,7 @@ test(
         root,
         spec,
         {
-          endpoint: `http://host.docker.internal:${address.port}`,
+          endpoint: liveControllerEndpoint(address.port),
           controlEndpoint: `http://127.0.0.1:${address.port}`,
         },
         controller.docker,

@@ -10,6 +10,7 @@ import { Store } from '../../src/store.js';
 import { Controller } from '../../src/controller.js';
 import { serve } from '../../src/api.js';
 import { optimize } from '../../src/optimizer.js';
+import { configureLiveModel, liveControllerEndpoint } from './fixture.js';
 
 // Explicitly opt-in, real-provider lifecycle acceptance. No score or improvement claim.
 test(
@@ -31,13 +32,7 @@ test(
     spec.objective =
       'This is an event transport lifecycle acceptance, not a quality experiment. Do not branch, mutate, submit candidates or run tasks. Call evolution_status, then evolution_wait with its exact cursor. The host will commit acceptance.wakeup when you wait. Once that event is received, call evolution_finish and quote its nonce in the reason. End normally. No repeated status polling.';
     spec.runtime.image = image;
-    spec.runtime.environment = {
-      directory: 'environment',
-      patch: 'cordis.patch.yml',
-      digest: await treeDigest(path.join(dataset, 'environment')),
-    };
-    spec.optimizer = JSON.parse(await readFile('examples/venus/model.json', 'utf8'));
-    spec.executor = spec.optimizer;
+    await configureLiveModel(dataset, spec);
     spec.evaluator.image = image;
     spec.candidate.build.image = image;
     spec.budget.optimizerSeconds = 180;
@@ -71,7 +66,7 @@ test(
         root,
         spec,
         {
-          endpoint: `http://host.docker.internal:${address.port}`,
+          endpoint: liveControllerEndpoint(address.port),
           controlEndpoint: `http://127.0.0.1:${address.port}`,
         },
         controller.docker,

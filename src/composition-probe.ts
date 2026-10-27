@@ -7,6 +7,7 @@ import { atomicJSON } from './artifacts.js';
 import { ToolCallId } from '@deepseek-ai/dsh-llm';
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
+import { BehaviorJournal } from './behavior-journal.js';
 
 export const name = 'evolution-composition-probe';
 export const inject = ['loader', 'agents', 'tools'];
@@ -42,17 +43,19 @@ export function apply(
     await atomicJSON(config.report, report);
     if (!report.passed) throw new Error('Native composition QA failed; inspect composition.json');
     if (config.behaviorModule) {
-      const observations: unknown[] = [];
       const file = path.join(path.dirname(config.report), 'behavior.json');
+      const journal = new BehaviorJournal(file);
+      await journal.start();
       try {
         const suite = await import(pathToFileURL(config.behaviorModule).href);
         if (typeof suite.probe !== 'function')
-          throw new Error('Suite must export async probe({agent, ctx, call, workspace})');
+          throw new Error('Suite must export async probe({agent, ctx, call, observe, workspace})');
         let sequence = 0;
         await suite.probe({
           agent,
           ctx: agent.ctx,
           workspace: config.workspace,
+          observe: (label: string, value: unknown) => journal.observe(label, value),
           call: async (name: string, args: Record<string, unknown>) => {
             const callSequence = ++sequence;
             const result = await agent.ctx.tools.execute({
@@ -62,18 +65,15 @@ export function apply(
               agent,
               signal: new AbortController().signal,
             });
-            observations.push(
-              JSON.parse(JSON.stringify({ sequence: callSequence, name, arguments: args, result })),
-            );
-            await atomicJSON(file, { status: 'running', observations });
+            await journal.tool(name, args, result);
             return result;
           },
         });
-        await atomicJSON(file, { status: 'passed', observations });
       } catch (error) {
-        await atomicJSON(file, { status: 'failed', observations, error: String(error) });
+        await journal.finish('failed', String(error));
         throw error;
       }
+      await journal.finish('passed');
     }
     return undefined;
   });

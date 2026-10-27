@@ -10,6 +10,7 @@ import { Store } from '../../src/store.js';
 import { Controller } from '../../src/controller.js';
 import { serve } from '../../src/api.js';
 import { optimize } from '../../src/optimizer.js';
+import { configureLiveModel, liveControllerEndpoint } from './fixture.js';
 import { experimentReport } from '../../src/report.js';
 
 test(
@@ -56,19 +57,14 @@ parameters:{a:{type:'number',required:true},b:{type:'number',required:true}},out
     const spec = containerSpecification();
     spec.name = 'live-behavioral-probe-acceptance';
     spec.objective =
-      'This is an explicitly requested protocol integration acceptance, not a quality or optimization experiment. Existing draft /workspace/distance declares number_distance as the distance between finite real numbers. Inspect its source with normal native tools. Do not modify that draft, submit candidates, call models from suites or run benchmark tasks. Independently derive a mathematical boundary property, author a separate ES-module suite under /workspace, export async probe({agent,ctx,call}), and use evolution_probe to test the existing draft through the real native tool pipeline. A native result contains isError and content. Use node:assert/strict so the original counterexample causes a failed probe, do not catch or erase the assertion. Wait via evolution_wait until probe.completed, inspect evolution_probe_evidence observations/native/behavior.json and original logs, then call evolution_finish quoting the probe ID and observed counterexample. Run exactly one probe. A retained failed assertion is the intended protocol outcome, not a task score.';
+      'This is an explicitly requested protocol integration acceptance, not a quality or optimization experiment. Existing draft /workspace/distance declares number_distance as the distance between finite real numbers. Inspect its source with normal native tools. Do not modify that draft, submit candidates, call models from suites or run benchmark tasks. Independently derive a mathematical boundary property, author a separate ES-module suite under /workspace, export async probe({agent,ctx,call,observe}), and use evolution_probe to test the existing draft through the real native tool pipeline. A native result contains isError and content. Before the boundary assertion, await observe(label,jsonValue) to persist the actual values obtained from the calls, choosing your own label and JSON structure. Use node:assert/strict so the original counterexample causes a failed probe, do not catch or erase the assertion. Wait via evolution_wait until probe.completed, inspect evolution_probe_evidence observations/native/behavior.json and original logs, then call evolution_finish quoting the probe ID and observed counterexample. Run exactly one probe. A retained failed assertion is the intended protocol outcome, not a task score.';
     spec.runtime = {
       image,
       dshVersion: '0.2.1-rc.4',
       profile: 'sdk',
-      environment: {
-        directory: 'environment',
-        digest: await treeDigest(path.join(dataset, 'environment')),
-        patch: 'cordis.patch.yml',
-      },
+      environment: null,
     };
-    spec.optimizer = JSON.parse(await readFile('examples/venus/model.json', 'utf8'));
-    spec.executor = spec.optimizer;
+    await configureLiveModel(dataset, spec);
     spec.evaluator.image = image;
     spec.candidate = { patch: 'cordis.patch.yml', build: { image, timeoutSeconds: 60 }, qa: null };
     spec.optimizerHarness.digest = await treeDigest(path.join(dataset, 'optimizer-bundle'));
@@ -100,7 +96,7 @@ parameters:{a:{type:'number',required:true},b:{type:'number',required:true}},out
           root,
           spec,
           {
-            endpoint: `http://host.docker.internal:${address.port}`,
+            endpoint: liveControllerEndpoint(address.port),
             controlEndpoint: `http://127.0.0.1:${address.port}`,
           },
           controller.docker,
@@ -118,6 +114,10 @@ parameters:{a:{type:'number',required:true},b:{type:'number',required:true}},out
       assert.match(behavior.error, /AssertionError/);
       assert.ok(
         behavior.observations.some((observation: { name: string }) => observation.name === 'number_distance'),
+      );
+      assert.ok(
+        behavior.observations.some((observation: { kind: string }) => observation.kind === 'value'),
+        'The model-authored suite must record its actual values before the failing assertion',
       );
       assert.ok(store.getMeta('searchConclusion')?.includes(probe.id));
       assert.equal(await treeDigest(draft), draftDigest);

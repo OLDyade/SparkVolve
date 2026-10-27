@@ -1,0 +1,317 @@
+{
+  "name": "Explicit service observations and native scope lifecycle",
+  "recordedOn": "2026-10-28",
+  "sourceBaseCommit": "dfd5434b727f594f8bffc2139e335d00ed0e3926",
+  "boundary": "Engineering acceptance. Native lifecycle is hand-authored. Real model chose an inadequate property, so counterexample acceptance failed. No candidate scores or stable improvement claim.",
+  "versions": {
+    "dsh": "0.2.1-rc.4",
+    "cordis": "4.0.5",
+    "latestOfficialCommit": "22ddee3792402c3e70ec5f86a63c3e3e895a2f60"
+  },
+  "finalImage": "sha256:09e0019870b05c7b49def84d54c0e30a14d2e2449ec0d964aa04ba98f26f998b",
+  "sourceHashes": {
+    "src/behavior-journal.ts": "13e8be112b39997a0c2af40dea3bade38fc773d7902cc499ea3d3e5b7ebc63ac",
+    "src/composition-probe.ts": "07e282ab6324073d43dd914dbd6560f875eb905ade361ad3087c3aec64aa315d",
+    "src/artifacts.ts": "525aabe4ad7a6038fe858026fd63ce6e53da7a70d92f1ae61a995b75baa3b6ec",
+    "tests/native/service-scope.test.ts": "5ee8dc2c0e6e9f8f85bcec4568e88317cd8edf643e9b7b5bdc03ba92f9bd4f54",
+    "tests/container/probes.test.ts": "dca3de0b1f10f32b16d4ea6a3876f7949ce03b95c283f7a4106968558bae4302",
+    "tests/live/probes.test.ts": "66bbe47a3e05582c5e1b673ef03ff3b592fa7b1880d44f42e7c8823de603e3ff",
+    "tests/live/fixture.ts": "3e292fef168b8959a56d5411eb0a5f6f544a0a3d9c450fd443ae9d06f35dab08"
+  },
+  "nativeLifecycle": {
+    "originalDirectory": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-service-scope-ushq4S",
+    "behavior": {
+      "observations": [
+        {
+          "kind": "value",
+          "label": "three-independent-service-scopes",
+          "sequence": 1,
+          "value": {
+            "left": {
+              "value": 6,
+              "version": "v1"
+            },
+            "right": {
+              "value": 10,
+              "version": "v1"
+            },
+            "root": {
+              "value": 4,
+              "version": "v1"
+            }
+          }
+        },
+        {
+          "kind": "value",
+          "label": "provider-unloaded-consumer-pending",
+          "sequence": 2,
+          "value": {
+            "consumerState": 0,
+            "events": [
+              "provider-v1-disposed:left",
+              "consumer-v1-disposed:left"
+            ],
+            "left": null,
+            "right": {
+              "value": 10,
+              "version": "v1"
+            },
+            "root": {
+              "value": 4,
+              "version": "v1"
+            }
+          }
+        },
+        {
+          "kind": "value",
+          "label": "new-interface-and-config",
+          "sequence": 3,
+          "value": {
+            "left": {
+              "value": 25,
+              "version": "v2"
+            },
+            "right": {
+              "value": 10,
+              "version": "v1"
+            },
+            "root": {
+              "value": 4,
+              "version": "v1"
+            }
+          }
+        },
+        {
+          "kind": "value",
+          "label": "asynchronous-cleanup-in-progress",
+          "sequence": 4,
+          "value": {
+            "disposed": false,
+            "events": [
+              "provider-v1-disposed:left",
+              "consumer-v1-disposed:left",
+              "provider-v2-cleanup-started"
+            ]
+          }
+        },
+        {
+          "kind": "value",
+          "label": "branch-and-children-fully-disposed",
+          "sequence": 5,
+          "value": {
+            "consumerUid": null,
+            "disposed": true,
+            "events": [
+              "provider-v1-disposed:left",
+              "consumer-v1-disposed:left",
+              "provider-v2-cleanup-started",
+              "provider-v2-cleanup-finished"
+            ],
+            "left": null,
+            "providerUid": null,
+            "right": {
+              "value": 10,
+              "version": "v1"
+            },
+            "root": {
+              "value": 4,
+              "version": "v1"
+            }
+          }
+        }
+      ],
+      "status": "passed"
+    }
+  },
+  "regression": {
+    "unit": {
+      "passed": 55,
+      "failed": 0
+    },
+    "native": {
+      "passed": 10,
+      "failed": 0
+    },
+    "finalImageRunc": {
+      "passed": 12,
+      "failed": 0
+    }
+  },
+  "retainedLaunchFailures": [
+    {
+      "directory": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-native-probes-6WreXA",
+      "cause": "Docker config digest used as image ID; no image found before candidate execution. Corrected using docker image inspect."
+    },
+    {
+      "directory": "/Users/apple/code/spark-harness-evolution/.evolution/service-observation-live-20261028",
+      "cause": "Old live test passed host.docker.internal to literal-IP controlled route; rejected before model invocation. Live fixture updated to shipped controlled-egress recipe and explicit IP."
+    }
+  ],
+  "liveCounterexampleAcceptance": {
+    "accepted": false,
+    "image": "sha256:afc8f0d0d770be1bf341bc2485c0695d254da15f979d6f7e7453b0472f2672a4",
+    "imageBoundary": "Before independent review added sparse-array rejection to canonical. Final image tested separately; no failed model acceptance retried.",
+    "originalDirectory": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-live-probes-wKYqdb",
+    "probeId": "31fdfd64f2d34a447b94805d62fd1e05de81f74663b26304ec3f00b0c866c2d8",
+    "suiteSha256": "478361c6e18421036c7a262d1c46d1f9241e859788570fa35eb16111f7ad4644",
+    "authoredSuite": "import assert from 'node:assert/strict';\n\nasync function callNumber(call, a, b) {\n  const result = await call('number_distance', {a, b});\n  const text = (result?.content ?? [])\n    .filter(block => block?.type === 'text')\n    .map(block => block.text)\n    .join('');\n  const value = Number(text);\n  return {a, b, isError: result?.isError === true, text, value};\n}\n\nexport async function probe({agent, ctx, call, observe, workspace}) {\n  // Mathematical boundary property derived independently: for every x in R,\n  // d(x, x) = |x - x| = 0. A distance (metric) must be zero on the diagonal.\n  const x = 5;\n  const self = await callNumber(call, x, x);\n\n  // Orientation/symmetry reference point: the claim under test is d(5, 5) = 0,\n  // not the implementation's sign convention.\n  const reversed = await callNumber(call, x, x);\n\n  await observe('number_distance_boundary', {\n    calls: {\n      selfSelf: self,\n      repeatedSelf: reversed,\n    },\n  });\n\n  assert.equal(self.isError, false, `number_distance(5, 5) returned isError: ${self.isError}`);\n  assert.equal(\n    self.value,\n    0,\n    `Expected d(5, 5) = |5 - 5| = 0 but observed ${JSON.stringify(self.text)}`,\n  );\n}",
+    "behavior": {
+      "observations": [
+        {
+          "arguments": {
+            "a": 5,
+            "b": 5
+          },
+          "kind": "tool",
+          "name": "number_distance",
+          "result": {
+            "content": [
+              {
+                "text": "0",
+                "type": "text"
+              }
+            ],
+            "isError": false,
+            "value": 0
+          },
+          "sequence": 1
+        },
+        {
+          "arguments": {
+            "a": 5,
+            "b": 5
+          },
+          "kind": "tool",
+          "name": "number_distance",
+          "result": {
+            "content": [
+              {
+                "text": "0",
+                "type": "text"
+              }
+            ],
+            "isError": false,
+            "value": 0
+          },
+          "sequence": 2
+        },
+        {
+          "kind": "value",
+          "label": "number_distance_boundary",
+          "sequence": 3,
+          "value": {
+            "calls": {
+              "repeatedSelf": {
+                "a": 5,
+                "b": 5,
+                "isError": false,
+                "text": "0",
+                "value": 0
+              },
+              "selfSelf": {
+                "a": 5,
+                "b": 5,
+                "isError": false,
+                "text": "0",
+                "value": 0
+              }
+            }
+          }
+        }
+      ],
+      "status": "passed"
+    },
+    "usage": {
+      "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+      "started": 9,
+      "results": 9,
+      "failed": 0,
+      "unfinished": 0,
+      "inputTokensReported": 19673,
+      "outputTokensReported": 2451,
+      "missingUsage": 0,
+      "requestDurationMsSum": 22325
+    },
+    "optimizerSummary": {
+      "consumedSeconds": 23.197,
+      "episodes": 1,
+      "optimizerHarness": "0d4c2c7bce43f893250cac42a438f68fc37bcae774c0bba48444aff3f17d2365",
+      "reason": "optimizer_concluded"
+    },
+    "diagnosis": "Model tested identical operands twice, d(5,5)=0. Subtraction satisfies this property while failing symmetry/nonnegativity off the diagonal. Protocol records actual values; selected experiment did not distinguish faulty implementation. No second probe or resampling."
+  },
+  "finalImageLiveRegression": [
+    {
+      "name": "eventContinuation",
+      "originalDirectory": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-live-events-R8gNAr",
+      "acceptance": {
+        "evidenceBoundary": "Real model lifecycle only; no task score or quality gain.",
+        "nonce": "bf27f78075b0a603",
+        "passed": true,
+        "summary": {
+          "consumedSeconds": 8.885,
+          "episodes": 1,
+          "optimizerHarness": "0d4c2c7bce43f893250cac42a438f68fc37bcae774c0bba48444aff3f17d2365",
+          "reason": "optimizer_concluded"
+        },
+        "waits": 1
+      },
+      "usage": {
+        "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+        "started": 4,
+        "results": 4,
+        "failed": 0,
+        "unfinished": 0,
+        "inputTokensReported": 6568,
+        "outputTokensReported": 729,
+        "missingUsage": 0,
+        "requestDurationMsSum": 8166
+      }
+    },
+    {
+      "name": "researchAssetImport",
+      "originalDirectory": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-live-library-1OzBSY",
+      "acceptance": {
+        "evidenceBoundary": "Real model retrieval and import only; synthetic archives, no quality gain.",
+        "imported": {
+          "archiveId": "ff29707c2ca614e4956aa7829efa1cd7f2371afa52145697292ff00acbebad77",
+          "draft": "evidence-first-research",
+          "recordDigest": "3e3e57b48ef4c47944b44d4c45a468ea21bc8d9bac852c224feeef541daee5bb",
+          "sourceCandidate": "f7e6e5fa142d64ce1d7e2bc2426b38718487658e5025d4e789c5a1481fc152ad",
+          "sourceExperiment": "synthetic-negative-research",
+          "sourcePhase": "qa_failed"
+        },
+        "passed": true,
+        "routes": [
+          "/status",
+          "/status",
+          "/library",
+          "/library",
+          "/asset",
+          "/asset",
+          "/asset",
+          "/import",
+          "/finish",
+          "/status"
+        ],
+        "summary": {
+          "consumedSeconds": 18.213,
+          "episodes": 1,
+          "optimizerHarness": "0d4c2c7bce43f893250cac42a438f68fc37bcae774c0bba48444aff3f17d2365",
+          "reason": "optimizer_concluded"
+        }
+      },
+      "usage": {
+        "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+        "started": 8,
+        "results": 8,
+        "failed": 0,
+        "unfinished": 0,
+        "inputTokensReported": 13456,
+        "outputTokensReported": 1823,
+        "missingUsage": 0,
+        "requestDurationMsSum": 17240
+      }
+    }
+  ]
+}
