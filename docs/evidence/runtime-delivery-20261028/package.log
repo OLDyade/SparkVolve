@@ -1,0 +1,7 @@
+npm notice run @harness-evolution/dsh-bundle@0.0.0-development package:artifacts
+npm notice run node scripts/package-artifacts.mjs .evolution/delivery-final/package
+npm notice run @harness-evolution/dsh-bundle@0.0.0-development prepack
+npm notice run npm run build
+npm notice run @harness-evolution/dsh-bundle@0.0.0-development build
+npm notice run tsc -p tsconfig.json
+{"output":"/Users/apple/code/spark-harness-home-fix/.evolution/delivery-final/package","commit":"ddf2633f020961715ee3f46dcc441ab659b8a206","dirty":true,"files":381,"dependencies":627,"sha256":"5b0587a0173f1e9064cdb908dacd62580269e391eb77695c69403b2e8efd8ed7"}

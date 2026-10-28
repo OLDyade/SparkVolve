@@ -37,6 +37,8 @@ test(
       import assert from 'node:assert/strict';
       import { readFile, writeFile } from 'node:fs/promises';
       import { networkInterfaces } from 'node:os';
+      import { initializeRuntimeEnvironment } from '/app/dist/runtime-environment.js';
+      await initializeRuntimeEnvironment();
       assert.notEqual(process.getuid(), 0);
       await assert.rejects(writeFile('/source/fact', 'changed'));
       await assert.rejects(writeFile('/rootfs-proof', 'changed'));
@@ -44,7 +46,9 @@ test(
       const status = await readFile('/proc/self/status', 'utf8');
       assert.match(status, /NoNewPrivs:\\s+1/);
       assert.match(status, /CapEff:\\s+0+\\n/);
-      await writeFile('/home/node/home-proof', 'writeable');
+      await writeFile(process.env.HOME + '/home-proof', 'writeable');
+      for (const key of ['XDG_CONFIG_HOME','XDG_CACHE_HOME','XDG_DATA_HOME','XDG_STATE_HOME','XDG_RUNTIME_DIR'])
+        await writeFile(process.env[key] + '/proof', 'writeable');
       await writeFile('/tmp/tmp-proof', 'writeable');
       await writeFile('/workspace/proof.json', JSON.stringify({uid:process.getuid(), status}));
     `,

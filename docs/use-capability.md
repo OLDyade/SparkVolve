@@ -38,7 +38,8 @@ docker run --name "$CAPABILITY_CONTAINER" --runtime runc \
   --user "$(id -u):$(id -g)" --cap-drop ALL --security-opt no-new-privileges \
   --read-only --memory 4g --cpus 2 --pids-limit 256 \
   --tmpfs /tmp:rw,exec,nosuid,nodev,size=536870912,mode=1777 \
-  --env HOME=/state/home --env DSH_HOME=/state/dsh \
+  --tmpfs "/tmp/evolution-home:rw,nosuid,nodev,size=134217728,uid=$(id -u),gid=$(id -g),mode=700" \
+  --env DSH_HOME=/state/dsh \
   --env DSH_MAX_TOKENS_AS_SUCCESS=false \
   --env-file "$CAPABILITY_CREDENTIALS" --workdir /workspace \
   --mount "type=bind,source=$CAPABILITY_BUNDLE,target=/capability/bundle.tgz,readonly" \

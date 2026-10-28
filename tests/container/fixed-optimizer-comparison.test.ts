@@ -325,7 +325,8 @@ test(
       assert.ok(entries.every((entry) => entry.mode === entries[0].mode));
       methodCallCounts[entries[0].mode] = entries.length;
     }
-    assert.deepEqual(methodCallCounts, { direct: 2, inspect: 3, failure: 1 });
+    // Native finish must not spend an additional request on either successful arm.
+    assert.deepEqual(methodCallCounts, { direct: 1, inspect: 2, failure: 1 });
     const failedJob = report.jobs.find((job: { phase: string }) => job.phase === 'failed');
     const failureLedger = (
       await readFile(path.join(study, failedJob.childRoot, 'optimizer/0/trace/requests.jsonl'), 'utf8')

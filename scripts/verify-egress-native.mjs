@@ -9,6 +9,7 @@ import { parse, stringify } from 'yaml';
 import ipaddr from 'ipaddr.js';
 import { command } from '../dist/docker.js';
 import { temporaryFilesystems } from '../dist/isolation.js';
+import { runtimeEnvironment } from '../dist/runtime-environment.js';
 import { timeoutSeconds } from '../examples/timeouts.mjs';
 import { waitTaskContainer } from './container-task-deadline.mjs';
 
@@ -193,7 +194,7 @@ try {
       [path.join(root, 'trace'), '/trace', true],
       [path.join(root, 'work'), '/workspace', true],
     ],
-    { HOME: '/home/node', EGRESS_CLIENT_TOKEN: 'local-broker-placeholder' },
+    { ...runtimeEnvironment, EGRESS_CLIENT_TOKEN: 'local-broker-placeholder' },
     ['--dns=127.0.0.1', '--add-host', `evolution-egress:${brokerIP}`],
   );
   await docker(['start', worker]);

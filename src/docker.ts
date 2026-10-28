@@ -5,6 +5,7 @@ import { Isolation, type IsolationSpec } from './contracts.js';
 import { atomicJSON } from './artifacts.js';
 import { networkArgs, type NetworkSpec } from './network.js';
 import { command } from './command.js';
+import { runtimeEnvironment } from './runtime-environment.js';
 export { command } from './command.js';
 import {
   containerIdentity,
@@ -80,6 +81,9 @@ export class Docker {
     ) as ContainerState;
   }
   async create(spec: ContainerSpec): Promise<void> {
+    for (const [key, value] of Object.entries(runtimeEnvironment))
+      if (key in spec.env && spec.env[key] !== value)
+        throw new Error(`Managed runtime environment conflict: ${key}`);
     Isolation.parse(spec.isolation);
     await this.host(spec.isolation.runtime);
     const args = [
@@ -119,9 +123,9 @@ export class Docker {
       );
     }
     // Only environment variable names reach argv; secret values travel via the child environment.
-    for (const name of Object.keys(spec.env)) args.push('--env', name);
+    for (const name of Object.keys({ ...runtimeEnvironment, ...spec.env })) args.push('--env', name);
     args.push(spec.image, ...spec.command);
-    await command('docker', args, { env: { ...process.env, ...spec.env } });
+    await command('docker', args, { env: { ...process.env, ...runtimeEnvironment, ...spec.env } });
     verifyIsolation(spec, await this.configuration(spec.name));
   }
   async halt(spec: ContainerSpec, expected?: ContainerReference): Promise<void> {

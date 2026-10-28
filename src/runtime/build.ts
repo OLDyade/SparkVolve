@@ -1,5 +1,7 @@
 import { cp, mkdir, readFile, writeFile, rename, chmod, readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { initializeRuntimeEnvironment } from '../runtime-environment.js';
+await initializeRuntimeEnvironment();
 import { command } from '../docker.js';
 import { atomicJSON, fileDigest, treeDigest, inventory } from '../artifacts.js';
 

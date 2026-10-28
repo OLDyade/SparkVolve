@@ -1,0 +1,101 @@
+npm notice run @harness-evolution/dsh-bundle@0.0.0-development test:container
+npm notice run npm run build && node --import tsx --test tests/container/*.test.ts
+npm notice run @harness-evolution/dsh-bundle@0.0.0-development build
+npm notice run tsc -p tsconfig.json
+Compiled build evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-compiled-build-8GYXB1
+✔ locked TypeScript build bundles runtime dependencies; recovery reuses original container; tampering fails (16563.295917ms)
+Cancellation evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-real-cancellation-sXzBQd
+✔ real cancellation stops only registered execution IDs, recovers removal and reclaims controlled egress (44042.199125ms)
+Replacement refusal evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-cancel-replacement-YfchRB
+✔ real same-name replacement is never stopped or removed by the original cancellation authority (3557.19275ms)
+Constraint evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-constraints-AjyFV4
+✔ independent container observations reject an infeasible seed and admit a feasible bundle (43267.69025ms)
+Egress reclamation evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-egress-release-s5IDUG
+✔ terminal archive precedes reclamation; interrupted removal resumes without any execution (15142.440417ms)
+Failure reclamation evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-egress-failed-release-egPtcP
+✔ recovery verification failure stops original running worker and resumes interrupted failure cleanup (22644.209333ms)
+Egress lifecycle evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-egress-session-UldQkL
+✔ controlled egress: original network/broker recovery, credential boundary and terminal loss (39523.131042ms)
+Container evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-container-qXg4fN
+✔ real containers: native DSH → immutable delivery → private grade → strict decision → installable archive (46511.442042ms)
+Fixed comparison native evidence retained: /Users/apple/code/spark-harness-home-fix/.evolution/fixed-comparison-native-rDQmw8
+✖ fixed comparison CLI executes every frozen method with real native search, independent assessment and no meta session (104213.1655ms)
+Host feedback native evidence retained: /Users/apple/code/spark-harness-home-fix/.evolution/host-feedback-native-tQSF7z
+✔ same frozen G runs full/mechanical host views through actual DSH containers and independent assessment (105757.959875ms)
+Isolation evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-isolation-UJafZK
+✔ real isolation: non-root, read-only source/root, offline network, bounded resources and refusal of drift (4563.158125ms)
+Network capacity evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-pool-WxlZu5
+✔ explicit pool supplies 62 distinct leases without consuming Docker default /24 pools (53745.598958ms)
+Cross-process contention evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-pool-race-QK2pWW
+✔ independent allocators contend for the same lease and reclaim the full finite pool (3626.979167ms)
+Study cancellation evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-real-study-cancel-2RNLxb
+✔ real parent study cancellation reclaims completed method and meta workers across interruption (10274.61075ms)
+Optimizer preset evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-preset-container-A146fm
+✖ optimizer container mounts the native preset and concludes through the actual controller API (35494.427167ms)
+Probe container evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-native-probes-j5qwxu
+✔ native behavioral probes exercise real composed services and tools in isolated containers (31968.581208ms)
+Publication recovery evidence: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-publication-candidates-JZBT8W
+Publication recovery evidence: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-publication-delivery-Mar3tk
+Publication recovery evidence: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-publication-artifacts-rch0py
+▶ real containers survive SIGKILL during source, build and delivery publication without resampling
+  ✔ candidates (41581.126375ms)
+  ✔ artifacts (40365.453166ms)
+  ✔ delivery (52712.370542ms)
+✔ real containers survive SIGKILL during source, build and delivery publication without resampling (52713.12725ms)
+Domain QA evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-domain-qa-UiNZJW
+✔ explicit domain QA failure remains terminal after successful native assembly (7674.815083ms)
+Native HOME evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-native-home-iAlqGK
+✔ native sandbox can initialize default LibreOffice profile in quota-bound HOME (4778.838166ms)
+Validation cancellation evidence retained: /Users/apple/code/spark-harness-home-fix/.evolution/validation-cancellation-native-n8AqFF
+✔ public validate SIGINT retains original task; cancel-validation removes it and forbids new arms (13777.023083ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 21
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 106228.110125
+
+✖ failing tests:
+
+test at tests/container/fixed-optimizer-comparison.test.ts:1:634
+✖ fixed comparison CLI executes every frozen method with real native search, independent assessment and no meta session (104213.1655ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    {
+  +   direct: 1,
+  -   direct: 2,
+      failure: 1,
+  +   inspect: 2
+  -   inspect: 3
+    }
+  
+      at TestContext.<anonymous> (/Users/apple/code/spark-harness-home-fix/tests/container/fixed-optimizer-comparison.test.ts:328:12)
+      at async Test.run (node:internal/test_runner/test:1313:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { failure: 1, direct: 1, inspect: 2 },
+    expected: { direct: 2, inspect: 3, failure: 1 },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/container/optimizer.test.ts:1:642
+✖ optimizer container mounts the native preset and concludes through the actual controller API (35494.427167ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  4 !== 5
+  
+      at TestContext.<anonymous> (/Users/apple/code/spark-harness-home-fix/tests/container/optimizer.test.ts:107:14)
+      at async Test.run (node:internal/test_runner/test:1313:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 5,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

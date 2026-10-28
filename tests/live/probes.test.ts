@@ -10,12 +10,12 @@ import { Store } from '../../src/store.js';
 import { Controller } from '../../src/controller.js';
 import { serve } from '../../src/api.js';
 import { optimize } from '../../src/optimizer.js';
-import { configureLiveModel, liveControllerEndpoint } from './fixture.js';
+import { configureLiveModel, liveControllerEndpoint, liveBudgets, liveTestTimeout } from './fixture.js';
 import { experimentReport } from '../../src/report.js';
 
 test(
   'real model authors and observes a native behavioral counterexample without scoring a task',
-  { timeout: 300_000 },
+  { timeout: liveTestTimeout(true) },
   async () => {
     const image = process.env.HE_TEST_IMAGE;
     assert.ok(image);
@@ -70,8 +70,12 @@ parameters:{a:{type:'number',required:true},b:{type:'number',required:true}},out
     spec.optimizerHarness.source.digest = await treeDigest(path.join(dataset, 'optimizer-bundle'));
     assert.equal(spec.optimizerHarness.kind, 'source');
     if (spec.optimizerHarness.kind === 'source') spec.optimizerHarness.build = { image, timeoutSeconds: 120 };
-    spec.budget = { candidates: 1, optimizerSeconds: 240 };
-    spec.probes = { limit: 1, timeoutSeconds: 30 };
+    spec.budget = {
+      candidates: 1,
+      optimizerSeconds:
+        liveBudgets.optimizerSeconds + liveBudgets.probeBuildSeconds + liveBudgets.probeSeconds,
+    };
+    spec.probes = { limit: 1, timeoutSeconds: liveBudgets.probeSeconds };
     for (const task of spec.tasks) {
       for (const dir of [task.input, task.evaluation])
         await mkdir(path.join(dataset, dir), { recursive: true });

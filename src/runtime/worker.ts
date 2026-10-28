@@ -5,6 +5,9 @@ import { z } from 'zod';
 import { Model } from '../contracts.js';
 import { stringify } from 'yaml';
 import { requestMetrics } from '../metrics.js';
+import { initializeRuntimeEnvironment } from '../runtime-environment.js';
+
+await initializeRuntimeEnvironment();
 
 const config = z
   .strictObject({
@@ -24,6 +27,11 @@ writeFileSync(
   stringify([
     {
       insert: [
+        {
+          id: 'evolution-http-transport',
+          name: '/app/dist/http-transport.js',
+          config: { timeoutSeconds: config.timeoutSeconds },
+        },
         {
           id: 'evolution-observer',
           name: '/app/dist/telemetry.js',

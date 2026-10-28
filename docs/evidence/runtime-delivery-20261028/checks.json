@@ -1,0 +1,96 @@
+{
+  "recordedAt": "2026-10-28T03:05:49.774Z",
+  "result": {
+    "exitCode": 0,
+    "results": [
+      {
+        "command": [
+          "npm",
+          "run",
+          "check"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "npm",
+          "run",
+          "package:artifacts",
+          "--",
+          ".evolution/delivery-final/package"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "npm",
+          "run",
+          "test:install"
+        ],
+        "exitCode": 0,
+        "archive": "5b0587a0173f1e9064cdb908dacd62580269e391eb77695c69403b2e8efd8ed7"
+      }
+    ],
+    "endedAt": "2026-10-28T03:05:24.788920+00:00"
+  },
+  "tests": {
+    "unit": {
+      "passed": 254,
+      "failed": 0
+    },
+    "native": {
+      "passed": 26,
+      "failed": 0
+    },
+    "container": {
+      "total": 23,
+      "initialPassed": 21,
+      "initialFailed": 2,
+      "correctedTestsPassed": 2,
+      "boundary": "Two stale request-count assertions corrected for native finish ending the turn; their complete tests passed on rerun. Initial failures retained."
+    }
+  },
+  "logs": {
+    "checks": {
+      "file": "checks.log",
+      "sha256": "bea32569557c6d253eac1f425b40124b6f94c7347879970ec609ce0e53d471fb"
+    },
+    "package": {
+      "file": "package.log",
+      "sha256": "fc8aec971b4106d0b34702ceb7fa412ce511abdbe20e6308911d521607e1625c"
+    },
+    "installation": {
+      "file": "installation.log",
+      "sha256": "2f6eb97b216a1eb53ba54d16375004f0916ebc3ecd557591f3d26730f8ac9c9e"
+    },
+    "containerInitial": {
+      "file": "containerInitial.log",
+      "sha256": "9e1c5e712e325949dba93e3dbf064dbeaf695896c5d62c158e708c435047ba91"
+    },
+    "containerCorrection": {
+      "file": "containerCorrection.log",
+      "sha256": "eabad4c0951d72db04da45cfc308e9f42ed4bdd2e19b329b8c4b91abb71aa125"
+    },
+    "longHttp": {
+      "file": "longHttp.log",
+      "sha256": "a8470e2fd6807c2078b219952d4de4225b58f5ac6499b8044003600b1f1c3872"
+    }
+  },
+  "package": {
+    "archive": "5b0587a0173f1e9064cdb908dacd62580269e391eb77695c69403b2e8efd8ed7",
+    "files": 381,
+    "sbomComponents": 627,
+    "exactArchiveNativeInstallationPassed": true,
+    "unpublished": true,
+    "receipt": "artifact.json"
+  },
+  "blueprintSha256": "46ecb1cf793756ceae7e9c881f51fa56cc3a960ddd2906a12c16808db84b1a44",
+  "hostedCi": {
+    "run": 40620231392,
+    "branch": "main",
+    "head": "ddf2633f020961715ee3f46dcc441ab659b8a206",
+    "stepsExecuted": 0,
+    "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased."
+  },
+  "boundary": "Engineering and archive installation evidence only. Actual provider and candidate semantic failures remain in the separate records. No claim of full project acceptance."
+}

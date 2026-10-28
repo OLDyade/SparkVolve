@@ -104,7 +104,9 @@ test(
         .trim()
         .split('\n')
         .map((line) => JSON.parse(line));
-      assert.equal(requests.length, 5);
+      // Successful evolution_finish ends the native turn immediately; no extra
+      // model request is allowed after the host commits the conclusion.
+      assert.equal(requests.length, 4);
       assert.equal(waits, 1);
       assert.ok(JSON.stringify(requests[2].messages).includes('acceptance.wakeup'));
       assert.ok(requests[0].tools.some((t: { name: string }) => t.name === 'evolution_submit'));

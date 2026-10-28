@@ -1,0 +1,1975 @@
+{
+  "status": "unpublished-artifact",
+  "name": "@harness-evolution/dsh-bundle",
+  "version": "0.0.0-development",
+  "commit": "ddf2633f020961715ee3f46dcc441ab659b8a206",
+  "workingTreeDirty": true,
+  "workingTreeStatus": [
+    "M .github/workflows/verify.yml",
+    " M Dockerfile",
+    " M docs/completion.md",
+    " M docs/review-ledger.md",
+    " M docs/use-capability.md",
+    " M examples/capability/install.mjs",
+    " M package-lock.json",
+    " M package.json",
+    " M scripts/verify-egress-native.mjs",
+    " M scripts/verify-study-artifacts.mjs",
+    " M src/docker.ts",
+    " M src/isolation.ts",
+    " M src/runtime/build.ts",
+    " M src/runtime/qa.ts",
+    " M src/runtime/worker.ts",
+    " M src/telemetry.ts",
+    " M tests/container/fixed-optimizer-comparison.test.ts",
+    " M tests/container/isolation.test.ts",
+    " M tests/container/optimizer.test.ts",
+    " M tests/live/events.test.ts",
+    " M tests/live/fixture.ts",
+    " M tests/live/library.test.ts",
+    " M tests/live/probes.test.ts",
+    " M tests/native/native-authoring-provider.mjs",
+    " M tests/native/native-authoring.test.ts",
+    " M tests/native/telemetry.test.ts",
+    " M tests/qa-budget.test.ts",
+    "?? docs/evidence/runtime-delivery-20261028/",
+    "?? docs/experiments/2026-10-28-runtime-delivery.md",
+    "?? docs/research/2026-10-28-runtime-budget-and-home.md",
+    "?? scripts/verify-installed-capability.mjs",
+    "?? src/http-transport.ts",
+    "?? src/runtime-environment.ts",
+    "?? tests/container/runtime-home-fixture.mjs",
+    "?? tests/container/runtime-home.test.ts",
+    "?? tests/http-transport.test.ts",
+    "?? tests/installed-capability-driver.test.mjs",
+    "?? tests/native/http-transport.test.ts",
+    "?? tests/native/telemetry-provider.mjs",
+    "?? tests/runtime-environment.test.ts"
+  ],
+  "node": "v24.16.0",
+  "npm": "12.2.0",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "archive": {
+    "file": "harness-evolution-dsh-bundle-0.0.0-development.tgz",
+    "sha256": "5b0587a0173f1e9064cdb908dacd62580269e391eb77695c69403b2e8efd8ed7",
+    "integrity": "sha512-mQOzr/4Fkq+yA0dt0mQjk+ivrQudTjCnu8Sf2qQFOsyif2PnsppW35BF25ZIeTZCt1cg5KTgy1uv9CHXROPijg==",
+    "files": [
+      {
+        "path": "11.md",
+        "size": 37379,
+        "mode": 420
+      },
+      {
+        "path": "LICENSE",
+        "size": 11360,
+        "mode": 420
+      },
+      {
+        "path": "NOTICE",
+        "size": 592,
+        "mode": 420
+      },
+      {
+        "path": "README.en.md",
+        "size": 16842,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 18613,
+        "mode": 420
+      },
+      {
+        "path": "SECURITY.md",
+        "size": 2712,
+        "mode": 420
+      },
+      {
+        "path": "cordis.patch.yml",
+        "size": 561,
+        "mode": 420
+      },
+      {
+        "path": "dist/api.d.ts",
+        "size": 224,
+        "mode": 420
+      },
+      {
+        "path": "dist/api.js",
+        "size": 8157,
+        "mode": 420
+      },
+      {
+        "path": "dist/api.js.map",
+        "size": 7326,
+        "mode": 420
+      },
+      {
+        "path": "dist/artifacts.d.ts",
+        "size": 750,
+        "mode": 420
+      },
+      {
+        "path": "dist/artifacts.js",
+        "size": 6861,
+        "mode": 420
+      },
+      {
+        "path": "dist/artifacts.js.map",
+        "size": 6772,
+        "mode": 420
+      },
+      {
+        "path": "dist/behavior-journal.d.ts",
+        "size": 539,
+        "mode": 420
+      },
+      {
+        "path": "dist/behavior-journal.js",
+        "size": 1788,
+        "mode": 420
+      },
+      {
+        "path": "dist/behavior-journal.js.map",
+        "size": 1819,
+        "mode": 420
+      },
+      {
+        "path": "dist/build.d.ts",
+        "size": 1134,
+        "mode": 420
+      },
+      {
+        "path": "dist/build.js",
+        "size": 5407,
+        "mode": 420
+      },
+      {
+        "path": "dist/build.js.map",
+        "size": 5300,
+        "mode": 420
+      },
+      {
+        "path": "dist/cancellation-state.d.ts",
+        "size": 158,
+        "mode": 420
+      },
+      {
+        "path": "dist/cancellation-state.js",
+        "size": 514,
+        "mode": 420
+      },
+      {
+        "path": "dist/cancellation-state.js.map",
+        "size": 493,
+        "mode": 420
+      },
+      {
+        "path": "dist/cancellation.d.ts",
+        "size": 1384,
+        "mode": 420
+      },
+      {
+        "path": "dist/cancellation.js",
+        "size": 17453,
+        "mode": 420
+      },
+      {
+        "path": "dist/cancellation.js.map",
+        "size": 15890,
+        "mode": 420
+      },
+      {
+        "path": "dist/capability-card.d.ts",
+        "size": 518,
+        "mode": 420
+      },
+      {
+        "path": "dist/capability-card.js",
+        "size": 6757,
+        "mode": 420
+      },
+      {
+        "path": "dist/capability-card.js.map",
+        "size": 3114,
+        "mode": 420
+      },
+      {
+        "path": "dist/cli.d.ts",
+        "size": 31,
+        "mode": 420
+      },
+      {
+        "path": "dist/cli.js",
+        "size": 17424,
+        "mode": 420
+      },
+      {
+        "path": "dist/cli.js.map",
+        "size": 14493,
+        "mode": 420
+      },
+      {
+        "path": "dist/command.d.ts",
+        "size": 270,
+        "mode": 420
+      },
+      {
+        "path": "dist/command.js",
+        "size": 3265,
+        "mode": 420
+      },
+      {
+        "path": "dist/command.js.map",
+        "size": 3138,
+        "mode": 420
+      },
+      {
+        "path": "dist/composition-probe.d.ts",
+        "size": 895,
+        "mode": 420
+      },
+      {
+        "path": "dist/composition-probe.js",
+        "size": 3476,
+        "mode": 420
+      },
+      {
+        "path": "dist/composition-probe.js.map",
+        "size": 3290,
+        "mode": 420
+      },
+      {
+        "path": "dist/composition.d.ts",
+        "size": 477,
+        "mode": 420
+      },
+      {
+        "path": "dist/composition.js",
+        "size": 2259,
+        "mode": 420
+      },
+      {
+        "path": "dist/composition.js.map",
+        "size": 2114,
+        "mode": 420
+      },
+      {
+        "path": "dist/constraints.d.ts",
+        "size": 796,
+        "mode": 420
+      },
+      {
+        "path": "dist/constraints.js",
+        "size": 3402,
+        "mode": 420
+      },
+      {
+        "path": "dist/constraints.js.map",
+        "size": 3830,
+        "mode": 420
+      },
+      {
+        "path": "dist/contracts.d.ts",
+        "size": 14327,
+        "mode": 420
+      },
+      {
+        "path": "dist/contracts.js",
+        "size": 11305,
+        "mode": 420
+      },
+      {
+        "path": "dist/contracts.js.map",
+        "size": 13278,
+        "mode": 420
+      },
+      {
+        "path": "dist/control-routes.d.ts",
+        "size": 658,
+        "mode": 420
+      },
+      {
+        "path": "dist/control-routes.js",
+        "size": 1622,
+        "mode": 420
+      },
+      {
+        "path": "dist/control-routes.js.map",
+        "size": 1552,
+        "mode": 420
+      },
+      {
+        "path": "dist/control-transport.d.ts",
+        "size": 1183,
+        "mode": 420
+      },
+      {
+        "path": "dist/control-transport.js",
+        "size": 4326,
+        "mode": 420
+      },
+      {
+        "path": "dist/control-transport.js.map",
+        "size": 4336,
+        "mode": 420
+      },
+      {
+        "path": "dist/controller.d.ts",
+        "size": 10326,
+        "mode": 420
+      },
+      {
+        "path": "dist/controller.js",
+        "size": 32167,
+        "mode": 420
+      },
+      {
+        "path": "dist/controller.js.map",
+        "size": 32454,
+        "mode": 420
+      },
+      {
+        "path": "dist/docker.d.ts",
+        "size": 1722,
+        "mode": 420
+      },
+      {
+        "path": "dist/docker.js",
+        "size": 9773,
+        "mode": 420
+      },
+      {
+        "path": "dist/docker.js.map",
+        "size": 9734,
+        "mode": 420
+      },
+      {
+        "path": "dist/egress-session.d.ts",
+        "size": 1793,
+        "mode": 420
+      },
+      {
+        "path": "dist/egress-session.js",
+        "size": 19195,
+        "mode": 420
+      },
+      {
+        "path": "dist/egress-session.js.map",
+        "size": 18879,
+        "mode": 420
+      },
+      {
+        "path": "dist/egress.d.ts",
+        "size": 3474,
+        "mode": 420
+      },
+      {
+        "path": "dist/egress.js",
+        "size": 13275,
+        "mode": 420
+      },
+      {
+        "path": "dist/egress.js.map",
+        "size": 14177,
+        "mode": 420
+      },
+      {
+        "path": "dist/events.d.ts",
+        "size": 425,
+        "mode": 420
+      },
+      {
+        "path": "dist/events.js",
+        "size": 203,
+        "mode": 420
+      },
+      {
+        "path": "dist/events.js.map",
+        "size": 359,
+        "mode": 420
+      },
+      {
+        "path": "dist/evidence.d.ts",
+        "size": 4222,
+        "mode": 420
+      },
+      {
+        "path": "dist/evidence.js",
+        "size": 7507,
+        "mode": 420
+      },
+      {
+        "path": "dist/evidence.js.map",
+        "size": 7512,
+        "mode": 420
+      },
+      {
+        "path": "dist/execution.d.ts",
+        "size": 1555,
+        "mode": 420
+      },
+      {
+        "path": "dist/execution.js",
+        "size": 8670,
+        "mode": 420
+      },
+      {
+        "path": "dist/execution.js.map",
+        "size": 8371,
+        "mode": 420
+      },
+      {
+        "path": "dist/experiment.d.ts",
+        "size": 816,
+        "mode": 420
+      },
+      {
+        "path": "dist/experiment.js",
+        "size": 6871,
+        "mode": 420
+      },
+      {
+        "path": "dist/experiment.js.map",
+        "size": 6682,
+        "mode": 420
+      },
+      {
+        "path": "dist/export.d.ts",
+        "size": 240,
+        "mode": 420
+      },
+      {
+        "path": "dist/export.js",
+        "size": 4174,
+        "mode": 420
+      },
+      {
+        "path": "dist/export.js.map",
+        "size": 4214,
+        "mode": 420
+      },
+      {
+        "path": "dist/file-reader.d.ts",
+        "size": 550,
+        "mode": 420
+      },
+      {
+        "path": "dist/file-reader.js",
+        "size": 5485,
+        "mode": 420
+      },
+      {
+        "path": "dist/file-reader.js.map",
+        "size": 2100,
+        "mode": 420
+      },
+      {
+        "path": "dist/http-transport.d.ts",
+        "size": 591,
+        "mode": 420
+      },
+      {
+        "path": "dist/http-transport.js",
+        "size": 2119,
+        "mode": 420
+      },
+      {
+        "path": "dist/http-transport.js.map",
+        "size": 2089,
+        "mode": 420
+      },
+      {
+        "path": "dist/ip-pool.d.ts",
+        "size": 479,
+        "mode": 420
+      },
+      {
+        "path": "dist/ip-pool.js",
+        "size": 1857,
+        "mode": 420
+      },
+      {
+        "path": "dist/ip-pool.js.map",
+        "size": 2350,
+        "mode": 420
+      },
+      {
+        "path": "dist/isolation.d.ts",
+        "size": 3741,
+        "mode": 420
+      },
+      {
+        "path": "dist/isolation.js",
+        "size": 5077,
+        "mode": 420
+      },
+      {
+        "path": "dist/isolation.js.map",
+        "size": 5095,
+        "mode": 420
+      },
+      {
+        "path": "dist/library.d.ts",
+        "size": 3171,
+        "mode": 420
+      },
+      {
+        "path": "dist/library.js",
+        "size": 7967,
+        "mode": 420
+      },
+      {
+        "path": "dist/library.js.map",
+        "size": 8583,
+        "mode": 420
+      },
+      {
+        "path": "dist/metrics.d.ts",
+        "size": 474,
+        "mode": 420
+      },
+      {
+        "path": "dist/metrics.js",
+        "size": 2465,
+        "mode": 420
+      },
+      {
+        "path": "dist/metrics.js.map",
+        "size": 2984,
+        "mode": 420
+      },
+      {
+        "path": "dist/native-authoring.d.ts",
+        "size": 1041,
+        "mode": 420
+      },
+      {
+        "path": "dist/native-authoring.js",
+        "size": 5139,
+        "mode": 420
+      },
+      {
+        "path": "dist/native-authoring.js.map",
+        "size": 3867,
+        "mode": 420
+      },
+      {
+        "path": "dist/network-pool.d.ts",
+        "size": 304,
+        "mode": 420
+      },
+      {
+        "path": "dist/network-pool.js",
+        "size": 2647,
+        "mode": 420
+      },
+      {
+        "path": "dist/network-pool.js.map",
+        "size": 2467,
+        "mode": 420
+      },
+      {
+        "path": "dist/network.d.ts",
+        "size": 1127,
+        "mode": 420
+      },
+      {
+        "path": "dist/network.js",
+        "size": 3012,
+        "mode": 420
+      },
+      {
+        "path": "dist/network.js.map",
+        "size": 3702,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-access.d.ts",
+        "size": 16673,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-access.js",
+        "size": 7575,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-access.js.map",
+        "size": 6952,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-harness.d.ts",
+        "size": 724,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-harness.js",
+        "size": 9077,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-harness.js.map",
+        "size": 8622,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-cancel.d.ts",
+        "size": 1270,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-cancel.js",
+        "size": 6613,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-cancel.js.map",
+        "size": 6664,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-contracts.d.ts",
+        "size": 169455,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-contracts.js",
+        "size": 13181,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-contracts.js.map",
+        "size": 13777,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-report.d.ts",
+        "size": 18808,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-report.js",
+        "size": 7911,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-report.js.map",
+        "size": 7575,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-runner.d.ts",
+        "size": 823,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-runner.js",
+        "size": 20062,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-runner.js.map",
+        "size": 16685,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-store.d.ts",
+        "size": 9076,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-store.js",
+        "size": 38163,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study-store.js.map",
+        "size": 36276,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study.d.ts",
+        "size": 10161,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study.js",
+        "size": 41777,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer-study.js.map",
+        "size": 40169,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer.d.ts",
+        "size": 517,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer.js",
+        "size": 11916,
+        "mode": 420
+      },
+      {
+        "path": "dist/optimizer.js.map",
+        "size": 10549,
+        "mode": 420
+      },
+      {
+        "path": "dist/plugin.d.ts",
+        "size": 725,
+        "mode": 420
+      },
+      {
+        "path": "dist/plugin.js",
+        "size": 12928,
+        "mode": 420
+      },
+      {
+        "path": "dist/plugin.js.map",
+        "size": 7875,
+        "mode": 420
+      },
+      {
+        "path": "dist/preset.d.ts",
+        "size": 1339,
+        "mode": 420
+      },
+      {
+        "path": "dist/preset.js",
+        "size": 2090,
+        "mode": 420
+      },
+      {
+        "path": "dist/preset.js.map",
+        "size": 1448,
+        "mode": 420
+      },
+      {
+        "path": "dist/probes.d.ts",
+        "size": 687,
+        "mode": 420
+      },
+      {
+        "path": "dist/probes.js",
+        "size": 7165,
+        "mode": 420
+      },
+      {
+        "path": "dist/probes.js.map",
+        "size": 7063,
+        "mode": 420
+      },
+      {
+        "path": "dist/report.d.ts",
+        "size": 4315,
+        "mode": 420
+      },
+      {
+        "path": "dist/report.js",
+        "size": 6916,
+        "mode": 420
+      },
+      {
+        "path": "dist/report.js.map",
+        "size": 6914,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime-environment.d.ts",
+        "size": 500,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime-environment.js",
+        "size": 947,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime-environment.js.map",
+        "size": 835,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime/build.d.ts",
+        "size": 11,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime/build.js",
+        "size": 3358,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime/build.js.map",
+        "size": 3729,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime/egress.d.ts",
+        "size": 11,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime/egress.js",
+        "size": 1135,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime/egress.js.map",
+        "size": 1405,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime/qa.d.ts",
+        "size": 11,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime/qa.js",
+        "size": 1476,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime/qa.js.map",
+        "size": 1703,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime/worker.d.ts",
+        "size": 11,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime/worker.js",
+        "size": 3494,
+        "mode": 420
+      },
+      {
+        "path": "dist/runtime/worker.js.map",
+        "size": 3549,
+        "mode": 420
+      },
+      {
+        "path": "dist/sdk-preset.d.ts",
+        "size": 699,
+        "mode": 420
+      },
+      {
+        "path": "dist/sdk-preset.js",
+        "size": 1313,
+        "mode": 420
+      },
+      {
+        "path": "dist/sdk-preset.js.map",
+        "size": 1147,
+        "mode": 420
+      },
+      {
+        "path": "dist/store.d.ts",
+        "size": 2217,
+        "mode": 420
+      },
+      {
+        "path": "dist/store.js",
+        "size": 17565,
+        "mode": 420
+      },
+      {
+        "path": "dist/store.js.map",
+        "size": 16696,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-api.d.ts",
+        "size": 325,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-api.js",
+        "size": 4262,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-api.js.map",
+        "size": 4060,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-control.d.ts",
+        "size": 7437,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-control.js",
+        "size": 1842,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-control.js.map",
+        "size": 1787,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-evidence.d.ts",
+        "size": 5824,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-evidence.js",
+        "size": 13741,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-evidence.js.map",
+        "size": 12520,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-paths.d.ts",
+        "size": 273,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-paths.js",
+        "size": 331,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-paths.js.map",
+        "size": 252,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-plugin.d.ts",
+        "size": 386,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-plugin.js",
+        "size": 9535,
+        "mode": 420
+      },
+      {
+        "path": "dist/study-plugin.js.map",
+        "size": 6648,
+        "mode": 420
+      },
+      {
+        "path": "dist/telemetry.d.ts",
+        "size": 1048,
+        "mode": 420
+      },
+      {
+        "path": "dist/telemetry.js",
+        "size": 7719,
+        "mode": 420
+      },
+      {
+        "path": "dist/telemetry.js.map",
+        "size": 7326,
+        "mode": 420
+      },
+      {
+        "path": "dist/validation-cancel.d.ts",
+        "size": 765,
+        "mode": 420
+      },
+      {
+        "path": "dist/validation-cancel.js",
+        "size": 3291,
+        "mode": 420
+      },
+      {
+        "path": "dist/validation-cancel.js.map",
+        "size": 3013,
+        "mode": 420
+      },
+      {
+        "path": "dist/validation.d.ts",
+        "size": 2084,
+        "mode": 420
+      },
+      {
+        "path": "dist/validation.js",
+        "size": 9233,
+        "mode": 420
+      },
+      {
+        "path": "dist/validation.js.map",
+        "size": 10292,
+        "mode": 420
+      },
+      {
+        "path": "docs/acceptance-continuous.md",
+        "size": 5628,
+        "mode": 420
+      },
+      {
+        "path": "docs/acceptance-joint-development.md",
+        "size": 4335,
+        "mode": 420
+      },
+      {
+        "path": "docs/acceptance-structured-data.md",
+        "size": 4664,
+        "mode": 420
+      },
+      {
+        "path": "docs/acceptance.md",
+        "size": 5380,
+        "mode": 420
+      },
+      {
+        "path": "docs/architecture.md",
+        "size": 12419,
+        "mode": 420
+      },
+      {
+        "path": "docs/assets/experiment-results.png",
+        "size": 149758,
+        "mode": 420
+      },
+      {
+        "path": "docs/assets/experiment-results.svg",
+        "size": 84415,
+        "mode": 420
+      },
+      {
+        "path": "docs/behavioral-probes.md",
+        "size": 6181,
+        "mode": 420
+      },
+      {
+        "path": "docs/capability-cards.md",
+        "size": 2427,
+        "mode": 420
+      },
+      {
+        "path": "docs/compatibility.md",
+        "size": 3024,
+        "mode": 420
+      },
+      {
+        "path": "docs/completion.md",
+        "size": 13817,
+        "mode": 420
+      },
+      {
+        "path": "docs/components.md",
+        "size": 6399,
+        "mode": 420
+      },
+      {
+        "path": "docs/constraints.md",
+        "size": 3551,
+        "mode": 420
+      },
+      {
+        "path": "docs/controlled-egress.md",
+        "size": 10947,
+        "mode": 420
+      },
+      {
+        "path": "docs/domain-adapters.md",
+        "size": 3789,
+        "mode": 420
+      },
+      {
+        "path": "docs/domain-verification.md",
+        "size": 3897,
+        "mode": 420
+      },
+      {
+        "path": "docs/events.md",
+        "size": 3139,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence-access.md",
+        "size": 6352,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-27-composable-qa-acceptance.json",
+        "size": 2454,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-27-constraints-acceptance.json",
+        "size": 5996,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-27-continuous-acceptance.json",
+        "size": 24123,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-27-event-acceptance.json",
+        "size": 928,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-27-gvisor-acceptance.json",
+        "size": 11226,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-27-isolation-acceptance.json",
+        "size": 2105,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-27-library-acceptance.json",
+        "size": 1346,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-27-real-acceptance.json",
+        "size": 9510,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-behavioral-probes.json",
+        "size": 11980,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-controlled-controller-integration.json",
+        "size": 1542,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-domain-verification.json",
+        "size": 23800,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-egress-boundary.json",
+        "size": 17469,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-egress-native-transport.json",
+        "size": 4322,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-egress-resource-lifecycle.json",
+        "size": 4072,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-feedback-views.json",
+        "size": 14192,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-fixed-comparison.json",
+        "size": 4346,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-gvisor-controlled-dns.json",
+        "size": 7137,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-joint-development.json",
+        "size": 37567,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-joint-independent-validation.json",
+        "size": 54744,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-materialized-evidence.json",
+        "size": 55444,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-native-probe-spreadsheet-control.json",
+        "size": 36728,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-offline-tour.json",
+        "size": 2312,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-optimizer-study.json",
+        "size": 14022,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-package-artifacts.json",
+        "size": 960,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-paired-feedback-registration.json",
+        "size": 40472,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-persistent-volume-host-probe.json",
+        "size": 1524,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-probe-study-setup-failure.json",
+        "size": 10809,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-publication-recovery.json",
+        "size": 21114,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-service-observations.json",
+        "size": 11519,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-standalone-capability.json",
+        "size": 3264,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-structured-data.json",
+        "size": 23780,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-study-delivery.json",
+        "size": 2124,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/2026-10-28-user-journey.json",
+        "size": 115518,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/execution-budgets-20261028/checks.json",
+        "size": 2129,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/execution-budgets-20261028/checks.log",
+        "size": 28525,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/execution-budgets-20261028/container-qa.log",
+        "size": 561,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/execution-budgets-20261028/deadline-regression.log",
+        "size": 1154,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/execution-budgets-20261028/index.json",
+        "size": 4875,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/execution-budgets-20261028/live-transport.json",
+        "size": 2326,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/execution-budgets-20261028/package-installation.json",
+        "size": 623,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/execution-budgets-20261028/preflight.json",
+        "size": 53583,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/native-authoring-20261028/acceptance.json",
+        "size": 305333,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/native-authoring-20261028/comparison.json",
+        "size": 2696,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/native-authoring-20261028/independent-mechanism-review.json",
+        "size": 8412,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/native-authoring-20261028/index.json",
+        "size": 3211,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/native-authoring-20261028/installed.json",
+        "size": 232,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/native-authoring-20261028/registration.json",
+        "size": 49548,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/native-authoring-20261028/transport-diagnosis.json",
+        "size": 11248,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/paired-feedback-20261028/acceptance.json",
+        "size": 8960,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/paired-feedback-20261028/artifact-installation-interrupted.json",
+        "size": 39425,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/paired-feedback-20261028/artifact-installation-timeout.json",
+        "size": 39609,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/paired-feedback-20261028/artifact-installation.json",
+        "size": 40161,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/paired-feedback-20261028/comparison.json",
+        "size": 8867,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/paired-feedback-20261028/h0-report.json",
+        "size": 9061,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/paired-feedback-20261028/host-interruption.json",
+        "size": 2599,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/paired-feedback-20261028/index.json",
+        "size": 3035,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/paired-feedback-20261028/mechanism-diagnostic.json",
+        "size": 59246,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/paired-feedback-20261028/study-report.json",
+        "size": 104129,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/runtime-delivery-20261028/formula-counterexamples.json",
+        "size": 1259,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/runtime-delivery-20261028/index.json",
+        "size": 4047,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/runtime-delivery-20261028/installed-four.json",
+        "size": 30986,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/runtime-delivery-20261028/postfix-native.json",
+        "size": 3764,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/runtime-delivery-20261028/search.json",
+        "size": 13180,
+        "mode": 420
+      },
+      {
+        "path": "docs/evidence/runtime-delivery-20261028/validation.json",
+        "size": 4128,
+        "mode": 420
+      },
+      {
+        "path": "docs/execution-budgets.md",
+        "size": 4111,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-27-joint-plugin-development.json",
+        "size": 8891,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-28-feedback-study-registration.md",
+        "size": 8619,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-28-joint-independent-results.md",
+        "size": 3353,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-28-joint-independent-validation.json",
+        "size": 11534,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-28-native-authoring-registration.md",
+        "size": 6262,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-28-native-authoring-results.md",
+        "size": 5535,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-28-native-probe-control.json",
+        "size": 18055,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-28-native-probe-spreadsheet-control.json",
+        "size": 18545,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-28-native-probe-spreadsheet-results.md",
+        "size": 5458,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-28-optimizer-study-results.md",
+        "size": 12571,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-28-paired-feedback-results.md",
+        "size": 8832,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-28-runtime-delivery.md",
+        "size": 4475,
+        "mode": 420
+      },
+      {
+        "path": "docs/experiments/2026-10-28-structured-data.json",
+        "size": 6583,
+        "mode": 420
+      },
+      {
+        "path": "docs/feedback-views.md",
+        "size": 6297,
+        "mode": 420
+      },
+      {
+        "path": "docs/isolation.md",
+        "size": 9150,
+        "mode": 420
+      },
+      {
+        "path": "docs/native-authoring.md",
+        "size": 3469,
+        "mode": 420
+      },
+      {
+        "path": "docs/optimizer-studies.md",
+        "size": 15614,
+        "mode": 420
+      },
+      {
+        "path": "docs/prd/DIAGNOSIS-Round176-Fixed5.md",
+        "size": 1998,
+        "mode": 420
+      },
+      {
+        "path": "docs/prd/DIAGNOSIS-Round179-Controlled-Ablation.md",
+        "size": 5124,
+        "mode": 420
+      },
+      {
+        "path": "docs/presets.md",
+        "size": 4668,
+        "mode": 420
+      },
+      {
+        "path": "docs/releasing.md",
+        "size": 7460,
+        "mode": 420
+      },
+      {
+        "path": "docs/research-assets.md",
+        "size": 3876,
+        "mode": 420
+      },
+      {
+        "path": "docs/research-protocol.md",
+        "size": 4202,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-09-harness-blueprint-audit.md",
+        "size": 15581,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-27-candidate-build.md",
+        "size": 3724,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-27-composable-domain-qa.md",
+        "size": 2947,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-27-composition-qa.md",
+        "size": 3103,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-27-event-continuation.md",
+        "size": 2343,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-27-harness-evolution-design-review.md",
+        "size": 21711,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-27-native-evolution-preset.md",
+        "size": 3818,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-27-native-implementation.md",
+        "size": 8631,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-27-outcome-constraints.md",
+        "size": 3194,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-27-repository-conventions.md",
+        "size": 4230,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-27-research-asset-reuse.md",
+        "size": 2601,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-27-runtime-isolation.md",
+        "size": 5588,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-command-process-groups.md",
+        "size": 3644,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-controlled-egress.md",
+        "size": 6005,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-ecosystem-delivery.md",
+        "size": 4008,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-egress-lifecycle-review.md",
+        "size": 4881,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-evolution-finish-native-turn.md",
+        "size": 3830,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-executable-probes.md",
+        "size": 5678,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-feedback-causal-protocol.md",
+        "size": 12278,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-gvisor-egress-dns.md",
+        "size": 3876,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-independent-domain-contracts.md",
+        "size": 3160,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-native-authoring-integration.md",
+        "size": 6512,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-native-microvm.md",
+        "size": 15289,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-native-tool-schema-findings.md",
+        "size": 4306,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-optimizer-self-evolution.md",
+        "size": 8966,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-persistent-storage-boundary.md",
+        "size": 4758,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-publication-recovery.md",
+        "size": 5247,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-runtime-budget-and-home.md",
+        "size": 3367,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-service-observations.md",
+        "size": 4769,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-user-journey.md",
+        "size": 5345,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/2026-10-28-validation-cancellation.md",
+        "size": 2454,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/archive/evolution-policy-2026-10-27.md",
+        "size": 11808,
+        "mode": 420
+      },
+      {
+        "path": "docs/research/archive/README.md",
+        "size": 1655,
+        "mode": 420
+      },
+      {
+        "path": "docs/review-ledger.md",
+        "size": 17217,
+        "mode": 420
+      },
+      {
+        "path": "docs/structured-data.md",
+        "size": 4796,
+        "mode": 420
+      },
+      {
+        "path": "docs/tour.design.md",
+        "size": 1829,
+        "mode": 420
+      },
+      {
+        "path": "docs/tour.html",
+        "size": 36838,
+        "mode": 420
+      },
+      {
+        "path": "docs/use-capability.md",
+        "size": 6734,
+        "mode": 420
+      },
+      {
+        "path": "docs/user-journey.md",
+        "size": 5812,
+        "mode": 420
+      },
+      {
+        "path": "examples/capability/headless.yml",
+        "size": 215,
+        "mode": 420
+      },
+      {
+        "path": "examples/capability/install.mjs",
+        "size": 1094,
+        "mode": 420
+      },
+      {
+        "path": "examples/isolation.mjs",
+        "size": 872,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/Dockerfile",
+        "size": 352,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/generate.py",
+        "size": 2492,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/grade.py",
+        "size": 1803,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/prepare.mjs",
+        "size": 3988,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/research.py",
+        "size": 7527,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/seed/cordis.patch.yml",
+        "size": 34,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/seed/index.mjs",
+        "size": 2324,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/seed/LICENSE",
+        "size": 11360,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/seed/package-lock.json",
+        "size": 14209,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/seed/package.json",
+        "size": 412,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/seed/workbook.py",
+        "size": 1329,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/validation.mjs",
+        "size": 3408,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/verification/check.mjs",
+        "size": 2142,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/verification/fixture.py",
+        "size": 1757,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/verify-contract.mjs",
+        "size": 2636,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/verify-image.mjs",
+        "size": 1781,
+        "mode": 420
+      },
+      {
+        "path": "examples/spreadsheet/verify.py",
+        "size": 1260,
+        "mode": 420
+      },
+      {
+        "path": "examples/structured-data/generate.py",
+        "size": 5558,
+        "mode": 420
+      },
+      {
+        "path": "examples/structured-data/grade.py",
+        "size": 2612,
+        "mode": 420
+      },
+      {
+        "path": "examples/structured-data/prepare.mjs",
+        "size": 3742,
+        "mode": 420
+      },
+      {
+        "path": "examples/structured-data/seed/cordis.patch.yml",
+        "size": 34,
+        "mode": 420
+      },
+      {
+        "path": "examples/structured-data/seed/index.mjs",
+        "size": 1530,
+        "mode": 420
+      },
+      {
+        "path": "examples/structured-data/seed/LICENSE",
+        "size": 11360,
+        "mode": 420
+      },
+      {
+        "path": "examples/structured-data/seed/package-lock.json",
+        "size": 14217,
+        "mode": 420
+      },
+      {
+        "path": "examples/structured-data/seed/package.json",
+        "size": 438,
+        "mode": 420
+      },
+      {
+        "path": "examples/TIMEOUTS.md",
+        "size": 2661,
+        "mode": 420
+      },
+      {
+        "path": "examples/timeouts.mjs",
+        "size": 1193,
+        "mode": 420
+      },
+      {
+        "path": "examples/venus/cordis.patch.yml",
+        "size": 939,
+        "mode": 420
+      },
+      {
+        "path": "examples/venus/egress.mjs",
+        "size": 1607,
+        "mode": 420
+      },
+      {
+        "path": "examples/venus/model.json",
+        "size": 162,
+        "mode": 420
+      },
+      {
+        "path": "optimizers/evidence-driven/cordis.patch.yml",
+        "size": 466,
+        "mode": 420
+      },
+      {
+        "path": "optimizers/evidence-driven/index.mjs",
+        "size": 6158,
+        "mode": 420
+      },
+      {
+        "path": "optimizers/evidence-driven/LICENSE",
+        "size": 11360,
+        "mode": 420
+      },
+      {
+        "path": "optimizers/evidence-driven/package-lock.json",
+        "size": 282,
+        "mode": 420
+      },
+      {
+        "path": "optimizers/evidence-driven/package.json",
+        "size": 382,
+        "mode": 420
+      },
+      {
+        "path": "optimizers/evidence-driven/plugins.yml",
+        "size": 52,
+        "mode": 420
+      },
+      {
+        "path": "optimizers/method-research/cordis.patch.yml",
+        "size": 446,
+        "mode": 420
+      },
+      {
+        "path": "optimizers/method-research/index.mjs",
+        "size": 2737,
+        "mode": 420
+      },
+      {
+        "path": "optimizers/method-research/LICENSE",
+        "size": 11360,
+        "mode": 420
+      },
+      {
+        "path": "optimizers/method-research/package-lock.json",
+        "size": 282,
+        "mode": 420
+      },
+      {
+        "path": "optimizers/method-research/package.json",
+        "size": 382,
+        "mode": 420
+      },
+      {
+        "path": "optimizers/method-research/plugins.yml",
+        "size": 52,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 4025,
+        "mode": 420
+      }
+    ]
+  },
+  "sbom": {
+    "file": "dependencies.cdx.json",
+    "sha256": "3223b23a637da74bfdecba6feb40830f674cd550d0c818cc6293895ae8dfb30f",
+    "components": 627
+  },
+  "lock": {
+    "file": "package-lock.json",
+    "sha256": "ed6d2e45177eea469fee7e215fb9f3e2af535b058a49b5d7a8d065c8fc952706"
+  },
+  "boundary": "Local build inventory, not a signature or public release. SBOM describes this repository lock before installation and excludes dev-only dependencies. Consumer Profile resolution can differ. Dirty working trees are explicitly recorded. Packaging does not substitute for native installation, real-model acceptance, or independent quality results."
+}

@@ -90,6 +90,7 @@ jobs:
         run: |
           set -euo pipefail
           HE_TEST_IMAGE=$(docker image inspect harness-evolution:test --format '{{.Id}}') \
+          HE_SPREADSHEET_IMAGE=$(docker image inspect harness-evolution-spreadsheet:test --format '{{.Id}}') \
             npm run test:container 2>&1 | tee "$TMPDIR/acceptance.log"
       - name: Retain logs and isolation receipts
         if: always()

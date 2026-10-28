@@ -18,6 +18,8 @@ for (const elapsed of [125_000, 600_000]) {
 globalThis.__qaClock = 1000;
 Date.now = () => globalThis.__qaClock;
 registerHooks({ load(url, context, next) {
+  if (url.endsWith('/dist/runtime-environment.js')) return { format: 'module', shortCircuit: true,
+    source: 'export async function initializeRuntimeEnvironment() {}' };
   if (url.endsWith('/dist/composition.js')) return { format: 'module', shortCircuit: true,
     source: 'export async function checkComposition() { globalThis.__qaClock += ${elapsed}; }' };
   if (url.endsWith('/dist/docker.js')) return { format: 'module', shortCircuit: true,

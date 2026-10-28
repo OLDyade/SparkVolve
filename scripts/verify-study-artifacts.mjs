@@ -184,6 +184,8 @@ import path from 'node:path';
 import {parse,stringify} from 'yaml';
 import {command} from '/acceptance/command.mjs';
 import {checkComposition} from '/app/dist/composition.js';
+import {initializeRuntimeEnvironment} from '/app/dist/runtime-environment.js';
+await initializeRuntimeEnvironment();
 import {sdkPreset,evolutionPreset} from '/app/dist/preset.js';
 import {fileDigest,atomicJSON} from '/app/dist/artifacts.js';
 const config=JSON.parse(await readFile('/acceptance/config.json','utf8'));

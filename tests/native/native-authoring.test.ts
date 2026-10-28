@@ -55,6 +55,7 @@ for (const profile of ['sdk', 'sdk-minimal'] as const) {
         model: 'protocol-fixture',
         env: { ...process.env, HOME: root, HE_AUTHORING_RECORDS: records, HE_AUTHORING_TOKEN: 'test-only' },
       });
+      let passed = false;
       try {
         const run = await runtime.run('Read native authoring contracts and their source.');
         assert.equal(
@@ -124,7 +125,10 @@ for (const profile of ['sdk', 'sdk-minimal'] as const) {
           path.join(toolsPackage.sources.directory, 'types/index.d.ts'),
           'utf8',
         );
-        assert.ok(receipt('source').includes(declaration.split('\n').slice(0, 60).join('\n')));
+        assert.ok(
+          receipt('source').includes(declaration.split('\n').slice(0, 60).join('\n')),
+          receipt('source'),
+        );
         const firstPrompt = JSON.stringify(requests[0].messages);
         for (const source of nativeSources.packages) {
           assert.ok(firstPrompt.includes(source.version));
@@ -152,9 +156,11 @@ for (const profile of ['sdk', 'sdk-minimal'] as const) {
         assert.ok(!ordinaryPrompt.includes('Native authoring sources:'));
         assert.ok(!ordinaryPrompt.includes('cordis-plugin-development'));
         assert.equal(observations.filter((row) => row.kind === 'disposal' && row.value.disposed).length, 1);
+        passed = true;
       } finally {
         await runtime.close();
-        await rm(root, { recursive: true, force: true });
+        if (passed) await rm(root, { recursive: true, force: true });
+        else console.log(`Failed native authoring evidence retained: ${root}`);
       }
     },
   );

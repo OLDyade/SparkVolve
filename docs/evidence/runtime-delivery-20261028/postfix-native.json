@@ -1,0 +1,116 @@
+{
+  "passed": false,
+  "startedAt": "2026-10-28T02:57:22.298Z",
+  "endedAt": "2026-10-28T02:59:30.981Z",
+  "image": "sha256:01dab8fe15242b307da63d1fad4d2038e0bb122d6ced9b3b721781223d11013c",
+  "allocation": {
+    "searchTasks": 12,
+    "validationTasks": 8,
+    "totalTaskExecutions": 20,
+    "candidatesIncludingBaseline": 3,
+    "optionalProbes": 3,
+    "taskTimeoutSeconds": 600,
+    "probeTimeoutSeconds": 600,
+    "modelRequestTimeoutSeconds": 600,
+    "optimizerSeconds": 7140,
+    "optimizerBudget": {
+      "authoringSeconds": 1200,
+      "candidateSlots": 2,
+      "candidateBuildSeconds": 300,
+      "nativeQaSeconds": 600,
+      "taskWaves": 1,
+      "taskSecondsPerWave": 600,
+      "scoringSecondsPerWave": 120,
+      "candidateWaitSeconds": 3240,
+      "probeBuildSeconds": 300,
+      "probeExecutionSeconds": 600,
+      "probeWaitSeconds": 2700,
+      "calculation": "authoring + candidateSlots × (build + nativeQA + taskWaves × (task + scoring)) + optionalProbes × (probeBuild + probeExecution)",
+      "boundary": "G wall time includes waits inside an active episode. Reserve the declared serial path plus the original 1200-second authoring allowance; baseline settles before G starts, independent validation runs after G. Deadlines are ceilings, never mandatory runtime or extra attempts."
+    },
+    "boundary": "Ceiling, not fabricated observations: QA/build failures consume candidate slots without task scores. Probe/build/QA/optimizer calls are separately accounted. No task retry."
+  },
+  "observed": {
+    "taskCeiling": 20,
+    "reservedTaskSlots": 4,
+    "actualTaskExecutions": 4,
+    "scoredTaskSlots": 4,
+    "terminalFailedTaskSlots": 0,
+    "missingStudyArms": [
+      "validation-h0",
+      "validation-selected"
+    ]
+  },
+  "usage": {
+    "ledgers": 5,
+    "availableLedgers": 5,
+    "unavailableLedgers": 0,
+    "reportedTotals": {
+      "started": 48,
+      "results": 47,
+      "failed": 1,
+      "unfinished": 0,
+      "inputTokensReported": 70180,
+      "outputTokensReported": 14559,
+      "missingUsage": 0,
+      "requestDurationMsSum": 147471.074802
+    },
+    "complete": true
+  },
+  "candidates": [
+    {
+      "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+      "phase": "champion",
+      "decision": {
+        "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+        "constraints": [],
+        "constraintsSatisfied": true,
+        "denominator": 4,
+        "failureBudgetSatisfied": true,
+        "failures": 0,
+        "mean": 0.95,
+        "previousChampion": null,
+        "promoted": true,
+        "qualityImproved": true
+      },
+      "samples": [
+        {
+          "task": "normalization",
+          "phase": "scored",
+          "score": 1,
+          "error": null,
+          "executionElapsedMs": 27010
+        },
+        {
+          "task": "weighted-portfolio",
+          "phase": "scored",
+          "score": 1,
+          "error": null,
+          "executionElapsedMs": 16474
+        },
+        {
+          "task": "debt-rollforward",
+          "phase": "scored",
+          "score": 0.8,
+          "error": null,
+          "executionElapsedMs": 26940
+        },
+        {
+          "task": "scenario-valuation",
+          "phase": "scored",
+          "score": 1,
+          "error": null,
+          "executionElapsedMs": 22969
+        }
+      ]
+    }
+  ],
+  "failure": {
+    "component": "controlled egress connecting to upstream",
+    "code": "ECONNRESET",
+    "upstreamStatus": null,
+    "clientStatus": 502,
+    "requestId": "d3e8e540-b672-404a-a139-a566f490ba87"
+  },
+  "boundary": "Four baseline tasks scored; optimizer failed before submitting a candidate. Unexecuted slots are not observations. No retry or quality gain claim."
+}

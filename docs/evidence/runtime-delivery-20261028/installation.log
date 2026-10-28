@@ -1,0 +1,14 @@
+npm notice run @harness-evolution/dsh-bundle@0.0.0-development test:install
+npm notice run npm run build && node --test tests/install.test.mjs
+npm notice run @harness-evolution/dsh-bundle@0.0.0-development build
+npm notice run tsc -p tsconfig.json
+Installed exact package SHA256: 5b0587a0173f1e9064cdb908dacd62580269e391eb77695c69403b2e8efd8ed7
+✔ packed distribution installs through native DSH and executes its registered capability (18764.265709ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18854.86375

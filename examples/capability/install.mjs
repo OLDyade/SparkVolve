@@ -3,6 +3,9 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parse, stringify } from 'yaml';
 import { command } from '../../dist/docker.js';
+import { initializeRuntimeEnvironment } from '../../dist/runtime-environment.js';
+
+await initializeRuntimeEnvironment();
 
 const [bundle] = process.argv.slice(2);
 if (!bundle || !process.env.DSH_HOME) throw new Error('Required: bundle.tgz argument and DSH_HOME');

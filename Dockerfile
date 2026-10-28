@@ -9,7 +9,8 @@ COPY tsconfig.json cordis.patch.yml ./
 COPY src ./src
 RUN npm run build
 RUN ln -s /app/node_modules /node_modules
-ENV HOME=/home/node
+ENV HOME=/tmp/evolution-home
+ENV XDG_CONFIG_HOME=/tmp/evolution-home/config XDG_CACHE_HOME=/tmp/evolution-home/cache XDG_DATA_HOME=/tmp/evolution-home/data XDG_STATE_HOME=/tmp/evolution-home/state XDG_RUNTIME_DIR=/tmp/evolution-home/run
 ENV PATH="/app/node_modules/.bin:${PATH}"
 ENTRYPOINT []
 CMD ["node", "/app/dist/cli.js", "--help"]

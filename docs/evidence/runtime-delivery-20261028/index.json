@@ -1,0 +1,99 @@
+{
+  "recordedAt": "2026-10-28T03:03:09.837Z",
+  "blueprintSha256": "46ecb1cf793756ceae7e9c881f51fa56cc3a960ddd2906a12c16808db84b1a44",
+  "originalExperiment": {
+    "acceptancePassed": false,
+    "originalAcceptanceSha256": "5931fd3fe8335210216ab5e972c324d5313eacda80e46b6cba01eb4eed225810",
+    "validationContinuation": {
+      "startedAt": "2026-10-28T02:50:04.304Z",
+      "scope": "Only the originally registered eight unexecuted validation tasks, then immutable export. No search/optimizer/task retry. Original failed acceptance and trace remain unchanged.",
+      "arms": [
+        {
+          "id": "h0",
+          "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b"
+        },
+        {
+          "id": "selected",
+          "digest": "d572b7b5851afbbe6a5ab87c57112a66ea6bf1fd24b2ef846db453e932248f1b"
+        }
+      ],
+      "steps": [
+        {
+          "args": [
+            "validate",
+            "--root",
+            "/Users/apple/code/spark-harness-evolution/.evolution/native-authoring-600-live-20261028/validation",
+            "--spec",
+            "/Users/apple/code/spark-harness-evolution/.evolution/native-authoring-600-live-20261028/inputs/assessment.json",
+            "--dataset",
+            "/Users/apple/code/spark-harness-evolution/.evolution/native-authoring-600-live-20261028/inputs/datasets/validation",
+            "--arms",
+            "/Users/apple/code/spark-harness-evolution/.evolution/native-authoring-600-live-20261028/validation-arms.json"
+          ],
+          "code": 0,
+          "endedAt": "2026-10-28T02:51:24.642Z"
+        },
+        {
+          "args": [
+            "export",
+            "--root",
+            "/Users/apple/code/spark-harness-evolution/.evolution/native-authoring-600-live-20261028/search",
+            "--candidate",
+            "d572b7b5851afbbe6a5ab87c57112a66ea6bf1fd24b2ef846db453e932248f1b",
+            "--output",
+            "/Users/apple/code/spark-harness-evolution/.evolution/native-authoring-600-live-20261028/export"
+          ],
+          "code": 0,
+          "endedAt": "2026-10-28T02:51:25.730Z"
+        }
+      ],
+      "completed": true,
+      "endedAt": "2026-10-28T02:51:25.730Z"
+    },
+    "executions": 20,
+    "scored": 16,
+    "executionFailures": 4,
+    "optimizerEnded": "failed: native fetch response-header timeout after 301872ms",
+    "boundary": "All originally registered slots consumed. Failed optimizer was not restarted; independent validation was unexecuted and continued under its original frozen contract."
+  },
+  "candidateReleaseDecision": {
+    "digest": "d572b7b5851afbbe6a5ab87c57112a66ea6bf1fd24b2ef846db453e932248f1b",
+    "recommended": false,
+    "reason": "Six deterministic formula semantic counterexamples differ from independent LibreOffice; raw score selection remains unchanged."
+  },
+  "transportRegression": {
+    "headerDelayMs": 305000,
+    "elapsedMs": 305739.97295900004,
+    "realSocket": true,
+    "nativeDshPiOpenAI": true,
+    "calls": 1,
+    "retries": 0,
+    "metrics": {
+      "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+      "started": 1,
+      "results": 1,
+      "failed": 0,
+      "unfinished": 0,
+      "inputTokensReported": 0,
+      "outputTokensReported": 0,
+      "missingUsage": 0,
+      "requestDurationMsSum": 305095.654417
+    }
+  },
+  "installedExperiment": {
+    "passed": false,
+    "registered": 4,
+    "scored": 3,
+    "upstreamFailures": 1,
+    "meanFullDenominator": 0.75,
+    "boundary": "All four installed their exact original archive. Three actual tasks scored 1; one failed because the broker received ECONNRESET before upstream headers and generated HTTP 502. No task rerun and no transfer/quality attribution."
+  },
+  "postfixExperiment": {
+    "passed": false,
+    "baselineTasksScored": 4,
+    "baselineMean": 0.95,
+    "newCandidatesSubmitted": 0,
+    "failure": "upstream connection ECONNRESET; broker-generated 502, not an upstream HTTP response",
+    "evidence": "postfix-native.json"
+  }
+}

@@ -2,6 +2,8 @@ import { readFile } from 'node:fs/promises';
 import { z } from 'zod';
 import { Model } from '../contracts.js';
 import { checkComposition } from '../composition.js';
+import { initializeRuntimeEnvironment } from '../runtime-environment.js';
+await initializeRuntimeEnvironment();
 import { command } from '../docker.js';
 
 const config = z

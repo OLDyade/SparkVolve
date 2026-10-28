@@ -1,0 +1,10 @@
+{"headerDelayMs":305000,"elapsedMs":305739.97295900004,"calls":1,"root":"/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-http-native-qliyLN"}
+✔ native Pi/OpenAI transport honors a 600s budget without an independent 300s header limit (305793.803042ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 305927.417917

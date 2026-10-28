@@ -1,0 +1,149 @@
+{
+  "boundary": "Paired descriptive results, full denominator. Repetitions share tasks; sample SD is not a confidence interval. Validation feedback must not be reused as unseen evaluation. No automatic release.",
+  "comparisons": [
+    {
+      "arm": "selected",
+      "meanDelta": 0.6875,
+      "pairs": [
+        {
+          "baseline": 0.25,
+          "delta": 0.75,
+          "repetition": 0,
+          "score": 1,
+          "task": "normalization"
+        },
+        {
+          "baseline": 1,
+          "delta": 0,
+          "repetition": 0,
+          "score": 1,
+          "task": "weighted-portfolio"
+        },
+        {
+          "baseline": 0,
+          "delta": 1,
+          "repetition": 0,
+          "score": 1,
+          "task": "debt-rollforward"
+        },
+        {
+          "baseline": 0,
+          "delta": 1,
+          "repetition": 0,
+          "score": 1,
+          "task": "scenario-valuation"
+        }
+      ],
+      "perTask": [
+        {
+          "meanDelta": 0.75,
+          "task": "normalization"
+        },
+        {
+          "meanDelta": 0,
+          "task": "weighted-portfolio"
+        },
+        {
+          "meanDelta": 1,
+          "task": "debt-rollforward"
+        },
+        {
+          "meanDelta": 1,
+          "task": "scenario-valuation"
+        }
+      ],
+      "sampleSd": 0.4732423621500228,
+      "status": "complete",
+      "strictImprovement": false
+    }
+  ],
+  "order": [
+    "h0",
+    "selected"
+  ],
+  "registrationDigest": "6097d98d1f676dfc7f49a408e66b8a9079bcb98812890071a15da07f0f41dc12",
+  "results": [
+    {
+      "build": {
+        "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+        "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+        "image": "sha256:01b8a43dbb9aef634ddf2199c649264d524aa75f337f91f41c638c72de9ebaf3",
+        "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+        "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+      },
+      "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+      "complete": true,
+      "constraints": [],
+      "failures": 2,
+      "id": "h0",
+      "mean": 0.3125,
+      "samples": [
+        {
+          "phase": "scored",
+          "repetition": 0,
+          "score": 0.25,
+          "task": "normalization"
+        },
+        {
+          "phase": "scored",
+          "repetition": 0,
+          "score": 1,
+          "task": "weighted-portfolio"
+        },
+        {
+          "phase": "execution_failed",
+          "repetition": 0,
+          "score": 0,
+          "task": "debt-rollforward"
+        },
+        {
+          "phase": "execution_failed",
+          "repetition": 0,
+          "score": 0,
+          "task": "scenario-valuation"
+        }
+      ]
+    },
+    {
+      "build": {
+        "artifactDigest": "0d4550c967083be1dda589fb0beec5abb94de4dc1674c4042a43244738ee1df3",
+        "bundleDigest": "05665355cd7f8c1c46e51b120899aebd89a9af755c9d1bc9ce7f94a856df9d44",
+        "image": "sha256:01b8a43dbb9aef634ddf2199c649264d524aa75f337f91f41c638c72de9ebaf3",
+        "lockDigest": "f16c2c5b4b12a53fe8d28b9235ef3190acd56a9124cab8479b3381381f7fc444",
+        "tarballDigest": "021c04bede71e313822690ce042c875682e7b96587f44d109a1b9f984f036e78"
+      },
+      "candidate": "d572b7b5851afbbe6a5ab87c57112a66ea6bf1fd24b2ef846db453e932248f1b",
+      "complete": true,
+      "constraints": [],
+      "failures": 0,
+      "id": "selected",
+      "mean": 1,
+      "samples": [
+        {
+          "phase": "scored",
+          "repetition": 0,
+          "score": 1,
+          "task": "normalization"
+        },
+        {
+          "phase": "scored",
+          "repetition": 0,
+          "score": 1,
+          "task": "weighted-portfolio"
+        },
+        {
+          "phase": "scored",
+          "repetition": 0,
+          "score": 1,
+          "task": "debt-rollforward"
+        },
+        {
+          "phase": "scored",
+          "repetition": 0,
+          "score": 1,
+          "task": "scenario-valuation"
+        }
+      ]
+    }
+  ]
+}

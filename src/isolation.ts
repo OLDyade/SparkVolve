@@ -2,6 +2,7 @@ import path from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { digest } from './artifacts.js';
 import type { ContainerSpec } from './docker.js';
+import { runtimeEnvironment } from './runtime-environment.js';
 import { verifyNetwork, type NetworkInspection } from './network.js';
 
 /** The label binds a durable intent. Actual Docker settings are checked separately. */
@@ -13,6 +14,7 @@ export function containerIdentity(spec: ContainerSpec): string {
     isolation: spec.isolation,
     network: spec.network,
     timeoutSeconds: spec.timeoutSeconds,
+    runtimeEnvironment,
   });
 }
 
@@ -20,7 +22,7 @@ export function temporaryFilesystems(spec: ContainerSpec): Record<string, string
   const { uid, gid } = spec.isolation.user;
   return {
     '/tmp': `rw,exec,nosuid,nodev,size=${spec.isolation.tmpMiB}m,uid=${uid},gid=${gid},mode=1777`,
-    '/home/node': `rw,nosuid,nodev,size=${spec.isolation.homeMiB}m,uid=${uid},gid=${gid},mode=700`,
+    [runtimeEnvironment.HOME]: `rw,nosuid,nodev,size=${spec.isolation.homeMiB}m,uid=${uid},gid=${gid},mode=700`,
   };
 }
 
@@ -35,6 +37,7 @@ export interface InspectedContainer extends NetworkInspection {
     WorkingDir: string;
     Labels: Record<string, string>;
     Volumes: Record<string, unknown> | null;
+    Env: string[];
   };
   HostConfig: {
     Runtime: string;
@@ -70,6 +73,12 @@ export function verifyIsolation(spec: ContainerSpec, actual: InspectedContainer)
   check(!config.Entrypoint?.length, 'entrypoint');
   check(config.User === `${spec.isolation.user.uid}:${spec.isolation.user.gid}`, 'user');
   check(config.WorkingDir === '/workspace', 'workdir');
+  for (const [key, value] of Object.entries(runtimeEnvironment))
+    check(
+      config.Env.filter((entry) => entry.startsWith(`${key}=`)).length === 1 &&
+        config.Env.includes(`${key}=${value}`),
+      `runtime environment ${key}`,
+    );
   check(!Object.keys(config.Volumes ?? {}).length, 'image volumes');
   check(host.Runtime === spec.isolation.runtime, 'runtime');
   check(!host.Privileged && host.ReadonlyRootfs && host.Init, 'privileges/rootfs/init');

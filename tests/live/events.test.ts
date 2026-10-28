@@ -10,12 +10,12 @@ import { Store } from '../../src/store.js';
 import { Controller } from '../../src/controller.js';
 import { serve } from '../../src/api.js';
 import { optimize } from '../../src/optimizer.js';
-import { configureLiveModel, liveControllerEndpoint } from './fixture.js';
+import { configureLiveModel, liveControllerEndpoint, liveBudgets, liveTestTimeout } from './fixture.js';
 
 // Explicitly opt-in, real-provider lifecycle acceptance. No score or improvement claim.
 test(
   'real model waits for a committed host event through native DSH and concludes',
-  { timeout: 240_000 },
+  { timeout: liveTestTimeout() },
   async () => {
     const image = process.env.HE_TEST_IMAGE;
     assert.ok(image, 'Set HE_TEST_IMAGE to an immutable runtime image');
@@ -35,7 +35,7 @@ test(
     await configureLiveModel(dataset, spec);
     spec.evaluator.image = image;
     spec.candidate.build.image = image;
-    spec.budget.optimizerSeconds = 180;
+    spec.budget.optimizerSeconds = liveBudgets.optimizerSeconds;
     spec.optimizerHarness.source.digest = await treeDigest(path.join(dataset, 'optimizer-bundle'));
     assert.equal(spec.optimizerHarness.kind, 'source');
     if (spec.optimizerHarness.kind === 'source') spec.optimizerHarness.build = { image, timeoutSeconds: 120 };
