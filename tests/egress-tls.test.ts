@@ -139,6 +139,17 @@ test(
         .map((line) => JSON.parse(line) as EgressEvent);
       assert.equal(events.length, 2);
       assert.equal(events[1]!.outcome, streaming ? 'cancelled' : trusted ? 'completed' : 'upstream_error');
+      const observed = events[1]!.transport;
+      assert.ok(observed?.tcpConnectedMs !== undefined);
+      if (trusted) {
+        assert.ok(observed.tlsConnectedMs! >= observed.tcpConnectedMs);
+        assert.equal(observed.tlsAuthorized, true);
+        assert.ok(observed.responseHeadersMs! >= observed.tlsConnectedMs!);
+      } else {
+        assert.equal(events[1]!.failure?.stage, 'tls');
+        assert.equal(observed.tlsConnectedMs, undefined);
+        assert.equal(observed.responseHeadersMs, undefined);
+      }
       assert.doesNotMatch(JSON.stringify({ events, stdout, stderr }), /test-only-tls-secret/);
     }
     assert.equal(calls, 2, 'Untrusted TLS connection must not send an authenticated HTTP request');

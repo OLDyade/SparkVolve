@@ -93,6 +93,8 @@ test('resolver failure records its native code and stage without leaking excepti
   assert.equal(event.outcome, 'upstream_error');
   assert.deepEqual(event.failure, { stage: 'resolve', code: 'EAI_AGAIN' });
   assert.equal(event.address, undefined);
+  assert.equal(event.transport?.resolvedMs, undefined);
+  assert.equal(event.transport?.socketAssignedMs, undefined);
   assert.equal(JSON.stringify(service.events).includes('private request'), false);
 });
 
@@ -241,6 +243,14 @@ test(
     const reset = await post(gateway.base);
     assert.equal(reset.status, 502);
     assert.equal(((await reset.json()) as { error: string }).error, 'upstream_error');
+    const failed = await gateway.finished;
+    assert.equal(failed.failure?.stage, 'headers');
+    assert.equal(failed.failure?.code, 'ECONNRESET');
+    assert.ok(failed.transport?.tcpConnectedMs !== undefined);
+    assert.ok(failed.transport?.requestFlushedMs !== undefined);
+    assert.equal(failed.transport?.responseHeadersMs, undefined);
+    assert.equal(failed.transport?.tlsConnectedMs, undefined);
+    assert.equal(failed.transport?.reusedSocket, false);
     const redirect = await post(gateway.base);
     assert.equal(redirect.status, 307);
     assert.equal(await redirect.text(), 'redirect');
@@ -252,6 +262,35 @@ test(
     assert.equal(calls, 3);
   },
 );
+
+test('transport measures delayed response headers separately from TCP and local request flush', async (t) => {
+  let calls = 0;
+  const provider = await upstream(t, (req, res) => {
+    calls++;
+    req.resume();
+    setTimeout(() => res.end('ready'), 60);
+  });
+  const gateway = await broker(t, [route(provider)]);
+  assert.equal(await (await post(gateway.base)).text(), 'ready');
+  const { transport } = await gateway.finished;
+  assert.ok(transport);
+  for (const name of [
+    'bodyReadMs',
+    'resolvedMs',
+    'socketAssignedMs',
+    'tcpConnectedMs',
+    'requestFlushedMs',
+    'responseHeadersMs',
+    'responseCompleteMs',
+  ] as const)
+    assert.ok(Number.isFinite(transport[name]), name);
+  assert.ok(transport.responseHeadersMs! - transport.tcpConnectedMs! >= 40);
+  assert.ok(transport.responseHeadersMs! >= transport.requestFlushedMs!);
+  assert.ok(transport.responseCompleteMs! >= transport.responseHeadersMs!);
+  assert.ok(transport.elapsedMs >= transport.responseCompleteMs!);
+  assert.equal(transport.tlsConnectedMs, undefined);
+  assert.equal(calls, 1);
+});
 
 test('DNS contract rejects private, mapped, reserved and mixed answers without a second resolution', async () => {
   const base: Route = {

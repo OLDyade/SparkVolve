@@ -2,6 +2,7 @@ import http from 'node:http';
 import https from 'node:https';
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
+import { TLSSocket } from 'node:tls';
 import { randomUUID } from 'node:crypto';
 import { pipeline } from 'node:stream/promises';
 import { getSystemErrorMap } from 'node:util';
@@ -74,7 +75,20 @@ export interface EgressEvent {
   outcome?: 'completed' | 'denied' | 'upstream_error' | 'cancelled' | 'timeout';
   upstreamStatus?: number;
   address?: string;
-  failure?: { stage: 'request' | 'resolve' | 'connect' | 'response'; code?: string };
+  failure?: { stage: 'request' | 'resolve' | 'connect' | 'tls' | 'headers' | 'response'; code?: string };
+  transport?: {
+    elapsedMs: number;
+    bodyReadMs?: number;
+    resolvedMs?: number;
+    socketAssignedMs?: number;
+    tcpConnectedMs?: number;
+    tlsConnectedMs?: number;
+    tlsAuthorized?: boolean;
+    requestFlushedMs?: number;
+    responseHeadersMs?: number;
+    responseCompleteMs?: number;
+    reusedSocket?: boolean;
+  };
 }
 export type EgressServer = http.Server & { shutdown: () => Promise<void> };
 class Denied extends Error {}
@@ -227,6 +241,9 @@ export async function serveEgress(
     return stopping;
   }
   async function handle(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
+    const started = performance.now();
+    const transport: NonNullable<EgressEvent['transport']> = { elapsedMs: 0 };
+    const elapsed = () => performance.now() - started;
     const route = config.routes.find((r) => r.path === req.url && r.method === req.method);
     const id = randomUUID();
     const record = (event: Omit<EgressEvent, 'id' | 'at' | 'route'>) =>
@@ -253,8 +270,10 @@ export async function serveEgress(
     try {
       if (!route) throw new Denied('Route not permitted');
       const body = await readBody(req, route, abort.signal);
+      transport.bodyReadMs = elapsed();
       stage = 'resolve';
       address = await abortable(resolveEgressAddress(route, resolve), abort.signal);
+      transport.resolvedMs = elapsed();
       abort.signal.throwIfAborted();
       const url = new URL(route.upstream);
       const headers: Record<string, string> = {
@@ -281,8 +300,29 @@ export async function serveEgress(
               else callback(null, pinned.address, pinned.family);
             },
           },
-          resolve,
+          (response) => {
+            transport.responseHeadersMs = elapsed();
+            resolve(response);
+          },
         );
+        request.once('socket', (socket) => {
+          transport.socketAssignedMs = elapsed();
+          transport.reusedSocket = request.reusedSocket;
+          socket.once('connect', () => {
+            transport.tcpConnectedMs = elapsed();
+            stage = socket instanceof TLSSocket ? 'tls' : 'headers';
+          });
+          if (socket instanceof TLSSocket)
+            socket.once('secureConnect', () => {
+              transport.tlsConnectedMs = elapsed();
+              transport.tlsAuthorized = socket.authorized;
+              stage = 'headers';
+            });
+        });
+        // finish means handed to the OS, not acknowledged by the upstream.
+        request.once('finish', () => {
+          transport.requestFlushedMs = elapsed();
+        });
         request.on('error', reject);
         request.end(body);
       });
@@ -295,6 +335,7 @@ export async function serveEgress(
       }
       // Redirects remain responses. The broker never follows Location or retries any request.
       await pipeline(response, res, { signal: abort.signal });
+      transport.responseCompleteMs = elapsed();
       outcome = 'completed';
     } catch (error) {
       const code = (error as NodeJS.ErrnoException)?.code;
@@ -320,6 +361,7 @@ export async function serveEgress(
       record({
         phase: 'finished',
         outcome,
+        transport: { ...transport, elapsedMs: elapsed() },
         ...(address ? { address: address.address } : {}),
         ...(upstreamStatus !== undefined ? { upstreamStatus } : {}),
         ...(failure ? { failure } : {}),
