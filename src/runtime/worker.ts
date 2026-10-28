@@ -56,7 +56,7 @@ const runtime = new DeepSeekHarness({
     : { reasoningEffort: ReasoningEffortId(config.model.reasoningEffort) }),
   maxTokens: config.model.maxTokens,
   requestTimeoutMs: config.timeoutSeconds * 1000,
-  initializeTimeoutMs: 60_000,
+  initializeTimeoutMs: config.timeoutSeconds * 1000,
   env: { ...process.env, DSH_MAX_TOKENS_AS_SUCCESS: 'false' },
 });
 try {

@@ -1,0 +1,86 @@
+{
+  "startedAt": "2026-10-28T02:11:12.098180+00:00",
+  "steps": [
+    {
+      "name": "check",
+      "command": [
+        "npm",
+        "run",
+        "check"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "base-image",
+      "command": [
+        "docker",
+        "build",
+        "-t",
+        "harness-evolution:budget600-20261028",
+        "."
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "spreadsheet-image",
+      "command": [
+        "docker",
+        "build",
+        "--build-arg",
+        "HARNESS_IMAGE=harness-evolution:budget600-20261028",
+        "-f",
+        "examples/spreadsheet/Dockerfile",
+        "-t",
+        "harness-evolution-spreadsheet:budget600-20261028",
+        "."
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "preflight",
+      "command": [
+        "node",
+        "scripts/verify-native-authoring.mjs",
+        "--root",
+        ".evolution/budget600-preflight-20261028",
+        "--image",
+        "sha256:01b8a43dbb9aef634ddf2199c649264d524aa75f337f91f41c638c72de9ebaf3",
+        "--model",
+        ".evolution/native-authoring-config-20261028/model.json",
+        "--isolation",
+        ".evolution/feedback-study-config-20261028/isolation.json",
+        "--controller-ip",
+        "0.250.250.254",
+        "--install-policy",
+        ".evolution/feedback-study-config-20261028/install-policy.json",
+        "--check-contracts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "container-qa",
+      "command": [
+        "node",
+        "--import",
+        "tsx",
+        "--test",
+        "tests/container/qa.test.ts",
+        "tests/container/validation-cancellation.test.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "live-transport",
+      "command": [
+        "node",
+        "--env-file=/Users/apple/.config/harness-evolution/venus.env",
+        "scripts/verify-egress-native.mjs",
+        ".evolution/budget600-live-transport-20261028"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "image": "sha256:01b8a43dbb9aef634ddf2199c649264d524aa75f337f91f41c638c72de9ebaf3",
+  "passed": true,
+  "completedAt": "2026-10-28T02:15:21.541256+00:00"
+}

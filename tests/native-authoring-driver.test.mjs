@@ -16,18 +16,68 @@ import {
 function contract() {
   const s = specification();
   s.tasks = ['one', 'two', 'three', 'four'].map((id) => ({ ...s.tasks[0], id }));
+  s.candidate.build.timeoutSeconds = 300;
+  s.evaluator.timeoutSeconds = 120;
   return s;
 }
 test('native acceptance fixes 12 search + 8 independent validation tasks before inference', () => {
   const c = acceptanceContracts(contract(), contract());
-  assert.deepEqual(c.search.budget, { candidates: 3, optimizerSeconds: 1200 });
+  assert.deepEqual(c.search.budget, { candidates: 3, optimizerSeconds: 7140 });
   assert.equal(c.search.probes.limit, 3);
+  assert.equal(c.search.timeoutSeconds, 600);
+  assert.equal(c.assessment.timeoutSeconds, 600);
+  assert.equal(c.search.probes.timeoutSeconds, 600);
+  assert.equal(c.allocation.optimizerBudget.authoringSeconds, 1200);
+  assert.equal(c.allocation.optimizerBudget.candidateWaitSeconds, 3240);
+  assert.equal(c.allocation.optimizerBudget.probeWaitSeconds, 2700);
   assert.equal(c.assessment.purpose, 'validation');
   assert.equal(c.assessment.budget.candidates, 1);
   assert.equal(c.allocation.totalTaskExecutions, 20);
   const invalid = contract();
   invalid.tasks.pop();
   assert.throws(() => acceptanceContracts(invalid, contract()));
+});
+
+test('custom task deadlines propagate to task, native QA, probe and derived optimizer allocation', () => {
+  const c = acceptanceContracts(contract(), contract(), { taskTimeoutSeconds: 900 });
+  assert.equal(c.search.timeoutSeconds, 900);
+  assert.equal(c.assessment.timeoutSeconds, 900);
+  assert.equal(c.search.probes.timeoutSeconds, 900);
+  assert.equal(c.allocation.modelRequestTimeoutSeconds, 900);
+  assert.equal(c.allocation.optimizerBudget.nativeQaSeconds, 900);
+  assert.equal(c.search.budget.optimizerSeconds, 9240);
+  assert.equal(c.allocation.totalTaskExecutions, 20);
+  const changedBuild = contract();
+  changedBuild.candidate.build.timeoutSeconds = 450;
+  assert.equal(
+    acceptanceContracts(changedBuild, structuredClone(changedBuild)).search.budget.optimizerSeconds,
+    7890,
+  );
+});
+
+test('invalid deadlines and shorter model route deadlines are rejected before inference', () => {
+  for (const taskTimeoutSeconds of [0, -1, 0.5, NaN, Infinity, Number.MAX_SAFE_INTEGER])
+    assert.throws(() => acceptanceContracts(contract(), contract(), { taskTimeoutSeconds }));
+  const development = contract();
+  development.egress.optimizer = [
+    {
+      id: 'model',
+      path: '/v1/chat/completions',
+      method: 'POST',
+      upstream: 'https://provider.invalid/v1/chat/completions',
+      addresses: { kind: 'public' },
+      credential: null,
+      body: { kind: 'empty' },
+      maxRequestBytes: 1024,
+      timeoutSeconds: 300,
+    },
+  ];
+  assert.throws(() => acceptanceContracts(development, contract()), /route deadline/);
+  development.egress.optimizer[0].timeoutSeconds = 900;
+  assert.equal(
+    acceptanceContracts(development, contract(), { taskTimeoutSeconds: 900 }).search.budget.optimizerSeconds,
+    9240,
+  );
 });
 
 const event = (type, data, seq) => ({

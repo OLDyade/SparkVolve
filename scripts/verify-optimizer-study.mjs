@@ -29,6 +29,8 @@ import {
   treeDigest,
 } from '../dist/artifacts.js';
 import { configureEgress } from '../examples/venus/egress.mjs';
+import { installationProgram } from './verify-study-artifacts.mjs';
+import { timeoutSeconds, optimizerSecondsForPlan, candidateSecondsForPlan } from '../examples/timeouts.mjs';
 
 export function assertTerminalStudyReport(report) {
   assert.equal(report.state?.phase, 'complete', 'Only a terminal complete study can be verified');
@@ -97,6 +99,11 @@ export async function main(args = process.argv.slice(2)) {
     args,
     options: {
       ...Object.fromEntries(keys.map((key) => [key, { type: 'string' }])),
+      'task-timeout-seconds': { type: 'string' },
+      'model-http-timeout-seconds': { type: 'string' },
+      'optimizer-seconds': { type: 'string' },
+      'probe-timeout-seconds': { type: 'string' },
+      'meta-optimizer-seconds': { type: 'string' },
       help: { type: 'boolean' },
       'check-contracts': { type: 'boolean' },
       'verify-completed': { type: 'string' },
@@ -105,16 +112,26 @@ export async function main(args = process.argv.slice(2)) {
   });
   if (values.help) {
     console.log(
-      'node --env-file=<private-env> scripts/verify-optimizer-study.mjs --root <NEW directory> --image <immutable digest> --isolation <json> --model <json> --controller-ip <IPv4>\nRuns real paid inference once. Keeps failures. Never retries.\n--check-contracts builds the three real bundles and validates all four dataset contracts and study registration, then exits before study-init/inference. This non-inference check does not require a credential.\n--verify-completed <original completed root> --root <NEW verification directory> verifies preserved evidence and installs exact frozen artifacts without study-init, study-run, model calls or rewriting original reports. Other execution options are forbidden.',
+      'node --env-file=<private-env> scripts/verify-optimizer-study.mjs --root <NEW directory> --image <immutable digest> --isolation <json> --model <json> --controller-ip <IPv4>\nRuns real paid inference once. Keeps failures. Never retries. Optional deadlines: --task-timeout-seconds (default 600), --model-http-timeout-seconds, --probe-timeout-seconds, --optimizer-seconds, --meta-optimizer-seconds. Optimizer defaults reserve the complete declared wait plan plus authoring time.\n--check-contracts builds the three real bundles and validates all four dataset contracts and study registration, then exits before study-init/inference. This non-inference check does not require a credential.\n--verify-completed <original completed root> --root <NEW verification directory> verifies preserved evidence and installs exact frozen artifacts without study-init, study-run, model calls or rewriting original reports. Other execution options are forbidden.',
     );
     process.exit(0);
   }
   assert.ok(values.root, 'Required --root');
+  const taskTimeoutSeconds = timeoutSeconds(values['task-timeout-seconds']);
+  const httpTimeoutSeconds = timeoutSeconds(values['model-http-timeout-seconds'], taskTimeoutSeconds);
+  const probeTimeoutSeconds = timeoutSeconds(values['probe-timeout-seconds'], taskTimeoutSeconds);
   const completedRoot = values['verify-completed'] ? await realpath(values['verify-completed']) : null;
   if (completedRoot) {
     await assertOutputOutside(completedRoot, values.root);
     assert.ok(!values['check-contracts'], 'Completed verification cannot construct contracts');
-    for (const key of keys.filter((key) => key !== 'root'))
+    for (const key of [
+      ...keys.filter((key) => key !== 'root'),
+      'task-timeout-seconds',
+      'model-http-timeout-seconds',
+      'optimizer-seconds',
+      'probe-timeout-seconds',
+      'meta-optimizer-seconds',
+    ])
       assert.equal(
         values[key],
         undefined,
@@ -311,7 +328,7 @@ shutil.copyfile(p.with_name('grade.py'),r/'evaluation'/'grade.py')
       path.join(directory, 'method/artifact'),
       path.join(root, 'publications'),
     );
-    const egress = await configureEgress(path.join(directory, 'runtime'), model),
+    const egress = await configureEgress(path.join(directory, 'runtime'), model, httpTimeoutSeconds),
       task = await json(path.join(directory, 'task.json'));
     task.inputDigest = await treeDigest(path.join(directory, task.input));
     task.evaluationDigest = await treeDigest(path.join(directory, task.evaluation));
@@ -347,13 +364,13 @@ shutil.copyfile(p.with_name('grade.py'),r/'evaluation'/'grade.py')
       tasks: [task],
       repetitions: 1,
       concurrency: 1,
-      timeoutSeconds: 300,
+      timeoutSeconds: taskTimeoutSeconds,
       failureLimit: 0,
       budget:
         purpose === 'search'
           ? { candidates: 2, optimizerSeconds: 600 }
           : { candidates: 1, optimizerSeconds: 1 },
-      probes: purpose === 'search' ? { limit: 4, timeoutSeconds: 60 } : null,
+      probes: purpose === 'search' ? { limit: 4, timeoutSeconds: probeTimeoutSeconds } : null,
       metric: {
         name: 'structured_output_accuracy',
         direction: 'maximize',
@@ -363,6 +380,11 @@ shutil.copyfile(p.with_name('grade.py'),r/'evaluation'/'grade.py')
       },
       constraints: [],
     });
+    if (purpose === 'search')
+      spec.budget.optimizerSeconds = timeoutSeconds(
+        values['optimizer-seconds'],
+        optimizerSecondsForPlan(spec, 600),
+      );
     return {
       specification: spec,
       dataset: { directory: `cases/${name}`, digest: await treeDigest(directory) },
@@ -449,44 +471,20 @@ shutil.copyfile(p.with_name('grade.py'),r/'evaluation'/'grade.py')
     await verifyArtifact(artifact, sourceDigest, identity);
     const home = path.join(root, 'installation', name);
     await mkdir(path.join(home, 'work'), { recursive: true });
-    const program = `import assert from 'node:assert/strict';
-import {readFile,writeFile,mkdir} from 'node:fs/promises';
-import {parse,stringify} from 'yaml';
-import {command} from '/app/dist/docker.js';
-import {checkComposition} from '/app/dist/composition.js';
-import path from 'node:path';
-import {sdkPreset,evolutionPreset} from '/app/dist/preset.js';
-import {fileDigest,atomicJSON} from '/app/dist/artifacts.js';
-const config=JSON.parse(await readFile('/acceptance/config.json','utf8'));
-const env={...process.env,DSH_HOME:'/workspace/native/dsh',EVOLUTION_ENDPOINT:'http://127.0.0.1:1',EVOLUTION_TOKEN:'unused-install-acceptance',VENUS_API_KEY:'unused-install-acceptance'};Object.assign(process.env,env);
-await command('dsh',['--profile',config.profile,'--dump-default-config'],{env,timeoutMs:30000});
-const profileRoot=env.DSH_HOME+'/profiles/'+config.profile;
-const workspace=profileRoot+'/pnpm-workspace.yaml',settings=parse(await readFile(workspace,'utf8'));
-settings.allowBuilds={'@deepseek-ai/dsh-subprocess-local@0.2.1-rc.4':true,'@google/genai@2.21.0':true,'koffi@3.1.1':true,'node-pty@1.2.0-beta.15':true,'protobufjs@7.6.6':true};await writeFile(workspace,stringify(settings));
-if(config.composition)await command('dsh',['plugin','--profile',config.profile,'add','/framework/package.tgz'],{env,timeoutMs:180000});
-await command('dsh',['plugin','--profile',config.profile,'add','/artifact/bundle.tgz'],{env,timeoutMs:180000});
-const profile=JSON.parse(await readFile(profileRoot+'/package.json','utf8'));
-const manifest=JSON.parse(await readFile('/artifact/bundle/package.json','utf8'));assert.ok(profile.dsh.profile.bundles.includes(manifest.name));
-assert.equal(await fileDigest('/artifact/bundle.tgz'),config.identity.tarballDigest);
-await mkdir('/workspace/task',{recursive:true});const patches=['/environment/cordis.patch.yml'];
-if(config.composition){
- const installedComposition=path.join(profileRoot,'node_modules',manifest.name,config.composition);
- await readFile(installedComposition);
- const methodPreset=evolutionPreset({plugin:'@harness-evolution/dsh-bundle',endpoint:env.EVOLUTION_ENDPOINT,tokenEnv:'EVOLUTION_TOKEN',composition:installedComposition});
- await writeFile('/workspace/preset.yml',stringify([{insert:sdkPreset('evolution','@harness-evolution/dsh-bundle/sdk-preset',config.profile)},{id:'preset-evolution',config:methodPreset.config}]));patches.push('/workspace/preset.yml');
-}
-await checkComposition({profile:config.profile,model:config.model,patches,directory:'/workspace/native',processCwd:'/app',workspace:'/workspace/task',timeoutSeconds:60});
-const observed=JSON.parse(await readFile('/workspace/native/composition.json','utf8'));
-if(config.composition)assert.ok(observed.tools.some(t=>t.name==='evolution_status'));
-else assert.ok(!observed.tools.some(t=>t.name.startsWith('evolution_')));
-assert.ok(!observed.tools.some(t=>t.name.startsWith('optimizer_study_')));
-await atomicJSON('/workspace/installed.json',{package:manifest.name,profile:config.profile,composition:config.composition,tarballDigest:config.identity.tarballDigest,installed:true,nativeComposition:true,inferenceRequested:false});
-`;
-    await writeFile(path.join(home, 'install.mjs'), program);
-    await atomicJSON(
-      path.join(home, 'config.json'),
-      installationConfiguration(model, identity, composition, runtime),
-    );
+    await cp(path.join(repo, 'dist/command.js'), path.join(home, 'command.mjs'));
+    await writeFile(path.join(home, 'install.mjs'), installationProgram);
+    await atomicJSON(path.join(home, 'config.json'), {
+      ...installationConfiguration(model, identity, composition, runtime),
+      timeoutSeconds: 480,
+      environmentPatch: runtime.environment?.patch ?? null,
+      allowBuilds: {
+        '@deepseek-ai/dsh-subprocess-local@0.2.1-rc.4': true,
+        '@google/genai@2.21.0': true,
+        'koffi@3.1.1': true,
+        'node-pty@1.2.0-beta.15': true,
+        'protobufjs@7.6.6': true,
+      },
+    });
     const result = await docker.run(
       {
         name: `he-install-study-${randomUUID()}`,
@@ -789,7 +787,7 @@ await atomicJSON('/workspace/installed.json',{package:manifest.name,profile:conf
         recursive: true,
         errorOnExist: true,
       });
-      const routes = await configureEgress(path.join(inputs, 'runtime'), model);
+      const routes = await configureEgress(path.join(inputs, 'runtime'), model, httpTimeoutSeconds);
       const spec = OptimizerStudy.parse({
         name: 'native-optimizer-method-study',
         objective:
@@ -833,6 +831,24 @@ await atomicJSON('/workspace/installed.json',{package:manifest.name,profile:conf
         budget: { methodCandidates: 2, metaOptimizerSeconds: 1200, concurrentSearches: 1 },
         selection: { failureLimit: 0 },
       });
+      // A meta episode waits for native G preparation and complete nested development jobs.
+      // Sum serial job ceilings: concurrency can reduce elapsed time, never require a shorter budget.
+      const nestedSeconds = spec.developmentCases.reduce(
+        (sum, item) =>
+          sum +
+          spec.repetitions *
+            (item.search.specification.timeoutSeconds +
+              candidateSecondsForPlan(item.search.specification) +
+              item.search.specification.budget.optimizerSeconds +
+              candidateSecondsForPlan(item.assessment.specification)),
+        0,
+      );
+      spec.budget.metaOptimizerSeconds = timeoutSeconds(
+        values['meta-optimizer-seconds'],
+        1200 +
+          (spec.budget.methodCandidates - 1) *
+            (spec.methodBuild.timeoutSeconds + taskTimeoutSeconds + nestedSeconds),
+      );
       await atomicJSON(path.join(root, 'study-spec.json'), spec);
       receipt.registrationDigest = digest(spec);
       receipt.frozen = { baseline, meta, seed };
@@ -842,14 +858,15 @@ await atomicJSON('/workspace/installed.json',{package:manifest.name,profile:conf
           search = name.endsWith('search');
         assert.equal(parsed.purpose, search ? 'search' : 'validation');
         assert.equal(parsed.budget.candidates, search ? 2 : 1);
-        assert.deepEqual(parsed.probes, search ? { limit: 4, timeoutSeconds: 60 } : null);
+        assert.deepEqual(parsed.probes, search ? { limit: 4, timeoutSeconds: probeTimeoutSeconds } : null);
         if (!search) {
           assert.equal(
             Experiment.safeParse({ ...parsed, budget: { ...parsed.budget, candidates: 2 } }).success,
             false,
           );
           assert.equal(
-            Experiment.safeParse({ ...parsed, probes: { limit: 4, timeoutSeconds: 60 } }).success,
+            Experiment.safeParse({ ...parsed, probes: { limit: 4, timeoutSeconds: probeTimeoutSeconds } })
+              .success,
             false,
           );
         }

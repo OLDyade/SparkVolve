@@ -1,0 +1,1257 @@
+{
+  "protocol": "native-authoring-acceptance",
+  "image": "sha256:3e941da1abf0493a67aa2de615b91e2a8045d0a9e1b1a7537f22f80f1482de37",
+  "allocation": {
+    "searchTasks": 12,
+    "validationTasks": 8,
+    "totalTaskExecutions": 20,
+    "candidatesIncludingBaseline": 3,
+    "optionalProbes": 3,
+    "optimizerSeconds": 1200,
+    "boundary": "Ceiling, not fabricated observations: QA/build failures consume candidate slots without task scores. Probe/build/QA/optimizer calls are separately accounted. No task retry."
+  },
+  "search": {
+    "name": "native-authoring-development",
+    "objective": "Improve the general spreadsheet plugin using authorized task evidence. For this native authoring integration acceptance, actually query the relevant Cordis inspect contract and load an official plugin-development or composition Skill before implementing a candidate. These tool-use requirements test integration, not autonomous preference or causal benefit. Choose your own evidence-backed implementation or assembly change; do not encode task identities, coordinates, fixture values or answers. Freeze and evaluate the candidate through the ordinary controller. Optional probes are available. Negative quality results are valid; never change the evaluator, resample an unchanged candidate, or modify the frozen optimizer.",
+    "purpose": "search",
+    "hostSearchProtocol": {
+      "ancestry": "unrestricted",
+      "feedback": "full"
+    },
+    "isolation": {
+      "runtime": "runc",
+      "user": {
+        "uid": 501,
+        "gid": 20
+      },
+      "memoryMiB": 4096,
+      "cpus": 2,
+      "pids": 256,
+      "tmpMiB": 512,
+      "homeMiB": 128,
+      "network": {
+        "egressPool": "10.230.0.0/16",
+        "egressDns": [
+          "0.250.250.200"
+        ],
+        "optimizer": "controlled",
+        "executor": "controlled",
+        "build": "bridge",
+        "qa": "none",
+        "evaluator": "none"
+      }
+    },
+    "egress": {
+      "optimizer": [
+        {
+          "id": "venus",
+          "path": "/v1/chat/completions",
+          "method": "POST",
+          "upstream": "https://venus.xfinfr.com/v1/chat/completions",
+          "addresses": {
+            "kind": "public"
+          },
+          "credential": {
+            "env": "VENUS_API_KEY",
+            "header": "authorization",
+            "prefix": "Bearer "
+          },
+          "body": {
+            "kind": "json",
+            "equals": {
+              "model": "deepseek/deepseek-v4.1-flash-1017"
+            },
+            "maximum": {
+              "max_tokens": 32768
+            }
+          },
+          "maxRequestBytes": 8388608,
+          "timeoutSeconds": 300
+        }
+      ],
+      "executor": [
+        {
+          "id": "venus",
+          "path": "/v1/chat/completions",
+          "method": "POST",
+          "upstream": "https://venus.xfinfr.com/v1/chat/completions",
+          "addresses": {
+            "kind": "public"
+          },
+          "credential": {
+            "env": "VENUS_API_KEY",
+            "header": "authorization",
+            "prefix": "Bearer "
+          },
+          "body": {
+            "kind": "json",
+            "equals": {
+              "model": "deepseek/deepseek-v4.1-flash-1017"
+            },
+            "maximum": {
+              "max_tokens": 32768
+            }
+          },
+          "maxRequestBytes": 8388608,
+          "timeoutSeconds": 300
+        }
+      ]
+    },
+    "runtime": {
+      "image": "sha256:3e941da1abf0493a67aa2de615b91e2a8045d0a9e1b1a7537f22f80f1482de37",
+      "dshVersion": "0.2.1-rc.4",
+      "profile": "sdk",
+      "environment": {
+        "directory": "runtime",
+        "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+        "patch": "cordis.patch.yml"
+      }
+    },
+    "executor": {
+      "provider": "venus",
+      "model": "deepseek/deepseek-v4.1-flash-1017",
+      "reasoningEffort": "off",
+      "maxTokens": 32768,
+      "credentialEnv": [
+        "VENUS_API_KEY"
+      ]
+    },
+    "optimizer": {
+      "provider": "venus",
+      "model": "deepseek/deepseek-v4.1-flash-1017",
+      "reasoningEffort": "off",
+      "maxTokens": 32768,
+      "credentialEnv": [
+        "VENUS_API_KEY"
+      ]
+    },
+    "optimizerHarness": {
+      "kind": "source",
+      "source": {
+        "directory": "optimizer-bundle",
+        "digest": "d8d9624f857efa37c4a1187f42013cd3845cff87de5cea6a6cbde03f0c6630be"
+      },
+      "composition": "plugins.yml",
+      "build": {
+        "image": "sha256:3e941da1abf0493a67aa2de615b91e2a8045d0a9e1b1a7537f22f80f1482de37",
+        "timeoutSeconds": 300
+      }
+    },
+    "researchLibrary": null,
+    "evaluator": {
+      "image": "sha256:3e941da1abf0493a67aa2de615b91e2a8045d0a9e1b1a7537f22f80f1482de37",
+      "command": [
+        "python3",
+        "/evaluation/grade.py"
+      ],
+      "timeoutSeconds": 120
+    },
+    "candidate": {
+      "patch": "cordis.patch.yml",
+      "build": {
+        "image": "sha256:3e941da1abf0493a67aa2de615b91e2a8045d0a9e1b1a7537f22f80f1482de37",
+        "timeoutSeconds": 300
+      },
+      "qa": {
+        "directory": "verification",
+        "digest": "1fc2d5df1011a5a9c15314ceb577db900f77a1448e5b5b30792a8466e748620f",
+        "entry": "check.mjs"
+      }
+    },
+    "tasks": [
+      {
+        "id": "normalization",
+        "prompt": "Complete /input/source.xlsx using Excel formulas. For every displayed year, normalize reported results by removing non-recurring expenses and gains. Begin with reported tax expense; each adjustment tax rate applies only to its own adjustment. Fill all four normalized metric rows for all years. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+        "input": "inputs/normalization",
+        "inputDigest": "1b722e7c2dc3bc2f59691d8429493b4bdb1f2650ce80d99528a6916112d18748",
+        "evaluation": "evaluation/normalization",
+        "evaluationDigest": "f8ffd6cfaced3d845e506c92d3b885c4a5f3a96caa855046612e80975133096a"
+      },
+      {
+        "id": "weighted-portfolio",
+        "prompt": "Complete /input/source.xlsx using Excel formulas. Fill each segment revenue, gross profit and margin. Fill total units, revenue, gross profit and the portfolio margin. Total price and total cost per unit cells are intentionally blank; do not fill them. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+        "input": "inputs/weighted-portfolio",
+        "inputDigest": "484d266b212c51f5444972305d30b908b00ff08497af511277c2df6798f460a5",
+        "evaluation": "evaluation/weighted-portfolio",
+        "evaluationDigest": "73e0c0ba41b276b07560c9bd3854f48f02cf82513062f3595383fb96dc8cf489"
+      },
+      {
+        "id": "debt-rollforward",
+        "prompt": "Complete /input/source.xlsx using Excel formulas. Build the four-year debt schedule. Repay equal principal installments each year, based on original principal. Interest uses the same-year opening balance and rate. Fill all five schedule rows for every year. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+        "input": "inputs/debt-rollforward",
+        "inputDigest": "2a623e95ee26db2f041ce7f1774e3f743416a884011edbe4c74fe792bc68a39e",
+        "evaluation": "evaluation/debt-rollforward",
+        "evaluationDigest": "f24d53e64e24558ba763986438d07ac70361ba158bbc3f139b7ad21cd4da6ff7"
+      },
+      {
+        "id": "scenario-valuation",
+        "prompt": "Complete /input/source.xlsx using Excel formulas. Use the requested case to fill all forecast revenues and EBITDA. Then calculate exit enterprise and equity value in the final year only. Earlier-year exit value cells are intentionally blank. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+        "input": "inputs/scenario-valuation",
+        "inputDigest": "3e0b2650f74121f49faf7c6aac1ac21cd900e98f128dd694a26e1c603a15e5f0",
+        "evaluation": "evaluation/scenario-valuation",
+        "evaluationDigest": "b72cac8b824b2639218db40e00b3a4056243de9bfc89e1a5d7d56d1377d871f3"
+      }
+    ],
+    "repetitions": 1,
+    "concurrency": 4,
+    "timeoutSeconds": 300,
+    "failureLimit": 0,
+    "budget": {
+      "candidates": 3,
+      "optimizerSeconds": 1200
+    },
+    "probes": {
+      "limit": 3,
+      "timeoutSeconds": 120
+    },
+    "metric": {
+      "name": "formula_value_accuracy",
+      "direction": "maximize",
+      "minimum": 0,
+      "maximum": 1,
+      "failure": 0
+    },
+    "constraints": []
+  },
+  "assessment": {
+    "name": "native-authoring-validation",
+    "objective": "Independently assess original H0 and the final search champion on every registered validation task. No search or mutation.",
+    "purpose": "validation",
+    "hostSearchProtocol": {
+      "ancestry": "unrestricted",
+      "feedback": "full"
+    },
+    "isolation": {
+      "runtime": "runc",
+      "user": {
+        "uid": 501,
+        "gid": 20
+      },
+      "memoryMiB": 4096,
+      "cpus": 2,
+      "pids": 256,
+      "tmpMiB": 512,
+      "homeMiB": 128,
+      "network": {
+        "egressPool": "10.230.0.0/16",
+        "egressDns": [
+          "0.250.250.200"
+        ],
+        "optimizer": "controlled",
+        "executor": "controlled",
+        "build": "bridge",
+        "qa": "none",
+        "evaluator": "none"
+      }
+    },
+    "egress": {
+      "optimizer": [
+        {
+          "id": "venus",
+          "path": "/v1/chat/completions",
+          "method": "POST",
+          "upstream": "https://venus.xfinfr.com/v1/chat/completions",
+          "addresses": {
+            "kind": "public"
+          },
+          "credential": {
+            "env": "VENUS_API_KEY",
+            "header": "authorization",
+            "prefix": "Bearer "
+          },
+          "body": {
+            "kind": "json",
+            "equals": {
+              "model": "deepseek/deepseek-v4.1-flash-1017"
+            },
+            "maximum": {
+              "max_tokens": 32768
+            }
+          },
+          "maxRequestBytes": 8388608,
+          "timeoutSeconds": 300
+        }
+      ],
+      "executor": [
+        {
+          "id": "venus",
+          "path": "/v1/chat/completions",
+          "method": "POST",
+          "upstream": "https://venus.xfinfr.com/v1/chat/completions",
+          "addresses": {
+            "kind": "public"
+          },
+          "credential": {
+            "env": "VENUS_API_KEY",
+            "header": "authorization",
+            "prefix": "Bearer "
+          },
+          "body": {
+            "kind": "json",
+            "equals": {
+              "model": "deepseek/deepseek-v4.1-flash-1017"
+            },
+            "maximum": {
+              "max_tokens": 32768
+            }
+          },
+          "maxRequestBytes": 8388608,
+          "timeoutSeconds": 300
+        }
+      ]
+    },
+    "runtime": {
+      "image": "sha256:3e941da1abf0493a67aa2de615b91e2a8045d0a9e1b1a7537f22f80f1482de37",
+      "dshVersion": "0.2.1-rc.4",
+      "profile": "sdk",
+      "environment": {
+        "directory": "runtime",
+        "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+        "patch": "cordis.patch.yml"
+      }
+    },
+    "executor": {
+      "provider": "venus",
+      "model": "deepseek/deepseek-v4.1-flash-1017",
+      "reasoningEffort": "off",
+      "maxTokens": 32768,
+      "credentialEnv": [
+        "VENUS_API_KEY"
+      ]
+    },
+    "optimizer": {
+      "provider": "venus",
+      "model": "deepseek/deepseek-v4.1-flash-1017",
+      "reasoningEffort": "off",
+      "maxTokens": 32768,
+      "credentialEnv": [
+        "VENUS_API_KEY"
+      ]
+    },
+    "optimizerHarness": {
+      "kind": "source",
+      "source": {
+        "directory": "optimizer-bundle",
+        "digest": "d8d9624f857efa37c4a1187f42013cd3845cff87de5cea6a6cbde03f0c6630be"
+      },
+      "composition": "plugins.yml",
+      "build": {
+        "image": "sha256:3e941da1abf0493a67aa2de615b91e2a8045d0a9e1b1a7537f22f80f1482de37",
+        "timeoutSeconds": 300
+      }
+    },
+    "researchLibrary": null,
+    "evaluator": {
+      "image": "sha256:3e941da1abf0493a67aa2de615b91e2a8045d0a9e1b1a7537f22f80f1482de37",
+      "command": [
+        "python3",
+        "/evaluation/grade.py"
+      ],
+      "timeoutSeconds": 120
+    },
+    "candidate": {
+      "patch": "cordis.patch.yml",
+      "build": {
+        "image": "sha256:3e941da1abf0493a67aa2de615b91e2a8045d0a9e1b1a7537f22f80f1482de37",
+        "timeoutSeconds": 300
+      },
+      "qa": {
+        "directory": "verification",
+        "digest": "1fc2d5df1011a5a9c15314ceb577db900f77a1448e5b5b30792a8466e748620f",
+        "entry": "check.mjs"
+      }
+    },
+    "tasks": [
+      {
+        "id": "normalization",
+        "prompt": "Complete /input/source.xlsx using Excel formulas. For every displayed year, normalize reported results by removing non-recurring expenses and gains. Begin with reported tax expense; each adjustment tax rate applies only to its own adjustment. Fill all four normalized metric rows for all years. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+        "input": "inputs/normalization",
+        "inputDigest": "8048c820055de4ed37604578f57a5124a202d557d06ebc4811b2e653705afb35",
+        "evaluation": "evaluation/normalization",
+        "evaluationDigest": "8516824bcd2d6ab4dc0e9817365047957787c7ac63bb21caa0cafb2015d47817"
+      },
+      {
+        "id": "weighted-portfolio",
+        "prompt": "Complete /input/source.xlsx using Excel formulas. Fill each segment revenue, gross profit and margin. Fill total units, revenue, gross profit and the portfolio margin. Total price and total cost per unit cells are intentionally blank; do not fill them. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+        "input": "inputs/weighted-portfolio",
+        "inputDigest": "a5315afa8161ad5aabb59a69f38dc738e7ae6395039c1e5848b82eefc12ed8e3",
+        "evaluation": "evaluation/weighted-portfolio",
+        "evaluationDigest": "577cea14079c73d17ba74bd12f4037cc0f6bee84bf65ba99724c394f1d46c5ec"
+      },
+      {
+        "id": "debt-rollforward",
+        "prompt": "Complete /input/source.xlsx using Excel formulas. Build the four-year debt schedule. Repay equal principal installments each year, based on original principal. Interest uses the same-year opening balance and rate. Fill all five schedule rows for every year. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+        "input": "inputs/debt-rollforward",
+        "inputDigest": "5ae56d406ece839f28713740d0b671f4756accf1b546329b25c0305bfe1272e5",
+        "evaluation": "evaluation/debt-rollforward",
+        "evaluationDigest": "488841ff305bc629a5938311943c0d9227e9004eabae1c4d56855fa3ad2d5b7a"
+      },
+      {
+        "id": "scenario-valuation",
+        "prompt": "Complete /input/source.xlsx using Excel formulas. Use the requested case to fill all forecast revenues and EBITDA. Then calculate exit enterprise and equity value in the final year only. Earlier-year exit value cells are intentionally blank. Preserve all original inputs, labels, units and intentional blanks. Read original comments. Deliver /workspace/result.xlsx; an independent engine recalculates formulas. Python openpyxl and LibreOffice are installed.",
+        "input": "inputs/scenario-valuation",
+        "inputDigest": "a3257a868d1ed3aa419eef9316587e417d84be4212e6ac34d534788a6b09143e",
+        "evaluation": "evaluation/scenario-valuation",
+        "evaluationDigest": "f7e2b2caed7bb9f56e2e3846c7c02bc5ac9104401ed62ec039d0d9db528ec714"
+      }
+    ],
+    "repetitions": 1,
+    "concurrency": 4,
+    "timeoutSeconds": 300,
+    "failureLimit": 0,
+    "budget": {
+      "candidates": 1,
+      "optimizerSeconds": 1
+    },
+    "probes": null,
+    "metric": {
+      "name": "formula_value_accuracy",
+      "direction": "maximize",
+      "minimum": 0,
+      "maximum": 1,
+      "failure": 0
+    },
+    "constraints": []
+  },
+  "seedDigest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+  "datasets": {
+    "development": "ed839d1d7f5099b9d985a37b1d628d0c85ad5c2bb089813b1be6f6a762f72b7e",
+    "validation": "891b5d20b87d6c7f4f15acae19eb8491718375eab21cfe6ec64eedfeaae03757"
+  },
+  "references": {
+    "packages": [
+      {
+        "name": "@deepseek-ai/dsh-tool-cordis",
+        "version": "0.2.1-rc.4",
+        "directory": "/app/node_modules/@deepseek-ai/dsh-tool-cordis",
+        "manifestSha256": "733b8449aa6c0fcb21676d6de32fb4dcc771f95daa6a0908ff1c00832b862739",
+        "entry": "/app/node_modules/@deepseek-ai/dsh-tool-cordis/lib/index.js",
+        "entrySha256": "ce0cd4d8983532c920cab7713dc51874f6d710c2c46c4a095167bfa980becdb0",
+        "sources": {
+          "directory": "/app/node_modules/@deepseek-ai/dsh-tool-cordis/lib",
+          "files": [
+            {
+              "file": "index.js",
+              "sha256": "ce0cd4d8983532c920cab7713dc51874f6d710c2c46c4a095167bfa980becdb0"
+            },
+            {
+              "file": "types/api-catalog.d.ts",
+              "sha256": "751ebac54d1c2d0a694d18973b2d1a95f901b8dda3ed49eb6303795a30c8dc4e"
+            },
+            {
+              "file": "types/api-catalog.js",
+              "sha256": "32b4164d2f159f7b1e02337902c721eb69898efafb21a256a0ba3c524a4bd348"
+            },
+            {
+              "file": "types/config.d.ts",
+              "sha256": "2921d2e8d943a758faf1174ee17177cf0ab8abc4b04a0fe84c3198d24e962719"
+            },
+            {
+              "file": "types/config.js",
+              "sha256": "dcda10b36438639d67c8cdc69ea1fb43180a257c39a9fd73ad03779082fdbd1b"
+            },
+            {
+              "file": "types/host.d.ts",
+              "sha256": "cc2a841dc0bceb31e9af55b7c6a813820c0204d33d560772d10deeece7347df9"
+            },
+            {
+              "file": "types/host.js",
+              "sha256": "fd0fa5d7d320b8a33698a662d6d5ed98a9dc7d34f9c37c3a5e1112fb601b7254"
+            },
+            {
+              "file": "types/index.d.ts",
+              "sha256": "b46c41605edc8e7423a1a1ec4e835f31be67b8dc8d9e1f0f2ca5da12fba576f6"
+            },
+            {
+              "file": "types/index.js",
+              "sha256": "83f78fb90500ff0cb339493c9d3b8de8a68a5c2481f8e1d556462c198e37a616"
+            },
+            {
+              "file": "types/present.d.ts",
+              "sha256": "e364f532f29ae5865e3d4be6525d1cb1a2f1d637f1516676c6815a53a03dc016"
+            },
+            {
+              "file": "types/present.js",
+              "sha256": "b8ce8f666d3ef6fe1a61909b85e01a178aaf26cbeeb21590ce5dbd8709596096"
+            },
+            {
+              "file": "types/providers.d.ts",
+              "sha256": "d6747b5af669b59592071bb4246ef14f9ca2a303db4bbe7d4c023a33e9897836"
+            },
+            {
+              "file": "types/providers.js",
+              "sha256": "24269ddf75dbf6fdbbe2fb4b4a8ee6bf27af649be6ad0a1399a420aa383cbdb8"
+            }
+          ],
+          "sha256": "e0cf81185840dafdef3c53a2cd9062d8c1646d520ec2edafb2d3519e167b4d00"
+        }
+      },
+      {
+        "name": "@deepseek-ai/dsh-cordis-host-runner",
+        "version": "0.2.1-rc.4",
+        "directory": "/app/node_modules/@deepseek-ai/dsh-cordis-host-runner",
+        "manifestSha256": "6956a1d464827410800db1748d4faf53af87ccc1bab16e583dac2b868121c6b8",
+        "entry": "/app/node_modules/@deepseek-ai/dsh-cordis-host-runner/lib/index.js",
+        "entrySha256": "6bb46b4b2edf2d28600c185808ad3a60393447fc675eebf7339189a37b7949da",
+        "sources": {
+          "directory": "/app/node_modules/@deepseek-ai/dsh-cordis-host-runner/lib",
+          "files": [
+            {
+              "file": "index.js",
+              "sha256": "6bb46b4b2edf2d28600c185808ad3a60393447fc675eebf7339189a37b7949da"
+            },
+            {
+              "file": "typert.host.d.ts",
+              "sha256": "5e2d26ee86d0fe170dac8cd3f5854e67bdea334c57f40a5766ace57b8304c17d"
+            },
+            {
+              "file": "typert.host.js",
+              "sha256": "c52193f76fc71da2601a6c1a02470ea0b8e6d3fb6b5f5e5895a067f49b3d1847"
+            },
+            {
+              "file": "typert.remote-client.d.ts",
+              "sha256": "1d1b0ec623f2275f359237e2df75d5d156295f2fa0966816dd241550a847e669"
+            },
+            {
+              "file": "typert.remote-client.js",
+              "sha256": "28d278d3ac6c527d6546448e163bdd1da34b778f96b7e31947f8f85d7c6ab6de"
+            },
+            {
+              "file": "types/guard.d.ts",
+              "sha256": "f3183b7b7e892497ac9cfecf4939d7995689145d5f8ae39054dd15131e3cffde"
+            },
+            {
+              "file": "types/guard.js",
+              "sha256": "3a436d4731fc683920571732c3371e23a5b60b395ea3521cb839eb701adfb05a"
+            },
+            {
+              "file": "types/index.d.ts",
+              "sha256": "b1fa7a94baa9446b2c64a0ef3ae7db3c17049fc081b72d111b073f26d43090a9"
+            },
+            {
+              "file": "types/index.js",
+              "sha256": "a611450fd1ecd5aa80f0cc9d16d3b883ade550ffdc538194c9492dc57d4498ba"
+            },
+            {
+              "file": "types/inspect-registry.d.ts",
+              "sha256": "136ca7762eb96a41cc2b97a6ff573269bce1ce4f7ecdae907f27e1133d7889a9"
+            },
+            {
+              "file": "types/inspect-registry.js",
+              "sha256": "82824813191a1916e30c5e84a955e14cb270d9d307a64ed5ce01f1cfcbb5787c"
+            },
+            {
+              "file": "types/lifecycle.d.ts",
+              "sha256": "fa3297497815c95820d05983b40f4d80ae4141c6a54a1b3182d404144f22eab7"
+            },
+            {
+              "file": "types/lifecycle.js",
+              "sha256": "ce0ce21e0ce3ce098f18be19a151db549d4135dff277b7aa13ade0224a4eb5b1"
+            },
+            {
+              "file": "types/registry.d.ts",
+              "sha256": "33ea9b6df0490ead3fcc00d9482b76696ce43c2ac81e989f86e7732b7e6bb692"
+            },
+            {
+              "file": "types/registry.js",
+              "sha256": "88875ebc14a1b61f8e461c66ba6ab77cfa41d7599a30b5740f3795d9c2204c84"
+            },
+            {
+              "file": "types/sandbox.d.ts",
+              "sha256": "18ceb6644d2f45be82c1f2b0e1f4d8a31d8261e3200a648f173122448959263b"
+            },
+            {
+              "file": "types/sandbox.js",
+              "sha256": "b997f63a340432ab71055725546b2e74307448e4b0a5c5fc1440a2145ea5743e"
+            },
+            {
+              "file": "types/types.d.ts",
+              "sha256": "c3583b5c8b15cb7d9988e6ca19556100b345bfeee4efc3fcbb70a01bc6bd6f6c"
+            },
+            {
+              "file": "types/types.js",
+              "sha256": "5bfbd3b61ca6427bf0efd55024d7a7e06bbc4435eb3a1346e6ce89d048bd18bb"
+            }
+          ],
+          "sha256": "16d9f1caf2d5c21346748fa262b384a2176ebac75787f402533911bbb27f2bfe"
+        }
+      },
+      {
+        "name": "@deepseek-ai/dsh-skill-filesystem",
+        "version": "0.2.1-rc.4",
+        "directory": "/app/node_modules/@deepseek-ai/dsh-skill-filesystem",
+        "manifestSha256": "12becf74d89e8d2d8e06ce65ecf2462e740dc4a2f229cedc357fe8aa3159adb6",
+        "entry": "/app/node_modules/@deepseek-ai/dsh-skill-filesystem/lib/index.js",
+        "entrySha256": "783214a95cc531c82567925ed0afabfdee5c091a56c4b1c1e1bce523b948ee02",
+        "sources": {
+          "directory": "/app/node_modules/@deepseek-ai/dsh-skill-filesystem/lib",
+          "files": [
+            {
+              "file": "index.js",
+              "sha256": "783214a95cc531c82567925ed0afabfdee5c091a56c4b1c1e1bce523b948ee02"
+            },
+            {
+              "file": "types/index.d.ts",
+              "sha256": "ffb2583081a93b7ec6cdf3e7e4accfa4c96c8e516ee2514130f2181d35cc7138"
+            }
+          ],
+          "sha256": "eedb676acac386aa4c7939052f2ea0a173b8ea098516b8a93e35162964c1ef1e"
+        }
+      },
+      {
+        "name": "@deepseek-ai/dsh-skill",
+        "version": "0.2.1-rc.4",
+        "directory": "/app/node_modules/@deepseek-ai/dsh-skill",
+        "manifestSha256": "b26375821c22114a931ef7f39df343b4202b5e57ac4420cf3070f5217efdfb7a",
+        "entry": "/app/node_modules/@deepseek-ai/dsh-skill/lib/index.js",
+        "entrySha256": "4b88621be4e7ff09b05c175fc6dcb67e77a22e5c5570e3aa603338b2937ea791",
+        "sources": {
+          "directory": "/app/node_modules/@deepseek-ai/dsh-skill/lib",
+          "files": [
+            {
+              "file": "index.js",
+              "sha256": "4b88621be4e7ff09b05c175fc6dcb67e77a22e5c5570e3aa603338b2937ea791"
+            },
+            {
+              "file": "types/index.d.ts",
+              "sha256": "f99f26ddc53e2ffb2b187fff662ab8ddf3c2fedb79fd0e4ad355dc39b3637fab"
+            }
+          ],
+          "sha256": "6b720cd0ca09a2afdc0b6a35564f2388bbe8a4c5786d41ab695b21a691c396c8"
+        }
+      },
+      {
+        "name": "@deepseek-ai/dsh-tool-skill",
+        "version": "0.2.1-rc.4",
+        "directory": "/app/node_modules/@deepseek-ai/dsh-tool-skill",
+        "manifestSha256": "97426ae71fe8416d34713295c6cdf8a8fc536be2926b6027038371d413a85f42",
+        "entry": "/app/node_modules/@deepseek-ai/dsh-tool-skill/lib/index.js",
+        "entrySha256": "3d0aecda4e4b10ffc0404f0e1b99e31d0271018031f553c2d600e4c8e9db0ba2",
+        "sources": {
+          "directory": "/app/node_modules/@deepseek-ai/dsh-tool-skill/lib",
+          "files": [
+            {
+              "file": "index.js",
+              "sha256": "3d0aecda4e4b10ffc0404f0e1b99e31d0271018031f553c2d600e4c8e9db0ba2"
+            },
+            {
+              "file": "types/index.d.ts",
+              "sha256": "d001ca6579f34e4ea74cc63e637260124ea066632f8e3cd45347ecc223bcbd1d"
+            }
+          ],
+          "sha256": "430a2d29903b1f2419aa1372e22c0281cfc4e582ad66836768bedad103941c1f"
+        }
+      },
+      {
+        "name": "@deepseek-ai/dsh-agent-preset",
+        "version": "0.2.1-rc.4",
+        "directory": "/app/node_modules/@deepseek-ai/dsh-agent-preset",
+        "manifestSha256": "afc6ce1e033225ad8f85462959b66a485fbef88eab021810a6c7473a8b122899",
+        "entry": "/app/node_modules/@deepseek-ai/dsh-agent-preset/lib/index.js",
+        "entrySha256": "23cd2dd62ac3b27522a2d377e14b5a93f80c2189e733937dcdd02b73a6d3d1da",
+        "sources": {
+          "directory": "/app/node_modules/@deepseek-ai/dsh-agent-preset/lib",
+          "files": [
+            {
+              "file": "index.js",
+              "sha256": "23cd2dd62ac3b27522a2d377e14b5a93f80c2189e733937dcdd02b73a6d3d1da"
+            },
+            {
+              "file": "types/index.d.ts",
+              "sha256": "ff4a01ff707668b0b98a43aa71f62c7e153dc2c449dc2845ef173236cbd64c57"
+            }
+          ],
+          "sha256": "cf7610307d8f7e448d190c2950d27b1bb658d12ec6d21db8e8aa469855b785d0"
+        }
+      },
+      {
+        "name": "@deepseek-ai/dsh-tools",
+        "version": "0.2.1-rc.4",
+        "directory": "/app/node_modules/@deepseek-ai/dsh-tools",
+        "manifestSha256": "8a008f0b4b0ee95d988daf06d06661700630c71c068136e269643fc96694d34c",
+        "entry": "/app/node_modules/@deepseek-ai/dsh-tools/lib/index.js",
+        "entrySha256": "1e53932e7c4213ea24a7d87f06960b7a7702cb21f8a5741c97242b4a470a442a",
+        "sources": {
+          "directory": "/app/node_modules/@deepseek-ai/dsh-tools/lib",
+          "files": [
+            {
+              "file": "index.js",
+              "sha256": "1e53932e7c4213ea24a7d87f06960b7a7702cb21f8a5741c97242b4a470a442a"
+            },
+            {
+              "file": "types/index.d.ts",
+              "sha256": "049df0624956583b8ca05badfd6e9115c6933481571dc17965f36f407bdf95f0"
+            },
+            {
+              "file": "types/index.js",
+              "sha256": "d8cf8e1400e1b923684324546e46d6408bec140002430150b34099ae95a365c8"
+            },
+            {
+              "file": "types/json-schema.d.ts",
+              "sha256": "2496af10d1d7deae9513749aa58ba19384a9623befe40e9ca9729ee30b81de7b"
+            },
+            {
+              "file": "types/json-schema.js",
+              "sha256": "912e04e68c2455cbb77651031449574f992720c90311e6cbecb1d35020bc1072"
+            },
+            {
+              "file": "types/presentation.d.ts",
+              "sha256": "47d33a8f4456cef893ed047635cba3d2dc4ca83eb1226d775b4e365c88fc1429"
+            },
+            {
+              "file": "types/presentation.js",
+              "sha256": "253894265253e38fa9db12f3696d9dac9fd2bed1363c04ce3f95c0f19a6c16da"
+            },
+            {
+              "file": "types/ptc-calls.d.ts",
+              "sha256": "1dcdcc6387b1c71905db59928956da30cd57baf46b49be3570ea1b29d2b575a8"
+            },
+            {
+              "file": "types/ptc-calls.js",
+              "sha256": "29a6cc1e141c383294ca28bc2df8eccddd2df18ba3af8bd6f5f29b1390a0ab6f"
+            },
+            {
+              "file": "types/ptc.d.ts",
+              "sha256": "582400822fa2a8af6cb22814983e32237a5aac49f4aafbc715bd2f07bffea491"
+            },
+            {
+              "file": "types/ptc.js",
+              "sha256": "20f9a70b8c794299ab54280cdc96a9cdd2791cc71a2b385e829a591237d01fd7"
+            },
+            {
+              "file": "types/py-types.d.ts",
+              "sha256": "4fbca4f5e15404aed09f6eab9e3d1202f2e20d8218f3d881a46f7a773e86fd85"
+            },
+            {
+              "file": "types/py-types.js",
+              "sha256": "37fe51ab4acc0a8cb971dc7825173e036e9cc1dd26c57f8541bfd1c77d77ec7e"
+            },
+            {
+              "file": "types/schema.d.ts",
+              "sha256": "ecb08a02eec791f3c8cec6209a27893f7b1ff58f9269abca77cfa5c173f96d14"
+            },
+            {
+              "file": "types/schema.js",
+              "sha256": "c3dd33029e3f80e6ab9ad9b0d853ba80b88177c1c2423080a94a2db91e6f33f9"
+            },
+            {
+              "file": "types/testing.d.ts",
+              "sha256": "1da30cfb208ba84c8cca9eb843853dec6cb1619e14b6e65e42d84e8fd249acf0"
+            },
+            {
+              "file": "types/testing.js",
+              "sha256": "c6784f546e950dc38323baaad4009bb197eb25acf3a16adaa2893a44c7b7a650"
+            },
+            {
+              "file": "types/ts-types.d.ts",
+              "sha256": "4983401be920e4f9bd0e862f469ca73b1cc124f98d223f9b625361aab2fe27d8"
+            },
+            {
+              "file": "types/ts-types.js",
+              "sha256": "f6aea037453c8e42402fabaf5cdaca1f0d299d92a5f4ec20c6329d0e4599c6c7"
+            },
+            {
+              "file": "types/types.d.ts",
+              "sha256": "9b63946a7e47590c9b4e6ecc959bc6cedafcf8a65431e80433e2a31997cb8aa7"
+            },
+            {
+              "file": "types/types.js",
+              "sha256": "d53c54d32353419ece121f485a5534ee054842b74ebab7b4a4d3325545d0179a"
+            }
+          ],
+          "sha256": "f0f7a678c199b7cd4e948cf07311e006bdb53a48b55eeebb161bc385bbb0aef6"
+        }
+      },
+      {
+        "name": "@deepseek-ai/cordis",
+        "version": "4.0.5",
+        "directory": "/app/node_modules/@deepseek-ai/cordis",
+        "manifestSha256": "b73831b926b16cbd684aa1b277461e7800a2b35e2dd351ad3c2c8c0db158589d",
+        "entry": "/app/node_modules/@deepseek-ai/cordis/lib/index.js",
+        "entrySha256": "6a9394c0877ff45218818c6e815edd038f8057e1a1deb390a8d43ec81c57691e",
+        "sources": {
+          "directory": "/app/node_modules/@deepseek-ai/cordis/lib",
+          "files": [
+            {
+              "file": "index.js",
+              "sha256": "6a9394c0877ff45218818c6e815edd038f8057e1a1deb390a8d43ec81c57691e"
+            },
+            {
+              "file": "types/context.d.ts",
+              "sha256": "ddbdfbaace4a8e1982dded8fdb9a05b3f14b4db3613628caff53e623542f5b71"
+            },
+            {
+              "file": "types/context.d.ts.map",
+              "sha256": "5035974d57b6a1254ff87ab8bb747168b0f02f8e6e188ad9b1955ee37d3ae95a"
+            },
+            {
+              "file": "types/events.d.ts",
+              "sha256": "f72cc0e13b57c436817ab8199268bc7defc609c7121f8fda49018ca919bf84c9"
+            },
+            {
+              "file": "types/events.d.ts.map",
+              "sha256": "8e90124dfe4e486639d68eb8abccdc099a0c883ccfd9945fe112c7ec211a5fa5"
+            },
+            {
+              "file": "types/fiber.d.ts",
+              "sha256": "eec0d229849c8a293ede90cc2b107c54262db28acfdcdf9181cfec5cd1d0a7d4"
+            },
+            {
+              "file": "types/fiber.d.ts.map",
+              "sha256": "c4e2cfbd07f0ed23cd80ab8711097da176f67da25835072c12600fd5aa47c368"
+            },
+            {
+              "file": "types/index.d.ts",
+              "sha256": "51237bf92ef225c92c897c5fb0aa8e4482267a5ae6ff1cf768726a40c9a7db86"
+            },
+            {
+              "file": "types/index.d.ts.map",
+              "sha256": "82a677d64bdfbb406b78b9bfdd87538571dab897a6a8ea9c46e224baafe4c535"
+            },
+            {
+              "file": "types/logger.d.ts",
+              "sha256": "fcc969c54b945c21a4ad9a9e4565ae0d535f45c1755910a882826c5785f160f8"
+            },
+            {
+              "file": "types/logger.d.ts.map",
+              "sha256": "b646306f26ce06979832b129ef999398fff5d17543c293d6b4cccaf17ffc27fb"
+            },
+            {
+              "file": "types/reflect.d.ts",
+              "sha256": "84a46d00b1a6528add43e0f27c1f27bab158f1454d8d05c7ea120a0907a6dc7b"
+            },
+            {
+              "file": "types/reflect.d.ts.map",
+              "sha256": "6ec0b809ad0f00df500774b952350a2295203df4d7161ee1f4c16022d79bcd23"
+            },
+            {
+              "file": "types/registry.d.ts",
+              "sha256": "1188a67702253930766e6b03670b8f906e87ac11623c9aa69012215552a6f354"
+            },
+            {
+              "file": "types/registry.d.ts.map",
+              "sha256": "5397aeafe20f8da86e870c4c5ff559647a4e8486d51d4989c49a8aa6399c5615"
+            },
+            {
+              "file": "types/service.d.ts",
+              "sha256": "1bb754c0d12ad9f1b371e9a1496e0caba5b5a7a750796c5de81e123750e2fb09"
+            },
+            {
+              "file": "types/service.d.ts.map",
+              "sha256": "3477c03a00e659ec022fcea6feea50121b5c5229f77f279c831efc9b7b54a5ac"
+            },
+            {
+              "file": "types/utils.d.ts",
+              "sha256": "87149646f2227b818f9bdef4980fedc0539572b4574b63d75e1bbb7702390acb"
+            },
+            {
+              "file": "types/utils.d.ts.map",
+              "sha256": "b966e2af3618aa1c045ee7412f859a659cb6eb4f3deceacb480270b86ccaae65"
+            }
+          ],
+          "sha256": "872e9dc6f522b0d119948f9227d9a13a28d1de6c4523e08f6db3fd5538ceab11"
+        }
+      }
+    ],
+    "skills": {
+      "directory": "/app/node_modules/@deepseek-ai/dsh-agent-preset/skills",
+      "files": [
+        {
+          "file": "agent-experience/SKILL.md",
+          "sha256": "1244928710cb7e399325c416e80312037d4da249559a09fe289515cc66ee1752"
+        },
+        {
+          "file": "cordis-composition-reference/references/packages.md",
+          "sha256": "85ea959c1671a309f85567db1689b35840783110f2f78328789c33555797b6c1"
+        },
+        {
+          "file": "cordis-composition-reference/SKILL.md",
+          "sha256": "6583a81d9f4de07032ebdee0d5ea1a925067277805798936a5297cf2bac4f5e3"
+        },
+        {
+          "file": "cordis-plugin-development/references/host-plugin.md",
+          "sha256": "1d5b6ee648b5dd04462fb29075167a5dc570a8f4fd162b3c94ad40a78f2f627a"
+        },
+        {
+          "file": "cordis-plugin-development/references/mcp-bundle.md",
+          "sha256": "944b431411ba50582d690f03aa239044556d7a1395d50d3db69cff3920f61ff3"
+        },
+        {
+          "file": "cordis-plugin-development/references/practices.md",
+          "sha256": "5a61f4e0f754eded6116e55bbf72471fd9b128e138ea3faca120cda76701a042"
+        },
+        {
+          "file": "cordis-plugin-development/references/ui-plugin.md",
+          "sha256": "830a1710af97e3930ba5f29062e46ff78f7be3337995fbb20e85867f80339e23"
+        },
+        {
+          "file": "cordis-plugin-development/references/user-actions.md",
+          "sha256": "ecc7f1226536584d781af8f1f9dee30d7262943dada67bfd997eb7902b34a9be"
+        },
+        {
+          "file": "cordis-plugin-development/references/verification.md",
+          "sha256": "a28f7b91d0ec4592533360d11fd8a65dc2f103058e2ebf2f7e1497ad90afa9e2"
+        },
+        {
+          "file": "cordis-plugin-development/SKILL.md",
+          "sha256": "83561b4d4fed0dd8051b3e998c6f567a5676a43b7321eecd12c255f4c0478ecf"
+        },
+        {
+          "file": "cordis-plugin-development/templates/decoration/client.js",
+          "sha256": "bb17be70ae65f05d2cb26dd18f54448d706a89a1ba4da7ee3fe46ed46ac89f69"
+        },
+        {
+          "file": "cordis-plugin-development/templates/decoration/cordis.patch.yml",
+          "sha256": "542639675b704bbdfa7c6694011c6e57d05c403e4499baa35731902a9063e7fc"
+        },
+        {
+          "file": "cordis-plugin-development/templates/decoration/icon.svg",
+          "sha256": "4adcba5c2950e778c213101265820e287ed6b6248ba58e22840eef7690960935"
+        },
+        {
+          "file": "cordis-plugin-development/templates/decoration/index.js",
+          "sha256": "87edbe4014ee569545ade02f7aa1915f2d2135ffebad84016a247d4542d6f39a"
+        },
+        {
+          "file": "cordis-plugin-development/templates/decoration/locale/en.json",
+          "sha256": "38e7b64efc9c510ac98199baf79c5195560e7ab222692c27dacd0b4aaababa20"
+        },
+        {
+          "file": "cordis-plugin-development/templates/decoration/package.json",
+          "sha256": "08a8d23db9b417c706bd57084b99781631a95f9fd556558da0a3920ac7fa7690"
+        },
+        {
+          "file": "cordis-plugin-development/templates/mcp/cordis.patch.yml",
+          "sha256": "9a828bb02bd1aa07a6f873d823b725e85279b7ddf4bebbba40aa391ac501e9b5"
+        },
+        {
+          "file": "cordis-plugin-development/templates/mcp/icon.svg",
+          "sha256": "3afa45f14c22ab9f88075411708861bc35fc54bcffd0cbed7c508d2b4a0f6d1a"
+        },
+        {
+          "file": "cordis-plugin-development/templates/mcp/locale/en.json",
+          "sha256": "3f78c51e20992541807f3cd2686b742dfd8d17d284845d5c75e781e85c444b82"
+        },
+        {
+          "file": "cordis-plugin-development/templates/mcp/package.json",
+          "sha256": "592eb1cc8b7072ab06ca96afefefe444a9dfb519877a225a076966aae37082cc"
+        },
+        {
+          "file": "editing-cordis-compositions/SKILL.md",
+          "sha256": "974cc1e115bf07a8de7229c20a7e7aa7fa5cc5bfe0fbc22f86b5bc776a7298e6"
+        }
+      ],
+      "sha256": "707c92b15875f01fff4a023e0eb8a62e1c82b5da63b21ad6faa67cce479c7702"
+    }
+  },
+  "inputDigest": "52599ca916778f1a726449837cb2b81e7e9b7ee24a786225a76985dc39f09c24",
+  "runtimeModules": [
+    {
+      "path": "api.js",
+      "hash": "9be1c0d99aea9d707003cf96f09291df65150d30b97c949a1910dc2ca52c474b",
+      "executable": false
+    },
+    {
+      "path": "artifacts.js",
+      "hash": "bcf46b29f3f7e55a6c316d354112721671011d03e5dfccd50145b0801f9f55e6",
+      "executable": false
+    },
+    {
+      "path": "behavior-journal.js",
+      "hash": "0c7567505f1761a5a7251ddc988633455286ea3a00fc6406816592be78a94665",
+      "executable": false
+    },
+    {
+      "path": "build.js",
+      "hash": "154daf7c5f19491fcf37ac05757f8e281c5a575ca424ab81d7cc3ed1110283b4",
+      "executable": false
+    },
+    {
+      "path": "cancellation-state.js",
+      "hash": "b9a61e6d92639d2b37cc0f033d1616c9d96e1cfc4a5a416350e155d0ef96c4bd",
+      "executable": false
+    },
+    {
+      "path": "cancellation.js",
+      "hash": "fb779d00d65fafa3c23f14c22b15cb8fe258d3546d15578d0db976b5ee870a4f",
+      "executable": false
+    },
+    {
+      "path": "capability-card.js",
+      "hash": "452da8dc88ba489b97233cd71fa3c7a0876181a3830ac04b5ab56e39db8ceeb3",
+      "executable": false
+    },
+    {
+      "path": "cli.js",
+      "hash": "2877508be9ca574fa37793952a0eb4641c7ae89b915ec4fff0c62be97e9be24b",
+      "executable": false
+    },
+    {
+      "path": "command.js",
+      "hash": "69529248bb53f9e165a284f73ebd7aba2246846db12686df84d0e1ac2a5c6edf",
+      "executable": false
+    },
+    {
+      "path": "composition-probe.js",
+      "hash": "2329eb40726e7dc4b55ad7fe6750f07e15e6abaa46fb84e8e3339787e8248f47",
+      "executable": false
+    },
+    {
+      "path": "composition.js",
+      "hash": "94848159a68b273d1cc2ecbba8d001dcef056cc19cf032242c693149dddec32c",
+      "executable": false
+    },
+    {
+      "path": "constraints.js",
+      "hash": "a4350c86fbcae03bbaca941fe148e3ddc76c7c5db28664055255c53b0b76d959",
+      "executable": false
+    },
+    {
+      "path": "contracts.js",
+      "hash": "e539e79e12524f0435b5824c5465f699cb047e0393e29fc7bd702a638b012a54",
+      "executable": false
+    },
+    {
+      "path": "control-routes.js",
+      "hash": "0a3b481eb8558614770433f6690649778c196c2e96ac50ef03cc2248fb4e66ae",
+      "executable": false
+    },
+    {
+      "path": "control-transport.js",
+      "hash": "3769945a6d243b9c7ef7a67f3752835ccdf6713b954dc0637e6733bb9bd8a257",
+      "executable": false
+    },
+    {
+      "path": "controller.js",
+      "hash": "cf5058d97512ecce32f9096008989d127d56fb753b84372d8ed9c1cd9fb0b108",
+      "executable": false
+    },
+    {
+      "path": "docker.js",
+      "hash": "2db9dde5df94f75ab4204d6719a79c67f4c07c13d023b93e34412b194187f0d6",
+      "executable": false
+    },
+    {
+      "path": "egress-session.js",
+      "hash": "8b6231fc789d2605f4dd2c9e53a10b841b806314b1e48850504ee7183191ebd7",
+      "executable": false
+    },
+    {
+      "path": "egress.js",
+      "hash": "1a1e92e5d6f7ffe6d89cb6c837f32a82f41218c9358ae6db67aad807c792318e",
+      "executable": false
+    },
+    {
+      "path": "events.js",
+      "hash": "c21be84527a74159792afacf5d2f87cf1a27947b68b3f794f00e9b615af98631",
+      "executable": false
+    },
+    {
+      "path": "evidence.js",
+      "hash": "325319d3a7ff7cb15c221b10bc99d44bd9b93fd7d7fb85e434c935b5a985fa7e",
+      "executable": false
+    },
+    {
+      "path": "execution.js",
+      "hash": "8ca14f1f04bfa4f91d45410be7b5e1616fcd6a8132bf2fd421c2862d16a52496",
+      "executable": false
+    },
+    {
+      "path": "experiment.js",
+      "hash": "9333994cf916d34731fc24d02551c02b7ce94f7c27c6ac839082d7710ee27268",
+      "executable": false
+    },
+    {
+      "path": "export.js",
+      "hash": "166938b9adc176d1f50286590b732de3d836d7a4642560b78389ba78ae700a45",
+      "executable": false
+    },
+    {
+      "path": "file-reader.js",
+      "hash": "90a6540d8e18a3c179f24ee0291ba2d2b4eddd90c51b1d0979401ffab17576c8",
+      "executable": false
+    },
+    {
+      "path": "ip-pool.js",
+      "hash": "cc97bd35a23c380baa68d81c89b4f3b3c6cf8dc5f57f73b7e92858d9d72ae5c4",
+      "executable": false
+    },
+    {
+      "path": "isolation.js",
+      "hash": "9aa1b8924e11deba703e70efc8cc48743da1d3759fa58052ace857ba946415dc",
+      "executable": false
+    },
+    {
+      "path": "library.js",
+      "hash": "c206575e9d6a592a7f43eae9a36153753757625a32ae88508e29fd32cd0cfaef",
+      "executable": false
+    },
+    {
+      "path": "metrics.js",
+      "hash": "4ff45ecccf081c662527387a6922ff1c6460309aed77dccb74c3b2a7378b72bc",
+      "executable": false
+    },
+    {
+      "path": "native-authoring.js",
+      "hash": "b697ae07dff70e24aa21e8d3e4b2bc9c0365085af500c2af5fb1f6c1966a2c24",
+      "executable": false
+    },
+    {
+      "path": "network-pool.js",
+      "hash": "05b6687dc410123f79c8b35ebafc0eb3cef303549beba2f2df23138c46917f09",
+      "executable": false
+    },
+    {
+      "path": "network.js",
+      "hash": "a982c1b74ff1e31c47532e5f8ff1d76c2e36cff8b93b8b623a5d2a762b6abefc",
+      "executable": false
+    },
+    {
+      "path": "optimizer-access.js",
+      "hash": "892e2fc7af333a7d416fd214dcfa8b5a7d497394fb4928531adeda55feac678a",
+      "executable": false
+    },
+    {
+      "path": "optimizer-harness.js",
+      "hash": "1f9938aebac19d4b5ae3c992c7636994b226727798b7b1c65c37635d0c412b61",
+      "executable": false
+    },
+    {
+      "path": "optimizer-study-cancel.js",
+      "hash": "2c549a4b0b12ae6b426482994999d45b9605f4b42c5413bb3ee0919ce3106aa7",
+      "executable": false
+    },
+    {
+      "path": "optimizer-study-contracts.js",
+      "hash": "d6ba5d6411d47ca44e0ddcb315207bd7574a30d2f69fdec4ba1beb1c5667f740",
+      "executable": false
+    },
+    {
+      "path": "optimizer-study-report.js",
+      "hash": "22a63334ca0b55ee1064fe0809533e725cc132797456011b855dcd8924ceac45",
+      "executable": false
+    },
+    {
+      "path": "optimizer-study-runner.js",
+      "hash": "651731a87bf8a012ae59ec671a913fd13bad96e23017a0e69e892f78ddb35247",
+      "executable": false
+    },
+    {
+      "path": "optimizer-study-store.js",
+      "hash": "28b6612a725062da3f17a6623d9b23611e9292ba72c87d84089cf4e02292c947",
+      "executable": false
+    },
+    {
+      "path": "optimizer-study.js",
+      "hash": "0d9303c7ca2d2a62c09f9cb7467e270e8f66d22bd69e53b1a8581d000a961804",
+      "executable": false
+    },
+    {
+      "path": "optimizer.js",
+      "hash": "635233510f4f0d328f3d64be084ddff94011c62c9809f8b01f22135eec8f520a",
+      "executable": false
+    },
+    {
+      "path": "plugin.js",
+      "hash": "e167576de4afaf0f097fc1a578e43b443b7bd46ed9fff6cac4f0c4727f9b73ba",
+      "executable": false
+    },
+    {
+      "path": "preset.js",
+      "hash": "f8c3997156b69c56dcf3ac2e291962ad862c83724767d8f33b3f35edf6dc9fec",
+      "executable": false
+    },
+    {
+      "path": "probes.js",
+      "hash": "55340d437cf592b4b1d5fdf39c4c8a9c9f782829d4cbc0428acfe8ba0601a31b",
+      "executable": false
+    },
+    {
+      "path": "report.js",
+      "hash": "0a71e297939f22db5b3ab40d64e58be2e54bfe2cab25b03a7dfff2d1c12cf931",
+      "executable": false
+    },
+    {
+      "path": "runtime/build.js",
+      "hash": "f2015b4fb9b3d58ac59ee31fdc3a237e2c45b4d67433e931221c1bc8e0a13b5b",
+      "executable": false
+    },
+    {
+      "path": "runtime/egress.js",
+      "hash": "4d47554f2f3d4270782970a58cc478a72106937904037515840046e9396d79f1",
+      "executable": false
+    },
+    {
+      "path": "runtime/qa.js",
+      "hash": "6c39829ba17c67c9da4af06ede05ea169d82b1ee6459a3f13e3aedaf0b738981",
+      "executable": false
+    },
+    {
+      "path": "runtime/worker.js",
+      "hash": "9206ee208390010f2a0207db2d103ca28446fd7b9d7bf5085ecfa414102febfc",
+      "executable": false
+    },
+    {
+      "path": "sdk-preset.js",
+      "hash": "97d017f0946a890d1cc02f6e59fae75c43c7bc3adf44efcc409dacf140b150a2",
+      "executable": false
+    },
+    {
+      "path": "store.js",
+      "hash": "eafcd2d06f4f798f560c3eccb6f1258fd196d9601c682ba951e713e96fb1910e",
+      "executable": false
+    },
+    {
+      "path": "study-api.js",
+      "hash": "dbf3d9b271c2cae3c7dc35b2dfcecdc328aebc6d85c00a4bcb5fb6f067e3b163",
+      "executable": false
+    },
+    {
+      "path": "study-control.js",
+      "hash": "9f57818967d30e7254c205a90d46ff921765a0d71e12f773f175695a3b89e8a8",
+      "executable": false
+    },
+    {
+      "path": "study-evidence.js",
+      "hash": "fa0cea36cd5e71a8b66c6d8991cf328bb4a324c6ea69d37d0ff0c0ff2ce5a86a",
+      "executable": false
+    },
+    {
+      "path": "study-paths.js",
+      "hash": "21ee2424dfc95f288b93f7d43674c60d318a6347d426d1244dc71d8d70b9dcfa",
+      "executable": false
+    },
+    {
+      "path": "study-plugin.js",
+      "hash": "e473ef62f05bb069ae575c9b2521b53d49855f3d33d36847cfc095b0e131cffe",
+      "executable": false
+    },
+    {
+      "path": "telemetry.js",
+      "hash": "17a337dd5e07ab0be04dc30850a7e08858dccb0faaec5216f5b59390d4757c4d",
+      "executable": false
+    },
+    {
+      "path": "validation-cancel.js",
+      "hash": "8edb36570744bbdac4621b35dd83ac043359dffa8e09c4f62a4134656012c584",
+      "executable": false
+    },
+    {
+      "path": "validation.js",
+      "hash": "f37f98ef6e6bba5fdd4ea7c4f70b89c824e6ac89e3d629b6e80e24f20a2d502e",
+      "executable": false
+    }
+  ],
+  "driverSha256": "d971a3dcf91710760cf49d05310eb58b6a8cf4c3895f33d2c23c15326763286a",
+  "installationProgramSha256": "58fddb0521fa15af1eb12817eb058bca8d48c03bf503d1122991cb8a519ac217",
+  "commandSha256": "69529248bb53f9e165a284f73ebd7aba2246846db12686df84d0e1ac2a5c6edf",
+  "checks": [
+    "actual successful cordis_inspect_query",
+    "actual official Skill receipt with exact body and source",
+    "non-prose JS/TS/Python AST change in a nonbaseline candidate with native QA and 4 scored tasks",
+    "complete H0/Hstar independent validation",
+    "original champion archive native installation",
+    "complete real-model ledgers"
+  ],
+  "quality": "Full denominator; zero/tie/negative gain is not an integration failure. Source/AST changes always compare to registered H0; declared parents remain separate lineage facts. No forced probe, topology or predetermined repair. Structural code change does not prove beneficial behavior."
+}

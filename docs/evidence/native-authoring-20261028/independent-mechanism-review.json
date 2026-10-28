@@ -1,0 +1,127 @@
+{
+  "report_type": "independent_mechanism_review",
+  "provenance": {
+    "review_agent": "native_authoring_behavior_review",
+    "method": "read-only review of frozen source and existing execution traces, supplemented with in-memory counterexamples",
+    "original_model_artifact": false,
+    "new_independent_review_report": true,
+    "model_reruns": 0,
+    "candidate_or_run_artifacts_modified": false,
+    "official_scores_modified": false,
+    "gold_or_heldout_access": false,
+    "scope": "Bounded mechanism review, not an exhaustive audit. Only this new independent report was written."
+  },
+  "source_root": "/Users/apple/code/spark-harness-evolution/.evolution/native-authoring-live-20261028/search/candidates",
+  "source_path_rule": "source_root / candidate digest / source file name",
+  "baseline_digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+  "candidates": {
+    "H1": {
+      "digest": "423b3837787e760e5df9457d8241edbcc9383b09f4de0d74a0f5d367672d853b",
+      "source_sha256": {
+        "index.mjs": "fd26275a1e9d857f5d2517a2330ea6596d30edcd5e40de2856195332dfa87edf",
+        "workbook.py": "4796d131ebeb620e1e8cdbe97f0969f9a79eabb34c4b661ebd1d5cde797780aa",
+        "workbook_ops.py": "a8041354dfc892b8472d21fa3153281b57d72a17e1d1c59520f7f3b09e1f1725",
+        "formula_engine.py": "aeb40974ae68951e234aedfe3a4b8214028c373d0023cbd0f0296c1f616caa55",
+        "package.json": "37a70266960715e7fcbcae9085dda1925adbe5ac8714f65a8c8ae5c55e0ad0be",
+        "cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf"
+      },
+      "implementation_changes": [
+        "Added formula_engine.py and workbook_ops.py",
+        "Registered workbook_calculate, workbook_verify and workbook_cells",
+        "Changed index.mjs, workbook.py and package.json"
+      ]
+    },
+    "H2": {
+      "digest": "d4e566aa3221695db6f4ca37af2d433d8415764f09f28aaf8173d43e40040c6d",
+      "source_sha256": {
+        "index.mjs": "e0456404da24d4794dbef07365bd30ae89fd301a30bb7c1ce802b950fc2b43ad",
+        "workbook.py": "4796d131ebeb620e1e8cdbe97f0969f9a79eabb34c4b661ebd1d5cde797780aa",
+        "workbook_ops.py": "8508c7d15733585a7d92d785871a3deb3917bcec08ce20e9d74c844b03d1e846",
+        "formula_engine.py": "aeb40974ae68951e234aedfe3a4b8214028c373d0023cbd0f0296c1f616caa55",
+        "package.json": "37a70266960715e7fcbcae9085dda1925adbe5ac8714f65a8c8ae5c55e0ad0be",
+        "cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf"
+      },
+      "changes_relative_to_H1": [
+        "Changed only index.mjs and workbook_ops.py",
+        "Added workbook_profile",
+        "Added stale-cache comparison",
+        "Handled single-cell range selections",
+        "Added sheet-summary output; bare-coordinate values map remains"
+      ]
+    }
+  },
+  "native_authoring": {
+    "observed": ["Successful cordis_inspect_list", "Two successful cordis_inspect_query calls", "Official cordis-plugin-development/SKILL.md loaded"],
+    "trace": "search/optimizer/0/trace/notifications.jsonl",
+    "interpretation": "Native development integration observed. Required usage was explicitly prompted; spontaneous selection is not claimed."
+  },
+  "assembly": {
+    "patch_file": "cordis.patch.yml",
+    "H0_H1_byte_identical": true,
+    "H1_H2_byte_identical": true,
+    "content": "- insert:\n    - name: ./index.mjs\n",
+    "topology_evolution_demonstrated": false
+  },
+  "formula_counterexamples": {
+    "verified_candidates": ["H1", "H2"],
+    "formula_engine_byte_identical": true,
+    "method": "python3 -B imports the frozen formula_engine; Evaluator reads from an in-memory dictionary callback. No workbook writes or model calls.",
+    "input_cells": {"Main!A1": 2, "Main!A2": 3, "Main!B1": 5, "Main!B2": 7, "Data!A1": 9},
+    "cases": [
+      {"formula": "=SUMPRODUCT(A1:A2,B1:B2)", "sheet": "Main", "actual": 17.0, "expected": 31, "expected_reason": "2*5 + 3*7 = 31; multiply corresponding elements before summing", "source": "formula_engine.py", "line": 225},
+      {"formula": "=IF(1=1,5,1/0)", "sheet": "Main", "actual_error": "DIV/0", "expected": 5, "expected_reason": "True condition selects 5; evaluating the unused division branch causes the observed error", "source": "formula_engine.py", "line": 464},
+      {"formula": "=Data!A1", "sheet": "Main", "actual": null, "expected": 9, "observed_reader_arguments": ["Dat", 1, 1], "expected_reason": "Data!A1 has value 9; sheet name was incorrectly truncated to Dat", "source": "formula_engine.py", "line": 444}
+    ],
+    "reference_sources": ["https://learn.microsoft.com/en-us/office/vba/api/excel.worksheetfunction.sumproduct", "https://support.microsoft.com/en-au/excel/functions/if-function?nochrome=true"]
+  },
+  "H2_comment_omission": {
+    "candidate": "H2",
+    "source": "workbook_ops.py",
+    "line": 445,
+    "input": {"Sheet!A1": "Header", "Sheet!B2": null, "Sheet!B2.comment": "Keep this cell blank"},
+    "method": "In-memory openpyxl Workbook and Comment; monkeypatch workbook_ops.load_workbook to return the memory workbook; call op_profile(file=memory-only)",
+    "actual_row_2": {"kind": "blank_row"},
+    "expected_behavior": "Preserve B2 comment even when every cell value in its row is blank",
+    "finding": "Early blank-row return omits the comment, contrary to tool description claiming every comment",
+    "actual_task_harm_demonstrated": false
+  },
+  "verification_boundary": {
+    "H1_cache_comparison": "Cached value reported but excluded from mismatch condition at workbook_ops.py:228-229",
+    "H2_cache_comparison": "Added stale-cache comparison at workbook_ops.py:236",
+    "business_correctness_proven": false,
+    "observed_example": "H1 normalization workbook_verify reported no mismatches while independent development task score was 25%. Agreement on supplied formulas does not establish business correctness.",
+    "other_source_finding": "Both retain calculate values keyed by bare A1 coordinate; different sheets can overwrite the same coordinates. H2 workbook_ops.py:171. No actual task loss attributed to this finding."
+  },
+  "actual_tool_calls": {
+    "trace_path_rule": "search/runs/<run_id>/trace/notifications.jsonl",
+    "count_order": ["workbook_calculate", "workbook_verify", "workbook_cells", "workbook_profile"],
+    "H1": {
+      "normalization": {"run_id": "bd75660f916e6be10d28e24a90e181acd407c976f55c323d89b935f1e960e9eb", "counts": [0, 1, 0, 0]},
+      "weighted-portfolio": {"run_id": "3964201123acb015ef4f709bcd8f47d56adc2f1155508614dc9a488514c99d48", "counts": [1, 1, 0, 0]},
+      "debt-rollforward": {"run_id": "67ae89ddc7871e2816c8aa2296622187f064109699122f94f9596c00a0a0bbf2", "counts": [0, 0, 0, 0]},
+      "scenario-valuation": {"run_id": "1789f54d37031f4d5b9ecc1e644ee342eb8ac2ea04c73531c67e624ba3ed7cd6", "counts": [0, 0, 0, 0]}
+    },
+    "H2": {
+      "normalization": {"run_id": "14fe9b94b177599aa99eb28e9ba217767e744ffcb631877fe1f27515c9e226b1", "counts": [0, 0, 0, 0]},
+      "weighted-portfolio": {"run_id": "855e982a092d15c036f37cd0c0d33c3e15dbbd404076e4b08102a0d07d2d5d22", "counts": [0, 0, 0, 0]},
+      "debt-rollforward": {"run_id": "3022ba5a213371110b04dd6fe73a44557fe7d52ec0c1486cc2003932b4ac9c85", "counts": [1, 1, 0, 1]},
+      "scenario-valuation": {"run_id": "abbe3df118cef8873544fca7f11bd23f720c64423cea7b024542ce74758bbdd4", "counts": [1, 1, 0, 0]}
+    }
+  },
+  "bounded_negative_findings": {
+    "answer_hardcoding_found": false,
+    "automatic_business_repair_found": false,
+    "scope": "Reviewed frozen candidate source and listed development traces only; not proof of universal absence"
+  },
+  "quality_conclusion": {
+    "H0_mean_percent": 81.25,
+    "H1_mean_percent": 81.25,
+    "H2_mean_percent": 81.25,
+    "task_scores_percent_each_candidate": {"normalization": 25, "weighted-portfolio": 100, "debt-rollforward": 100, "scenario-valuation": 100},
+    "selection_result": "Both candidates rejected on strict-improvement tie; H0 retained",
+    "quality_gain_demonstrated": false,
+    "general_algorithm_correctness_demonstrated": false,
+    "qa_boundary": "Passing recorded QA and syntax builds does not cover demonstrated semantic counterexamples. Later candidate probes do not retroactively validate H1.",
+    "publication_boundary": "Evidence supports native authoring and actual feature invocation; it does not support reliable general formula-engine or quality-improvement claims."
+  }
+}

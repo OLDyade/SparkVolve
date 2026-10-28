@@ -1,0 +1,94 @@
+{
+  "sourceCommitBeforeChanges": "d8b11eca34d3c9bf6de3144291823c590c78cd73",
+  "workingTreeChanges": [
+    "docs/completion.md",
+    "docs/native-authoring.md",
+    "docs/review-ledger.md",
+    "examples/spreadsheet/prepare.mjs",
+    "examples/structured-data/prepare.mjs",
+    "examples/venus/cordis.patch.yml",
+    "examples/venus/egress.mjs",
+    "package.json",
+    "scripts/verify-controlled-controller.mjs",
+    "scripts/verify-egress-native.mjs",
+    "scripts/verify-feedback-study.mjs",
+    "scripts/verify-materialized-evidence.mjs",
+    "scripts/verify-native-authoring.mjs",
+    "scripts/verify-optimizer-study.mjs",
+    "src/contracts.ts",
+    "src/runtime/qa.ts",
+    "src/runtime/worker.ts",
+    "tests/contracts.test.ts",
+    "tests/native-authoring-driver.test.mjs"
+  ],
+  "taskDefaultSeconds": 600,
+  "localChecks": {
+    "unitTests": 236,
+    "nativeTests": 24,
+    "containerTests": 2,
+    "passed": true
+  },
+  "additionalDeadlineTests": {
+    "passed": 2,
+    "scope": "Two deadline cases plus eight configuration cases: 10/10 passed in the saved standalone run after the full suite.",
+    "record": "deadline-regression.log"
+  },
+  "nativePreflightPassed": true,
+  "liveTransportPassed": true,
+  "liveUsage": {
+    "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+    "started": 2,
+    "results": 2,
+    "failed": 0,
+    "unfinished": 0,
+    "inputTokensReported": 2365,
+    "outputTokensReported": 129,
+    "missingUsage": 0,
+    "requestDurationMsSum": 3517
+  },
+  "records": [
+    {
+      "source": ".evolution/budget600-checks-20261028/receipt.json",
+      "file": "checks.json",
+      "sha256": "cf4c6e4f8feb8f10db145e747bbddb368d12263d28650257baeb8de6588bd22e",
+      "bytes": 2129
+    },
+    {
+      "source": ".evolution/budget600-checks-20261028/check.log",
+      "file": "checks.log",
+      "sha256": "620f1bf5f37e978baafd7cbd5805cafe48da3d88ff5c83975ebba3c54f31cc95",
+      "bytes": 28525
+    },
+    {
+      "source": ".evolution/budget600-preflight-20261028/acceptance.json",
+      "file": "preflight.json",
+      "sha256": "e5e929adcd07c27c2f51e318c5f8e4ab8da2f75f94f33f2d30debac6ea16c58a",
+      "bytes": 53583
+    },
+    {
+      "source": ".evolution/budget600-live-transport-20261028/receipt.json",
+      "file": "live-transport.json",
+      "sha256": "8fc67668c794ee5dc447a051ff24d1448a16c9e588f33a0df58763dbb1c16dcc",
+      "bytes": 2326
+    },
+    {
+      "source": ".evolution/budget600-checks-20261028/container-qa.log",
+      "file": "container-qa.log",
+      "sha256": "45e41582c79b0483b0b5172d0175e59336fcdd8d9808b3f1b8b5b8d9ab7e4977",
+      "bytes": 561
+    },
+    {
+      "source": ".evolution/budget600-checks-20261028/deadline-regression.log",
+      "file": "deadline-regression.log",
+      "sha256": "0161a8aa190f75d168580002a84630860cac209abc8556d527854d947860a783",
+      "bytes": 1154
+    }
+  ],
+  "boundaries": [
+    "Source modules, driver, frozen config and immutable image are identified in copied raw receipts; this is a modified working-tree verification, not the old d8b11ec binary.",
+    "Real transport acceptance exercised one native task and two model requests. It completed in about four seconds, not a 300-to-600-second delayed-response simulation or a quality benchmark.",
+    "Deterministic tests separately exercise elapsed deadline enforcement, remaining QA budgets and default/custom provider settings.",
+    "Original 300-second native-authoring experiment and its failed quality/transport record remain unchanged. No benchmark task was retried or rescored.",
+    "Model HTTP and idle deadlines are explicit provider/example policy; custom external provider settings are not silently overwritten by the framework."
+  ]
+}

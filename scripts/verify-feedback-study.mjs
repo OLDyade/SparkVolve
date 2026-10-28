@@ -25,6 +25,7 @@ import {
   treeDigest,
 } from '../dist/artifacts.js';
 import { configureEgress } from '../examples/venus/egress.mjs';
+import { timeoutSeconds, optimizerSecondsForPlan } from '../examples/timeouts.mjs';
 
 export function comparisonRegistration(method, seed, search, assessment) {
   return FixedOptimizerComparison.parse({
@@ -77,7 +78,8 @@ export function validateStudyShape(spec, baseline) {
     assert.equal(split.specification.researchLibrary, null);
     assert.equal(split.specification.candidate.qa, null);
   }
-  assert.deepEqual(search.specification.budget, { candidates: 3, optimizerSeconds: 1200 });
+  assert.equal(search.specification.budget.candidates, 3);
+  assert.ok(search.specification.budget.optimizerSeconds > 0);
   assert.equal(assessment.specification.budget.candidates, 1);
   assert.deepEqual(baseline, {
     ...assessment.specification,
@@ -273,17 +275,22 @@ export async function main(args = process.argv.slice(2)) {
     args,
     options: {
       ...Object.fromEntries(required.map((key) => [key, { type: 'string' }])),
+      'task-timeout-seconds': { type: 'string' },
+      'model-http-timeout-seconds': { type: 'string' },
+      'optimizer-seconds': { type: 'string' },
       help: { type: 'boolean' },
       'check-contracts': { type: 'boolean' },
     },
   });
   if (values.help) {
     console.log(
-      'node --env-file=<private-env> scripts/verify-feedback-study.mjs --root <NEW> --image <immutable> --isolation <JSON file> --model <JSON file> --controller-ip <IPv4> [--check-contracts]\nExplicit execution uses real Venus inference, at most 72 task executions plus optimizer calls. --check-contracts freezes/builds/preflights/parses with no model calls. Existing roots and automatic retries are forbidden.',
+      'node --env-file=<private-env> scripts/verify-feedback-study.mjs --root <NEW> --image <immutable> --isolation <JSON file> --model <JSON file> --controller-ip <IPv4> [--check-contracts] [--task-timeout-seconds 600] [--model-http-timeout-seconds N] [--optimizer-seconds N]\nExplicit execution uses real Venus inference, at most 72 task executions plus optimizer calls. --check-contracts freezes/builds/preflights/parses with no model calls. Existing roots and automatic retries are forbidden.',
     );
     return;
   }
   for (const key of required) assert.ok(values[key], `Required --${key}`);
+  const taskTimeoutSeconds = timeoutSeconds(values['task-timeout-seconds']);
+  const httpTimeoutSeconds = timeoutSeconds(values['model-http-timeout-seconds'], taskTimeoutSeconds);
   const image = Image.parse(values.image),
     isolation = Isolation.parse(JSON.parse(await readFile(values.isolation, 'utf8'))),
     model = Model.parse(JSON.parse(await readFile(values.model, 'utf8')));
@@ -435,7 +442,7 @@ export async function main(args = process.argv.slice(2)) {
         force: false,
         errorOnExist: true,
       });
-      const egress = await configureEgress(path.join(directory, 'runtime'), model);
+      const egress = await configureEgress(path.join(directory, 'runtime'), model, httpTimeoutSeconds);
       await freeze(
         confined(inputs, method.source.directory),
         path.join(directory, 'method/source'),
@@ -483,7 +490,7 @@ export async function main(args = process.argv.slice(2)) {
         tasks,
         repetitions: 1,
         concurrency: 4,
-        timeoutSeconds: 300,
+        timeoutSeconds: taskTimeoutSeconds,
         failureLimit: 0,
         budget:
           purpose === 'search'
@@ -493,6 +500,11 @@ export async function main(args = process.argv.slice(2)) {
         metric: { name: 'formula_value_accuracy', direction: 'maximize', minimum: 0, maximum: 1, failure: 0 },
         constraints: [],
       });
+      if (purpose === 'search')
+        specification.budget.optimizerSeconds = timeoutSeconds(
+          values['optimizer-seconds'],
+          optimizerSecondsForPlan(specification, 1200),
+        );
       return { specification, dataset: { directory: `cases/${split}`, digest: await treeDigest(directory) } };
     }
     const search = await dataset('development', 'search'),

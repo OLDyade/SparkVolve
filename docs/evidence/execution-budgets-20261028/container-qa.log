@@ -1,0 +1,12 @@
+Domain QA evidence retained: /var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-domain-qa-dSjLqX
+✔ explicit domain QA failure remains terminal after successful native assembly (2627.984584ms)
+Validation cancellation evidence retained: /Users/apple/code/spark-harness-evolution/.evolution/validation-cancellation-native-z1tzeY
+✔ public validate SIGINT retains original task; cancel-validation removes it and forbids new arms (6186.687583ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6311.841625

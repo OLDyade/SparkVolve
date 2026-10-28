@@ -1,0 +1,18 @@
+✔ native transport task deadline kills a running worker using container StartedAt (1.3175ms)
+✔ task deadline kills while docker wait is pending; collection allowance cannot extend execution (51.141958ms)
+✔ example HTTP and provider idle settings share the selected deadline: default (10.217583ms)
+✔ example HTTP and provider idle settings share the selected deadline: 900 (3.662208ms)
+✔ example HTTP and provider idle settings share the selected deadline: 120 (2.936459ms)
+✔ invalid timing input fails and plan covers candidate waves plus all declared autonomous probes (0.352708ms)
+✔ spreadsheet prepare writes task/probe/provider deadlines and full optimizer budget: default (172.660375ms)
+✔ spreadsheet prepare writes task/probe/provider deadlines and full optimizer budget: 900 (163.539167ms)
+✔ structured-data prepare writes task/probe/provider deadlines and full optimizer budget: default (147.34175ms)
+✔ structured-data prepare writes task/probe/provider deadlines and full optimizer budget: 900 (150.636417ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 863.47325

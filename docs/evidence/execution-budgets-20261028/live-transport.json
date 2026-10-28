@@ -1,0 +1,62 @@
+{
+  "startedAt": "2026-10-28T02:15:15.903Z",
+  "image": "sha256:01b8a43dbb9aef634ddf2199c649264d524aa75f337f91f41c638c72de9ebaf3",
+  "timeouts": {
+    "taskSeconds": 600,
+    "modelHttpSeconds": 600
+  },
+  "passed": true,
+  "observations": {
+    "nativeToolInvocation": true,
+    "delivered": {
+      "sum": 55
+    },
+    "credentialAbsent": true,
+    "directPublicDenied": true,
+    "unapprovedRouteDenied": true,
+    "brokerListensOnlyOn": "192.168.158.2",
+    "modelRequests": 2,
+    "started": 3,
+    "finished": 3,
+    "brokerExit": 0,
+    "transportOutcomes": [
+      "cancelled",
+      "cancelled"
+    ],
+    "nativeMetrics": {
+      "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+      "started": 2,
+      "results": 2,
+      "failed": 0,
+      "unfinished": 0,
+      "inputTokensReported": 2365,
+      "outputTokensReported": 129,
+      "missingUsage": 0,
+      "requestDurationMsSum": 3517
+    },
+    "candidateNetwork": "he-native-egress-c9bb6998-isolated",
+    "dns": [
+      "127.0.0.1"
+    ],
+    "nativeReceipt": {
+      "startedAt": "2026-10-28T02:15:16.666Z",
+      "endedAt": "2026-10-28T02:15:20.657Z",
+      "sessionId": "session-5d73e146c1e246bcac4ab4df7faa353a",
+      "status": "completed"
+    }
+  },
+  "artifacts": {
+    "src/egress.ts": "3638b01edfa4ccaf3c6e5a7b8dd729b0bffeee579fe1415eeda342fb0c68e2b9",
+    "src/runtime/egress.ts": "589d97d94846356040c4a37800f096035c0e0d8cd3d0d1fa5d8c149ad2a5d111",
+    "src/runtime/worker.ts": "47a6698539cadfea9fabc5ab545984aa4806d69c80b1534ee0fb4399f28e1445",
+    "src/telemetry.ts": "d8365e152056cb8a0bfb6ac3af74b303fedb9af873030dded9f3904f07675dbb",
+    "dist/egress.js": "1a1e92e5d6f7ffe6d89cb6c837f32a82f41218c9358ae6db67aad807c792318e",
+    "dist/runtime/egress.js": "4d47554f2f3d4270782970a58cc478a72106937904037515840046e9396d79f1",
+    "dist/runtime/worker.js": "0b5d568e0c2e660fdc2f822542917ab217aac49e277db304ad6172886e8a62a5",
+    "dist/telemetry.js": "17a337dd5e07ab0be04dc30850a7e08858dccb0faaec5216f5b59390d4757c4d",
+    "package-lock.json": "23fc98e426bc38d617caaeca51109c10ae3c620a6e0f0f6f78ade336c7f5b3f3",
+    "scripts/verify-egress-native.mjs": "83ca7ad2cf7f8f275e476c3ecc6a86160a9be6b05cc7cf610a38d594637cabea"
+  },
+  "completedAt": "2026-10-28T02:15:21.536Z",
+  "cleanupErrors": []
+}

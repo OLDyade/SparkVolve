@@ -4,10 +4,17 @@ import path from 'node:path';
 import { treeDigest } from '../../dist/artifacts.js';
 import { Experiment } from '../../dist/contracts.js';
 import { configureEgress } from '../venus/egress.mjs';
+import { timeoutSeconds, optimizerSecondsForPlan } from '../timeouts.mjs';
 
-const [dataset, image, modelFile, output, isolationFile] = process.argv.slice(2);
+const [dataset, image, modelFile, output, isolationFile, taskLimit, optimizerLimit, httpLimit, probeLimit] =
+  process.argv.slice(2);
+const taskTimeoutSeconds = timeoutSeconds(taskLimit);
+const httpTimeoutSeconds = timeoutSeconds(httpLimit, taskTimeoutSeconds);
+const probeTimeoutSeconds = timeoutSeconds(probeLimit, taskTimeoutSeconds);
 if (!dataset || !image || !modelFile || !output || !isolationFile)
-  throw new Error('Usage: prepare.mjs <dataset> <image-digest> <model.json> <spec-output> <isolation.json>');
+  throw new Error(
+    'Usage: prepare.mjs <dataset> <image-digest> <model.json> <spec-output> <isolation.json> [task-seconds] [optimizer-seconds] [model-http-seconds] [probe-seconds]',
+  );
 const model = JSON.parse(await readFile(modelFile, 'utf8'));
 await cp(new URL('../venus/', import.meta.url), path.join(dataset, 'runtime'), {
   recursive: true,
@@ -34,7 +41,7 @@ for (const task of tasks) {
   task.evaluationDigest = await treeDigest(path.join(dataset, task.evaluation));
 }
 const spec = Experiment.parse({
-  egress: await configureEgress(path.join(dataset, 'runtime'), model),
+  egress: await configureEgress(path.join(dataset, 'runtime'), model, httpTimeoutSeconds),
   name: 'spreadsheet-business-search',
   purpose: 'search',
   hostSearchProtocol: { ancestry: 'unrestricted', feedback: 'full' },
@@ -76,11 +83,12 @@ const spec = Experiment.parse({
   tasks,
   repetitions: 1,
   concurrency: 3,
-  timeoutSeconds: 300,
+  timeoutSeconds: taskTimeoutSeconds,
   failureLimit: 0,
   budget: { candidates: 4, optimizerSeconds: 1800 },
-  probes: { limit: 6, timeoutSeconds: 120 },
+  probes: { limit: 6, timeoutSeconds: probeTimeoutSeconds },
   metric: { name: 'formula_value_accuracy', direction: 'maximize', minimum: 0, maximum: 1, failure: 0 },
   constraints: [],
 });
+spec.budget.optimizerSeconds = timeoutSeconds(optimizerLimit, optimizerSecondsForPlan(spec, 1800));
 await writeFile(output, JSON.stringify(spec, null, 2));

@@ -7,6 +7,8 @@
         api: openai-completions
         baseURL: https://venus.xfinfr.com/v1
         apiKeyEnv: VENUS_API_KEY
+        timeoutMs: 600000
+        streamIdleTimeoutMs: 600000
         retryPolicy:
           mode: normal
           maxRetries: 0

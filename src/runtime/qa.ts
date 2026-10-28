@@ -15,6 +15,8 @@ const config = z
   })
   .parse(JSON.parse(await readFile(process.argv[2]!, 'utf8')));
 
+const deadline = Date.now() + config.timeoutSeconds * 1000;
+
 await checkComposition({
   profile: config.profile,
   model: config.model,
@@ -27,9 +29,11 @@ await checkComposition({
 });
 // Domain QA remains a separate, explicit check of synthetic business behaviour.
 if (config.command !== null) {
+  const remainingMs = deadline - Date.now();
+  if (remainingMs <= 0) throw new Error('QA execution budget exhausted during native composition');
   process.stdout.write(
     await command(config.command[0]!, config.command.slice(1), {
-      timeoutMs: config.timeoutSeconds * 1000,
+      timeoutMs: remainingMs,
     }),
   );
 }

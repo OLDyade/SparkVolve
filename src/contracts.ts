@@ -5,6 +5,9 @@ import { EgressRoute } from './egress.js';
 import { controlPaths } from './control-routes.js';
 import { EgressPool, poolCapacity, ipv4Range } from './ip-pool.js';
 
+/** Default elapsed task budget; parsed contracts persist the effective value. */
+export const DEFAULT_TASK_TIMEOUT_SECONDS = 600;
+
 export const Digest = z.string().regex(/^[a-f0-9]{64}$/);
 export const Id = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,95}$/);
 export const RelativePath = z
@@ -157,7 +160,7 @@ export const Experiment = z
     tasks: z.array(Task).min(1),
     repetitions: z.number().int().positive(),
     concurrency: z.number().int().positive(),
-    timeoutSeconds: z.number().int().positive(),
+    timeoutSeconds: z.number().int().positive().default(DEFAULT_TASK_TIMEOUT_SECONDS),
     failureLimit: z.number().int().nonnegative(),
     budget: z.strictObject({
       candidates: z.number().int().positive(),

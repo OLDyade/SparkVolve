@@ -22,11 +22,20 @@ import {
   ReclamationError,
 } from '../dist/execution.js';
 import { configureEgress } from '../examples/venus/egress.mjs';
+import { timeoutSeconds } from '../examples/timeouts.mjs';
 
 // A real-model native interface acceptance. No search, scored task, retry, or candidate promotion.
 const { values } = parseArgs({
   options: Object.fromEntries(
-    ['root', 'image', 'isolation', 'model', 'controller-ip'].map((key) => [key, { type: 'string' }]),
+    [
+      'root',
+      'image',
+      'isolation',
+      'model',
+      'controller-ip',
+      'task-timeout-seconds',
+      'model-http-timeout-seconds',
+    ].map((key) => [key, { type: 'string' }]),
   ),
 });
 for (const key of ['root', 'image', 'isolation', 'model', 'controller-ip'])
@@ -37,6 +46,8 @@ assert.equal(
   4,
   'Pass the explicit container-reachable IPv4 controller address',
 );
+const taskTimeoutSeconds = timeoutSeconds(values['task-timeout-seconds']);
+const httpTimeoutSeconds = timeoutSeconds(values['model-http-timeout-seconds'], taskTimeoutSeconds);
 const image = Image.parse(values.image);
 const isolation = Isolation.parse(JSON.parse(await readFile(values.isolation, 'utf8')));
 assert.equal(
@@ -62,6 +73,7 @@ const receipt = {
   passed: false,
   startedAt: new Date().toISOString(),
   image,
+  timeouts: { taskSeconds: taskTimeoutSeconds, modelHttpSeconds: httpTimeoutSeconds },
   boundary:
     'Native materialization interface acceptance with a real model; no task score, search effectiveness, or quality gain claim. The fixture candidate remains frozen and is never executed or promoted.',
 };
@@ -72,7 +84,7 @@ try {
   await cp(path.join(repo, 'examples/venus'), path.join(dataset, 'environment'), { recursive: true });
   await cp(path.join(repo, 'optimizers/evidence-driven'), path.join(dataset, 'method'), { recursive: true });
   const model = Model.parse({ ...JSON.parse(await readFile(values.model, 'utf8')), maxTokens: 4096 });
-  const egress = await configureEgress(path.join(dataset, 'environment'), model);
+  const egress = await configureEgress(path.join(dataset, 'environment'), model, httpTimeoutSeconds);
   // Random bytes are held on the trusted host. Neither bytes nor expected hash are included in the prompt.
   const bytes = randomBytes(8192),
     sha256 = createHash('sha256').update(bytes).digest('hex');
@@ -141,9 +153,9 @@ try {
     ],
     repetitions: 1,
     concurrency: 1,
-    timeoutSeconds: 180,
+    timeoutSeconds: taskTimeoutSeconds,
     failureLimit: 0,
-    budget: { candidates: 1, optimizerSeconds: 180 },
+    budget: { candidates: 1, optimizerSeconds: taskTimeoutSeconds },
     probes: null,
     metric: { name: 'not-measured', direction: 'maximize', minimum: 0, maximum: 1, failure: 0 },
     constraints: [],
@@ -164,7 +176,7 @@ try {
     stringify([
       {
         insert: [
-              ...sdkPreset('evolution', '/app/dist/sdk-preset.js', 'sdk'),
+          ...sdkPreset('evolution', '/app/dist/sdk-preset.js', 'sdk'),
           evolutionPreset({
             plugin: '/app/dist/plugin.js',
             endpoint: 'http://evolution-egress:8080',
@@ -179,7 +191,7 @@ try {
     model,
     patch: '/optimizer.patch.yml',
     environmentPatch: '/environment/cordis.patch.yml',
-    timeoutSeconds: 180,
+    timeoutSeconds: taskTimeoutSeconds,
     prompt: [
       'Perform this one native interface acceptance; do not run an optimization search, submit mutations, or grade tasks.',
       `Call evolution_materialize with ${JSON.stringify(reference)}. Use the returned path as a filesystem path; do not transcribe or decode base64.`,
@@ -209,9 +221,9 @@ try {
       execution: name,
       image,
       isolation,
-      timeoutSeconds: 180,
+      timeoutSeconds: taskTimeoutSeconds,
       routes: [
-        ...controlRoutes(endpoint, 180).filter((route) => route.path === '/materialize'),
+        ...controlRoutes(endpoint, taskTimeoutSeconds).filter((route) => route.path === '/materialize'),
         ...egress.optimizer,
       ],
     },
@@ -228,7 +240,7 @@ try {
       command: ['node', '/app/dist/runtime/worker.js', '/launch.json'],
       isolation,
       network: await gateway.candidateNetwork(),
-      timeoutSeconds: 180,
+      timeoutSeconds: taskTimeoutSeconds,
       env: Object.fromEntries(
         ['EVOLUTION_TOKEN', ...model.credentialEnv].map((key) => [key, 'egress-client-placeholder']),
       ),

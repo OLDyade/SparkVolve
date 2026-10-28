@@ -9,12 +9,19 @@ import { parse, stringify } from 'yaml';
 import ipaddr from 'ipaddr.js';
 import { command } from '../dist/docker.js';
 import { temporaryFilesystems } from '../dist/isolation.js';
+import { timeoutSeconds } from '../examples/timeouts.mjs';
+import { waitTaskContainer } from './container-task-deadline.mjs';
 
 // Runs the shipped broker and the native DSH worker on separate container networks.
 // This is transport acceptance, not a quality experiment or Controller recovery proof.
 const repo = fileURLToPath(new URL('..', import.meta.url));
 const root = path.resolve(process.argv[2] ?? '');
-assert.ok(process.argv[2], 'Usage: verify-egress-native.mjs <new-evidence-directory>');
+assert.ok(
+  process.argv[2],
+  'Usage: verify-egress-native.mjs <new-evidence-directory> [task-seconds] [model-http-seconds]',
+);
+const taskTimeoutSeconds = timeoutSeconds(process.argv[3]);
+const httpTimeoutSeconds = timeoutSeconds(process.argv[4], taskTimeoutSeconds);
 const image = process.env.HE_TEST_IMAGE;
 assert.match(image ?? '', /^sha256:[a-f0-9]{64}$/);
 assert.ok(process.env.VENUS_API_KEY, 'VENUS_API_KEY is required in the trusted launcher environment');
@@ -29,6 +36,7 @@ const networks = [],
 const receipt = {
   startedAt: new Date().toISOString(),
   image,
+  timeouts: { taskSeconds: taskTimeoutSeconds, modelHttpSeconds: httpTimeoutSeconds },
   passed: false,
   observations: {},
   artifacts: {},
@@ -124,7 +132,7 @@ try {
         credential: { env: 'VENUS_API_KEY', header: 'authorization', prefix: 'Bearer ' },
         body: { kind: 'json', equals: { model: model.model }, maximum: { max_tokens: model.maxTokens } },
         maxRequestBytes: 2 * 1024 * 1024,
-        timeoutSeconds: 120,
+        timeoutSeconds: httpTimeoutSeconds,
       },
     ],
   };
@@ -133,6 +141,8 @@ try {
   const provider = environment.find((entry) => entry.id === 'llm-pi-ai').config.providers.venus;
   provider.baseURL = 'http://evolution-egress:8080/v1';
   provider.apiKeyEnv = 'EGRESS_CLIENT_TOKEN';
+  provider.timeoutMs = httpTimeoutSeconds * 1000;
+  provider.streamIdleTimeoutMs = httpTimeoutSeconds * 1000;
   await writeFile(path.join(root, 'launch/environment.yml'), stringify(environment));
   await writeFile(path.join(root, 'launch/candidate.yml'), '[]\n');
   await json('launch/worker.json', {
@@ -142,7 +152,7 @@ try {
     environmentPatch: '/launch/environment.yml',
     prompt:
       'Use your bash tool to run Python and calculate sum(range(11)). Write the result as JSON {"sum": <calculated value>} to /workspace/proof.json. Then reply briefly. This verifies a native tool invocation; do not access the network.',
-    timeoutSeconds: 120,
+    timeoutSeconds: taskTimeoutSeconds,
   });
   const broker = await create(
     'broker',
@@ -188,7 +198,7 @@ try {
   );
   await docker(['start', worker]);
   assert.equal(
-    await docker(['wait', worker], {}, 150000),
+    await waitTaskContainer(docker, worker, taskTimeoutSeconds),
     '0',
     'Native worker failed; retain logs and receipt',
   );

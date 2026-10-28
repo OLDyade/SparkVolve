@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { parse } from '@babel/parser';
-import { Experiment, Image, Isolation, Model } from '../dist/contracts.js';
+import { DEFAULT_TASK_TIMEOUT_SECONDS, Experiment, Image, Isolation, Model } from '../dist/contracts.js';
 import { inventory, treeDigest, fileDigest, freeze, digest } from '../dist/artifacts.js';
 import { verifyArtifact } from '../dist/build.js';
 import { Docker } from '../dist/docker.js';
@@ -21,19 +21,58 @@ const json = async (p) => JSON.parse(await readFile(p, 'utf8'));
 const save = async (p, value) => writeFile(p, JSON.stringify(value, null, 2) + '\n', { flag: 'wx' });
 const sha256 = (s) => createHash('sha256').update(s).digest('hex');
 
-export function acceptanceContracts(development, validation) {
+export const acceptanceLimits = Object.freeze({
+  taskTimeoutSeconds: DEFAULT_TASK_TIMEOUT_SECONDS,
+  authoringSeconds: 1200,
+  candidatesIncludingBaseline: 3,
+  optionalProbes: 3,
+  concurrency: 4,
+  repetitions: 1,
+  validationArms: 2,
+});
+
+export function acceptanceContracts(
+  development,
+  validation,
+  { taskTimeoutSeconds = acceptanceLimits.taskTimeoutSeconds } = {},
+) {
+  assert.ok(
+    Number.isSafeInteger(taskTimeoutSeconds) && taskTimeoutSeconds > 0,
+    'Task timeout must be a positive integer number of seconds',
+  );
+  const {
+    authoringSeconds,
+    candidatesIncludingBaseline,
+    optionalProbes,
+    concurrency,
+    repetitions,
+    validationArms,
+  } = acceptanceLimits;
+  const candidateSlots = candidatesIncludingBaseline - 1;
+  const taskWaves = Math.ceil((development.tasks.length * repetitions) / concurrency);
+  const candidateWaitSeconds =
+    candidateSlots *
+    (development.candidate.build.timeoutSeconds +
+      taskTimeoutSeconds +
+      taskWaves * (taskTimeoutSeconds + development.evaluator.timeoutSeconds));
+  const probeWaitSeconds = optionalProbes * (development.candidate.build.timeoutSeconds + taskTimeoutSeconds);
+  const optimizerSeconds = authoringSeconds + candidateWaitSeconds + probeWaitSeconds;
+  assert.ok(
+    Number.isSafeInteger(optimizerSeconds) && optimizerSeconds <= 2_147_483,
+    'Derived optimizer deadline exceeds the Node timer range',
+  );
   const objective =
     'Improve the general spreadsheet plugin using authorized task evidence. For this native authoring integration acceptance, actually query the relevant Cordis inspect contract and load an official plugin-development or composition Skill before implementing a candidate. These tool-use requirements test integration, not autonomous preference or causal benefit. Choose your own evidence-backed implementation or assembly change; do not encode task identities, coordinates, fixture values or answers. Freeze and evaluate the candidate through the ordinary controller. Optional probes are available. Negative quality results are valid; never change the evaluator, resample an unchanged candidate, or modify the frozen optimizer.';
   const search = Experiment.parse({
     ...development,
     name: 'native-authoring-development',
     objective,
-    concurrency: 4,
-    repetitions: 1,
-    timeoutSeconds: 300,
+    concurrency,
+    repetitions,
+    timeoutSeconds: taskTimeoutSeconds,
     failureLimit: 0,
-    budget: { candidates: 3, optimizerSeconds: 1200 },
-    probes: { limit: 3, timeoutSeconds: 120 },
+    budget: { candidates: candidatesIncludingBaseline, optimizerSeconds },
+    probes: { limit: optionalProbes, timeoutSeconds: taskTimeoutSeconds },
   });
   const assessment = Experiment.parse({
     ...validation,
@@ -41,9 +80,9 @@ export function acceptanceContracts(development, validation) {
     purpose: 'validation',
     objective:
       'Independently assess original H0 and the final search champion on every registered validation task. No search or mutation.',
-    concurrency: 4,
-    repetitions: 1,
-    timeoutSeconds: 300,
+    concurrency,
+    repetitions,
+    timeoutSeconds: taskTimeoutSeconds,
     failureLimit: 0,
     budget: { candidates: 1, optimizerSeconds: 1 },
     probes: null,
@@ -56,16 +95,47 @@ export function acceptanceContracts(development, validation) {
   assert.equal(search.runtime.image, assessment.runtime.image);
   assert.deepEqual(search.executor, assessment.executor);
   assert.deepEqual(search.candidate, assessment.candidate);
+  for (const spec of [search, assessment]) {
+    for (const route of [...spec.egress.optimizer, ...spec.egress.executor]) {
+      assert.equal(
+        route.timeoutSeconds,
+        taskTimeoutSeconds,
+        'Registered model route deadline must match the task deadline',
+      );
+    }
+  }
+  const searchTasks = search.tasks.length * repetitions * candidatesIncludingBaseline;
+  const validationTasks = assessment.tasks.length * repetitions * validationArms;
   return {
     search,
     assessment,
     allocation: {
-      searchTasks: 12,
-      validationTasks: 8,
-      totalTaskExecutions: 20,
-      candidatesIncludingBaseline: 3,
-      optionalProbes: 3,
-      optimizerSeconds: 1200,
+      searchTasks,
+      validationTasks,
+      totalTaskExecutions: searchTasks + validationTasks,
+      candidatesIncludingBaseline,
+      optionalProbes,
+      taskTimeoutSeconds,
+      probeTimeoutSeconds: taskTimeoutSeconds,
+      modelRequestTimeoutSeconds: taskTimeoutSeconds,
+      optimizerSeconds,
+      optimizerBudget: {
+        authoringSeconds,
+        candidateSlots,
+        candidateBuildSeconds: development.candidate.build.timeoutSeconds,
+        nativeQaSeconds: taskTimeoutSeconds,
+        taskWaves,
+        taskSecondsPerWave: taskTimeoutSeconds,
+        scoringSecondsPerWave: development.evaluator.timeoutSeconds,
+        candidateWaitSeconds,
+        probeBuildSeconds: development.candidate.build.timeoutSeconds,
+        probeExecutionSeconds: taskTimeoutSeconds,
+        probeWaitSeconds,
+        calculation:
+          'authoring + candidateSlots × (build + nativeQA + taskWaves × (task + scoring)) + optionalProbes × (probeBuild + probeExecution)',
+        boundary:
+          'G wall time includes waits inside an active episode. Reserve the declared serial path plus the original 1200-second authoring allowance; baseline settles before G starts, independent validation runs after G. Deadlines are ceilings, never mandatory runtime or extra attempts.',
+      },
       boundary:
         'Ceiling, not fabricated observations: QA/build failures consume candidate slots without task scores. Probe/build/QA/optimizer calls are separately accounted. No task retry.',
     },
@@ -265,16 +335,22 @@ export async function main(args = process.argv.slice(2)) {
     options: {
       ...Object.fromEntries(required.map((k) => [k, { type: 'string' }])),
       'check-contracts': { type: 'boolean' },
+      'task-timeout-seconds': { type: 'string', default: String(acceptanceLimits.taskTimeoutSeconds) },
       help: { type: 'boolean' },
     },
   });
   if (values.help) {
     console.log(
-      'node --env-file=<private-env> scripts/verify-native-authoring.mjs --root <NEW> --image <immutable> --model <JSON> --isolation <JSON> --controller-ip <IPv4> --install-policy <JSON> [--check-contracts]\nAt most 20 real task executions; optional probes 3. Check-contracts makes no model calls. Never resume or retry an existing root.',
+      'node --env-file=<private-env> scripts/verify-native-authoring.mjs --root <NEW> --image <immutable> --model <JSON> --isolation <JSON> --controller-ip <IPv4> --install-policy <JSON> [--task-timeout-seconds <positive-integer>] [--check-contracts]\nAt most 20 real task executions; optional probes 3. Tasks, native QA, probes and individual model requests default to 600 seconds. Optimizer wall budget includes declared serial waits plus 1200 seconds for authoring. Check-contracts makes no model calls. Never resume or retry an existing root.',
     );
     return;
   }
   for (const key of required) assert.ok(values[key], `Required --${key}`);
+  const taskTimeoutSeconds = Number(values['task-timeout-seconds']);
+  assert.ok(
+    Number.isSafeInteger(taskTimeoutSeconds) && taskTimeoutSeconds > 0,
+    '--task-timeout-seconds must be a positive integer',
+  );
   const image = Image.parse(values.image),
     model = Model.parse(await json(values.model)),
     isolation = Isolation.parse(await json(values.isolation));
@@ -391,11 +467,13 @@ export async function main(args = process.argv.slice(2)) {
         path.join(inputs, 'model.json'),
         path.join(inputs, `${split}-prepared.json`),
         path.join(inputs, 'isolation.json'),
+        String(taskTimeoutSeconds),
       ]);
     }
     const contracts = acceptanceContracts(
       await json(path.join(inputs, 'development-prepared.json')),
       await json(path.join(inputs, 'validation-prepared.json')),
+      { taskTimeoutSeconds },
     );
     await save(path.join(inputs, 'search.json'), contracts.search);
     await save(path.join(inputs, 'assessment.json'), contracts.assessment);

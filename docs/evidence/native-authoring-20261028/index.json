@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "exportedAt": "2026-10-28T02:07:49.268Z",
+  "sourceRoot": ".evolution/native-authoring-live-20261028",
+  "implementationCommit": "d8b11eca34d3c9bf6de3144291823c590c78cd73",
+  "image": "sha256:3e941da1abf0493a67aa2de615b91e2a8045d0a9e1b1a7537f22f80f1482de37",
+  "acceptancePassed": false,
+  "boundaries": [
+    "Exact original bytes, including failed acceptance, original registration, comparison, installation receipt and independent read-only diagnoses. No rerun or replacement of any attempt.",
+    "Search retained H0 after equal-scoring mutations. The two validation arms executed the same frozen H0; their score difference is not evidence of evolution quality gain.",
+    "The original validation task failed at its registered 300-second boundary. Transport cause remains undetermined within the pre-response boundary; this export does not retroactively change that budget.",
+    "233 adapter attempts started, 232 results, one unfinished. Reported token and duration totals omit unknown terminal usage of the unfinished attempt; no zero usage or zero cost is imputed.",
+    "Native authoring integration, installation and observed tool use do not certify general algorithm correctness, topology evolution, stable improvement or transfer.",
+    "Includes public synthetic task instructions, recorded tool-call arguments, environment variable names, source paths and hashes. Excludes credential values, environment files, workbook binaries and raw request ledgers."
+  ],
+  "records": [
+    {
+      "source": ".evolution/native-authoring-live-20261028/acceptance.json",
+      "file": "docs/evidence/native-authoring-20261028/acceptance.json",
+      "sha256": "e71efdddb4a987a6360263b2260f1f729b93c156f86d888fc48adf3e146a7721",
+      "bytes": 305333
+    },
+    {
+      "source": ".evolution/native-authoring-live-20261028/registration.json",
+      "file": "docs/evidence/native-authoring-20261028/registration.json",
+      "sha256": "a3523e579445939c914f4c44cf8ab6d9041cf235cd7c8d2c9198367ddea0a6d0",
+      "bytes": 49548
+    },
+    {
+      "source": ".evolution/native-authoring-live-20261028/validation/comparison.json",
+      "file": "docs/evidence/native-authoring-20261028/comparison.json",
+      "sha256": "0ef595a006813f1ec7fa02aa55283feccd8341c668c90187ac115d5a32ca7919",
+      "bytes": 2696
+    },
+    {
+      "source": ".evolution/native-authoring-live-20261028/installation/work/installed.json",
+      "file": "docs/evidence/native-authoring-20261028/installed.json",
+      "sha256": "86eb402a4951a7baf4a6c0af1c1e8f45a9c7ea506ec76444ec2742f52f624c91",
+      "bytes": 232
+    },
+    {
+      "source": ".evolution/native-authoring-live-20261028/independent-mechanism-review.json",
+      "file": "docs/evidence/native-authoring-20261028/independent-mechanism-review.json",
+      "sha256": "902ed3f5feb9b3bb9390ea61974b80a91014e1a87ccd53259e72cf89d8a26eaf",
+      "bytes": 8412
+    },
+    {
+      "source": ".evolution/native-authoring-live-20261028/transport-diagnosis.json",
+      "file": "docs/evidence/native-authoring-20261028/transport-diagnosis.json",
+      "sha256": "aee6f8f79056d267f97cd8ca226c647f01cab62768fd226da8937296dc382cd0",
+      "bytes": 11248
+    }
+  ]
+}

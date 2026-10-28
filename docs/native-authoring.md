@@ -42,3 +42,5 @@ SDK 装配显式选择 Profile：`sdk` 复用已有的原生 Skill 服务，`sdk
 这些能力帮助优化器核实 API，不保证其选择的机制或生成的算法正确。真实模型是否使用资料、改了什么、候选是否通过 QA、质量是否改善，分别从轨迹、源码和独立评分记录判断。
 
 实现入口：[`preset.ts`](../src/preset.ts)、[`native-authoring.ts`](../src/native-authoring.ts)、[默认方法 Bundle](../optimizers/evidence-driven)。完整验收状态见 [completion.md](completion.md)。
+
+真实模型已实际查询契约、加载官方 Skill 并提交两个实现变异；该轮 20 次执行中 1 次触发原 300 秒上限，总体验收保留失败，详见[原始结果](experiments/2026-10-28-native-authoring-results.md)。新运行默认任务预算为 600 秒，模型出口、流空闲和优化器等待预算同步声明，见[执行预算](execution-budgets.md)。
