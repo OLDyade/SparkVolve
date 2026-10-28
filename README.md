@@ -1,234 +1,119 @@
+<div align="center">
+
 # 让 Harness 自己进化
 
-[English](README.en.md) · [项目全景](11.md) · [组件地图](docs/components.md) · [实验记录](docs/acceptance-continuous.md) · [开发指南](CONTRIBUTING.md)
-
-[![Verify native evolution](https://github.com/OLDyade/spark-harness-evolution/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/OLDyade/spark-harness-evolution/actions/workflows/verify.yml)
-[Apache-2.0](LICENSE) · DSH `0.2.1-rc.4` · Native Cordis plugins
-
-## Evolve the Harness, Not the Model.
+**Evolve the Harness, Not the Model.**
 
 不改模型权重，让 Harness 在任务中持续进化。
 
+[![CI](https://github.com/OLDyade/spark-harness-evolution/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/OLDyade/spark-harness-evolution/actions/workflows/verify.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-202124?style=flat-square)](LICENSE)
+[![DSH](https://img.shields.io/badge/DSH-Native_plugins-DDEAF5?style=flat-square&labelColor=202124)](docs/components.md)
+
+[English](README.en.md) · [快速开始](#quick-start) · [工作原理](#工作原理) · [接入任务](#把你的任务接进来) · [项目全景](11.md)
+
+![Harness Evolution：固定模型，进化插件代码、配置与组合，以任务反馈沉淀可复用 Bundle](docs/assets/readme/hero.png)
+
+</div>
+
 一个基于插件化架构的 Harness 自进化框架，让 Agent 通过真实任务反馈，自主改造自己的能力结构，并将有效改进沉淀为可复用的插件。
+
+> 过去我们给 Agent 装能力，现在让 Agent 自己决定需要什么能力、修改什么能力，甚至创造新能力。
 
 ## 三个核心设计
 
-- **插件即进化基因：让 Harness 从“人工装配”走向“自主重构”**
-- **进化也是插件：给已有 Harness 装上自进化能力**
-- **进化成果也是插件：从实验分数到可安装的能力**
+**插件即进化基因：让 Harness 从“人工装配”走向“自主重构”**<br>
+把插件的配置、代码实现、组合拓扑纳入同一个进化空间。Agent 可以启停、调优、替换、重组，也可以创造新插件。
 
-```text
-  配置 · 实现 · 组合结构                 真实任务反馈                  可复用的能力
-           │                                │                            ▲
-           └── 启用 · 停用 · 调优 · 替换 · 组合 · 创造 ── 独立验证 ── Bundle
-```
+**进化也是插件：给已有 Harness 装上自进化能力**<br>
+沿用 DeepSeek Harness / Cordis 原生生态，通过 Evolution Bundle 和 Preset 接入研究、编码与实验能力。
 
-优化器拥有原生 DSH 的研究与编码能力，可以创造插件、重构服务边界、调整装配。实验层固定模型、数据权限、预算和评判规则，让每次改动留下可比较、可追溯的证据。商业 Excel 是首个场景，领域接入通过独立任务与裁判完成。
+**进化成果也是插件：从实验分数到可安装的能力**<br>
+有效改进随原始 Bundle、候选谱系、能力卡与复现实验一起交付，供其他开发者安装、验证和继续进化。
 
-## 从这里开始
+## Quick start
 
-**先看一次真实进化：**克隆仓库后，在浏览器打开 [`docs/tour.html`](docs/tour.html)。无需密钥或 Docker，可切换候选、查看逐题裁决和独立复验、下载原始记录；页面离线回放历史实验，不调用模型。重生成：`node scripts/render-tour.mjs`。
+**先看一轮进化**：克隆后用浏览器打开 [交互式实验导览](docs/tour.html)。可切换候选、查看逐题结果和下载记录；离线回放无需密钥。
 
-| 你想做什么 | 直接进入 |
-|---|---|
-| 体验进化后的能力 | [安装 Bundle，完成真实工作簿任务](docs/use-capability.md) |
-| 让自己的 Harness 进化 | [完整运行旅程](docs/user-journey.md) · [接入自己的任务与裁判](docs/domain-adapters.md) |
-| 研究优化器自身 | [Optimizer Studies：改造 G，比较它产生的 H](docs/optimizer-studies.md) |
-| 检查研究结论 | [实验结果与逐项落实状态](docs/completion.md) |
-
-## 它如何运行
-
-```text
-任务与实验合同
-      │
-      ▼
-DSH 优化器 ── 真实证据 ──► 改写插件配置 / 实现 / 组合
-      ▲                              │
-      │                              ▼
-      │                    冻结源码 → 构建 Bundle → 独立 QA
-      │                              │
-      │                              ▼
-      │                    DSH 执行器 × 固定任务清单
-      │                              │
-      └── 评分、轨迹、交付 ◄── 独立评分 / 完整分母
-                                     │
-                          严格择优 → 独立复验 → 可安装 Bundle
-```
-
-优化器沿用 DSH Agent Loop 和编码工具，依据反馈选择改动。控制器只执行实验合同：冻结、调度、记账、评分与选择。框架没有预置题目答案或逐题变异脚本。
-
-[原生插件开发能力](docs/native-authoring.md)随 Evolution Preset 装配：优化器按需查询 Cordis 服务、事件与工具契约，加载当前安装版本的官方开发 Skills，再自主改写插件与组合。作者资料和运行镜像一起冻结，候选继续接受独立验证。
-
-[官方 DeepSeek 真实闭环](docs/experiments/2026-10-28-official-deepseek-results.md)已跑通自主插件改造、独立验证、原包安装及四类业务复用；逐题结果、负结果、语义修复与用量完整列出。可通过[官方接入配置](examples/deepseek/README.md)运行，不依赖中转服务。
-
-[原生行为实验台](docs/behavioral-probes.md)让优化器在提交前检验自己的机制假设：编写测试、冻结草稿、在真实 DSH 组合中调用工具与服务，留下成功与反例。实验使用独立预算，正式评分继续独立进行。
-
-```mermaid
-flowchart LR
-  A["任务与固定合同"] --> B["DSH 优化器"]
-  B --> C["插件联合变异"]
-  C --> D["冻结 · 构建 · 装配 QA"]
-  D --> E["DSH 执行器"]
-  E --> F["独立评分与真实证据"]
-  F --> B
-  F --> G["选择 · 独立复验"]
-  G --> H["能力 Bundle + 研究档案"]
-```
-
-## Quick start：真实 Excel 闭环
-
-[完整用户旅程](docs/user-journey.md)提供公开命令串联、逐步日志、真实事件观察和负结果分支。下面先准备运行环境，再启动真实模型闭环。
-
-运行前显式生成[隔离合同](docs/isolation.md)：五类角色使用声明的运行时、非 root 身份和资源预算。原容器恢复时重新核验权限，运行时缺失直接报错。
-
-支持显式选择 runc 或 gVisor；gVisor 已完成插件构建、原生 DSH 执行、独立评分、恢复及真实模型接续验收。[固定版本安装与测试矩阵](docs/isolation.md)提供可复现入口。
-
-需要 Node **24.16.0**、npm **12.2.0**、pnpm **12.15.0**、Python 3 和运行中的 Docker。宿主 Python 必须支持 Unix `dir_fd`、`O_NOFOLLOW` 和 `O_DIRECTORY`，用于按授权目录读取不可信文件；缺失时明确报错，不退回存在竞态的路径读取。示例采用用户指定的 Venus 模型快照；其他模型通过原生 DSH Provider 配置接入。没有自动模型降级。
-
-将 `HE_EGRESS_POOL` 设为部署方已预留、与宿主/LAN/VPN 不冲突的私有 IPv4 CIDR。每个受控执行占两个 `/29` 网段，30 执行器加 1 优化器需要至少 62 个；一个 `/23` 提供 64 个。地址池进入合同，容量不足直接拒绝，终态归档后释放。
-
-将 `HE_TEST_DNS` 设为部署方确认可达的 IPv4 DNS 列表，以逗号分隔。可按[部署发现说明](docs/isolation.md#出口-dns)从同一镜像和运行时的 default bridge 获取候选地址；框架不内置公共 DNS，发现记录不代表最终受控网络已通过解析验收。
+**启动真实进化**：需要 Node.js 24、Python 3、Docker 和模型凭证。[启动指南](docs/quick-start.md)集中提供安装、示例数据与模型配置；完成一次准备后，运行：
 
 ```bash
-npm ci
-npm run check
-docker build -t harness-evolution:local .
-docker build --build-arg HARNESS_IMAGE=harness-evolution:local \
-  -f examples/spreadsheet/Dockerfile -t harness-evolution-spreadsheet:local .
-
-mkdir -p .evolution/business
-node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
-  "${HE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > .evolution/business/isolation.json
-node examples/spreadsheet/verify-image.mjs \
-  "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')" \
-  .evolution/business/isolation.json .evolution/business/image-check
-docker run --rm \
-  --user "$(id -u):$(id -g)" \
-  --mount type=bind,src="$PWD/examples/spreadsheet",dst=/example,readonly \
-  --mount type=bind,src="$PWD/.evolution/business",dst=/workspace \
-  harness-evolution-spreadsheet:local python3 /example/generate.py /workspace/dataset
-
-node examples/spreadsheet/prepare.mjs .evolution/business/dataset \
-  "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')" \
-  examples/venus/model.json .evolution/business/spec.json .evolution/business/isolation.json examples/venus
-
-node dist/cli.js init --root .evolution/business/search \
-  --spec .evolution/business/spec.json --dataset .evolution/business/dataset \
-  --seed examples/spreadsheet/seed
-```
-
-将密钥写入仓库外权限为 `0600` 的环境文件，变量名为 `VENUS_API_KEY`。真实凭证仅交给可信出口代理；优化器和执行器使用本地占位值。一条命令管理控制服务、执行、评分和优化器会话。控制地址使用容器可达的明确 IP，下面的辅助命令读取 Docker 的 `host-gateway` 映射；Linux 主机也可明确指定已配置的可达接口。端口需空闲，防火墙需允许代理访问。
-
-```bash
-HE_CONTROLLER_IP=$(node scripts/controller-address.mjs \
-  "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')")
 node --env-file=/absolute/private/venus.env dist/cli.js evolve \
   --root .evolution/business/search --host 0.0.0.0 --port 18948 \
-  --endpoint "http://${HE_CONTROLLER_IP}:18948"
-
-# 查看真实产物与裁决
-node dist/cli.js status --root .evolution/business/search
-# 在另一个终端跟随已提交事件；Ctrl-C 只停止观察
-node dist/cli.js events --root .evolution/business/search --follow
+  --endpoint "http://${HE_CONTROLLER_IP:?请先完成启动指南中的地址配置}:18948"
 ```
 
-示例生成公开合成 XLSX 业务任务，使用真实模型和独立 LibreOffice 重算。生成合同同时冻结[独立领域 QA](docs/domain-verification.md)，通过原生工具检查显式写入和源文件保留，再运行正式任务。它验证产品闭环，不能代表 SpreadsheetBench 分数、迁移收益或统计显著性。历史私有题库、答案和运行产物没有进入仓库。
+这个入口接管优化器会话、候选执行、评分与事件接续。示例默认每题 **600 秒**；模型、任务、预算和并发写入实验合同。支持[官方 DeepSeek](examples/deepseek/README.md)及[原生 Provider 配置](docs/compatibility.md)。
 
-需要研究实验时，使用 `research.py` 生成四类业务机制任务，在 `init` 前登记任务角色、重复次数、候选与失败预算。全部候选使用同一合同；[已登记的联合插件实验](docs/experiments/2026-10-27-joint-plugin-development.json)提供一份具体示例。工程演示与研究实验分别记账。
+| 想做什么 | 从这里进入 |
+|:---|:---|
+| 跑通一次进化 | [环境准备与启动](docs/quick-start.md) |
+| 换成自己的任务 | [领域适配接口](docs/domain-adapters.md) |
+| 直接使用进化成果 | [安装能力 Bundle](docs/use-capability.md) |
 
-## 已经跑通的实验
+## 工作原理
 
-**第二领域已接入：**[结构化事件与日志](docs/structured-data.md)复用同一进化引擎，无需 Excel。已完成自主工具变异、独立评分、拒绝退步及原生安装后的真实工具调用。[六次任务与负结果](docs/acceptance-structured-data.md)完整记录；领域适配没有修改控制器。
+![原生进化闭环：任务合同→DSH优化器→插件变异→构建与QA→DSH执行器→独立评分；证据回流优化器，候选经复验后导出安装](docs/assets/readme/evolution-loop.png)
 
-此前[预注册开发集实验](docs/acceptance-joint-development.md)：65.625% → 81.25%，24 次完整评分、一次原生 QA 失败、326 次模型适配器调用。最终候选含不接受的启发式自动恢复，暂不作为接受能力分发；这次开发集提高不构成稳定收益证明。
+**优化器决定怎样改，实验系统保证怎样比较。**<br>
+DSH 优化器读取真实任务、轨迹和交付，研究原因并自主编码；控制器负责冻结版本、执行预算、调度与记账；独立评分器按固定规则检查交付。
 
-[联合候选独立复验](docs/experiments/2026-10-28-joint-independent-results.md)完成 24/24 次评分：基线 93.75%，候选 77.08%，拒绝晋级。每题三次、原冻结源码与构建产物、全部调用账本和工具反例均保留；该公开合成任务集此前已被开发使用，不宣称未知留出集收益。
+| 进化动作 | 可以改变什么 |
+|:---|:---|
+| **Enable / Disable** · 启用 / 停用 | 能力、依赖与冗余插件 |
+| **Tune / Swap** · 调优 / 替换 | 配置、提示词、Skills、工具实现与接口 |
+| **Compose / Author** · 组合 / 创造 | 插件拓扑、作用域、事件接线与全新能力 |
 
-最新[同 G 反馈对照](docs/experiments/2026-10-28-paired-feedback-results.md)完成 4 次独立搜索、8 次自主变异、60 次任务评分和 692 次请求记账。两组独立均值为 90.625% / 81.25%，但差值来自选择了同一 H0 的配对块，不能归功于变异。原包、3 次 QA 失败和机制反例一起保留；新候选未直接作为通用能力发布。
+原生开发资料、工具契约和行为实验台帮助优化器检验机制假设。候选经过构建与 QA，再进入真实任务；每轮的高分、退步、失败与成本都保留。通过独立复验的改进，可以封装为可安装能力。<br>
+深入了解：[原生插件开发](docs/native-authoring.md) · [行为实验台](docs/behavioral-probes.md) · [架构与恢复](docs/architecture.md)
 
-`node dist/cli.js report --root <实验目录> --output <新文件.json>` 可统一导出逐题分数、失败、用量与优化器账本，无需重跑任务。
+## 把你的任务接进来
 
-![连续搜索与配对复验：完整分母、失败和负结果](docs/assets/experiment-results.svg)
+![替换任务与适配器，复用同一进化引擎：输入、运行环境、种子插件、独立评分器；输出能力Bundle与可复核证据](docs/assets/readme/bring-your-task.png)
 
-图表直接生成自[机器记录](docs/evidence/2026-10-27-continuous-acceptance.json)，包含三次真实变异及新任务配对执行。复验选择搜索最高分且同分最早的 Mutation 1；该候选在复验中发生一次传输故障和两次取消，保留完整分母。当前证据尚未证明稳定提分。逐题结果、源码变化、用量和边界见[完整实验报告](docs/acceptance-continuous.md)。
+**通用进化框架，任务由你定义。** 商业 Excel 是首个示例；结构化事件与日志已通过第二领域接入，复用同一控制器。
 
-原生插件装配、构建产物一致性、事件接续、研究资产复用、独立约束评分及 runc/gVisor 隔离均有专项验收。图表可用 `python3 scripts/render-evidence.py` 从同一记录重新生成；绘图依赖见 `scripts/requirements-figures.txt`。
+| 你提供 | 用途 |
+|:---|:---|
+| **任务与输入** | 明确目标、文件、交付形式和稳定任务 ID |
+| **运行环境** | 为任务提供模型、依赖与执行镜像 |
+| **种子插件** | 给出进化起点，开放配置、实现和组合结构 |
+| **独立评分器** | 将实际交付转为分数与获准反馈 |
 
-## 复验与安装
+准备好这些接口后，在实验合同中设置预算和选择规则，即可运行同一套进化循环。新领域需要实现并验证对应适配器。
 
-直接使用能力见[原生 headless 任务入口](docs/use-capability.md)：安装 Bundle、提供工作簿和任务，即可获得交付。干净容器真实验收已通过，无需先启动进化流程。
+[Excel 示例](examples/spreadsheet) · [结构化数据示例](docs/structured-data.md) · **[编写你的领域适配器 →](docs/domain-adapters.md)**
 
-从 `status` 取得冻结候选 digest。[独立复验指南](docs/research-protocol.md)用同一预注册协议运行基线与候选，记录逐题、重复和配对差异；validation 不开放优化器 API。发布决策由研究证据支持，搜索冠军不会自动变成公开版本。
+## 让结果带着证据交付
 
-```bash
-node dist/cli.js export --root .evolution/business/search \
-  --candidate <digest> --output /absolute/new-export-directory
+一次进化留下三种可复用资产：
 
-# 按 docs/use-capability.md 的声明镜像入口安装并执行
-# 入口使用镜像内锁定的 DSH 和原生依赖构建授权，无需宿主全局 dsh。
-```
+| 能力 | 过程 | 证据 |
+|:---|:---|:---|
+| 冻结的原生 **Bundle** | 插件源码、装配配置与候选谱系 | 逐题评分、失败、轨迹与用量 |
+| 安装到新 Profile 执行任务 | 导入历史变体继续改造 | 独立复验与能力卡 |
 
-每份导出附带[能力卡 `CAPABILITY.md`](docs/capability-cards.md)、机器研究档案与逐次用量报告，直接展示原包身份、用途声明、实际评分及失败。卡片放在已冻结 Bundle 旁，原包字节保持不变；安装者可以从证据进入能力。
+[官方 DeepSeek 端到端实验](docs/experiments/2026-10-28-official-deepseek-results.md)已完成自主插件改造、独立验证和原包安装复用：
 
-进化设施自身同样可安装：`npm pack` 后通过原生命令装入目标 Profile，设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，再选择 **Harness Evolution** Preset。进化工具和研究方法只对选择该组合的会话可见。`evolve` 自动完成装配；独立使用 `sdk/sdk-minimal` 时，需加载[原生注册表与选择桥配置](docs/presets.md#sdk-的明确接入)。方法 Bundle 可单独替换，内容哈希写入实验合同。
+| 验证阶段 | 实际结果 |
+|:---|:---|
+| 自主开发搜索 | H0 **56.25%** → H1 **81.25%** → H2 **100%** |
+| 独立执行验证 | H0 **81.25%** → H2 **100%** |
+| 原归档安装后业务复用 | **4 / 4** 合成任务通过 |
 
-提交候选后，优化器通过 `evolution_wait` 等待已提交事件。持久游标支持断线补读，控制器恢复时收集原容器；无须反复空查，也不会因等待超时重跑任务。[事件与恢复协议](docs/events.md)
+以上为公开合成任务的工程验收，尚不构成稳定提分或跨领域迁移证明。历史实验中的退步、语义错误和传输失败一并公开，详见[实验索引](docs/experiments/README.md)。
 
-研究资产也进入进化循环：研究者在合同中授权一个冻结库，优化器即可检索历史机制与负结果、检查原始源码，自主导入并改造。来源随候选保存，旧成绩不进入新实验裁决。[资产复用与授权](docs/research-assets.md)
+## 深入探索
 
-研究资产支持 `remember → library → import`：保留有效候选与负结果、谱系、来源、账本和证据哈希。导入产生新的可编辑草稿，历史分数不会转移到新实验。详见[架构](docs/architecture.md)。
+| 方向 | 文档 |
+|:---|:---|
+| **理解方法** | [完整项目全景](11.md) · [架构](docs/architecture.md) · [组件与生命周期](docs/components.md) |
+| **运行与扩展** | [完整用户旅程](docs/user-journey.md) · [领域适配](docs/domain-adapters.md) · [模型与版本](docs/compatibility.md) |
+| **研究与复现** | [独立实验协议](docs/research-protocol.md) · [优化器自身进化](docs/optimizer-studies.md) · [实验索引](docs/experiments/README.md) |
+| **交付与贡献** | [能力安装](docs/use-capability.md) · [发布](docs/releasing.md) · [贡献指南](CONTRIBUTING.md) · [安全边界](SECURITY.md) |
 
-## 文档导航
+欢迎贡献新的任务适配器、插件变异机制与可复现实验。也欢迎带着失败案例提出 [Issue](https://github.com/OLDyade/spark-harness-evolution/issues)。
 
-| 文档 | 内容 |
-|---|---|
-| [项目全景与核心指导](11.md) | 核心思想、开放指导原则、完整 ASCII 流程与后续重构蓝图 |
-| [最新深度审校](docs/research/2026-10-27-harness-evolution-design-review.md) | 相关研究、DSH 机制、搜索方法、实验协议与贡献定位 |
-| [前期生态审校](docs/research/2026-10-09-harness-blueprint-audit.md) | 历史概念核验与架构推敲 |
-| [历史资料与同步记录](docs/research/archive/README.md) | 来源哈希、历史证据和迁移边界 |
-| [可执行架构与边界](docs/architecture.md) | 原生插件、控制服务、身份、恢复、隔离与成本 |
-| [当前实现核验](docs/research/2026-10-27-native-implementation.md) | 实际发布物、源码差异、原生验证和工程决策 |
-| [真实模型端到端验收](docs/acceptance.md) | 自主代码变异、真实评分、失败裁决和原生安装后的实际任务 |
-| [冷启动用户旅程](docs/research/2026-10-28-user-journey.md) | 干净检出、13 条公开命令、自主搜索、原包复验与安装前审查；正负结果完整保留 |
-| [原字节证据交付](docs/evidence-access.md) | 授权文件直接进入只读工具挂载，真实模型读取与复制，独立竞态复核 |
-| [宿主反馈对照](docs/feedback-views.md) | 同一冻结优化器、不同反馈条件、独立臂身份及完整原账本 |
-| [能力卡与证据交付](docs/capability-cards.md) | 原包旁展示用途、身份、实际成绩、失败与未知成本 |
-| [优化器自身进化](docs/optimizer-studies.md) | 真实元优化器生成并运行 G1；G/H 独立版本、同起点与预算、开发选择和封闭最终验证，保留同分与机制缺陷 |
-| [连续进化与独立复验](docs/acceptance-continuous.md) | 三次真实变异、双会话接续、负结果与研究资产复用 |
-| [全景方案落实状态](docs/completion.md) | 已验证能力、尚缺的完整交付环节与研究边界 |
-| [深度评审落实账本](docs/review-ledger.md) | 全部评审项、核实结论、实现与验收进度 |
-| [组件与生命周期](docs/components.md) | 原生插件组合、实验服务、候选状态和事件接续图 |
+---
 
-## 可靠性与证据
-
-- 状态机与单写租约，唯一任务身份，断点接回原容器。
-- [发布与登记恢复](docs/research/2026-10-28-publication-recovery.md)：源码、构建和交付复制中 SIGKILL 后接续原 attempt；响应重放不重复消耗候选预算。
-- 候选 lock 与构建镜像固定；QA、执行、复验和分发使用同一冻结构建产物，源码单独保留供继续变异。
-- 固定题集、完整分母、独立评分；同分拒绝，失败与负结果保留。
-- 评分故障可以对同一冻结交付 `rescore`；不会重做任务刷分。
-- 原生请求账本区分成功、失败、未完成与缺失用量，优化器和执行器分别记账。
-- 类型检查、原生 SDK 子进程、容器执行、独立评分、恢复与安装分别验收。
-
-| 验证层 | 检查内容 | 证据 |
-|---|---|---|
-| 合同与状态 | 冻结身份、完整分母、约束、租约、重放 | `npm run check` |
-| 原生 DSH | Profile / Preset / 服务依赖 / Schema / 会话作用域 | [组件](docs/components.md)、[Preset](docs/presets.md) |
-| 真实容器 | 构建、执行、故障恢复、私有评分、分发；runc 与 gVisor | [隔离验收](docs/isolation.md) |
-| 真实模型 | 自主变异、连续搜索、独立复验、失败和用量 | [实验报告](docs/acceptance-continuous.md) |
-| GitHub Actions | macOS / Ubuntu 检查与双运行时矩阵 | [当前工程状态](docs/completion.md) |
-
-Actions 徽章显示真实远端状态。仓库公开后标准 runner 已实际执行，原账户分钟额度拦截已消除；云端矩阵、真实模型实验与本地证据分别记录。完整交付范围及尚未完成项见[落实状态](docs/completion.md)。
-
-```bash
-HE_TEST_RUNTIME=runc HE_TEST_DNS="${HE_TEST_DNS:?Set approved IPv4 DNS servers}" \
-  HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}') npm run test:container
-npm audit --audit-level=moderate
-```
-
-当前能力和未验证边界明确记录于[架构](docs/architecture.md)与[安全说明](SECURITY.md)。参与开发见 [CONTRIBUTING.md](CONTRIBUTING.md)，接入新任务见[领域适配](docs/domain-adapters.md)，运行版本见[兼容性](docs/compatibility.md)。
-
-分发包附依赖 SBOM、锁快照与字节摘要，CI 对同一 tarball 做原生安装验收；具体命令和公开发布边界见[分发与发布](docs/releasing.md)。
-
-采用 [Apache-2.0](LICENSE)，引用信息见 [CITATION.cff](CITATION.cff)，第三方归属见 [NOTICE](NOTICE)。源码仓库已公开；版本 Release 与 npm 包发布单独管理，当前构建产物不标记为稳定发行版。
-
-通用框架优先，商业 Excel 是首个场景。架构承接 DeepSeek Harness / Cordis 原生插件生态，研究归属与引用见调研文档。
+基于 **DeepSeek Harness / Cordis** 原生插件生态构建。采用 [Apache-2.0](LICENSE)，第三方归属见 [NOTICE](NOTICE)，研究引用见 [CITATION.cff](CITATION.cff)。当前为开发版本，npm 与版本 Release 单独发布。
