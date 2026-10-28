@@ -1,6 +1,6 @@
 # 分发、复现与发布
 
-能力 Bundle 和自进化设施都沿用 DSH 原生安装。发布前先交付可审查的实际包、依赖清单和验证记录；目前仓库保持私有，流程不会自动公开仓库、创建 Release 或发布 npm 包。
+能力 Bundle 和自进化设施都沿用 DSH 原生安装。发布前先交付可审查的实际包、依赖清单和验证记录；源码仓库已于 2026-10-28 按用户指令公开，构建流程不会自动创建 Release 或发布 npm 包。
 
 候选 `export` 同时生成[能力卡](capability-cards.md)、原研究档案和导出时用量报告。它们描述实际冻结包及实验边界，不改 tarball；下方 `package:artifacts` 则用于分发自进化设施本身。
 
@@ -12,7 +12,7 @@
                    可安装 bundle.tgz     依赖 SBOM + 锁文件    身份与 SHA256
                          └─────────────────────┼───────────────────┘
                                                ▼
-                             私有 CI Artifact / 本地交付目录
+                             CI Artifact / 本地交付目录
                                                │
                               版本与许可审查 + 明确发布决定
                                                ▼
@@ -67,12 +67,12 @@ node scripts/verify-study-artifacts.mjs \
 - 版本、仓库可见性、发布目标及许可证保持明确；公开操作需要项目所有者指令。当前许可为仓库的 Apache-2.0，第三方归属保留于 NOTICE。
 - Release 说明列出变更、准确支持矩阵、独立验收入口和已知限制；研究分数必须引用完整实验记录。配置、接口和依赖升级写明新合同要求，历史实验不改写兼容。
 - 安装包、冻结候选、源提交、运行镜像和研究成绩分别标识；同一个版本号不能代替具体产物身份。
-- CI 上传的是未发布构建产物，无 registry 写权限。云端额度限制未解除前，不把已配置的任务标成通过。
+- CI 上传的是未发布构建产物，无 registry 写权限。以具体运行和提交的实际结果判断通过，保留原失败记录。
 
 ### 公开后的 CI 运行方式
 
 正式公开后，沿用本仓库的标准 GitHub 托管 Ubuntu/macOS runner。GitHub 对公开仓库的标准 runner 运行免费，不消耗私有仓库的套餐分钟额度；大型 runner 仍收费，运行时间、并发与存储等限制仍需分别管理。只把 reusable workflow 放在公开仓库、由私有仓库调用，仍按调用方计费，不能解决私有仓库额度问题。依据：[Actions billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)、[Reusable workflow billing](https://docs.github.com/en/actions/concepts/billing-and-usage#billing-for-reusable-workflows)（核实于 2026-10-28）。
 
-公共 CI 验证构建、类型、原生装配、容器协议和真实包安装；需要凭证的模型研究单独授权与记账，runner 免费不包含第三方模型 API 费用。当前仓库保持私有；公开可见性需项目所有者明确指令。既有账户支付限制能否解除，以之后实际运行结果确认。
+公共 CI 验证构建、类型、原生装配、容器协议和真实包安装；需要凭证的模型研究单独授权与记账，runner 免费不包含第三方模型 API 费用。仓库公开后的实际运行已消除原分钟额度拦截，并暴露出 macOS 缺少 Go 的工作流问题，已显式安装固定版本；具体矩阵结果见[落实状态](completion.md)。
 
-研究依据：同事仓库 [Publish workflow](https://github.com/XHToken/dsh-intelligent-router/blob/d762b8e8ebd9f07dcea34fe2da56202f9f727fe4/.github/workflows/publish.yaml) 将构建、测试、标签版本核对和分发串联。本项目借鉴可核验产物链，当前保留私有交付；没有启用其公开发布触发器。SBOM 使用 [npm 官方命令](https://docs.npmjs.com/cli/v12/commands/npm-sbom)，已核对安装版 npm 12.2.0 的锁文件加载与 pre-build 标识实现。
+研究依据：同事仓库 [Publish workflow](https://github.com/XHToken/dsh-intelligent-router/blob/d762b8e8ebd9f07dcea34fe2da56202f9f727fe4/.github/workflows/publish.yaml) 将构建、测试、标签版本核对和分发串联。本项目借鉴可核验产物链，交付审阅用构建包；没有启用其 registry 发布触发器。SBOM 使用 [npm 官方命令](https://docs.npmjs.com/cli/v12/commands/npm-sbom)，已核对安装版 npm 12.2.0 的锁文件加载与 pre-build 标识实现。

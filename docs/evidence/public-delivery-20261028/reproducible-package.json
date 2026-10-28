@@ -1,0 +1,71 @@
+{
+  "runId": 40625648430,
+  "commit": "0b67a1088b1153a1793cd42d6afce851b5c4d978",
+  "identical": true,
+  "packages": [
+    {
+      "platform": "linux",
+      "manifest": {
+        "status": "unpublished-artifact",
+        "name": "@harness-evolution/dsh-bundle",
+        "version": "0.0.0-development",
+        "commit": "0b67a1088b1153a1793cd42d6afce851b5c4d978",
+        "workingTreeDirty": false,
+        "workingTreeStatus": [],
+        "node": "v24.16.0",
+        "npm": "12.2.0",
+        "platform": "linux",
+        "architecture": "x64",
+        "archive": {
+          "file": "harness-evolution-dsh-bundle-0.0.0-development.tgz",
+          "sha256": "055ac14a3232325d25d35af596e55393f1407dfd662f5a452a123aaccd927696",
+          "integrity": "sha512-SNeDa+mR7dkl1Oi9r4dDZSKTqg69fWpzyvcREZ4VfJRkWmmXiu3vK3NVeYlsPAHYueNFtXU8qSQQIPYQYsrHXw==",
+          "fileCount": 390
+        },
+        "sbom": {
+          "file": "dependencies.cdx.json",
+          "sha256": "ecf6638b31c11954157e7a3e828353b669b73ecc7e94611bd4d062bf31263ee1",
+          "components": 627
+        },
+        "lock": {
+          "file": "package-lock.json",
+          "sha256": "ed6d2e45177eea469fee7e215fb9f3e2af535b058a49b5d7a8d065c8fc952706"
+        },
+        "boundary": "Local build inventory, not a signature or public release. SBOM describes this repository lock before installation and excludes dev-only dependencies. Consumer Profile resolution can differ. Dirty working trees are explicitly recorded. Packaging does not substitute for native installation, real-model acceptance, or independent quality results."
+      },
+      "downloadedArchiveSha256": "055ac14a3232325d25d35af596e55393f1407dfd662f5a452a123aaccd927696"
+    },
+    {
+      "platform": "macos",
+      "manifest": {
+        "status": "unpublished-artifact",
+        "name": "@harness-evolution/dsh-bundle",
+        "version": "0.0.0-development",
+        "commit": "0b67a1088b1153a1793cd42d6afce851b5c4d978",
+        "workingTreeDirty": false,
+        "workingTreeStatus": [],
+        "node": "v24.16.0",
+        "npm": "12.2.0",
+        "platform": "darwin",
+        "architecture": "arm64",
+        "archive": {
+          "file": "harness-evolution-dsh-bundle-0.0.0-development.tgz",
+          "sha256": "055ac14a3232325d25d35af596e55393f1407dfd662f5a452a123aaccd927696",
+          "integrity": "sha512-SNeDa+mR7dkl1Oi9r4dDZSKTqg69fWpzyvcREZ4VfJRkWmmXiu3vK3NVeYlsPAHYueNFtXU8qSQQIPYQYsrHXw==",
+          "fileCount": 390
+        },
+        "sbom": {
+          "file": "dependencies.cdx.json",
+          "sha256": "d6dc672a29683d9150fe997b51457531903d4efbe0415ec95dbbb5cdf1b6a3b4",
+          "components": 627
+        },
+        "lock": {
+          "file": "package-lock.json",
+          "sha256": "ed6d2e45177eea469fee7e215fb9f3e2af535b058a49b5d7a8d065c8fc952706"
+        },
+        "boundary": "Local build inventory, not a signature or public release. SBOM describes this repository lock before installation and excludes dev-only dependencies. Consumer Profile resolution can differ. Dirty working trees are explicitly recorded. Packaging does not substitute for native installation, real-model acceptance, or independent quality results."
+      },
+      "downloadedArchiveSha256": "055ac14a3232325d25d35af596e55393f1407dfd662f5a452a123aaccd927696"
+    }
+  ]
+}

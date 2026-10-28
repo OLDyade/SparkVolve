@@ -9,7 +9,7 @@
 | DSH | 精确锁定 `0.2.1-rc.4`；使用 `sdk` / `sdk-minimal` Profile |
 | Cordis | `4.0.5`；插件注册、服务依赖、生命周期由原生实现处理 |
 | 模型 | Quick start 使用 Venus `deepseek/deepseek-v4.1-flash-1017`；Provider 配置与模型合同分别冻结 |
-| 容器 | runc（OrbStack daemon）及 gVisor 20261019.0/systrap（专用 Debian 13 daemon，ARM64）全链路实测；Linux x86_64 CI 矩阵受账单限制，待实际运行 |
+| 容器 | runc（OrbStack daemon）及 gVisor 20261019.0/systrap（专用 Debian 13 daemon，ARM64）全链路实测；公开 Linux x86_64 CI 已验证 gVisor 的 23 项完整矩阵，runc 的取消测试初始化竞态已修正，逐版本结果见[公开验收记录](experiments/2026-10-28-public-ci-and-delivery.md) |
 | Excel | 示例镜像提供 openpyxl / LibreOffice；独立重算并检验公式与数值 |
 
 DSH 的 Profile 选择应用装配，Bundle 提供可分发 patch 与插件，Cordis 管理服务和生命周期。优化器和执行器分别运行原生 SDK；本项目不实现另一个 Agent Loop。

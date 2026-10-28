@@ -134,7 +134,7 @@ Read the [full experiment report](docs/acceptance-continuous.md) for individual 
 | Isolation | Explicit non-root/resource/network contracts; runc and pinned gVisor acceptance |
 | Asset reuse | Authorized library search, exact source inspection and import provenance; previous scores never transfer |
 
-Current GitHub Actions include macOS/Ubuntu checks and runc/gVisor jobs. Account billing limits have prevented cloud jobs from starting; local evidence is reported separately. See [delivery status](docs/completion.md) for the remaining full-project work.
+GitHub Actions run macOS/Ubuntu checks and runc/gVisor jobs. Standard runners now execute in the public repository; the earlier private-repository minutes block has cleared. Cloud checks, real-model experiments and local evidence are reported separately. See [delivery status](docs/completion.md) for the remaining full-project work.
 
 ## Install the evolved capability
 
@@ -180,4 +180,4 @@ npm run test:install
 npm audit --audit-level=moderate
 ```
 
-Built on [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) and its Cordis ecosystem. Related research and source-pinned technical decisions are recorded in [research notes](docs/research/2026-10-27-harness-evolution-design-review.md). Licensed under [Apache-2.0](LICENSE); see [NOTICE](NOTICE) and [CITATION.cff](CITATION.cff). The repository remains private until an explicit publication decision.
+Built on [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) and its Cordis ecosystem. Related research and source-pinned technical decisions are recorded in [research notes](docs/research/2026-10-27-harness-evolution-design-review.md). Licensed under [Apache-2.0](LICENSE); see [NOTICE](NOTICE) and [CITATION.cff](CITATION.cff). The source repository is public. Versioned releases and npm publication are managed separately; current build artifacts are not a stable release.

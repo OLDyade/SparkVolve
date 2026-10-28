@@ -46,7 +46,7 @@ HE_TEST_RUNTIME=he-runsc-20261019 \
   npm run test:container
 ```
 
-GitHub Actions 分别运行 runc 和固定 gVisor，将测试日志与各角色隔离回执保留 14 天。远端任务当前被账户账单限制阻止启动，矩阵配置不代表云端验收通过。
+GitHub Actions 分别运行 runc 和固定 gVisor，将测试日志与各角色隔离回执保留 14 天。仓库公开后，标准 runner 已实际执行，原额度拦截解除；具体版本的完整结果见[公开 CI 记录](experiments/2026-10-28-public-ci-and-delivery.md)。
 
 生成器提供可编辑的工作站配置。框架不补缺失字段、不自动选择默认运行时、不在运行失败后回退。`prepare.mjs` 第五参数必须为此 JSON；冻结后修改合同需要新实验。UID/GID 必须能访问挂载目录，框架不会修改宿主目录权限。远端 Docker 的挂载路径必须真实存在于 daemon 宿主；本地路径不会自动上传。
 
@@ -55,12 +55,14 @@ GitHub Actions 分别运行 runc 和固定 gVisor，将测试日志与各角色�
 | `runtime` | Docker 注册的精确名称；名称不证明实现或隔离强度 |
 | `user.uid/gid` | 明确的非 root 用户，五类角色共用 |
 | `memoryMiB` / `cpus` / `pids` | 每容器内存、CPU、进程上限；swap 总限额等于内存上限 |
-| `tmpMiB` / `homeMiB` | 临时文件系统大小及用户所有权；`/tmp` 允许 DSH 动态库执行 |
+| `tmpMiB` / `homeMiB` | 容器临时文件系统大小及用户所有权；`/tmp` 允许 DSH 动态库执行；HOME 独立挂载于 `/workspace/.harness-home`，通过原生工作区 bind 保留配额与跨调用状态 |
 | `network` | build 为 none 或 bridge；optimizer 为 controlled，executor 为 controlled 或 none；QA/grader 固定 none |
 | `network.egressPool` | 部署方预留的私有 IPv4 CIDR；每个受控执行占用两个 `/29`，包括优化器；合同检查并发所需容量 |
 | `network.egressDns` | 必填的 1–3 个 IPv4 resolver；拒绝重复、0.0.0.0、回环、组播、广播及与 egressPool 重叠的地址，无默认值 |
 
 固定清空 capabilities、禁止提权、只读根文件系统、私有 IPC；镜像入口被显式命令替代。核验用户、资源、网络、挂载读写、运行时及命令，拒绝镜像隐式 volumes。恢复沿用原容器，权限变化不触发任务重跑。
+
+镜像安装 Bubblewrap，由 DSH 原生 sandbox-local 选择可用后端；不替换 Agent Loop 或关闭工具沙箱。该 DSH 版本的 Bubblewrap 会为 workspace-write 命令创建独立 `/tmp`，因此 HOME 不放在 `/tmp` 下。工作区中的 HOME 是单独的 0700 tmpfs，销毁容器后宿主只留空挂载点，不把缓存、配置或历史带入能力交付。`tmpMiB` 描述外层容器 `/tmp` 的挂载配额；内层 Bubblewrap 新建的 `/tmp` 受容器总内存约束，不能宣称继承了该独立配额。
 
 ## 出口 DNS
 

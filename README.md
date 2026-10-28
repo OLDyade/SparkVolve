@@ -215,7 +215,7 @@ node dist/cli.js export --root .evolution/business/search \
 | 真实模型 | 自主变异、连续搜索、独立复验、失败和用量 | [实验报告](docs/acceptance-continuous.md) |
 | GitHub Actions | macOS / Ubuntu 检查与双运行时矩阵 | [当前工程状态](docs/completion.md) |
 
-Actions 徽章显示真实远端状态。当前云端运行曾因账户账单/额度限制无法启动；本地通过记录单独保留。完整交付范围及尚未完成项见[落实状态](docs/completion.md)。
+Actions 徽章显示真实远端状态。仓库公开后标准 runner 已实际执行，原账户分钟额度拦截已消除；云端矩阵、真实模型实验与本地证据分别记录。完整交付范围及尚未完成项见[落实状态](docs/completion.md)。
 
 ```bash
 HE_TEST_RUNTIME=runc HE_TEST_DNS="${HE_TEST_DNS:?Set approved IPv4 DNS servers}" \
@@ -227,6 +227,6 @@ npm audit --audit-level=moderate
 
 分发包附依赖 SBOM、锁快照与字节摘要，CI 对同一 tarball 做原生安装验收；具体命令和公开发布边界见[分发与发布](docs/releasing.md)。
 
-采用 [Apache-2.0](LICENSE)，引用信息见 [CITATION.cff](CITATION.cff)，第三方归属见 [NOTICE](NOTICE)。仓库当前保持私有；许可证选择不代表已经公开发布。
+采用 [Apache-2.0](LICENSE)，引用信息见 [CITATION.cff](CITATION.cff)，第三方归属见 [NOTICE](NOTICE)。源码仓库已公开；版本 Release 与 npm 包发布单独管理，当前构建产物不标记为稳定发行版。
 
 通用框架优先，商业 Excel 是首个场景。架构承接 DeepSeek Harness / Cordis 原生插件生态，研究归属与引用见调研文档。

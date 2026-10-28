@@ -4,6 +4,8 @@ import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import os from 'node:os';
+import { DatabaseSync } from 'node:sqlite';
 import { setTimeout as delay } from 'node:timers/promises';
 import { atomicJSON, freeze, treeDigest } from '../../src/artifacts.js';
 import { buildBundle } from '../../src/build.js';
@@ -19,8 +21,7 @@ test(
     const image = process.env.HE_TEST_IMAGE;
     assert.match(image ?? '', /^sha256:[0-9a-f]{64}$/);
     const base = containerSpecification();
-    await mkdir('.evolution', { recursive: true });
-    const root = await mkdtemp(path.resolve('.evolution/validation-cancellation-native-')),
+    const root = await mkdtemp(path.join(os.tmpdir(), 'he-validation-cancellation-native-')),
       source = path.join(root, 'source'),
       dataset = path.join(root, 'dataset'),
       study = path.join(root, 'validation'),
@@ -136,15 +137,35 @@ test(
       while (Date.now() < deadline) {
         assert.equal(child.exitCode, null, `Validation exited before interrupt: ${log}`);
         try {
-          const store = new Store(path.join(study, 'arms/h0/experiment.sqlite'), spec, 'read');
+          // File existence precedes schema/identity publication. Observe the committed
+          // preparation state before opening the strict experiment reader.
+          const arm = path.join(study, 'arms/h0');
+          const initialization = new DatabaseSync(path.join(arm, 'initialization.sqlite'), {
+            readOnly: true,
+            timeout: 5000,
+          });
+          let prepared = false;
           try {
-            const run = store.runs().find((item) => item.phase === 'executing');
-            if (run && (await docker.inspect(run.container))?.Running) {
-              original = { name: run.container, id: (await docker.configuration(run.container)).Id };
-              break;
-            }
+            const schema = initialization
+              .prepare("SELECT name FROM sqlite_schema WHERE type='table' AND name='initialization'")
+              .get();
+            prepared = Boolean(
+              schema && initialization.prepare("SELECT id FROM initialization WHERE phase='prepared'").get(),
+            );
           } finally {
-            store.close();
+            initialization.close();
+          }
+          if (prepared) {
+            const store = new Store(path.join(arm, 'experiment.sqlite'), spec, 'read');
+            try {
+              const run = store.runs().find((item) => item.phase === 'executing');
+              if (run && (await docker.inspect(run.container))?.Running) {
+                original = { name: run.container, id: (await docker.configuration(run.container)).Id };
+                break;
+              }
+            } finally {
+              store.close();
+            }
           }
         } catch (error) {
           if (!(error instanceof Error && /unable to open database/.test(error.message))) throw error;
