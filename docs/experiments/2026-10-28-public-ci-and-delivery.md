@@ -16,6 +16,8 @@
 
 Linux x64 与 macOS ARM64 从干净提交 `0b67a10` 构建出的实际 npm tarball 逐字节一致：SHA256 `055ac14a3232325d25d35af596e55393f1407dfd662f5a452a123aaccd927696`，两平台都安装并调用同一归档。原 manifest、SBOM 与归档从 CI 下载核对，见[可复现构建回执](../evidence/public-delivery-20261028/reproducible-package.json)。此证据只覆盖对应提交和两种实际环境，不保证任意未来环境。
 
+修正后的 `48e835c` 在 [CI 40629306937](https://github.com/OLDyade/spark-harness-evolution/actions/runs/40629306937) **四路全部通过**：Linux/macOS 各 255 单元、26 原生和 1 项实际分发包安装；runc/gVisor 各 23 项容器测试。终态由 GitHub API 和各作业实际日志交叉核实，见[机器回执](../evidence/public-delivery-20261028/cloud-ci-40629306937.json)。此前失败与取消记录完整保留；没有停用失败测试或降低隔离要求。
+
 ## 600 秒真实模型验收
 
 原生运行时冻结在 `0b67a10`，实际镜像 `sha256:f4a77050fd1a786c983e2b4a2e08ff117f6db5332e35ab61cfa87a99625f2de9`。新合同登记四类任务、两份候选预算与独立验证；没有重跑旧 optimizer 或失败任务，也没有切换服务或模型。
