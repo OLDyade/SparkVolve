@@ -473,7 +473,7 @@ if(config.composition){
  const installedComposition=path.join(profileRoot,'node_modules',manifest.name,config.composition);
  await readFile(installedComposition);
  const methodPreset=evolutionPreset({plugin:'@harness-evolution/dsh-bundle',endpoint:env.EVOLUTION_ENDPOINT,tokenEnv:'EVOLUTION_TOKEN',composition:installedComposition});
- await writeFile('/workspace/preset.yml',stringify([{insert:sdkPreset('evolution','@harness-evolution/dsh-bundle/sdk-preset')},{id:'preset-evolution',config:methodPreset.config}]));patches.push('/workspace/preset.yml');
+ await writeFile('/workspace/preset.yml',stringify([{insert:sdkPreset('evolution','@harness-evolution/dsh-bundle/sdk-preset',config.profile)},{id:'preset-evolution',config:methodPreset.config}]));patches.push('/workspace/preset.yml');
 }
 await checkComposition({profile:config.profile,model:config.model,patches,directory:'/workspace/native',processCwd:'/app',workspace:'/workspace/task',timeoutSeconds:60});
 const observed=JSON.parse(await readFile('/workspace/native/composition.json','utf8'));

@@ -139,7 +139,7 @@ test(
                   id: 'evolution-finish-provider',
                   name: path.resolve('tests/native/evolution-finish-provider.mjs'),
                 },
-                ...sdkPreset('evolution', path.resolve('dist/sdk-preset.js')),
+                ...sdkPreset('evolution', path.resolve('dist/sdk-preset.js'), 'sdk'),
                 evolutionPreset({
                   plugin: path.resolve('dist/plugin.js'),
                   endpoint: control.endpoint,

@@ -69,4 +69,10 @@ node scripts/verify-study-artifacts.mjs \
 - 安装包、冻结候选、源提交、运行镜像和研究成绩分别标识；同一个版本号不能代替具体产物身份。
 - CI 上传的是未发布构建产物，无 registry 写权限。云端额度限制未解除前，不把已配置的任务标成通过。
 
+### 公开后的 CI 运行方式
+
+正式公开后，沿用本仓库的标准 GitHub 托管 Ubuntu/macOS runner。GitHub 对公开仓库的标准 runner 运行免费，不消耗私有仓库的套餐分钟额度；大型 runner 仍收费，运行时间、并发与存储等限制仍需分别管理。只把 reusable workflow 放在公开仓库、由私有仓库调用，仍按调用方计费，不能解决私有仓库额度问题。依据：[Actions billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)、[Reusable workflow billing](https://docs.github.com/en/actions/concepts/billing-and-usage#billing-for-reusable-workflows)（核实于 2026-10-28）。
+
+公共 CI 验证构建、类型、原生装配、容器协议和真实包安装；需要凭证的模型研究单独授权与记账，runner 免费不包含第三方模型 API 费用。当前仓库保持私有；公开可见性需项目所有者明确指令。既有账户支付限制能否解除，以之后实际运行结果确认。
+
 研究依据：同事仓库 [Publish workflow](https://github.com/XHToken/dsh-intelligent-router/blob/d762b8e8ebd9f07dcea34fe2da56202f9f727fe4/.github/workflows/publish.yaml) 将构建、测试、标签版本核对和分发串联。本项目借鉴可核验产物链，当前保留私有交付；没有启用其公开发布触发器。SBOM 使用 [npm 官方命令](https://docs.npmjs.com/cli/v12/commands/npm-sbom)，已核对安装版 npm 12.2.0 的锁文件加载与 pre-build 标识实现。

@@ -37,6 +37,7 @@ flowchart TB
 |---|---|---|
 | 进化 Bundle / Preset | 将进化工具与可替换方法装入选定 Agent 作用域 | [`plugin.ts`](../src/plugin.ts)、[`preset.ts`](../src/preset.ts)、[`sdk-preset.ts`](../src/sdk-preset.ts) |
 | 优化器方法 | 从证据选择父版本、机制和变异规模；可以独立版本化 | [`optimizers/evidence-driven`](../optimizers/evidence-driven) |
+| 原生插件开发能力 | 按需查询 DSH 作者契约和官方 Skill；记录安装来源，G 观察与候选 H 的验证分开 | [`native-authoring.ts`](../src/native-authoring.ts)、[开发能力装配](native-authoring.md) |
 | 优化器研究 | 原生元优化器修改 G，可信宿主调度同预算子搜索与封闭最终验证 | [`study-plugin.ts`](../src/study-plugin.ts)、[`optimizer-study.ts`](../src/optimizer-study.ts)、[研究协议](optimizer-studies.md) |
 | 控制器与状态 | 冻结、构建、调度、续接原容器、选择与持久事件 | [`controller.ts`](../src/controller.ts)、[`store.ts`](../src/store.ts) |
 | 构建与装配 | lock 固定依赖；运行产物冻结；审计完整原生插件树 | [`build.ts`](../src/build.ts)、[`composition.ts`](../src/composition.ts) |
@@ -63,7 +64,7 @@ flowchart TB
   Final --> Report["配对结果 · 原始谱系<br/>元优化 / 搜索 / 复验成本"]
 ```
 
-上图描述已接入代码的扩展模式，完整真实模型研究正在验收。最终验证没有返回元优化器的连线；开发质量、最终质量和工程验收分别记录。原生 G 会话证据与 H 任务轨迹均可读取，权限以注册实例和执行身份为准。
+上图描述已接入代码的扩展模式，[真实模型研究及原包安装](experiments/2026-10-28-optimizer-study-results.md)已经完成，开发同分保留 G0，未证明优化器自进化收益。最终验证没有返回元优化器的连线；开发质量、最终质量和工程验收分别记录。原生 G 会话证据与 H 任务轨迹均可读取，权限以注册实例和执行身份为准。
 
 ## 一个候选的生命周期
 

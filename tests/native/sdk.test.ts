@@ -28,7 +28,7 @@ test(
         {
           insert: [
             { id: 'provider', name: path.resolve('tests/native/fixture-provider.mjs') },
-            ...sdkPreset('evolution', path.resolve('dist/sdk-preset.js')),
+            ...sdkPreset('evolution', path.resolve('dist/sdk-preset.js'), 'sdk'),
             evolutionPreset({
               plugin: path.resolve('dist/plugin.js'),
               endpoint: `http://127.0.0.1:${address.port}`,
@@ -94,7 +94,7 @@ test('missing selected preset fails before any model request', { timeout: 30_000
       {
         insert: [
           { id: 'provider', name: path.resolve('tests/native/fixture-provider.mjs') },
-          ...sdkPreset('missing-preset', path.resolve('dist/sdk-preset.js')),
+          ...sdkPreset('missing-preset', path.resolve('dist/sdk-preset.js'), 'sdk-minimal'),
         ],
       },
     ]),
@@ -153,7 +153,7 @@ test(
                 timeoutSeconds: 30,
               },
             },
-            ...sdkPreset('evolution', path.resolve('dist/sdk-preset.js')),
+            ...sdkPreset('evolution', path.resolve('dist/sdk-preset.js'), 'sdk-minimal'),
             evolutionPreset({
               plugin: path.resolve('dist/plugin.js'),
               endpoint: `http://127.0.0.1:${address.port}`,

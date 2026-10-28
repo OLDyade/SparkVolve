@@ -33,6 +33,8 @@ flowchart LR
 
 The optimizer chooses mechanisms from original inputs, traces, deliveries and independent feedback. The experiment service enforces fixed models, data permissions, budgets and selection. It does not contain task-answer patches or a prescribed list of successful mutations. Business spreadsheets are the first domain; task and evaluator adapters remain separate from the engine.
 
+[Native plugin-authoring capabilities](docs/native-authoring.md) are assembled into the Evolution Preset: the optimizer can inspect Cordis service, event and tool contracts, load official development Skills from the installed version, then independently edit plugins and their composition. Authoring references are frozen with the runtime image; candidates still undergo independent validation.
+
 [Native behavioral probes](docs/behavioral-probes.md) let the optimizer test a mechanism before submitting a scored candidate. Authored suites exercise actual tools and services inside the contracted DSH composition, with frozen inputs, a separate budget and retained counterexamples. Probe outcomes do not replace independent task evaluation.
 
 The [cold-checkout walkthrough](docs/research/2026-10-28-user-journey.md) completed 13 public commands through autonomous search, frozen-build validation and research export. Both validation arms scored 81.25%; independent API checks rejected the selected candidate for trusted installation. The walkthrough retains this negative delivery decision alongside the successful execution path.

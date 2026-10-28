@@ -9,6 +9,7 @@ import { Store } from './store.js';
 import { Docker } from './docker.js';
 import { verifyArtifact, verifyBuild } from './build.js';
 import { assessConstraints } from './constraints.js';
+import { assertNotCancelled } from './cancellation-state.js';
 
 export const FrozenValidationArm = z.strictObject({
   id: Id,
@@ -30,7 +31,10 @@ export async function validateStudy(
   dataset: string,
   rawArms: unknown,
   docker = new Docker(),
+  signal?: AbortSignal,
 ): Promise<void> {
+  signal?.throwIfAborted();
+  assertNotCancelled(root);
   const spec = Experiment.parse(raw),
     arms = Arms.parse(rawArms);
   if (spec.purpose !== 'validation') throw new Error('A paired study requires a validation specification');
@@ -51,6 +55,8 @@ export async function validateStudy(
       await rm(staging, { recursive: true, force: true });
     }
     for (const arm of arms) {
+      signal?.throwIfAborted();
+      assertNotCancelled(root);
       if ((await treeDigest(arm.source)) !== arm.digest) throw new Error(`Arm digest mismatch: ${arm.id}`);
       await verifyArtifact(arm.artifact, arm.digest, arm.build);
       await freeze(arm.source, path.join(root, 'sources', arm.id), path.join(root, 'publications'));
@@ -59,6 +65,8 @@ export async function validateStudy(
     await atomicJSON(path.join(root, 'registration.json'), registration);
   }
   for (const arm of arms) {
+    signal?.throwIfAborted();
+    assertNotCancelled(root);
     const armRoot = path.join(root, 'arms', arm.id);
     await mkdir(path.dirname(armRoot), { recursive: true });
     await validateFrozenArm(
@@ -67,8 +75,11 @@ export async function validateStudy(
       dataset,
       { ...arm, source: path.join(root, 'sources', arm.id), artifact: path.join(root, 'artifacts', arm.id) },
       docker,
+      signal,
     );
   }
+  signal?.throwIfAborted();
+  assertNotCancelled(root);
   await writeStudyReport(root);
 }
 
@@ -87,7 +98,9 @@ export async function validateFrozenArm(
   if (spec.purpose !== 'validation') throw new Error('Frozen assessment requires a validation specification');
   if ((await treeDigest(arm.source)) !== arm.digest) throw new Error(`Arm digest mismatch: ${arm.id}`);
   await verifyArtifact(arm.artifact, arm.digest, arm.build);
+  signal?.throwIfAborted();
   await prepareExperiment(root, spec, dataset, arm.source, docker);
+  signal?.throwIfAborted();
   const store = new Store(path.join(root, 'experiment.sqlite'), spec);
   const controller = new Controller(root, path.join(root, 'dataset'), spec, store, docker);
   try {
@@ -110,6 +123,7 @@ export async function validateFrozenArm(
     await controller.close();
     store.close();
   }
+  signal?.throwIfAborted();
   return validationResult(root, spec, arm);
 }
 

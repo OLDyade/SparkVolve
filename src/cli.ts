@@ -23,6 +23,7 @@ import { evolveOptimizerStudy, runFixedOptimizerComparison } from './optimizer-s
 import { optimizerStudyReport } from './optimizer-study-report.js';
 import { cancelOptimizerStudy } from './optimizer-study-cancel.js';
 import { cancelExperiment } from './cancellation.js';
+import { cancelValidationStudy } from './validation-cancel.js';
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,
@@ -57,6 +58,7 @@ init      --root <new-directory> --spec <json> --dataset <directory> --seed <bun
 serve     --root <directory> [--host 127.0.0.1] [--port 8787]
 evolve    --root <directory> --endpoint <container-reachable-url> [--host 127.0.0.1] [--port 8787]
 validate  --root <study-directory> --spec <validation.json> --dataset <directory> --arms <arms.json>
+cancel-validation --root <study-directory>
 optimize  --root <directory> --endpoint <container-reachable-url>
 run       --root <directory>
 status    --root <directory>
@@ -96,10 +98,14 @@ run reconciles original tasks; rescore reuses the original delivery; export does
 } else {
   if (!values.root) throw new Error('Required: --root <experiment directory>');
   const root = path.resolve(values.root);
-  if (action === 'cancel' || action === 'study-cancel') {
+  if (action === 'cancel' || action === 'study-cancel' || action === 'cancel-validation') {
     console.log(
       JSON.stringify(
-        await (action === 'cancel' ? cancelExperiment(root) : cancelOptimizerStudy(root)),
+        await (action === 'cancel'
+          ? cancelExperiment(root)
+          : action === 'cancel-validation'
+            ? cancelValidationStudy(root)
+            : cancelOptimizerStudy(root)),
         null,
         2,
       ),
@@ -178,13 +184,29 @@ run reconciles original tasks; rescore reuses the original delivery; export does
   } else if (action === 'validate') {
     if (!values.spec || !values.dataset || !values.arms)
       throw new Error('validate requires --spec, --dataset and --arms');
-    await validateStudy(
-      root,
-      Experiment.parse(JSON.parse(await readFile(values.spec, 'utf8'))),
-      path.resolve(values.dataset),
-      JSON.parse(await readFile(values.arms, 'utf8')),
-    );
-    console.log(await readFile(path.join(root, 'comparison.json'), 'utf8'));
+    const abort = new AbortController();
+    const interrupt = () =>
+      abort.abort(
+        new Error(
+          'Validation observer interrupted; original attempts retained for resume or explicit cancel-validation',
+        ),
+      );
+    process.once('SIGINT', interrupt);
+    process.once('SIGTERM', interrupt);
+    try {
+      await validateStudy(
+        root,
+        Experiment.parse(JSON.parse(await readFile(values.spec, 'utf8'))),
+        path.resolve(values.dataset),
+        JSON.parse(await readFile(values.arms, 'utf8')),
+        undefined,
+        abort.signal,
+      );
+      console.log(await readFile(path.join(root, 'comparison.json'), 'utf8'));
+    } finally {
+      process.removeListener('SIGINT', interrupt);
+      process.removeListener('SIGTERM', interrupt);
+    }
   } else {
     const spec = Experiment.parse(JSON.parse(await readFile(path.join(root, 'experiment.json'), 'utf8')));
     const store = new Store(

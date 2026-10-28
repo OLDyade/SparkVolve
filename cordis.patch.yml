@@ -6,6 +6,8 @@
         name: Harness Evolution
         description: Evidence-driven plugin evolution with independent experiments
         plugins:
+          - id: evolution-native-authoring
+            name: '@harness-evolution/dsh-bundle/native-authoring'
           - id: evolution-tools
             name: '@harness-evolution/dsh-bundle'
             config:

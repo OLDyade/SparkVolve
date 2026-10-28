@@ -8,6 +8,7 @@ import { specification } from './fixtures.js';
 import { treeDigest, fileDigest, atomicJSON } from '../src/artifacts.js';
 import { Docker, type ContainerSpec } from '../src/docker.js';
 import { validateStudy, validateFrozenArm } from '../src/validation.js';
+import { cancelValidationStudy } from '../src/validation-cancel.js';
 
 test('single-arm and paired validation preserve built artifacts and resume without new executions', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'he-study-'));
@@ -103,7 +104,7 @@ test('single-arm and paired validation preserve built artifacts and resume witho
     override async collect() {
       return exited;
     }
-    override async run(spec: ContainerSpec) {
+    override async run(spec: ContainerSpec, _logDir?: string, _signal?: AbortSignal) {
       if (spec.name.startsWith('he-build-')) {
         throw new Error('Independent validation must never rebuild selected artifacts');
       }
@@ -161,6 +162,55 @@ test('single-arm and paired validation preserve built artifacts and resume witho
       (error) => error === stopped,
     );
     assert.equal(driver.creations, 4);
+    const abortBeforeRegistration = path.join(root, 'aborted-validation');
+    await assert.rejects(
+      validateStudy(abortBeforeRegistration, spec, dataset, arms, driver, AbortSignal.abort(stopped)),
+      (error) => error === stopped,
+    );
+    await assert.rejects(readFile(path.join(abortBeforeRegistration, 'registration.json')), {
+      code: 'ENOENT',
+    });
+
+    const stopValidation = new AbortController();
+    class InterruptingDriver extends Driver {
+      observedSignal = false;
+      override async run(input: ContainerSpec, logDir?: string, signal?: AbortSignal) {
+        if (input.name.startsWith('he-qa-')) {
+          assert.equal(signal, stopValidation.signal, 'CLI-facing study signal must reach the arm worker');
+          this.observedSignal = true;
+          stopValidation.abort(stopped);
+          signal!.throwIfAborted();
+        }
+        return await super.run(input, logDir, signal);
+      }
+    }
+    const interruptedDriver = new InterruptingDriver(),
+      interruptedStudy = path.join(root, 'interrupted-validation');
+    await assert.rejects(
+      validateStudy(interruptedStudy, spec, dataset, arms, interruptedDriver, stopValidation.signal),
+      (error) => error === stopped,
+    );
+    assert.equal(interruptedDriver.observedSignal, true);
+    assert.equal(interruptedDriver.creations, 0);
+    await assert.rejects(readFile(path.join(interruptedStudy, 'arms/candidate/experiment.sqlite')), {
+      code: 'ENOENT',
+    });
+    await assert.rejects(readFile(path.join(interruptedStudy, 'comparison.json')), { code: 'ENOENT' });
+    const cancellation = await cancelValidationStudy(interruptedStudy, interruptedDriver);
+    assert.equal(cancellation.outcome, 'cancelled');
+    assert.deepEqual(
+      cancellation.arms.map((arm) => arm.cleanup.state),
+      ['cancelled', 'unstarted'],
+    );
+    assert.deepEqual(await cancelValidationStudy(interruptedStudy, interruptedDriver), cancellation);
+    await assert.rejects(
+      validateStudy(interruptedStudy, spec, dataset, arms, interruptedDriver),
+      /cancellation has started/,
+    );
+    assert.equal(interruptedDriver.creations, 0);
+    await writeFile(path.join(interruptedStudy, 'validation-cancellation.json'), '{}');
+    await assert.rejects(cancelValidationStudy(interruptedStudy, interruptedDriver), /receipt changed/);
+
     await validateStudy(study, spec, dataset, arms, driver);
     // The immutable intent survives a missing registration projection.
     await unlink(path.join(study, 'registration.json'));

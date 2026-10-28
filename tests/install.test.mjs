@@ -103,7 +103,7 @@ test(
           {
             insert: [
               { id: 'fixture-provider', name: path.resolve('tests/native/fixture-provider.mjs') },
-              ...sdkPreset('evolution', '@harness-evolution/dsh-bundle/sdk-preset'),
+              ...sdkPreset('evolution', '@harness-evolution/dsh-bundle/sdk-preset', 'sdk-minimal'),
             ],
           },
         ]),
@@ -133,6 +133,25 @@ test(
         .map(JSON.parse);
       const names = requests[0].tools.map((t) => t.name);
       assert.match(JSON.stringify(requests[0].messages), /Evolve the Harness, Not the Model/);
+      for (const name of ['cordis_inspect_list', 'cordis_inspect_query', 'skill'])
+        assert.ok(names.includes(name), `Installed bundle omitted native authoring tool: ${name}`);
+      const prompt = requests[0].messages
+        .flatMap((message) => message.content)
+        .filter((block) => block.type === 'text')
+        .map((block) => block.text)
+        .join('\n');
+      const sourceLine = prompt.match(/^Native authoring sources: (.+)$/m);
+      assert.ok(sourceLine, 'Installed preset omitted native authoring source identities');
+      const sources = JSON.parse(sourceLine[1]);
+      assert.ok(sources.packages.some((entry) => entry.name === '@deepseek-ai/dsh-tool-cordis'));
+      for (const entry of sources.packages) {
+        const bytes = await readFile(path.join(entry.directory, 'package.json'));
+        assert.equal(JSON.parse(bytes.toString()).version, entry.version);
+        assert.equal(createHash('sha256').update(bytes).digest('hex'), entry.manifestSha256);
+      }
+      assert.match(sources.skills.sha256, /^[a-f0-9]{64}$/);
+      assert.ok(sources.skills.files > 0);
+      await readFile(path.join(sources.skills.directory, 'cordis-plugin-development/SKILL.md'));
       for (const name of ['status', 'branch', 'submit', 'evidence', 'materialize', 'candidate', 'finish'])
         assert.ok(names.includes('evolution_' + name));
     } finally {

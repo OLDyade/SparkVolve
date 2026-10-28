@@ -10,12 +10,13 @@
   "packageManager": "npm@12.2.0",
   "type": "module",
   "engines": {
-    "node": ">=24.9.0"
+    "node": ">=24.11.0"
   },
   "exports": {
     ".": "./dist/plugin.js",
     "./sdk-preset": "./dist/sdk-preset.js",
     "./preset": "./dist/preset.js",
+    "./native-authoring": "./dist/native-authoring.js",
     "./contracts": "./dist/contracts.js",
     "./study": "./dist/study-plugin.js",
     "./study-contracts": "./dist/optimizer-study-contracts.js"
@@ -45,7 +46,7 @@
     "typecheck": "npm run build && tsc -p tsconfig.tests.json",
     "format": "prettier --write src tests examples optimizers .github package.json tsconfig.json tsconfig.tests.json cordis.patch.yml",
     "format:check": "prettier --check src tests examples optimizers .github package.json tsconfig.json tsconfig.tests.json cordis.patch.yml",
-    "test": "node --import tsx --test tests/*.test.ts tests/optimizer-study-driver.test.mjs tests/feedback-study-driver.test.mjs",
+    "test": "node --import tsx --test tests/*.test.ts tests/optimizer-study-driver.test.mjs tests/feedback-study-driver.test.mjs tests/native-authoring-driver.test.mjs",
     "test:native": "npm run build && node --import tsx --test tests/native/*.test.ts",
     "test:container": "npm run build && node --import tsx --test tests/container/*.test.ts",
     "check": "npm run format:check && npm run docs:check && npm run typecheck && npm test && npm run test:native",
@@ -61,10 +62,15 @@
     "@deepseek-ai/dsh-agent": "0.2.1-rc.4",
     "@deepseek-ai/dsh-agent-preset": "0.2.1-rc.4",
     "@deepseek-ai/dsh-agent-preset-registry": "0.2.1-rc.4",
+    "@deepseek-ai/dsh-cordis-host-runner": "0.2.1-rc.4",
     "@deepseek-ai/dsh-llm": "0.2.1-rc.4",
     "@deepseek-ai/dsh-sdk-client": "0.2.1-rc.4",
     "@deepseek-ai/dsh-session-projection": "0.2.1-rc.4",
+    "@deepseek-ai/dsh-skill": "0.2.1-rc.4",
+    "@deepseek-ai/dsh-skill-filesystem": "0.2.1-rc.4",
     "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.4",
+    "@deepseek-ai/dsh-tool-cordis": "0.2.1-rc.4",
+    "@deepseek-ai/dsh-tool-skill": "0.2.1-rc.4",
     "@deepseek-ai/dsh-tools": "0.2.1-rc.4",
     "@deepseek-ai/schemastery": "3.18.5",
     "ipaddr.js": "2.5.0",
@@ -72,6 +78,7 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@babel/parser": "8.0.8",
     "@types/node": "24.10.1",
     "pnpm": "12.15.0",
     "prettier": "3.9.10",

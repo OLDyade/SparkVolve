@@ -1,9 +1,8 @@
 import { lstat, readFile, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { DatabaseSync } from 'node:sqlite';
-import { atomicJSON, confined, digest, fileDigest } from './artifacts.js';
-import { cancelExecutionTree, cancelExperiment, type ExecutionRegistration } from './cancellation.js';
+import { atomicJSON, digest } from './artifacts.js';
+import { cancelExecutionTree, cancelRegisteredChild, type ExecutionRegistration } from './cancellation.js';
 import { Docker } from './docker.js';
 import { RegisteredOptimizerStudy } from './optimizer-study-contracts.js';
 import { OptimizerStudyStore } from './optimizer-study-store.js';
@@ -24,60 +23,6 @@ async function present(file: string): Promise<boolean> {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false;
     throw error;
   }
-}
-
-/** No child database is created here. A registered but unstarted child is explicit absence, not execution proof. */
-async function cancelChild(
-  root: string,
-  relative: string,
-  specificationDigest: string | undefined,
-  docker: Docker,
-) {
-  const child = confined(root, relative);
-  if ((await present(child)) && (await realpath(child)) !== child)
-    throw Error('Study cancellation child follows a symbolic link');
-  const spec = await optional(path.join(child, 'experiment.json'));
-  const database = await present(path.join(child, 'experiment.sqlite'));
-  if (database) {
-    if (spec === undefined) throw Error('Registered child experiment has lost its specification');
-    if (specificationDigest === undefined || digest(spec) !== specificationDigest)
-      throw Error('Child cancellation specification differs from the study reservation');
-    return { state: 'cancelled' as const, root: relative, receipt: await cancelExperiment(child, docker) };
-  }
-  // These directories can only follow child registration. Their presence without its database is corruption.
-  for (const name of [
-    'candidates',
-    'drafts',
-    'builds',
-    'qa',
-    'runs',
-    'probes',
-    'optimizer',
-    'optimizer-harness',
-    'artifacts',
-  ])
-    if (await present(path.join(child, name)))
-      throw Error('Child execution evidence exists without its original experiment ledger');
-  let initializationDigest: string | null = null;
-  const initialization = path.join(child, 'initialization.sqlite');
-  if (await present(initialization)) {
-    const db = new DatabaseSync(initialization, { readOnly: true });
-    try {
-      const row = db.prepare('SELECT phase FROM initialization WHERE id=1').get();
-      if (row?.phase === 'prepared') throw Error('Prepared child experiment database is missing');
-    } finally {
-      db.close();
-    }
-    initializationDigest = await fileDigest(initialization);
-  }
-  if (spec !== undefined && (specificationDigest === undefined || digest(spec) !== specificationDigest))
-    throw Error('Partial child specification changed');
-  return {
-    state: 'unstarted' as const,
-    root: relative,
-    observations: { specificationDigest: spec === undefined ? null : digest(spec), initializationDigest },
-    receipt: null,
-  };
 }
 
 /** Call only after the original observer has stopped and released its lease. Recover cleanup, never tasks. */
@@ -135,10 +80,15 @@ export async function cancelOptimizerStudy(root: string, docker = new Docker()) 
     const children = [];
     for (const job of jobs) {
       assertOwner();
-      const search = await cancelChild(root, job.childRoot, job.childSpecDigest, docker);
+      const search = await cancelRegisteredChild(root, job.childRoot, job.childSpecDigest, docker);
       assertOwner();
       store.recordCleanup(owner, { kind: 'job-search', id: job.id, digest: digest(search) });
-      const assessment = await cancelChild(root, job.assessmentRoot, job.assessmentSpecDigest, docker);
+      const assessment = await cancelRegisteredChild(
+        root,
+        job.assessmentRoot,
+        job.assessmentSpecDigest,
+        docker,
+      );
       assertOwner();
       store.recordCleanup(owner, { kind: 'job-assessment', id: job.id, digest: digest(assessment) });
       const record = { id: job.id, search, assessment };

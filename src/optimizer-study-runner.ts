@@ -237,7 +237,7 @@ export async function evolveOptimizerStudy(
           stringify([
             {
               insert: [
-                ...sdkPreset('evolution', '/app/dist/sdk-preset.js'),
+                ...sdkPreset('evolution', '/app/dist/sdk-preset.js', 'sdk'),
                 evolutionPreset({
                   plugin: '/app/dist/study-plugin.js',
                   endpoint: 'http://evolution-egress:8080',

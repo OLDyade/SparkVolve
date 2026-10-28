@@ -72,6 +72,7 @@ run: queued → executing → delivered → scoring → scored
 - 每个优化器会话有持久启动意图与唯一容器身份。重启先收集原会话；正常完成且预算未耗尽时开启下一会话，接收前一会话的只读轨迹、持久草稿和最新实验结果。服务失败直接暴露，不隐式重试失败会话。
 - `evolve` 同时管理控制 API、候选调度与优化器；`evolution_finish` 在候选收集完成后记录搜索结论。总时间预算跨会话累计。中断宿主命令保留原容器供恢复收集。
 - 控制服务的首次绑定地址持久化，恢复使用原端口；配置改变或端口占用直接暴露。明确结束实验使用 `cancel`；父级方法研究使用 `study-cancel` 回收账本注册的全部后代。取消命令需要取得租约，不能与活动宿主并行接管。
+- 配对 `validate` 的 SIGINT/SIGTERM 只中断观察器，信号传至当前 arm，后续 arm 不再启动；原任务保留供恢复。决定结束时，等待观察器退出后执行 `cancel-validation --root <study-directory>`，按冻结注册逐 arm 回收；取消账本关闭后续准入，`validation-cancellation.json` 保留完整分母与未启动 arm。
 - 冻结中断留下的 reservation 和未入库快照需要调查后显式处理；不会猜测删除或跳过完整性检查。
 
 ## 实验与研究结论

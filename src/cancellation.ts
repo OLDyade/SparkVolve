@@ -1,8 +1,8 @@
-import { mkdir, readFile, realpath, readdir, stat } from 'node:fs/promises';
+import { mkdir, readFile, realpath, readdir, stat, lstat } from 'node:fs/promises';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { randomUUID } from 'node:crypto';
-import { atomicJSON, digest, treeDigest } from './artifacts.js';
+import { atomicJSON, confined, digest, fileDigest, treeDigest } from './artifacts.js';
 import { Docker, type ContainerSpec, type ContainerReference } from './docker.js';
 import { ExecutionIntent, ExecutionRecord } from './execution.js';
 import { EgressSession, type EgressSessionSpec } from './egress-session.js';
@@ -338,4 +338,65 @@ export async function cancelExperiment(root: string, docker = new Docker()): Pro
     store.release(owner);
     store.close();
   }
+}
+
+/** Cancel only a parent's registered child; absence never creates a child experiment ledger. */
+export async function cancelRegisteredChild(
+  root: string,
+  relative: string,
+  specificationDigest: string | undefined,
+  docker: Docker,
+) {
+  const child = confined(root, relative);
+  async function present(file: string) {
+    try {
+      await lstat(file);
+      return true;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false;
+      throw error;
+    }
+  }
+  if ((await present(child)) && (await realpath(child)) !== child)
+    throw Error('Parent cancellation child follows a symbolic link');
+  const spec = await json(path.join(child, 'experiment.json'));
+  if (await present(path.join(child, 'experiment.sqlite'))) {
+    if (spec === null) throw Error('Registered child experiment has lost its specification');
+    if (specificationDigest === undefined || digest(spec) !== specificationDigest)
+      throw Error('Child cancellation specification differs from the parent registration');
+    return { state: 'cancelled' as const, root: relative, receipt: await cancelExperiment(child, docker) };
+  }
+  for (const name of [
+    'candidates',
+    'drafts',
+    'builds',
+    'qa',
+    'runs',
+    'probes',
+    'optimizer',
+    'optimizer-harness',
+    'artifacts',
+  ])
+    if (await present(path.join(child, name)))
+      throw Error('Child execution evidence exists without its original experiment ledger');
+  let initializationDigest: string | null = null;
+  const initialization = path.join(child, 'initialization.sqlite');
+  if (await present(initialization)) {
+    const db = new DatabaseSync(initialization, { readOnly: true });
+    try {
+      const row = db.prepare('SELECT phase FROM initialization WHERE id=1').get();
+      if (row?.phase === 'prepared') throw Error('Prepared child experiment database is missing');
+    } finally {
+      db.close();
+    }
+    initializationDigest = await fileDigest(initialization);
+  }
+  if (spec !== null && (specificationDigest === undefined || digest(spec) !== specificationDigest))
+    throw Error('Partial child specification changed');
+  return {
+    state: 'unstarted' as const,
+    root: relative,
+    observations: { specificationDigest: spec === null ? null : digest(spec), initializationDigest },
+    receipt: null,
+  };
 }

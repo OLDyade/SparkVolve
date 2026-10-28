@@ -21,6 +21,7 @@ for (const required of [
   'dist/plugin.js',
   'dist/cli.js',
   'dist/preset.js',
+  'dist/native-authoring.js',
   'cordis.patch.yml',
   '11.md',
   'LICENSE',
