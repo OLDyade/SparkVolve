@@ -13,7 +13,7 @@ import { prepareExecution } from '../../src/execution.js';
 test(
   'controlled egress: original network/broker recovery, credential boundary and terminal loss',
   { timeout: 120_000 },
-  async () => {
+  async (t) => {
     const image = process.env.HE_TEST_IMAGE;
     assert.ok(image, 'HE_TEST_IMAGE is required; real network acceptance cannot skip');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-egress-session-'));
@@ -26,6 +26,10 @@ test(
       requests++;
       res.setHeader('content-type', 'application/json');
       res.end(JSON.stringify({ authenticated: req.headers.authorization === `Bearer ${secret}` }));
+    });
+    t.after(async () => {
+      upstream.closeAllConnections();
+      await new Promise<void>((resolve) => upstream.close(() => resolve()));
     });
     await new Promise<void>((resolve) => upstream.listen(0, '0.0.0.0', resolve));
     const address = upstream.address();
@@ -239,8 +243,6 @@ test(
         ),
       );
     } finally {
-      upstream.closeAllConnections();
-      await new Promise<void>((resolve) => upstream.close(() => resolve()));
       for (const name of [execution, rogue, ...(intent ? [intent.broker] : [])])
         if (await docker.inspect(name)) await command('docker', ['rm', '-f', name]);
       if (intent)

@@ -13,3 +13,11 @@ macOS runner `macos-26-arm64` 的 actionlint 步骤报告 `go: command not found
 按 [Node HTTP 文档](https://nodejs.org/docs/latest-v24.x/api/http.html#event-finish)，request finish 只表示交给操作系统，不证明服务端接收。按 [Node TLS 文档](https://nodejs.org/docs/latest-v24.x/api/tls.html#event-secureconnect)，握手事件与证书授权是不同事实。当前 HTTPS 验证行为保持，凭证和请求正文不写入传输账本。
 
 11 项实际 HTTP/TLS 回归通过：DNS 拒绝、握手拒绝、握手成功、延迟响应头、已连通后重置、超时、取消和无重试。仅增强观测，不改路由、凭证、模型、超时、地址选择或错误裁决。
+
+## gVisor 安装后的 Docker 网络初始化
+
+公开 CI `40626981748` 的 gVisor 作业在启动编译容器时直接失败：`could not parse extra host IP invalid IP: ParseAddr("invalid IP")`。同一矩阵 runc 作业不执行运行时安装脚本。脚本原来注册 runsc 后只调用 `systemctl reload docker`。
+
+[Docker 官方说明](https://docs.docker.com/reference/cli/dockerd/#configure-host-gateway-ip)明确 `host-gateway` 默认取默认 bridge 的地址；[GitHub gh-aw 的运行时集成记录](https://github.com/github/gh-aw/issues/44795)记录了 reload 后同一错误及完整 restart 的要求。安装脚本改为在专用宿主机完整重启 Docker，不写固定网关 IP，不更换运行时，不降低隔离。脚本头部明确告知 Docker 重启副作用。
+
+同时修正测试自身资源生命周期：本地 HTTP fixture 创建后立即注册清理，保证在 host-gateway 探测失败、尚未进入后续测试体时也关闭服务。CI 使用 TAP 即时输出失败堆栈，保留容器 stdout/stderr；失败不会因为测试服务残留而长期隐藏。

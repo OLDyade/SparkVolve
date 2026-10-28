@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run on a dedicated Linux Docker host. Leaves existing runtimes/default unchanged.
+# Run on a dedicated Linux Docker host. Restarts Docker; preserves runtime/default configuration.
 set -euo pipefail
 if (( $# > 1 )); then
   printf 'Usage: %s [verified-release-archive.tar.bz2]\n' "$0" >&2
@@ -34,6 +34,8 @@ sudo install -d -m 0755 "$target"
 sudo tar -xjf "$archive" -C "$target"
 sudo "$target/runsc" install --runtime="$runtime" --clobber=false \
   --download-sidecars=NEVER --require-sidecars=ALWAYS -- --platform=systrap
-sudo systemctl reload docker
+# A full restart initializes host-gateway addresses after the runtime registration.
+# Reload-only configurations can leave Docker's computed host-gateway invalid.
+sudo systemctl restart docker
 "$target/runsc" --version
 docker info --format '{{range $name, $runtime := .Runtimes}}{{$name}}{{"\n"}}{{end}}'
