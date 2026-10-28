@@ -96,7 +96,7 @@ jobs:
           set -euo pipefail
           HE_TEST_IMAGE=$(docker image inspect harness-evolution:test --format '{{.Id}}') \
           HE_SPREADSHEET_IMAGE=$(docker image inspect harness-evolution-spreadsheet:test --format '{{.Id}}') \
-            npm run test:container 2>&1 | tee "$TMPDIR/acceptance.log"
+            node --import tsx --test --test-reporter=tap tests/container/*.test.ts 2>&1 | tee "$TMPDIR/acceptance.log"
       - name: Retain logs and isolation receipts
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -106,6 +106,9 @@ jobs:
             ${{ runner.temp }}/harness-evolution/acceptance.log
             ${{ runner.temp }}/harness-evolution/egress-dns.json
             ${{ runner.temp }}/harness-evolution/**/isolation*.json
+            ${{ runner.temp }}/harness-evolution/**/stdout.log
+            ${{ runner.temp }}/harness-evolution/**/stderr.log
+            ${{ runner.temp }}/harness-evolution/**/execution-completion.json
             ${{ runner.temp }}/harness-evolution/spreadsheet-image/work/*.json
             ${{ runner.temp }}/harness-evolution/spreadsheet-image/logs/*.log
             ${{ runner.temp }}/harness-evolution/egress-boundary/*
