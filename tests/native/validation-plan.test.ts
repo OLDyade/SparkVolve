@@ -36,6 +36,7 @@ test('spreadsheet preparation and independent validation retain the same frozen 
     path.join(root, 'model.json'),
     path.join(search, 'experiment.json'),
     path.join(root, 'isolation.json'),
+    'examples/venus',
   ]);
   const spec = Experiment.parse(JSON.parse(await readFile(path.join(search, 'experiment.json'), 'utf8')));
   assert.ok(spec.candidate.qa);

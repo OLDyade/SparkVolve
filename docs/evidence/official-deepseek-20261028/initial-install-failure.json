@@ -1,0 +1,106 @@
+{
+  "kind": "derived-installation-summary",
+  "source": ".evolution/official-installed-four-20261028/acceptance.json",
+  "startedAt": "2026-10-28T08:37:56.887Z",
+  "completedAt": "2026-10-28T08:37:58.827Z",
+  "passed": false,
+  "registration": {
+    "sourceDigest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+    "build": {
+      "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+      "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+      "image": "sha256:8bc3300c7e6fb329d1e03417a82bb1306c865f76b7b490803f2ad811b67bb2af",
+      "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+      "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+    },
+    "datasetDigest": "5604c0ffefe222cd8699e60480b94c5a2f5e80cd8c9f4d32406a27e21c392b50",
+    "driverSha256": "f438bbd7d89b75366787910b295ab2771679920c3045475a3bdecd15605786da",
+    "taskSeconds": 600,
+    "boundary": "Independent post-installation delivery experiment; no build or mutation, no task/score retry, no borrowed scores. Model credentials remain exclusively in controlled egress."
+  },
+  "result": {
+    "executionAttempts": 0,
+    "failed": 4,
+    "passed": false,
+    "quality": {
+      "boundary": "Installed delivery acceptance only. Scores are fresh observations; no improvement or transfer claim and no reuse of search/validation scores.",
+      "meanWithRegisteredFailureValue": 0,
+      "metric": {
+        "direction": "maximize",
+        "failure": 0,
+        "maximum": 1,
+        "minimum": 0,
+        "name": "formula_value_accuracy"
+      },
+      "scoringComplete": false
+    },
+    "registered": 4,
+    "rows": [
+      {
+        "task": "normalization",
+        "phase": "failed",
+        "error": {
+          "message": "Error: docker failed (1): \nError response from daemon: failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: error mounting \"tmpfs\" to rootfs at \"/workspace/.harness-home\": create mountpoint for /workspace/.harness-home mount: make mountpoint \"/workspace/.harness-home\": create next directory component failed: mkdirat([12]<\"/var/lib/docker/rootfs/overlayfs/a63d902406ae7126a69f9aa31f0c9e5000e5873d0699998379cdb25bee5d03fb/workspace\">, \".harness-home\", 0o755): Read-only file system (os error 30)\nfailed to start containers: he-installed-ca2dc624937e757bd33d-ea74ef48daab-install\n",
+          "phase": "installing"
+        },
+        "executionAttempted": false,
+        "grade": null,
+        "deliveryDigest": null,
+        "usage": null,
+        "installation": null,
+        "integrity": null
+      },
+      {
+        "task": "weighted-portfolio",
+        "phase": "failed",
+        "error": {
+          "message": "Error: docker failed (1): \nError response from daemon: failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: error mounting \"tmpfs\" to rootfs at \"/workspace/.harness-home\": create mountpoint for /workspace/.harness-home mount: make mountpoint \"/workspace/.harness-home\": create next directory component failed: mkdirat([12]<\"/var/lib/docker/rootfs/overlayfs/d892d6bd5e3673b4b6fa1d2d6d683f1d41bf749c8dce600a3a88b15abb43eb0c/workspace\">, \".harness-home\", 0o755): Read-only file system (os error 30)\nfailed to start containers: he-installed-ca2dc624937e757bd33d-06339c7e9760-install\n",
+          "phase": "installing"
+        },
+        "executionAttempted": false,
+        "grade": null,
+        "deliveryDigest": null,
+        "usage": null,
+        "installation": null,
+        "integrity": null
+      },
+      {
+        "task": "debt-rollforward",
+        "phase": "failed",
+        "error": {
+          "message": "Error: docker failed (1): \nError response from daemon: failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: error mounting \"tmpfs\" to rootfs at \"/workspace/.harness-home\": create mountpoint for /workspace/.harness-home mount: make mountpoint \"/workspace/.harness-home\": create next directory component failed: mkdirat([12]<\"/var/lib/docker/rootfs/overlayfs/43c37e72b0768531b37bf1724ca12ae0ccbc74c0d23fc3e19ea47214f93e3a8f/workspace\">, \".harness-home\", 0o755): Read-only file system (os error 30)\nfailed to start containers: he-installed-ca2dc624937e757bd33d-b95807335d91-install\n",
+          "phase": "installing"
+        },
+        "executionAttempted": false,
+        "grade": null,
+        "deliveryDigest": null,
+        "usage": null,
+        "installation": null,
+        "integrity": null
+      },
+      {
+        "task": "scenario-valuation",
+        "phase": "failed",
+        "error": {
+          "message": "Error: docker failed (1): \nError response from daemon: failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: error mounting \"tmpfs\" to rootfs at \"/workspace/.harness-home\": create mountpoint for /workspace/.harness-home mount: make mountpoint \"/workspace/.harness-home\": create next directory component failed: mkdirat([12]<\"/var/lib/docker/rootfs/overlayfs/01178dd7884ada89aac706a1c5feb3c9eca8e587ea38f40b8f12566cf96a42c9/workspace\">, \".harness-home\", 0o755): Read-only file system (os error 30)\nfailed to start containers: he-installed-ca2dc624937e757bd33d-7d91463fb0f1-install\n",
+          "phase": "installing"
+        },
+        "executionAttempted": false,
+        "grade": null,
+        "deliveryDigest": null,
+        "usage": null,
+        "installation": null,
+        "integrity": null
+      }
+    ],
+    "scored": 0,
+    "terminalExecutions": 0,
+    "usage": {
+      "availableLedgers": 0,
+      "complete": false,
+      "ledgers": 4,
+      "reportedTotals": null,
+      "unavailableLedgers": 4
+    }
+  }
+}

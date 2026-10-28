@@ -399,6 +399,10 @@ export async function main(args = process.argv.slice(2)) {
     const helper = async (task, mode) => {
       const directory = path.join(root, 'tasks', task.id),
         target = mode === 'install' ? 'installation' : 'integrity';
+      // Installation and integrity checks need an isolated writable HOME mountpoint,
+      // never the task delivery directory. Keep their temporary work separate.
+      const helperWork = path.join(directory, target, 'work');
+      await mkdir(helperWork);
       const container = {
         name: `${id(task)}-${mode}`,
         image: spec.runtime.image,
@@ -420,7 +424,7 @@ export async function main(args = process.argv.slice(2)) {
             : []),
           { source: artifact, target: '/artifact', writable: false },
           { source: path.join(directory, 'trace'), target: '/trace', writable: mode === 'install' },
-          { source: path.join(directory, 'work'), target: '/workspace', writable: false },
+          { source: helperWork, target: '/workspace', writable: true },
           { source: path.join(directory, target), target: '/verification', writable: true },
         ],
       };

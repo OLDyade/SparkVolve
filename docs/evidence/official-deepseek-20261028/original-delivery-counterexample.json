@@ -1,0 +1,47 @@
+{
+  "report": {
+    "source": "/workspace/source.xlsx",
+    "delivery": "/workspace/result.xlsx",
+    "engine": {
+      "engine": "/usr/bin/soffice",
+      "exit_code": 0,
+      "elapsed_seconds": 0.421,
+      "stdout": "convert /tmp/xl-engine-eyas1g4n/source.xlsx -> /tmp/xl-engine-eyas1g4n/out/source.xlsx using filter : Calc MS Excel 2007 XML",
+      "stderr": "Warning: failed to launch javaldx - java may not function correctly",
+      "output_present": true
+    },
+    "formula_count": 2,
+    "error_value_count": 1,
+    "values_are_engine_results": true,
+    "note": "engine_value/engine_error are outputs produced by the installed spreadsheet engine from the source bytes; null means the engine produced no value for that cell. Formula text is reported verbatim.",
+    "formulas": [
+      {
+        "sheet": "Model",
+        "cell": "A1",
+        "formula": "=ROUND(2.5,0)",
+        "engine_value": 3,
+        "engine_error": null
+      },
+      {
+        "sheet": "Model",
+        "cell": "A2",
+        "formula": "=\"#literal\"",
+        "engine_value": null,
+        "engine_error": "#literal"
+      }
+    ]
+  },
+  "deliveryCells": [
+    {
+      "cell": "A1",
+      "value": 3,
+      "type": "n"
+    },
+    {
+      "cell": "A2",
+      "value": "#literal",
+      "type": "s"
+    }
+  ],
+  "sourceUnchanged": true
+}

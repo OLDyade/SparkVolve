@@ -1,0 +1,567 @@
+{
+  "kind": "derived-installation-summary",
+  "source": ".evolution/official-reviewed-installed-20261028/acceptance.json",
+  "startedAt": "2026-10-28T08:55:39.597Z",
+  "completedAt": "2026-10-28T08:56:04.835Z",
+  "passed": true,
+  "registration": {
+    "sourceDigest": "6b31d303711ca2bbb7816038e716b39d2d7c035dc623fa12c4870a49decd0114",
+    "build": {
+      "artifactDigest": "7ebc673133ddf30dec604fc98f593bb0ccb6030c6c148cc08b659e7d44871308",
+      "bundleDigest": "af8f1c845fa5a59e04374b138fc2064f9433a65fce028a30bdd75fd7ee633e8d",
+      "image": "sha256:8bc3300c7e6fb329d1e03417a82bb1306c865f76b7b490803f2ad811b67bb2af",
+      "lockDigest": "814d025a708b416bd0e910990a3544e73c58f17389c47348a643e7cad05defb4",
+      "tarballDigest": "4afd2f35f497848f82b1ea8047974a1821b0e49ddaa4cf27952a169d65089fb8"
+    },
+    "datasetDigest": "8f09ef64100afabb7d4e66dfdd9df4529ed286159bebda3efbe413546d530eb9",
+    "driverSha256": "b0f2e1c6cb66fd0947d1b946b629f95baa505b3fd78d3ec634c296f907d943b0",
+    "taskSeconds": 600,
+    "boundary": "Independent post-installation delivery experiment; no build or mutation, no task/score retry, no borrowed scores. Model credentials remain exclusively in controlled egress."
+  },
+  "result": {
+    "executionAttempts": 4,
+    "failed": 0,
+    "passed": true,
+    "quality": {
+      "boundary": "Installed delivery acceptance only. Scores are fresh observations; no improvement or transfer claim and no reuse of search/validation scores.",
+      "meanWithRegisteredFailureValue": 0.8125,
+      "metric": {
+        "direction": "maximize",
+        "failure": 0,
+        "maximum": 1,
+        "minimum": 0,
+        "name": "formula_value_accuracy"
+      },
+      "scoringComplete": true
+    },
+    "registered": 4,
+    "rows": [
+      {
+        "task": "normalization",
+        "phase": "scored",
+        "error": null,
+        "executionAttempted": true,
+        "grade": {
+          "feedback": "[{\"sheet\": \"Model\", \"cell\": \"B10\", \"passed\": true, \"actual\": 216.4}, {\"sheet\": \"Model\", \"cell\": \"B11\", \"passed\": false, \"actual\": 35.6}, {\"sheet\": \"Model\", \"cell\": \"B12\", \"passed\": false, \"actual\": 180.8}, {\"sheet\": \"Model\", \"cell\": \"B13\", \"passed\": false, \"actual\": 0.174349083895853}, {\"sheet\": \"Model\", \"cell\": \"C10\", \"passed\": true, \"actual\": 262.4}, {\"sheet\": \"Model\", \"cell\": \"C11\", \"passed\": false, \"actual\": 42.5}, {\"sheet\": \"Model\", \"cell\": \"C12\", \"passed\": false, \"actual\": 219.9}, {\"sheet\": \"Model\", \"cell\": \"C13\", \"passed\": false, \"actual\": 0.170862470862471}, {\"sheet\": \"Model\", \"cell\": \"D10\", \"passed\": true, \"actual\": 317.4}, {\"sheet\": \"Model\", \"cell\": \"D11\", \"passed\": false, \"actual\": 52.84}, {\"sheet\": \"Model\", \"cell\": \"D12\", \"passed\": false, \"actual\": 264.56}, {\"sheet\": \"Model\", \"cell\": \"D13\", \"passed\": false, \"actual\": 0.18410577592206}, {\"sheet\": \"Model\", \"cell\": \"E10\", \"passed\": true, \"actual\": 341.4}, {\"sheet\": \"Model\", \"cell\": \"E11\", \"passed\": false, \"actual\": 54.32}, {\"sheet\": \"Model\", \"cell\": \"E12\", \"passed\": false, \"actual\": 287.08}, {\"sheet\": \"Model\", \"cell\": \"E13\", \"passed\": false, \"actual\": 0.177538651824366}]",
+          "metrics": {
+            "preserved": 1
+          },
+          "score": 0.25
+        },
+        "deliveryDigest": "cf17d5b3b9f620ac7381a15aab7819d43a611c0c9a750db6c84e3cebcb004513",
+        "usage": {
+          "failed": 0,
+          "inputTokensReported": 5224,
+          "missingUsage": 0,
+          "outputTokensReported": 1771,
+          "requestDurationMsSum": 16018.504737999998,
+          "results": 9,
+          "started": 9,
+          "unfinished": 0,
+          "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+        },
+        "installation": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "3241dd129bee1266074378a909a62631d9401e41d67dd2d467044a5101a602f5",
+              "path": "PROVENANCE.md"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "4320e116352a1636da4091e75a386baffd990f0088395aa886e45f3bd8b38ab9",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "a244be88de0b928d77a10fe6f8bb472896730bf3657660b0a2e87fa2176d6069",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "58c0ffd74227d1f40a0bf5aca25820cd375f47e6158e3e0da75990a5ecc099b1",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet-native-engine",
+          "package": "@harness-evolution/spreadsheet-native-engine",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "90718c7a6310f278474394d16cb6e8256d26151767b50f595e44be0eaa989dab",
+            "pnpm-lock.yaml": "fd6527bf33d672b6337e589a33ffd43f432d14bec02ad265088a028543c819dd",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "4afd2f35f497848f82b1ea8047974a1821b0e49ddaa4cf27952a169d65089fb8"
+        },
+        "integrity": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "3241dd129bee1266074378a909a62631d9401e41d67dd2d467044a5101a602f5",
+              "path": "PROVENANCE.md"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "4320e116352a1636da4091e75a386baffd990f0088395aa886e45f3bd8b38ab9",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "a244be88de0b928d77a10fe6f8bb472896730bf3657660b0a2e87fa2176d6069",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "58c0ffd74227d1f40a0bf5aca25820cd375f47e6158e3e0da75990a5ecc099b1",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet-native-engine",
+          "package": "@harness-evolution/spreadsheet-native-engine",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "90718c7a6310f278474394d16cb6e8256d26151767b50f595e44be0eaa989dab",
+            "pnpm-lock.yaml": "fd6527bf33d672b6337e589a33ffd43f432d14bec02ad265088a028543c819dd",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "4afd2f35f497848f82b1ea8047974a1821b0e49ddaa4cf27952a169d65089fb8"
+        }
+      },
+      {
+        "task": "weighted-portfolio",
+        "phase": "scored",
+        "error": null,
+        "executionAttempted": true,
+        "grade": {
+          "feedback": "[{\"sheet\": \"Model\", \"cell\": \"E3\", \"passed\": true, \"actual\": 8.995}, {\"sheet\": \"Model\", \"cell\": \"F3\", \"passed\": true, \"actual\": 4.112}, {\"sheet\": \"Model\", \"cell\": \"G3\", \"passed\": true, \"actual\": 0.457142857142857}, {\"sheet\": \"Model\", \"cell\": \"E4\", \"passed\": true, \"actual\": 13.166}, {\"sheet\": \"Model\", \"cell\": \"F4\", \"passed\": true, \"actual\": 6.129}, {\"sheet\": \"Model\", \"cell\": \"G4\", \"passed\": true, \"actual\": 0.46551724137931}, {\"sheet\": \"Model\", \"cell\": \"E5\", \"passed\": true, \"actual\": 7.634}, {\"sheet\": \"Model\", \"cell\": \"F5\", \"passed\": true, \"actual\": 2.429}, {\"sheet\": \"Model\", \"cell\": \"G5\", \"passed\": true, \"actual\": 0.318181818181818}, {\"sheet\": \"Model\", \"cell\": \"B6\", \"passed\": true, \"actual\": 831}, {\"sheet\": \"Model\", \"cell\": \"E6\", \"passed\": true, \"actual\": 29.795}, {\"sheet\": \"Model\", \"cell\": \"F6\", \"passed\": true, \"actual\": 12.67}, {\"sheet\": \"Model\", \"cell\": \"G6\", \"passed\": true, \"actual\": 0.4252391340829}]",
+          "metrics": {
+            "preserved": 1
+          },
+          "score": 1
+        },
+        "deliveryDigest": "82674a23e0faf7fc48e111d763fff304639d518afa645b48c86d2e12f9706fd3",
+        "usage": {
+          "failed": 0,
+          "inputTokensReported": 1334,
+          "missingUsage": 0,
+          "outputTokensReported": 878,
+          "requestDurationMsSum": 7818.237659,
+          "results": 4,
+          "started": 4,
+          "unfinished": 0,
+          "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+        },
+        "installation": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "3241dd129bee1266074378a909a62631d9401e41d67dd2d467044a5101a602f5",
+              "path": "PROVENANCE.md"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "4320e116352a1636da4091e75a386baffd990f0088395aa886e45f3bd8b38ab9",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "a244be88de0b928d77a10fe6f8bb472896730bf3657660b0a2e87fa2176d6069",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "58c0ffd74227d1f40a0bf5aca25820cd375f47e6158e3e0da75990a5ecc099b1",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet-native-engine",
+          "package": "@harness-evolution/spreadsheet-native-engine",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "90718c7a6310f278474394d16cb6e8256d26151767b50f595e44be0eaa989dab",
+            "pnpm-lock.yaml": "fd6527bf33d672b6337e589a33ffd43f432d14bec02ad265088a028543c819dd",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "4afd2f35f497848f82b1ea8047974a1821b0e49ddaa4cf27952a169d65089fb8"
+        },
+        "integrity": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "3241dd129bee1266074378a909a62631d9401e41d67dd2d467044a5101a602f5",
+              "path": "PROVENANCE.md"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "4320e116352a1636da4091e75a386baffd990f0088395aa886e45f3bd8b38ab9",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "a244be88de0b928d77a10fe6f8bb472896730bf3657660b0a2e87fa2176d6069",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "58c0ffd74227d1f40a0bf5aca25820cd375f47e6158e3e0da75990a5ecc099b1",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet-native-engine",
+          "package": "@harness-evolution/spreadsheet-native-engine",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "90718c7a6310f278474394d16cb6e8256d26151767b50f595e44be0eaa989dab",
+            "pnpm-lock.yaml": "fd6527bf33d672b6337e589a33ffd43f432d14bec02ad265088a028543c819dd",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "4afd2f35f497848f82b1ea8047974a1821b0e49ddaa4cf27952a169d65089fb8"
+        }
+      },
+      {
+        "task": "debt-rollforward",
+        "phase": "scored",
+        "error": null,
+        "executionAttempted": true,
+        "grade": {
+          "feedback": "[{\"sheet\": \"Model\", \"cell\": \"B6\", \"passed\": true, \"actual\": 1337}, {\"sheet\": \"Model\", \"cell\": \"B7\", \"passed\": true, \"actual\": 334.25}, {\"sheet\": \"Model\", \"cell\": \"B8\", \"passed\": true, \"actual\": 106.96}, {\"sheet\": \"Model\", \"cell\": \"B9\", \"passed\": true, \"actual\": 441.21}, {\"sheet\": \"Model\", \"cell\": \"B10\", \"passed\": true, \"actual\": 1002.75}, {\"sheet\": \"Model\", \"cell\": \"C6\", \"passed\": true, \"actual\": 1002.75}, {\"sheet\": \"Model\", \"cell\": \"C7\", \"passed\": true, \"actual\": 334.25}, {\"sheet\": \"Model\", \"cell\": \"C8\", \"passed\": true, \"actual\": 70.1925}, {\"sheet\": \"Model\", \"cell\": \"C9\", \"passed\": true, \"actual\": 404.4425}, {\"sheet\": \"Model\", \"cell\": \"C10\", \"passed\": true, \"actual\": 668.5}, {\"sheet\": \"Model\", \"cell\": \"D6\", \"passed\": true, \"actual\": 668.5}, {\"sheet\": \"Model\", \"cell\": \"D7\", \"passed\": true, \"actual\": 334.25}, {\"sheet\": \"Model\", \"cell\": \"D8\", \"passed\": true, \"actual\": 40.11}, {\"sheet\": \"Model\", \"cell\": \"D9\", \"passed\": true, \"actual\": 374.36}, {\"sheet\": \"Model\", \"cell\": \"D10\", \"passed\": true, \"actual\": 334.25}, {\"sheet\": \"Model\", \"cell\": \"E6\", \"passed\": true, \"actual\": 334.25}, {\"sheet\": \"Model\", \"cell\": \"E7\", \"passed\": true, \"actual\": 334.25}, {\"sheet\": \"Model\", \"cell\": \"E8\", \"passed\": true, \"actual\": 16.7125}, {\"sheet\": \"Model\", \"cell\": \"E9\", \"passed\": true, \"actual\": 350.9625}, {\"sheet\": \"Model\", \"cell\": \"E10\", \"passed\": true, \"actual\": 0}]",
+          "metrics": {
+            "preserved": 1
+          },
+          "score": 1
+        },
+        "deliveryDigest": "95a88e4c9e9604aa48bd2c86cb9af077c2ea87c9f17673772c1c4fb5f5a97a56",
+        "usage": {
+          "failed": 0,
+          "inputTokensReported": 2628,
+          "missingUsage": 0,
+          "outputTokensReported": 1458,
+          "requestDurationMsSum": 10694.978183,
+          "results": 6,
+          "started": 6,
+          "unfinished": 0,
+          "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+        },
+        "installation": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "3241dd129bee1266074378a909a62631d9401e41d67dd2d467044a5101a602f5",
+              "path": "PROVENANCE.md"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "4320e116352a1636da4091e75a386baffd990f0088395aa886e45f3bd8b38ab9",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "a244be88de0b928d77a10fe6f8bb472896730bf3657660b0a2e87fa2176d6069",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "58c0ffd74227d1f40a0bf5aca25820cd375f47e6158e3e0da75990a5ecc099b1",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet-native-engine",
+          "package": "@harness-evolution/spreadsheet-native-engine",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "90718c7a6310f278474394d16cb6e8256d26151767b50f595e44be0eaa989dab",
+            "pnpm-lock.yaml": "fd6527bf33d672b6337e589a33ffd43f432d14bec02ad265088a028543c819dd",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "4afd2f35f497848f82b1ea8047974a1821b0e49ddaa4cf27952a169d65089fb8"
+        },
+        "integrity": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "3241dd129bee1266074378a909a62631d9401e41d67dd2d467044a5101a602f5",
+              "path": "PROVENANCE.md"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "4320e116352a1636da4091e75a386baffd990f0088395aa886e45f3bd8b38ab9",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "a244be88de0b928d77a10fe6f8bb472896730bf3657660b0a2e87fa2176d6069",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "58c0ffd74227d1f40a0bf5aca25820cd375f47e6158e3e0da75990a5ecc099b1",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet-native-engine",
+          "package": "@harness-evolution/spreadsheet-native-engine",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "90718c7a6310f278474394d16cb6e8256d26151767b50f595e44be0eaa989dab",
+            "pnpm-lock.yaml": "fd6527bf33d672b6337e589a33ffd43f432d14bec02ad265088a028543c819dd",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "4afd2f35f497848f82b1ea8047974a1821b0e49ddaa4cf27952a169d65089fb8"
+        }
+      },
+      {
+        "task": "scenario-valuation",
+        "phase": "scored",
+        "error": null,
+        "executionAttempted": true,
+        "grade": {
+          "feedback": "[{\"sheet\": \"Model\", \"cell\": \"B9\", \"passed\": true, \"actual\": 1250.7}, {\"sheet\": \"Model\", \"cell\": \"B10\", \"passed\": true, \"actual\": 312.675}, {\"sheet\": \"Model\", \"cell\": \"C9\", \"passed\": true, \"actual\": 1350.756}, {\"sheet\": \"Model\", \"cell\": \"C10\", \"passed\": true, \"actual\": 378.21168}, {\"sheet\": \"Model\", \"cell\": \"D9\", \"passed\": true, \"actual\": 1431.80136}, {\"sheet\": \"Model\", \"cell\": \"D10\", \"passed\": true, \"actual\": 429.540408}, {\"sheet\": \"Model\", \"cell\": \"D12\", \"passed\": true, \"actual\": 3221.55306}, {\"sheet\": \"Model\", \"cell\": \"D13\", \"passed\": true, \"actual\": 3041.55306}]",
+          "metrics": {
+            "preserved": 1
+          },
+          "score": 1
+        },
+        "deliveryDigest": "9904c9ee4a0f90efb19b6d647d514a393d3fd72b04059b2fa45f0ce3a16aac1d",
+        "usage": {
+          "failed": 0,
+          "inputTokensReported": 2770,
+          "missingUsage": 0,
+          "outputTokensReported": 1126,
+          "requestDurationMsSum": 11147.208705,
+          "results": 7,
+          "started": 7,
+          "unfinished": 0,
+          "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+        },
+        "installation": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "3241dd129bee1266074378a909a62631d9401e41d67dd2d467044a5101a602f5",
+              "path": "PROVENANCE.md"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "4320e116352a1636da4091e75a386baffd990f0088395aa886e45f3bd8b38ab9",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "a244be88de0b928d77a10fe6f8bb472896730bf3657660b0a2e87fa2176d6069",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "58c0ffd74227d1f40a0bf5aca25820cd375f47e6158e3e0da75990a5ecc099b1",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet-native-engine",
+          "package": "@harness-evolution/spreadsheet-native-engine",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "90718c7a6310f278474394d16cb6e8256d26151767b50f595e44be0eaa989dab",
+            "pnpm-lock.yaml": "fd6527bf33d672b6337e589a33ffd43f432d14bec02ad265088a028543c819dd",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "4afd2f35f497848f82b1ea8047974a1821b0e49ddaa4cf27952a169d65089fb8"
+        },
+        "integrity": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "3241dd129bee1266074378a909a62631d9401e41d67dd2d467044a5101a602f5",
+              "path": "PROVENANCE.md"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "4320e116352a1636da4091e75a386baffd990f0088395aa886e45f3bd8b38ab9",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "a244be88de0b928d77a10fe6f8bb472896730bf3657660b0a2e87fa2176d6069",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "58c0ffd74227d1f40a0bf5aca25820cd375f47e6158e3e0da75990a5ecc099b1",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet-native-engine",
+          "package": "@harness-evolution/spreadsheet-native-engine",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "90718c7a6310f278474394d16cb6e8256d26151767b50f595e44be0eaa989dab",
+            "pnpm-lock.yaml": "fd6527bf33d672b6337e589a33ffd43f432d14bec02ad265088a028543c819dd",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "4afd2f35f497848f82b1ea8047974a1821b0e49ddaa4cf27952a169d65089fb8"
+        }
+      }
+    ],
+    "scored": 4,
+    "terminalExecutions": 4,
+    "usage": {
+      "availableLedgers": 4,
+      "complete": true,
+      "ledgers": 4,
+      "reportedTotals": {
+        "failed": 0,
+        "inputTokensReported": 11956,
+        "missingUsage": 0,
+        "outputTokensReported": 5233,
+        "requestDurationMsSum": 45678.92928499999,
+        "results": 26,
+        "started": 26,
+        "unfinished": 0
+      },
+      "unavailableLedgers": 0
+    }
+  }
+}

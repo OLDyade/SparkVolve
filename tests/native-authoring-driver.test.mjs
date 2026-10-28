@@ -55,6 +55,22 @@ test('custom task deadlines propagate to task, native QA, probe and derived opti
   );
 });
 
+test('development evidence changes only the optimizer objective, never independent validation or budgets', () => {
+  const original = acceptanceContracts(contract(), contract());
+  const researchBrief = 'A synthetic tool-semantic counterexample, independent of benchmark answers.';
+  const informed = acceptanceContracts(contract(), contract(), { researchBrief });
+  assert.ok(informed.search.objective.endsWith(researchBrief));
+  assert.deepEqual(informed.assessment, original.assessment);
+  assert.deepEqual(informed.allocation, original.allocation);
+  assert.deepEqual({ ...informed.search, objective: original.search.objective }, original.search);
+  for (const invalid of ['', '  ', 1, {}]) {
+    assert.throws(
+      () => acceptanceContracts(contract(), contract(), { researchBrief: invalid }),
+      /Research brief/,
+    );
+  }
+});
+
 test('invalid deadlines and shorter model route deadlines are rejected before inference', () => {
   for (const taskTimeoutSeconds of [0, -1, 0.5, NaN, Infinity, Number.MAX_SAFE_INTEGER])
     assert.throws(() => acceptanceContracts(contract(), contract(), { taskTimeoutSeconds }));
@@ -144,6 +160,14 @@ test('AST evidence excludes prose and formatting while recognizing executable sy
     implementationShape(`export function apply(ctx) { ctx.prompt('old'); return ctx.tools.list(); }`),
   );
   assert.throws(() => implementationShape('export function {'));
+});
+test('AST evidence handles parser range metadata on imports and shorthand properties', () => {
+  const source = `import { spawn } from 'node:child_process'; export const run = () => ({ spawn });`;
+  assert.equal(implementationShape(source), implementationShape(`// shifted\n${source}`));
+  assert.notEqual(
+    implementationShape(source),
+    implementationShape(`import { spawn } from 'node:child_process'; export const run = () => spawn();`),
+  );
 });
 function evidence() {
   return {

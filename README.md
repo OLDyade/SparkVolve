@@ -59,6 +59,8 @@ DSH 优化器 ── 真实证据 ──► 改写插件配置 / 实现 / 组合
 
 [原生插件开发能力](docs/native-authoring.md)随 Evolution Preset 装配：优化器按需查询 Cordis 服务、事件与工具契约，加载当前安装版本的官方开发 Skills，再自主改写插件与组合。作者资料和运行镜像一起冻结，候选继续接受独立验证。
 
+[官方 DeepSeek 真实闭环](docs/experiments/2026-10-28-official-deepseek-results.md)已跑通自主插件改造、独立验证、原包安装及四类业务复用；逐题结果、负结果、语义修复与用量完整列出。可通过[官方接入配置](examples/deepseek/README.md)运行，不依赖中转服务。
+
 [原生行为实验台](docs/behavioral-probes.md)让优化器在提交前检验自己的机制假设：编写测试、冻结草稿、在真实 DSH 组合中调用工具与服务，留下成功与反例。实验使用独立预算，正式评分继续独立进行。
 
 ```mermaid
@@ -108,7 +110,7 @@ docker run --rm \
 
 node examples/spreadsheet/prepare.mjs .evolution/business/dataset \
   "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')" \
-  examples/venus/model.json .evolution/business/spec.json .evolution/business/isolation.json
+  examples/venus/model.json .evolution/business/spec.json .evolution/business/isolation.json examples/venus
 
 node dist/cli.js init --root .evolution/business/search \
   --spec .evolution/business/spec.json --dataset .evolution/business/dataset \

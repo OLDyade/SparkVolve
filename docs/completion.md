@@ -8,14 +8,14 @@
 | --- | --- |
 | 当前交付 | 原生开发接入、600 秒预算、原生沙箱 HOME/XDG、匹配 Undici 传输及完整事件记账；各项证据绑定对应源码、镜像和产物身份 |
 | 最近工程检查 | 提交 `48e835c` 的公开 CI **四路全绿**：Linux/macOS 各 **255 单元、26 原生及原包安装**；runc/gVisor 各 **23 项**。原生沙箱、HOME 与取消测试初始化竞态均经实际矩阵验证。真实 HTTP 等待响应头 **305 秒**通过，1 次调用、0 重试 |
-| 最近真实研究 | `0b67a10` 新合同：H0 四题均值 **81.25%**；G 收到约 301 秒无 finish_reason 的上游流，未提交候选。原注册 8 个验证槽已全部终态，6 评分、2 服务链路失败；原 20 槽中实际执行 12 槽、8 候选槽未发生。历史合同与分母独立保留 |
-| 原包交付 | 最新 H0 原归档在 4 个干净 DSH Profile 安装、解析来源及前后完整性核验通过；实际 4 题全部评分，得分 **0、1、1、1**。这证明安装交付链路，业务均值 75% 单独报告。旧 H2 的 6 个公式语义反例保留，**不作为通过验收的能力推荐** |
+| 最近真实研究 | 官方 DeepSeek 实际自主改造插件，20/20 搜索与独立验证任务评分，七项闭环检查全过；开发 H0/H1/H2 为 **56.25%／81.25%／100%**，独立 H0/入选候选为 **81.25%／100%**；205 次请求完整记账。单批合成任务结果不证明稳定收益 |
+| 原包交付 | 自主候选原 tarball 在四个干净 Profile 安装并实际执行四题，均为 **100%**；后续发现可选重算交付路径丢公式，已独立修复。维护者修正版验证 **100%**，另一次安装后执行 **81.25%**，归一化一题退步保留；源码、成绩与包身份严格区分 |
 | 当前主线 | 默认任务与模型 600 秒；优化器预算覆盖完整计划等待。实际 DSH → Pi → OpenAI SDK → HTTP 的 305 秒响应头回归消除了独立五分钟限制；不增加自动重试。真实服务连接故障、模型变异语义缺陷分别记录 |
 | 隔离路线 | runc／gVisor 主线已有实测；**MicroVM 为可选后端，不阻塞主线**，未验证的独立内核和磁盘硬限额不作已支持声明 |
 | 分发验收 | 干净提交 `0b67a10` 的 Linux x64/macOS ARM64 实际 tarball **390 文件／627 依赖 SBOM**，两平台 SHA256 同为 `055ac14a3232325d25d35af596e55393f1407dfd662f5a452a123aaccd927696`；两边原包安装均通过。文档回执不倒写归档，尚未发布 registry 包 |
 | 外部工程状态 | 2026-10-28 按用户指令公开仓库，标准 runner 实际运行，付款／额度拦截消失。macOS Go 安装与 gVisor Docker 初始化分别修复；旧失败、取消与新运行结果独立留档 |
 
-最新[公开 CI 与真实交付](experiments/2026-10-28-public-ci-and-delivery.md)及[原始来源摘要](evidence/public-delivery-20261028/sources.json)区分新搜索、原登记验证和独立安装任务。此前[600 秒运行记录](experiments/2026-10-28-runtime-delivery.md)、原 300 秒[结果](experiments/2026-10-28-native-authoring-results.md)、[同 G 反馈研究](experiments/2026-10-28-paired-feedback-results.md)及[全部安装尝试](evidence/paired-feedback-20261028/index.json)独立保留；新代码不改写旧合同或结果。
+最新[官方 DeepSeek 完整闭环与语义修复](experiments/2026-10-28-official-deepseek-results.md)及[原始来源摘要](evidence/official-deepseek-20261028/sources.json)区分自主改造、维护者修复及原包安装结果。此前[公开 CI 与真实交付](experiments/2026-10-28-public-ci-and-delivery.md)、[600 秒运行记录](experiments/2026-10-28-runtime-delivery.md)、原 300 秒[结果](experiments/2026-10-28-native-authoring-results.md)、[同 G 反馈研究](experiments/2026-10-28-paired-feedback-results.md)及[全部安装尝试](evidence/paired-feedback-20261028/index.json)独立保留；新代码不改写旧合同或结果。
 
 ## 能力与验收证据
 
@@ -26,7 +26,7 @@
 | 源码、构建与交付一致 | 独立构建、v3 lock、编译和依赖打包；QA、执行、复验及导出使用同一冻结产物；真实 TypeScript 构建、禁网安装调用、篡改拒绝与恢复通过 | [分发协议](releasing.md)、[原包交付回执](evidence/paired-feedback-20261028/artifact-installation.json) |
 | 原生装配与领域 QA | 按实际 SDK Profile、环境和候选 patch 创建 Agent，审计依赖、插件树及 Preset；独立领域操作合同冻结源码和入口，禁网、无凭证执行；支持跨插件组合 | [领域验证](domain-verification.md)、[服务与作用域观察](research/2026-10-28-service-observations.md) |
 | Evolution Preset 与工具语义 | 原生注册表、声明与 Include；会话隔离、子 Agent 继承、重启恢复及缺失定义拒绝；分叉返回真实草稿身份且重放不覆盖编辑，结束仅在宿主成功确认后生效 | [Preset](presets.md)、[普通结束工具验收](research/2026-10-28-evolution-finish-native-turn.md) |
-| 原生插件开发资料与检查 | 接入锁定 DSH 的 inspection 与官方插件开发 Skill；真实模型实际读取、检查并自主修改实现，两份新候选进入原生 QA 和任务评测；端到端验收仍有失败 | [接入研究](research/2026-10-28-native-authoring-integration.md)、[真实验收](experiments/2026-10-28-native-authoring-results.md) |
+| 原生插件开发资料与检查 | 锁定 DSH inspection 与官方开发 Skill 实际调用；官方 DeepSeek 自主实现原生引擎重算，两份候选进入 QA、评分及独立验证，入选原包安装复用通过。早期失败独立保留 | [接入研究](research/2026-10-28-native-authoring-integration.md)、[最新真实验收](experiments/2026-10-28-official-deepseek-results.md) |
 | 中断、事件与取消 | SQLite 单写租约及持久提交意图；发布阶段 SIGKILL、并发与响应丢失恢复原 attempt；提交后唤醒、持久游标重放；后代按登记身份取消并分层记账 | [恢复协议](research/2026-10-28-publication-recovery.md)、[事件协议](events.md)、[命令生命周期](research/2026-10-28-command-process-groups.md) |
 | 自主复用研究资产 | 授权库随合同冻结；真实模型检索、读取并导入负结果档案，来源进入新候选，旧成绩不进入本轮裁决 | [研究资产](research-assets.md) |
 | 原字节证据访问 | `evolution_materialize` 发布只读原文件；描述符读取覆盖文件、清单和冻结复制；独立竞态、真实模型读取／复制／摘要／回收通过 | [证据接口](evidence-access.md) |
@@ -58,10 +58,10 @@
 
 | 范围 | 剩余工作与完成依据 |
 | --- | --- |
-| DSH 原生插件开发端到端验收 | 原生 inspection、官方 Skill、真实自主变异、同包安装已有证据；600 秒传输及沙箱 HOME 已修复并实测。最新 G 在已完成 TCP/TLS 后收到缺少结束标记的上游流，无新候选；另一次验证在 TLS 阶段 ECONNRESET。已完成原注册验证和四类同包交付，完整自主变异链路仍待稳定服务支持 |
+| DSH 原生插件开发端到端验收 | **本轮已闭合**：官方 DeepSeek 自主改造、独立验证、同归档安装及真实四类业务执行完成。原中转流中断与首轮无效工具 JSON 保留；不宣称根治第三方服务，也不把安装成功当业务满分 |
 | 配置／实现／装配联合进化 | 保持优化器自主选择变异；补复杂跨插件接口、配置、作用域及装配重构的真实调用和独立反例证据，串起原树、变异树、交付与同包复用 |
 | 稳定收益与迁移研究 | 真实反馈比较已完成，结论仍受波动和样本限制。后续应基于明确机制改进预注册独立搜索与新任务实例；[完整反馈／盲变异／随机操作选择研究](research/2026-10-28-feedback-causal-protocol.md)尚未登记执行，不用重复抽样或确定性夹具替代研究 |
-| 当前版本完整交付 | 工程检查、实际 tarball 原生安装和提交回执分别留档；主线程自审，不再使用 subagent。真实服务验收与候选语义验收仍未全过，不能以本地测试绿色替代 |
+| 当前版本完整交付 | 官方服务完整闭环与原生语义回归已通过，维护者修复独立验证和安装执行已完成；业务仍有单题语义退步，保持完整分母。工程检查、实际 tarball 安装与提交回执分别留档；主线程自审，不使用 subagent |
 | GitHub 云端工程与治理 | 仓库已按用户指令公开，标准 runner 的 Linux/macOS 和 runc/gVisor 完整矩阵已通过；旧支付限制与私有 Rulesets 拒绝保留为历史。分支治理与 registry 发布独立管理，云端工程通过不代替真实模型和质量验收 |
 
 **可选扩展：MicroVM 与更强磁盘边界。** [持久存储探测](research/2026-10-28-persistent-storage-boundary.md)保留 OrbStack loop 关联 `EPERM`，未到写满验收；[Apple 原生路线](research/2026-10-28-native-microvm.md)已核官方包摘要、签名和公证，但尚未启动 VM。安装需管理员认证，工作卷、日志边界和原任务恢复仍待实测。按用户裁决，这条扩展不阻塞主线，也不自动切换既有运行时。

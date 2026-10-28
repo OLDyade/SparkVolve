@@ -1,0 +1,53 @@
+[
+  {
+    "turn": 0,
+    "status": 200,
+    "headersMs": 148,
+    "elapsedMs": 693,
+    "stop": "tool_use",
+    "events": 30,
+    "usage": {
+      "input_tokens": 295,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "output_tokens": 60,
+      "service_tier": "standard"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "I'll compute that using the add tool."
+      },
+      {
+        "type": "tool_use",
+        "id": "call_00_1DkZUiDTF6hSjQexdHu99548",
+        "name": "add",
+        "input": {
+          "a": 37,
+          "b": 58
+        }
+      }
+    ]
+  },
+  {
+    "turn": 1,
+    "status": 200,
+    "headersMs": 344,
+    "elapsedMs": 677,
+    "stop": "end_turn",
+    "events": 14,
+    "usage": {
+      "input_tokens": 240,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 128,
+      "output_tokens": 8,
+      "service_tier": "standard"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "37 + 58 = **95**"
+      }
+    ]
+  }
+]

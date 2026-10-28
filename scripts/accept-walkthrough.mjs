@@ -123,6 +123,7 @@ try {
     'examples/venus/model.json',
     path.join(root, 'spec.json'),
     path.join(root, 'isolation.json'),
+    'examples/venus',
   ]);
   const specBytes = await readFile(path.join(root, 'spec.json'));
   await record('registration.json', {

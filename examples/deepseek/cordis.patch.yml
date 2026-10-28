@@ -1,0 +1,19 @@
+# Native DSH Messages adapter. Catalog pinned from the official /models response.
+- id: llm-deepseek
+  config:
+    baseURL: https://api.deepseek.com/anthropic
+    apiKeyEnv: DEEPSEEK_API_KEY
+    maxTokens: 32768
+    defaultContextWindow: 1048576
+    streamIdleTimeoutMs: 600000
+    retryPolicy:
+      mode: normal
+      maxRetries: 0
+    models:
+      - id: deepseek-flash
+        name: DeepSeek-V4.1-Flash
+        contextWindow: 1048576
+        maxTokens: 393216
+        inputModalities: [text, image]
+        systemPromptUpdate: in-history
+        toolUpdate: addition-only

@@ -38,6 +38,7 @@ export const EgressRoute = z
     ]),
     maxRequestBytes: z.number().int().positive(),
     timeoutSeconds: z.number().int().positive(),
+    forwardHeaders: z.array(z.string().regex(/^[a-z0-9!#$%&'*+.^_`|~-]+$/)).optional(),
   })
   .superRefine((route, ctx) => {
     const url = new URL(route.upstream);
@@ -50,6 +51,24 @@ export const EgressRoute = z
       ctx.addIssue({ code: 'custom', message: 'Plain HTTP requires explicitly pinned addresses' });
     if (route.method === 'GET' && route.body.kind !== 'empty')
       ctx.addIssue({ code: 'custom', message: 'GET routes require an empty body' });
+    const names = route.forwardHeaders ?? [];
+    const owned = new Set([
+      'host',
+      'connection',
+      'transfer-encoding',
+      'content-length',
+      'content-type',
+      'accept-encoding',
+      'upgrade',
+      'te',
+      'trailer',
+      'authorization',
+      'proxy-authorization',
+      'cookie',
+      route.credential?.header.toLowerCase(),
+    ]);
+    if (new Set(names).size !== names.length || names.some((name) => owned.has(name)))
+      ctx.addIssue({ code: 'custom', message: 'Forwarded headers conflict with transport or credentials' });
   });
 export const EgressConfig = z
   .strictObject({
@@ -283,6 +302,10 @@ export async function serveEgress(
       };
       const credential = secrets.get(route.id);
       if (credential) headers[credential.header] = credential.value;
+      for (const name of route.forwardHeaders ?? []) {
+        const value = req.headers[name];
+        if (value !== undefined) headers[name] = Array.isArray(value) ? value.join(', ') : value;
+      }
       const pinned = address;
       stage = 'connect';
       const response = await new Promise<http.IncomingMessage>((resolve, reject) => {

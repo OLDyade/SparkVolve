@@ -8,6 +8,8 @@ import path from 'node:path';
 import { parse } from 'yaml';
 import { DEFAULT_TASK_TIMEOUT_SECONDS } from '../dist/contracts.js';
 import { configureEgress } from '../examples/venus/egress.mjs';
+import { prepareProvider } from '../examples/provider-runtime.mjs';
+import { EgressRoute } from '../dist/egress.js';
 import { candidateSecondsForPlan, optimizerSecondsForPlan, timeoutSeconds } from '../examples/timeouts.mjs';
 import { specification } from './fixtures.ts';
 import { waitTaskContainer } from '../scripts/container-task-deadline.mjs';
@@ -86,6 +88,33 @@ for (const selected of [undefined, 900, 120]) {
   });
 }
 
+test('explicit official provider preparation freezes native catalog, headers and deadlines without changing source', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'he-official-provider-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const source = new URL('../examples/deepseek/', import.meta.url).pathname;
+  const original = await readFile(path.join(source, 'cordis.patch.yml'), 'utf8');
+  const model = JSON.parse(await readFile(path.join(source, 'model.json'), 'utf8'));
+  const egress = await prepareProvider(source, path.join(root, 'runtime'), model, 600);
+  const route = EgressRoute.parse(egress.executor[0]);
+  assert.equal(route.upstream, 'https://api.deepseek.com/anthropic/v1/messages');
+  assert.deepEqual(route.credential, { env: 'DEEPSEEK_API_KEY', header: 'x-api-key', prefix: '' });
+  assert.equal(route.timeoutSeconds, 600);
+  assert.deepEqual(route.forwardHeaders, ['anthropic-version', 'anthropic-beta', 'accept']);
+  const provider = parse(await readFile(path.join(root, 'runtime/cordis.patch.yml'), 'utf8'))[0];
+  assert.equal(provider.id, 'llm-deepseek');
+  assert.equal(provider.config.baseURL, 'http://evolution-egress:8080/anthropic');
+  assert.equal(provider.config.streamIdleTimeoutMs, 600000);
+  assert.equal(provider.config.retryPolicy.maxRetries, 0);
+  assert.equal(provider.config.models[0].toolUpdate, 'addition-only');
+  assert.equal(await readFile(path.join(source, 'cordis.patch.yml'), 'utf8'), original);
+  await assert.rejects(
+    prepareProvider(source, path.join(root, 'wrong-provider'), { ...model, provider: 'venus' }, 600),
+  );
+  await assert.rejects(
+    prepareProvider(source, path.join(root, 'wrong-model'), { ...model, model: 'unlisted' }, 600),
+  );
+});
+
 test('invalid timing input fails and plan covers candidate waves plus all declared autonomous probes', () => {
   for (const value of ['0', '-1', 'NaN', '0.5', '']) assert.throws(() => timeoutSeconds(value));
   const spec = specification();
@@ -133,6 +162,7 @@ for (const example of ['spreadsheet', 'structured-data']) {
         new URL('../examples/venus/model.json', import.meta.url).pathname,
         path.join(root, 'experiment.json'),
         path.join(root, 'isolation.json'),
+        ...(example === 'spreadsheet' ? [new URL('../examples/venus', import.meta.url).pathname] : []),
         ...(selected ? [selected] : []),
       ];
       await promisify(execFile)(process.execPath, args, { timeout: 30000 });

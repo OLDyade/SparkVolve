@@ -34,7 +34,7 @@ export const acceptanceLimits = Object.freeze({
 export function acceptanceContracts(
   development,
   validation,
-  { taskTimeoutSeconds = acceptanceLimits.taskTimeoutSeconds } = {},
+  { taskTimeoutSeconds = acceptanceLimits.taskTimeoutSeconds, researchBrief = null } = {},
 ) {
   assert.ok(
     Number.isSafeInteger(taskTimeoutSeconds) && taskTimeoutSeconds > 0,
@@ -61,12 +61,19 @@ export function acceptanceContracts(
     Number.isSafeInteger(optimizerSeconds) && optimizerSeconds <= 2_147_483,
     'Derived optimizer deadline exceeds the Node timer range',
   );
+  assert.ok(
+    researchBrief === null || (typeof researchBrief === 'string' && researchBrief.trim()),
+    'Research brief must be nonempty text when supplied',
+  );
   const objective =
     'Improve the general spreadsheet plugin using authorized task evidence. For this native authoring integration acceptance, actually query the relevant Cordis inspect contract and load an official plugin-development or composition Skill before implementing a candidate. These tool-use requirements test integration, not autonomous preference or causal benefit. Choose your own evidence-backed implementation or assembly change; do not encode task identities, coordinates, fixture values or answers. Freeze and evaluate the candidate through the ordinary controller. Optional probes are available. Negative quality results are valid; never change the evaluator, resample an unchanged candidate, or modify the frozen optimizer.';
   const search = Experiment.parse({
     ...development,
     name: 'native-authoring-development',
-    objective,
+    objective:
+      researchBrief === null
+        ? objective
+        : `${objective}\n\nResearcher development evidence (frozen before inference):\n${researchBrief}`,
     concurrency,
     repetitions,
     timeoutSeconds: taskTimeoutSeconds,
@@ -207,7 +214,9 @@ export function implementationShape(source, filename = 'index.mjs') {
       return { type: node.type };
     return Object.fromEntries(
       Object.entries(node)
-        .filter(([k]) => !['start', 'end', 'loc', 'extra', 'comments', 'tokens', 'errors'].includes(k))
+        .filter(
+          ([k]) => !['start', 'end', 'range', 'loc', 'extra', 'comments', 'tokens', 'errors'].includes(k),
+        )
         .map(([k, v]) => [k, shape(v)]),
     );
   }
@@ -329,19 +338,28 @@ async function reportAt(root) {
 }
 
 export async function main(args = process.argv.slice(2)) {
-  const required = ['root', 'image', 'model', 'isolation', 'controller-ip', 'install-policy'];
+  const required = [
+    'root',
+    'image',
+    'model',
+    'provider-directory',
+    'isolation',
+    'controller-ip',
+    'install-policy',
+  ];
   const { values } = parseArgs({
     args,
     options: {
       ...Object.fromEntries(required.map((k) => [k, { type: 'string' }])),
       'check-contracts': { type: 'boolean' },
+      'research-brief': { type: 'string' },
       'task-timeout-seconds': { type: 'string', default: String(acceptanceLimits.taskTimeoutSeconds) },
       help: { type: 'boolean' },
     },
   });
   if (values.help) {
     console.log(
-      'node --env-file=<private-env> scripts/verify-native-authoring.mjs --root <NEW> --image <immutable> --model <JSON> --isolation <JSON> --controller-ip <IPv4> --install-policy <JSON> [--task-timeout-seconds <positive-integer>] [--check-contracts]\nAt most 20 real task executions; optional probes 3. Tasks, native QA, probes and individual model requests default to 600 seconds. Optimizer wall budget includes declared serial waits plus 1200 seconds for authoring. Check-contracts makes no model calls. Never resume or retry an existing root.',
+      'node --env-file=<private-env> scripts/verify-native-authoring.mjs --root <NEW> --image <immutable> --model <JSON> --provider-directory <directory> --isolation <JSON> --controller-ip <IPv4> --install-policy <JSON> [--research-brief <development-evidence.md>] [--task-timeout-seconds <positive-integer>] [--check-contracts]\nAt most 20 real task executions; optional probes 3. Tasks, native QA, probes and individual model requests default to 600 seconds. Optimizer wall budget includes declared serial waits plus 1200 seconds for authoring. Check-contracts makes no model calls. Never resume or retry an existing root.',
     );
     return;
   }
@@ -355,10 +373,10 @@ export async function main(args = process.argv.slice(2)) {
     model = Model.parse(await json(values.model)),
     isolation = Isolation.parse(await json(values.isolation));
   assert.equal(isIP(values['controller-ip']), 4);
-  assert.equal(model.provider, 'venus');
-  assert.deepEqual(model.credentialEnv, ['VENUS_API_KEY']);
   if (!values['check-contracts'])
-    assert.ok(process.env.VENUS_API_KEY, 'Load the private environment file before invoking');
+    for (const key of model.credentialEnv)
+      assert.ok(process.env[key], `Missing credential environment: ${key}`);
+  const modelEnvironment = Object.fromEntries(model.credentialEnv.map((key) => [key, process.env[key]]));
   const secrets = model.credentialEnv.map((key) => process.env[key]).filter(Boolean);
   const redact = (text) => secrets.reduce((s, secret) => s.split(secret).join('[REDACTED]'), String(text));
   const repo = fileURLToPath(new URL('..', import.meta.url));
@@ -368,6 +386,9 @@ export async function main(args = process.argv.slice(2)) {
     inputs = path.join(root, 'inputs'),
     searchRoot = path.join(root, 'search');
   await mkdir(inputs);
+  // Preserve the executed driver even when the checkout advances after a long-running experiment.
+  const driverSource = await readFile(fileURLToPath(import.meta.url));
+  await writeFile(path.join(inputs, 'acceptance-driver.mjs'), driverSource, { flag: 'wx' });
   const abort = new AbortController(),
     interrupt = () => abort.abort(new Error('Acceptance interrupted; original attempts retained'));
   for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, interrupt);
@@ -383,6 +404,9 @@ export async function main(args = process.argv.slice(2)) {
     runLogged(root, label, command, argv, { cwd: repo, env, secrets, signal: abort.signal });
   try {
     await save(path.join(inputs, 'model.json'), model);
+    const researchBrief = values['research-brief'] ? await readFile(values['research-brief'], 'utf8') : null;
+    if (researchBrief !== null)
+      await writeFile(path.join(inputs, 'research-brief.md'), researchBrief, { flag: 'wx' });
     await save(path.join(inputs, 'isolation.json'), isolation);
     const policy = await json(values['install-policy']);
     await save(path.join(inputs, 'install-policy.json'), policy);
@@ -467,13 +491,14 @@ export async function main(args = process.argv.slice(2)) {
         path.join(inputs, 'model.json'),
         path.join(inputs, `${split}-prepared.json`),
         path.join(inputs, 'isolation.json'),
+        path.resolve(values['provider-directory']),
         String(taskTimeoutSeconds),
       ]);
     }
     const contracts = acceptanceContracts(
       await json(path.join(inputs, 'development-prepared.json')),
       await json(path.join(inputs, 'validation-prepared.json')),
-      { taskTimeoutSeconds },
+      { taskTimeoutSeconds, researchBrief },
     );
     await save(path.join(inputs, 'search.json'), contracts.search);
     await save(path.join(inputs, 'assessment.json'), contracts.assessment);
@@ -498,8 +523,10 @@ export async function main(args = process.argv.slice(2)) {
       },
       references: references.manifest,
       inputDigest: await treeDigest(inputs),
+      researchBrief:
+        researchBrief === null ? null : { file: 'inputs/research-brief.md', sha256: sha256(researchBrief) },
       runtimeModules: modules,
-      driverSha256: await fileDigest(fileURLToPath(import.meta.url)),
+      driverSha256: sha256(driverSource),
       installationProgramSha256: sha256(installationProgram),
       commandSha256: await fileDigest(path.join(repo, 'dist/command.js')),
       checks: [
@@ -545,7 +572,7 @@ export async function main(args = process.argv.slice(2)) {
           '--endpoint',
           `http://${values['controller-ip']}:0`,
         ],
-        { PATH: process.env.PATH, VENUS_API_KEY: process.env.VENUS_API_KEY },
+        { PATH: process.env.PATH, ...modelEnvironment },
       );
       const state = await reportAt(searchRoot);
       receipt.search = state.report;
@@ -578,7 +605,7 @@ export async function main(args = process.argv.slice(2)) {
           '--arms',
           path.join(root, 'validation-arms.json'),
         ],
-        { PATH: process.env.PATH, VENUS_API_KEY: process.env.VENUS_API_KEY },
+        { PATH: process.env.PATH, ...modelEnvironment },
       );
       receipt.validation = await json(path.join(root, 'validation/comparison.json'));
       receipt.validationReports = await Promise.all(

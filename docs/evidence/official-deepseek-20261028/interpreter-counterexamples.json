@@ -1,0 +1,151 @@
+{
+  "sourceUnchanged": true,
+  "sourceSha256": "7c906bb99114a51f77739a8ba4d44aab985955dd1c906e940ff126a9cd9cddb9",
+  "results": [
+    {
+      "candidate": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+      "implementationSha256": "52a8af7d815cbbe23ee931d243ba489df1eb76146043ce8c0133273405b9e89d",
+      "observations": [
+        {
+          "cell": "A1",
+          "formula": "=ROUND(2.5,0)",
+          "native": 3,
+          "error": "KeyError: 'resolve'",
+          "equal": false
+        },
+        {
+          "cell": "A2",
+          "formula": "=IF(1=1,7,1/0)",
+          "native": 7,
+          "error": "KeyError: 'resolve'",
+          "equal": false
+        },
+        {
+          "cell": "A3",
+          "formula": "=SUM('Other'!A1:A2)",
+          "native": 5,
+          "error": "KeyError: 'resolve'",
+          "equal": false
+        },
+        {
+          "cell": "A4",
+          "formula": "=2^3^2",
+          "native": 64,
+          "error": "KeyError: 'resolve'",
+          "equal": false
+        },
+        {
+          "cell": "A5",
+          "formula": "=200-20+9",
+          "native": 189,
+          "error": "KeyError: 'resolve'",
+          "equal": false
+        },
+        {
+          "cell": "A6",
+          "formula": "=B1-B2+B3",
+          "native": 189,
+          "error": "KeyError: 'resolve'",
+          "equal": false
+        }
+      ]
+    },
+    {
+      "candidate": "b9b43dd5157f2a19e8491c15daf373995c0ebc8f2f2afdd1e5ee3af3d1597bd0",
+      "implementationSha256": "4605777ab3e51960196406b452d4f5363f619726a2f11bbfbf5335a0b19159a4",
+      "observations": [
+        {
+          "cell": "A1",
+          "formula": "=ROUND(2.5,0)",
+          "native": 3,
+          "candidate": 2,
+          "equal": false
+        },
+        {
+          "cell": "A2",
+          "formula": "=IF(1=1,7,1/0)",
+          "native": 7,
+          "error": "ValueError: division by zero in formula",
+          "equal": false
+        },
+        {
+          "cell": "A3",
+          "formula": "=SUM('Other'!A1:A2)",
+          "native": 5,
+          "error": "ValueError: 3-D ranges are not supported",
+          "equal": false
+        },
+        {
+          "cell": "A4",
+          "formula": "=2^3^2",
+          "native": 64,
+          "candidate": 512,
+          "equal": false
+        },
+        {
+          "cell": "A5",
+          "formula": "=200-20+9",
+          "native": 189,
+          "candidate": 189,
+          "equal": true
+        },
+        {
+          "cell": "A6",
+          "formula": "=B1-B2+B3",
+          "native": 189,
+          "candidate": 189,
+          "equal": true
+        }
+      ]
+    },
+    {
+      "candidate": "cb2e72e2ec867fb2e291c1d49348371314849bb1618a15ec084aceaa8d6d89c6",
+      "implementationSha256": "2f3c9032257691cb5e70d900ccd17569481199ccc89c098171835154d17d03ca",
+      "observations": [
+        {
+          "cell": "A1",
+          "formula": "=ROUND(2.5,0)",
+          "native": 3,
+          "candidate": 2,
+          "equal": false
+        },
+        {
+          "cell": "A2",
+          "formula": "=IF(1=1,7,1/0)",
+          "native": 7,
+          "error": "ValueError: division by zero in formula",
+          "equal": false
+        },
+        {
+          "cell": "A3",
+          "formula": "=SUM('Other'!A1:A2)",
+          "native": 5,
+          "error": "ValueError: 3-D ranges are not supported",
+          "equal": false
+        },
+        {
+          "cell": "A4",
+          "formula": "=2^3^2",
+          "native": 64,
+          "candidate": 512,
+          "equal": false
+        },
+        {
+          "cell": "A5",
+          "formula": "=200-20+9",
+          "native": 189,
+          "candidate": 189,
+          "equal": true
+        },
+        {
+          "cell": "A6",
+          "formula": "=B1-B2+B3",
+          "native": 189,
+          "candidate": 189,
+          "equal": true
+        }
+      ]
+    }
+  ],
+  "boundary": "Synthetic API-semantic counterexamples against actual LibreOffice recalculation; no benchmark answers or candidate mutation."
+}

@@ -1,0 +1,71 @@
+{
+  "kind": "raw-source-index",
+  "boundary": "Derived summaries preserve original results. Full private traces remain local; hashes identify original files. No model keys or full model transcripts are published.",
+  "sources": [
+    {
+      "path": ".evolution/native-authoring-official-deepseek-20261028/acceptance.json",
+      "sha256": "3003f7429253f52aa9dbf52d78fd2525857c0886a6ca3e1ccafa7ccab2f5a1c0",
+      "bytes": 365831
+    },
+    {
+      "path": ".evolution/native-authoring-official-semantics-20261028/acceptance.json",
+      "sha256": "7e129be97264de120976a898a42a2bff0a24e181b93c054084ea2a743f68dcc8",
+      "bytes": 260665
+    },
+    {
+      "path": ".evolution/official-installed-workspace-fix-20261028/acceptance.json",
+      "sha256": "eb70894a11751c22d772bfb16e55a8edf8830d7ad74e4b05dffbff3e6de53092",
+      "bytes": 26973
+    },
+    {
+      "path": ".evolution/official-autonomous-installed-20261028/acceptance.json",
+      "sha256": "3b3746f0d3c7b71d42070f3116bb53678a76699ed84c163f2d1745815b468c89",
+      "bytes": 26946
+    },
+    {
+      "path": ".evolution/official-reviewed-installed-20261028/acceptance.json",
+      "sha256": "b851d1005d92d93e6efb32c87e7be192a1602915e038f19c7b1164330cee6a46",
+      "bytes": 28198
+    },
+    {
+      "path": ".evolution/official-installed-four-20261028/acceptance.json",
+      "sha256": "f776758ce8ce3c06cbb9d8df2bba7de270e716d520013a72698c87ecbe191d93",
+      "bytes": 12187
+    },
+    {
+      "path": ".evolution/official-reviewed-native-registered-20261028/validation-report.json",
+      "sha256": "3af0ce4c229f97301dd51345b9fd3ac013134001fe9d16771a01eac3dd22a65d",
+      "bytes": 8355
+    },
+    {
+      "path": ".evolution/official-deepseek-probe-20261028/receipt.json",
+      "sha256": "bd2ab0c26f7833e6927b468396dd5ca193177345cee3ec03dac169d09ab245fa",
+      "bytes": 1032
+    },
+    {
+      "path": ".evolution/official-deepseek-probe-20261028/chat-receipt.json",
+      "sha256": "dd690339e847c915896c6cba93a49ee53c407111ced6705074d79f58d7081120",
+      "bytes": 401
+    },
+    {
+      "path": ".evolution/official-deepseek-probe-20261028/models.json",
+      "sha256": "2361faa376dbb6097fc777a209fe786e1d230f7da8c167093d8479f5f2d13a65",
+      "bytes": 1305
+    },
+    {
+      "path": "/var/folders/7l/l6fl6xdd1w3674vrxlzfmjkh0000gn/T/he-engine-semantics-rUtNUI/work/semantic-contract.json",
+      "sha256": "ea6506da5d4e1af8fb8222a171f24e600d49034dd16ab9324f3dda6210a65891",
+      "bytes": 2103
+    },
+    {
+      "path": ".evolution/original-native-delivery-counterexample/counterexample.json",
+      "sha256": "0165199313ce8d8446258de6aa1d6e616778fb244b057fc47c8c7e1ff488c7b9",
+      "bytes": 1324
+    },
+    {
+      "path": ".evolution/official-semantic-probe/report.json",
+      "sha256": "f8de4e36ed92127e0c4f1cdebfd33e5b37eec0cfc1ed68f784b38bf3ae97a014",
+      "bytes": 4047
+    }
+  ]
+}

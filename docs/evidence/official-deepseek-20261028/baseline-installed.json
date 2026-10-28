@@ -1,0 +1,527 @@
+{
+  "kind": "derived-installation-summary",
+  "source": ".evolution/official-installed-workspace-fix-20261028/acceptance.json",
+  "startedAt": "2026-10-28T08:40:52.044Z",
+  "completedAt": "2026-10-28T08:41:19.363Z",
+  "passed": true,
+  "registration": {
+    "sourceDigest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+    "build": {
+      "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+      "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+      "image": "sha256:8bc3300c7e6fb329d1e03417a82bb1306c865f76b7b490803f2ad811b67bb2af",
+      "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+      "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+    },
+    "datasetDigest": "5604c0ffefe222cd8699e60480b94c5a2f5e80cd8c9f4d32406a27e21c392b50",
+    "driverSha256": "b0f2e1c6cb66fd0947d1b946b629f95baa505b3fd78d3ec634c296f907d943b0",
+    "taskSeconds": 600,
+    "boundary": "Independent post-installation delivery experiment; no build or mutation, no task/score retry, no borrowed scores. Model credentials remain exclusively in controlled egress."
+  },
+  "result": {
+    "executionAttempts": 4,
+    "failed": 0,
+    "passed": true,
+    "quality": {
+      "boundary": "Installed delivery acceptance only. Scores are fresh observations; no improvement or transfer claim and no reuse of search/validation scores.",
+      "meanWithRegisteredFailureValue": 0.8125,
+      "metric": {
+        "direction": "maximize",
+        "failure": 0,
+        "maximum": 1,
+        "minimum": 0,
+        "name": "formula_value_accuracy"
+      },
+      "scoringComplete": true
+    },
+    "registered": 4,
+    "rows": [
+      {
+        "task": "normalization",
+        "phase": "scored",
+        "error": null,
+        "executionAttempted": true,
+        "grade": {
+          "feedback": "[{\"sheet\": \"Model\", \"cell\": \"B10\", \"passed\": true, \"actual\": 216.4}, {\"sheet\": \"Model\", \"cell\": \"B11\", \"passed\": false, \"actual\": 35.6}, {\"sheet\": \"Model\", \"cell\": \"B12\", \"passed\": false, \"actual\": 180.8}, {\"sheet\": \"Model\", \"cell\": \"B13\", \"passed\": false, \"actual\": 0.174349083895853}, {\"sheet\": \"Model\", \"cell\": \"C10\", \"passed\": true, \"actual\": 262.4}, {\"sheet\": \"Model\", \"cell\": \"C11\", \"passed\": false, \"actual\": 42.5}, {\"sheet\": \"Model\", \"cell\": \"C12\", \"passed\": false, \"actual\": 219.9}, {\"sheet\": \"Model\", \"cell\": \"C13\", \"passed\": false, \"actual\": 0.170862470862471}, {\"sheet\": \"Model\", \"cell\": \"D10\", \"passed\": true, \"actual\": 317.4}, {\"sheet\": \"Model\", \"cell\": \"D11\", \"passed\": false, \"actual\": 52.84}, {\"sheet\": \"Model\", \"cell\": \"D12\", \"passed\": false, \"actual\": 264.56}, {\"sheet\": \"Model\", \"cell\": \"D13\", \"passed\": false, \"actual\": 0.18410577592206}, {\"sheet\": \"Model\", \"cell\": \"E10\", \"passed\": true, \"actual\": 341.4}, {\"sheet\": \"Model\", \"cell\": \"E11\", \"passed\": false, \"actual\": 54.32}, {\"sheet\": \"Model\", \"cell\": \"E12\", \"passed\": false, \"actual\": 287.08}, {\"sheet\": \"Model\", \"cell\": \"E13\", \"passed\": false, \"actual\": 0.177538651824366}]",
+          "metrics": {
+            "preserved": 1
+          },
+          "score": 0.25
+        },
+        "deliveryDigest": "eba409e2c62823e843df8aceae924d34912b48347e401379201578eb75472a99",
+        "usage": {
+          "failed": 0,
+          "inputTokensReported": 2860,
+          "missingUsage": 0,
+          "outputTokensReported": 1487,
+          "requestDurationMsSum": 12416.333555000003,
+          "results": 6,
+          "started": 6,
+          "unfinished": 0,
+          "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+        },
+        "installation": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "cdadb7868ed23b51c85299eeaffbdf94ae87f676992330cfeebd95f3b476327c",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "f2ab4869b0242a1ddb20facf115d9599e67c7dd0fd798a28bace38c953ae57a1",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "52a8af7d815cbbe23ee931d243ba489df1eb76146043ce8c0133273405b9e89d",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet",
+          "package": "@harness-evolution/spreadsheet",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "36580db1b3b2119b74369150774f2eaa713622495a1fb5b8e3e23a550884c77f",
+            "pnpm-lock.yaml": "031b8c04cdb4f746138698a54cbcef68ca52028435deecd1e0704d1ccec35da2",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+        },
+        "integrity": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "cdadb7868ed23b51c85299eeaffbdf94ae87f676992330cfeebd95f3b476327c",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "f2ab4869b0242a1ddb20facf115d9599e67c7dd0fd798a28bace38c953ae57a1",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "52a8af7d815cbbe23ee931d243ba489df1eb76146043ce8c0133273405b9e89d",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet",
+          "package": "@harness-evolution/spreadsheet",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "36580db1b3b2119b74369150774f2eaa713622495a1fb5b8e3e23a550884c77f",
+            "pnpm-lock.yaml": "031b8c04cdb4f746138698a54cbcef68ca52028435deecd1e0704d1ccec35da2",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+        }
+      },
+      {
+        "task": "weighted-portfolio",
+        "phase": "scored",
+        "error": null,
+        "executionAttempted": true,
+        "grade": {
+          "feedback": "[{\"sheet\": \"Model\", \"cell\": \"E3\", \"passed\": true, \"actual\": 8.995}, {\"sheet\": \"Model\", \"cell\": \"F3\", \"passed\": true, \"actual\": 4.112}, {\"sheet\": \"Model\", \"cell\": \"G3\", \"passed\": true, \"actual\": 0.457142857142857}, {\"sheet\": \"Model\", \"cell\": \"E4\", \"passed\": true, \"actual\": 13.166}, {\"sheet\": \"Model\", \"cell\": \"F4\", \"passed\": true, \"actual\": 6.129}, {\"sheet\": \"Model\", \"cell\": \"G4\", \"passed\": true, \"actual\": 0.46551724137931}, {\"sheet\": \"Model\", \"cell\": \"E5\", \"passed\": true, \"actual\": 7.634}, {\"sheet\": \"Model\", \"cell\": \"F5\", \"passed\": true, \"actual\": 2.429}, {\"sheet\": \"Model\", \"cell\": \"G5\", \"passed\": true, \"actual\": 0.318181818181818}, {\"sheet\": \"Model\", \"cell\": \"B6\", \"passed\": true, \"actual\": 831}, {\"sheet\": \"Model\", \"cell\": \"E6\", \"passed\": true, \"actual\": 29.795}, {\"sheet\": \"Model\", \"cell\": \"F6\", \"passed\": true, \"actual\": 12.67}, {\"sheet\": \"Model\", \"cell\": \"G6\", \"passed\": true, \"actual\": 0.4252391340829}]",
+          "metrics": {
+            "preserved": 1
+          },
+          "score": 1
+        },
+        "deliveryDigest": "03909ebbeb608eaddda2a749cc17cc23cc80a175a711174a6f3e00b999e911cf",
+        "usage": {
+          "failed": 0,
+          "inputTokensReported": 4977,
+          "missingUsage": 0,
+          "outputTokensReported": 1915,
+          "requestDurationMsSum": 17236.205517999995,
+          "results": 8,
+          "started": 8,
+          "unfinished": 0,
+          "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+        },
+        "installation": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "cdadb7868ed23b51c85299eeaffbdf94ae87f676992330cfeebd95f3b476327c",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "f2ab4869b0242a1ddb20facf115d9599e67c7dd0fd798a28bace38c953ae57a1",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "52a8af7d815cbbe23ee931d243ba489df1eb76146043ce8c0133273405b9e89d",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet",
+          "package": "@harness-evolution/spreadsheet",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "36580db1b3b2119b74369150774f2eaa713622495a1fb5b8e3e23a550884c77f",
+            "pnpm-lock.yaml": "031b8c04cdb4f746138698a54cbcef68ca52028435deecd1e0704d1ccec35da2",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+        },
+        "integrity": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "cdadb7868ed23b51c85299eeaffbdf94ae87f676992330cfeebd95f3b476327c",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "f2ab4869b0242a1ddb20facf115d9599e67c7dd0fd798a28bace38c953ae57a1",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "52a8af7d815cbbe23ee931d243ba489df1eb76146043ce8c0133273405b9e89d",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet",
+          "package": "@harness-evolution/spreadsheet",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "36580db1b3b2119b74369150774f2eaa713622495a1fb5b8e3e23a550884c77f",
+            "pnpm-lock.yaml": "031b8c04cdb4f746138698a54cbcef68ca52028435deecd1e0704d1ccec35da2",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+        }
+      },
+      {
+        "task": "debt-rollforward",
+        "phase": "scored",
+        "error": null,
+        "executionAttempted": true,
+        "grade": {
+          "feedback": "[{\"sheet\": \"Model\", \"cell\": \"B6\", \"passed\": true, \"actual\": 1337}, {\"sheet\": \"Model\", \"cell\": \"B7\", \"passed\": true, \"actual\": 334.25}, {\"sheet\": \"Model\", \"cell\": \"B8\", \"passed\": true, \"actual\": 106.96}, {\"sheet\": \"Model\", \"cell\": \"B9\", \"passed\": true, \"actual\": 441.21}, {\"sheet\": \"Model\", \"cell\": \"B10\", \"passed\": true, \"actual\": 1002.75}, {\"sheet\": \"Model\", \"cell\": \"C6\", \"passed\": true, \"actual\": 1002.75}, {\"sheet\": \"Model\", \"cell\": \"C7\", \"passed\": true, \"actual\": 334.25}, {\"sheet\": \"Model\", \"cell\": \"C8\", \"passed\": true, \"actual\": 70.1925}, {\"sheet\": \"Model\", \"cell\": \"C9\", \"passed\": true, \"actual\": 404.4425}, {\"sheet\": \"Model\", \"cell\": \"C10\", \"passed\": true, \"actual\": 668.5}, {\"sheet\": \"Model\", \"cell\": \"D6\", \"passed\": true, \"actual\": 668.5}, {\"sheet\": \"Model\", \"cell\": \"D7\", \"passed\": true, \"actual\": 334.25}, {\"sheet\": \"Model\", \"cell\": \"D8\", \"passed\": true, \"actual\": 40.11}, {\"sheet\": \"Model\", \"cell\": \"D9\", \"passed\": true, \"actual\": 374.36}, {\"sheet\": \"Model\", \"cell\": \"D10\", \"passed\": true, \"actual\": 334.25}, {\"sheet\": \"Model\", \"cell\": \"E6\", \"passed\": true, \"actual\": 334.25}, {\"sheet\": \"Model\", \"cell\": \"E7\", \"passed\": true, \"actual\": 334.25}, {\"sheet\": \"Model\", \"cell\": \"E8\", \"passed\": true, \"actual\": 16.7125}, {\"sheet\": \"Model\", \"cell\": \"E9\", \"passed\": true, \"actual\": 350.9625}, {\"sheet\": \"Model\", \"cell\": \"E10\", \"passed\": true, \"actual\": 0}]",
+          "metrics": {
+            "preserved": 1
+          },
+          "score": 1
+        },
+        "deliveryDigest": "608ec8de263167d572b9c3efacaed033fd9261dfdfa0768242ebf7f93800eea0",
+        "usage": {
+          "failed": 0,
+          "inputTokensReported": 1338,
+          "missingUsage": 0,
+          "outputTokensReported": 1106,
+          "requestDurationMsSum": 7827.598437999999,
+          "results": 4,
+          "started": 4,
+          "unfinished": 0,
+          "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+        },
+        "installation": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "cdadb7868ed23b51c85299eeaffbdf94ae87f676992330cfeebd95f3b476327c",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "f2ab4869b0242a1ddb20facf115d9599e67c7dd0fd798a28bace38c953ae57a1",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "52a8af7d815cbbe23ee931d243ba489df1eb76146043ce8c0133273405b9e89d",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet",
+          "package": "@harness-evolution/spreadsheet",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "36580db1b3b2119b74369150774f2eaa713622495a1fb5b8e3e23a550884c77f",
+            "pnpm-lock.yaml": "031b8c04cdb4f746138698a54cbcef68ca52028435deecd1e0704d1ccec35da2",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+        },
+        "integrity": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "cdadb7868ed23b51c85299eeaffbdf94ae87f676992330cfeebd95f3b476327c",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "f2ab4869b0242a1ddb20facf115d9599e67c7dd0fd798a28bace38c953ae57a1",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "52a8af7d815cbbe23ee931d243ba489df1eb76146043ce8c0133273405b9e89d",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet",
+          "package": "@harness-evolution/spreadsheet",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "36580db1b3b2119b74369150774f2eaa713622495a1fb5b8e3e23a550884c77f",
+            "pnpm-lock.yaml": "031b8c04cdb4f746138698a54cbcef68ca52028435deecd1e0704d1ccec35da2",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+        }
+      },
+      {
+        "task": "scenario-valuation",
+        "phase": "scored",
+        "error": null,
+        "executionAttempted": true,
+        "grade": {
+          "feedback": "[{\"sheet\": \"Model\", \"cell\": \"B9\", \"passed\": true, \"actual\": 1250.7}, {\"sheet\": \"Model\", \"cell\": \"B10\", \"passed\": true, \"actual\": 312.675}, {\"sheet\": \"Model\", \"cell\": \"C9\", \"passed\": true, \"actual\": 1350.756}, {\"sheet\": \"Model\", \"cell\": \"C10\", \"passed\": true, \"actual\": 378.21168}, {\"sheet\": \"Model\", \"cell\": \"D9\", \"passed\": true, \"actual\": 1431.80136}, {\"sheet\": \"Model\", \"cell\": \"D10\", \"passed\": true, \"actual\": 429.540408}, {\"sheet\": \"Model\", \"cell\": \"D12\", \"passed\": true, \"actual\": 3221.55306}, {\"sheet\": \"Model\", \"cell\": \"D13\", \"passed\": true, \"actual\": 3041.55306}]",
+          "metrics": {
+            "preserved": 1
+          },
+          "score": 1
+        },
+        "deliveryDigest": "657e0382cc6449f364b1383ecd7347ba82471968adbe89bb57f31e0e80529a84",
+        "usage": {
+          "failed": 0,
+          "inputTokensReported": 2407,
+          "missingUsage": 0,
+          "outputTokensReported": 1358,
+          "requestDurationMsSum": 10227.619479,
+          "results": 5,
+          "started": 5,
+          "unfinished": 0,
+          "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+        },
+        "installation": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "cdadb7868ed23b51c85299eeaffbdf94ae87f676992330cfeebd95f3b476327c",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "f2ab4869b0242a1ddb20facf115d9599e67c7dd0fd798a28bace38c953ae57a1",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "52a8af7d815cbbe23ee931d243ba489df1eb76146043ce8c0133273405b9e89d",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet",
+          "package": "@harness-evolution/spreadsheet",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "36580db1b3b2119b74369150774f2eaa713622495a1fb5b8e3e23a550884c77f",
+            "pnpm-lock.yaml": "031b8c04cdb4f746138698a54cbcef68ca52028435deecd1e0704d1ccec35da2",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+        },
+        "integrity": {
+          "files": [
+            {
+              "executable": false,
+              "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+              "path": "LICENSE"
+            },
+            {
+              "executable": false,
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            },
+            {
+              "executable": false,
+              "hash": "cdadb7868ed23b51c85299eeaffbdf94ae87f676992330cfeebd95f3b476327c",
+              "path": "index.mjs"
+            },
+            {
+              "executable": false,
+              "hash": "f2ab4869b0242a1ddb20facf115d9599e67c7dd0fd798a28bace38c953ae57a1",
+              "path": "package.json"
+            },
+            {
+              "executable": false,
+              "hash": "52a8af7d815cbbe23ee931d243ba489df1eb76146043ce8c0133273405b9e89d",
+              "path": "workbook.py"
+            }
+          ],
+          "inferenceRequested": false,
+          "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/spreadsheet",
+          "package": "@harness-evolution/spreadsheet",
+          "profile": "sdk",
+          "profileFiles": {
+            "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+            "package.json": "36580db1b3b2119b74369150774f2eaa713622495a1fb5b8e3e23a550884c77f",
+            "pnpm-lock.yaml": "031b8c04cdb4f746138698a54cbcef68ca52028435deecd1e0704d1ccec35da2",
+            "pnpm-workspace.yaml": "e96533ff1df29db9fce60fc20e9f65785b58a4e92d21b5fff10741d91b5286ce"
+          },
+          "resolvedPatches": [
+            {
+              "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+              "path": "cordis.patch.yml"
+            }
+          ],
+          "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+        }
+      }
+    ],
+    "scored": 4,
+    "terminalExecutions": 4,
+    "usage": {
+      "availableLedgers": 4,
+      "complete": true,
+      "ledgers": 4,
+      "reportedTotals": {
+        "failed": 0,
+        "inputTokensReported": 11582,
+        "missingUsage": 0,
+        "outputTokensReported": 5866,
+        "requestDurationMsSum": 47707.75699,
+        "results": 23,
+        "started": 23,
+        "unfinished": 0
+      },
+      "unavailableLedgers": 0
+    }
+  }
+}

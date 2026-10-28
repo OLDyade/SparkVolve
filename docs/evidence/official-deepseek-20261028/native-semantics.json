@@ -1,0 +1,76 @@
+{
+  "verified": {
+    "formulaCount": 7,
+    "cachedResults": "matched",
+    "sourceCells": "preserved"
+  },
+  "report": {
+    "source": "/workspace/source.xlsx",
+    "delivery": "/workspace/result.xlsx",
+    "engine": {
+      "engine": "/usr/bin/libreoffice",
+      "exit_code": 0,
+      "elapsed_seconds": 0.284,
+      "stdout": "convert /tmp/xl-engine-wobrmoi5/source.xlsx -> /tmp/xl-engine-wobrmoi5/out/source.xlsx using filter : Calc MS Excel 2007 XML",
+      "stderr": "Warning: failed to launch javaldx - java may not function correctly",
+      "output_present": true
+    },
+    "formula_count": 7,
+    "error_value_count": 1,
+    "values_are_engine_results": true,
+    "note": "engine_value/engine_error are outputs produced by the installed spreadsheet engine from the source bytes; null means the engine produced no value for that cell. Formula text is reported verbatim.",
+    "formulas": [
+      {
+        "sheet": "Model",
+        "cell": "A1",
+        "formula": "=ROUND(2.5,0)",
+        "engine_value": 3,
+        "engine_error": null
+      },
+      {
+        "sheet": "Model",
+        "cell": "A2",
+        "formula": "=IF(1=1,7,1/0)",
+        "engine_value": 7,
+        "engine_error": null
+      },
+      {
+        "sheet": "Model",
+        "cell": "A3",
+        "formula": "=SUM('Other'!A1:A2)",
+        "engine_value": 5,
+        "engine_error": null
+      },
+      {
+        "sheet": "Model",
+        "cell": "A4",
+        "formula": "=2^3^2",
+        "engine_value": 64,
+        "engine_error": null
+      },
+      {
+        "sheet": "Model",
+        "cell": "A5",
+        "formula": "=\"#literal\"",
+        "engine_value": "#literal",
+        "engine_error": null
+      },
+      {
+        "sheet": "Model",
+        "cell": "A6",
+        "formula": "=1/0",
+        "engine_value": null,
+        "engine_error": "#DIV/0!"
+      },
+      {
+        "sheet": "Model",
+        "cell": "A7",
+        "formula": "=DATE(2020,2,3)",
+        "engine_value": "2020-02-03T00:00:00",
+        "engine_error": null
+      }
+    ]
+  },
+  "sourceUnchanged": true,
+  "failedOperationsAtomic": true
+}

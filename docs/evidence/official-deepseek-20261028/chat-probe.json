@@ -1,0 +1,21 @@
+{
+  "protocol": "openai-chat",
+  "status": 200,
+  "headersMs": 784,
+  "elapsedMs": 1456,
+  "done": true,
+  "finishReasons": [
+    "stop"
+  ],
+  "text": "transport-complete",
+  "usage": {
+    "prompt_tokens": 10,
+    "completion_tokens": 3,
+    "total_tokens": 13,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 10
+  }
+}

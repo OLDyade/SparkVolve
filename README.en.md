@@ -81,7 +81,7 @@ docker run --rm \
 
 node examples/spreadsheet/prepare.mjs .evolution/business/dataset \
   "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')" \
-  examples/venus/model.json .evolution/business/spec.json .evolution/business/isolation.json
+  examples/venus/model.json .evolution/business/spec.json .evolution/business/isolation.json examples/venus
 
 node dist/cli.js init --root .evolution/business/search \
   --spec .evolution/business/spec.json --dataset .evolution/business/dataset \

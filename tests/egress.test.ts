@@ -81,6 +81,47 @@ function post(base: string, data = body, path = '/v1/chat/completions') {
   });
 }
 
+test('declared native protocol headers cross the broker; arbitrary headers and caller keys do not', async (t) => {
+  const received = deferred<http.IncomingHttpHeaders>();
+  const provider = await upstream(t, (req, res) => {
+    received.resolve(req.headers);
+    req.resume();
+    res.end('ok');
+  });
+  const configured = route(provider, {
+    credential: { env: 'TEST_KEY', header: 'x-api-key', prefix: '' },
+    forwardHeaders: ['anthropic-version', 'anthropic-beta', 'accept'],
+  });
+  const gateway = await broker(t, [configured]);
+  const response = await fetch(gateway.base + configured.path, {
+    method: 'POST',
+    body,
+    headers: {
+      'x-api-key': 'caller-placeholder',
+      'content-type': 'application/json',
+      'anthropic-version': '2023-06-01',
+      'anthropic-beta': 'tool-changes-2026-06-01',
+      accept: 'text/event-stream',
+      'x-unapproved': 'must-not-cross',
+    },
+  });
+  assert.equal(await response.text(), 'ok');
+  const actual = await received.promise;
+  assert.equal(actual['x-api-key'], 'trusted-test-secret');
+  assert.equal(actual['anthropic-version'], '2023-06-01');
+  assert.equal(actual['anthropic-beta'], 'tool-changes-2026-06-01');
+  assert.equal(actual.accept, 'text/event-stream');
+  assert.equal(actual['x-unapproved'], undefined);
+  for (const name of ['x-api-key', 'authorization', 'host', 'connection', 'content-length'])
+    assert.throws(() =>
+      EgressConfig.parse({
+        bindAddress: '127.0.0.1',
+        port: 0,
+        routes: [{ ...configured, forwardHeaders: [name] }],
+      }),
+    );
+});
+
 test('resolver failure records its native code and stage without leaking exception contents', async (t) => {
   const provider = await upstream(t, (_req, res) => res.end('unexpected'));
   const service = await broker(t, [route(provider)], {
