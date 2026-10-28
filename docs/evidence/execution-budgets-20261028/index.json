@@ -82,6 +82,12 @@
       "file": "deadline-regression.log",
       "sha256": "0161a8aa190f75d168580002a84630860cac209abc8556d527854d947860a783",
       "bytes": 1154
+    },
+    {
+      "source": ".evolution/budget600-checks-20261028/package-receipt.json",
+      "file": "package-installation.json",
+      "sha256": "9181e6374b3a40e798ae0a6077624599171f0ed26546c07cc2834d4723d47c53",
+      "bytes": 623
     }
   ],
   "boundaries": [
@@ -90,5 +96,39 @@
     "Deterministic tests separately exercise elapsed deadline enforcement, remaining QA budgets and default/custom provider settings.",
     "Original 300-second native-authoring experiment and its failed quality/transport record remain unchanged. No benchmark task was retried or rescored.",
     "Model HTTP and idle deadlines are explicit provider/example policy; custom external provider settings are not silently overwritten by the framework."
-  ]
+  ],
+  "distribution": {
+    "startedAt": "2026-10-28T02:18:04.703989+00:00",
+    "steps": [
+      {
+        "command": [
+          "npm",
+          "run",
+          "package:artifacts",
+          "--",
+          "/Users/apple/code/spark-harness-evolution/.evolution/budget600-package-20261028"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "npm",
+          "run",
+          "test:install"
+        ],
+        "exitCode": 0
+      }
+    ],
+    "commit": "136f4abda0057e8acd54b8db769ac3c4f473b8dd",
+    "archiveSha256": "648db5046a0298c211120f915c9280a6c081a437a3ba0c7969c37148aeadb059",
+    "passed": true,
+    "completedAt": "2026-10-28T02:18:22.368816+00:00"
+  },
+  "hostedCi": {
+    "runId": 40620133728,
+    "commit": "136f4abda0057e8acd54b8db769ac3c4f473b8dd",
+    "executedSteps": 0,
+    "status": "blocked_by_billing",
+    "checkRunId": 122591893059
+  }
 }
