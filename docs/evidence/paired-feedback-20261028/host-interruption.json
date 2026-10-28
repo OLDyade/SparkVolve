@@ -1,0 +1,25 @@
+{
+  "observedAt": "2026-10-28T01:15:49.789Z",
+  "container": "he-delivery-cc454ed2-6645-43c3-89cb-23f1ead2ae2c",
+  "state": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 137,
+    "Error": "",
+    "StartedAt": "2026-10-27T21:47:34.420220729Z",
+    "FinishedAt": "2026-10-28T01:14:47.675946454Z"
+  },
+  "powerEvents": [
+    "2026-10-28 05:48:25 +0800 Sleep               \tEntering Sleep state due to 'Low Power Sleep':TCPKeepAlive=inactive Using Batt (Charge:1%) 12381 secs",
+    "2026-10-28 09:14:46 +0800 Wake                \tWake from Hibernate [CDNVA] : due to acattach rtc/UserActivity Assertion Using AC (Charge:1%)           ",
+    "2026-10-28 09:14:46 +0800 WakeTime            \tWakeTime: 3.192 sec                                                        \t          ",
+    "2026-10-28 09:14:46 +0800 Kernel Client Acks  \tDelays to Sleep notifications: [AppleSEPManager driver is slow(msg: SetState to 0)(1607 ms)] [AppleANS3CGv2Controller driver is slow(msg: SetState to 0)(1623 ms)] ",
+    "2026-10-28 09:14:46 +0800 Kernel Client Acks  \tDelays to Wake notifications: [AppleCS42L84Audio driver is slow(msg: SetState to 1)(65 ms)] [Port-USB-C driver is slow(msg: SetState to 1)(64 ms)] [Port-USB-C driver is slow(msg: SetState to 1)(68 ms)] [AppleSN012776Amp driver is slow(msg: SetState to 1)(94 ms)] [Port-USB-C driver is slow(msg: SetState to 1)(91 ms)] [AppleAVD driver is slow(msg: SetState to 1)(130 ms)] [Codec Output driver is slow(msg: SetState to 1)(76 ms)] [AppleSEPManager driver is slow(msg: SetState to 2)(276 ms)] [usb-drd2-port-ss driver is slow(msg: SetState to 3)(93 ms)] [AppleSDXC driver is slow(msg: WillChangeState to 2)(342 ms)] [usb-drd1-port-ss driver is slow(msg: SetState to 3)(87 ms)] [usb-drd0-port-ss driver is slow(msg: SetState to 3)(93 ms)] [AppleSDXC driver is slow(msg: SetState to 2)(102 ms)] [usb-drd1-port-hs driver is slow(msg: SetState to 3)(419 ms)] [usb-drd0-port-hs driver is slow(msg: SetState to 3)(424 ms)] [AppleDCPDPTXRemotePortProxy driver is slow(msg: SetState to 1)(581 ms)] [usb-drd2-port-hs driver is slow(msg: SetState to 3)(1164 ms)] [Port-SD Card driver is slow(msg: SetState to 2)(1007 ms)] [CoreKDLDriver driver is slow(msg: SetState to 1)(3282 ms)] [HibernationService driver is slow(msg: SetState to 1)(3462 ms)]           "
+  ],
+  "boundary": "Observed host low-power hibernation overlaps installer; container exited 137 with OOMKilled=false. Original installation failure retained; no model task rerun."
+}

@@ -1,0 +1,905 @@
+{
+  "protocol": "frozen-study-artifacts-1",
+  "evidenceRoot": "/Users/apple/code/spark-harness-evolution/.evolution/feedback-study-live-paired-20261028",
+  "output": "/Users/apple/code/spark-harness-evolution/.evolution/feedback-study-artifacts-20261028-deadline",
+  "startedAt": "2026-10-28T01:25:10.806Z",
+  "plan": {
+    "registrationDigest": "afb9b3fb4d337b3fdb4519bc5a7aa62397a04ea1b4399c97c5f462d28f9fec35",
+    "state": {
+      "conclusion": {
+        "at": "2026-10-27T21:45:59.423Z",
+        "reason": "Registered independent validation completed; results retained without automatic release"
+      },
+      "phase": "complete"
+    },
+    "denominator": 4,
+    "slots": [
+      {
+        "arm": "full",
+        "caseId": "public-spreadsheet-families",
+        "repetition": 0,
+        "job": {
+          "allocation": {
+            "assessmentTasks": 4,
+            "candidates": 3,
+            "optimizerSeconds": 1200,
+            "probes": 0,
+            "searchTasks": 12
+          },
+          "assessmentRoot": "assessments/3635b67d52b6c76bcf3efb5b88f34908e09652bc880f2c517fa936707a7339d8",
+          "assessmentSpecDigest": "e81e0a4b2982491e26933e16e62a7ade6f704a753ec2341650ef9492bfd21e32",
+          "caseId": "public-spreadsheet-families",
+          "childRoot": "children/3635b67d52b6c76bcf3efb5b88f34908e09652bc880f2c517fa936707a7339d8",
+          "childSpecDigest": "0532faee3e2a53789b1e34d3eefee4b6a62258ce923f8bd24a4ad7e72d8e99e2",
+          "comparisonArm": "d32de9c39f1d2d81eb881d35a65c546e3b88b38b0fc0dbc58bf9d93b26d0b6c6",
+          "id": "3635b67d52b6c76bcf3efb5b88f34908e09652bc880f2c517fa936707a7339d8",
+          "method": "5b94096f0be49b146effcba990e2e262ec244a82e138ce4df3c7eaab6cde7ebe",
+          "phase": "complete",
+          "repetition": 0,
+          "result": {
+            "constraintsSatisfied": true,
+            "denominator": 4,
+            "failures": 0,
+            "reportDigest": "328a8d4ee18dd2878d5f1811d399d7b03b0bd9640e13e6d5c2ae6090bca36525",
+            "score": 1
+          },
+          "selectedHarness": {
+            "artifact": {
+              "directory": "children/3635b67d52b6c76bcf3efb5b88f34908e09652bc880f2c517fa936707a7339d8/artifacts/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+              "identity": {
+                "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+                "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+                "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+                "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+              }
+            },
+            "source": {
+              "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+              "directory": "children/3635b67d52b6c76bcf3efb5b88f34908e09652bc880f2c517fa936707a7339d8/candidates/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b"
+            }
+          },
+          "stage": "validation"
+        },
+        "phase": "complete",
+        "selection": "selected"
+      },
+      {
+        "arm": "full",
+        "caseId": "public-spreadsheet-families",
+        "repetition": 1,
+        "job": {
+          "allocation": {
+            "assessmentTasks": 4,
+            "candidates": 3,
+            "optimizerSeconds": 1200,
+            "probes": 0,
+            "searchTasks": 12
+          },
+          "assessmentRoot": "assessments/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586",
+          "assessmentSpecDigest": "e81e0a4b2982491e26933e16e62a7ade6f704a753ec2341650ef9492bfd21e32",
+          "caseId": "public-spreadsheet-families",
+          "childRoot": "children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586",
+          "childSpecDigest": "0532faee3e2a53789b1e34d3eefee4b6a62258ce923f8bd24a4ad7e72d8e99e2",
+          "comparisonArm": "d32de9c39f1d2d81eb881d35a65c546e3b88b38b0fc0dbc58bf9d93b26d0b6c6",
+          "id": "2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586",
+          "method": "5b94096f0be49b146effcba990e2e262ec244a82e138ce4df3c7eaab6cde7ebe",
+          "phase": "complete",
+          "repetition": 1,
+          "result": {
+            "constraintsSatisfied": true,
+            "denominator": 4,
+            "failures": 0,
+            "reportDigest": "b5a33867b6e2ddf8c6ba7a495b1806152fb336db59aec376b8c192d090edc720",
+            "score": 0.8125
+          },
+          "selectedHarness": {
+            "artifact": {
+              "directory": "children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/artifacts/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e",
+              "identity": {
+                "artifactDigest": "1a52c99b79e1c49fd45bc055be53cb63316786463e9ae99cd136d951d9df5259",
+                "bundleDigest": "f71608c12d23b286e1df128bf50dfca9aae7b0339e98608f88107d1893a52843",
+                "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+                "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                "tarballDigest": "f2a10a848ce3cd069fc7145662f8b507b4f139f8652e1ba145128cd72c1f37bf"
+              }
+            },
+            "source": {
+              "digest": "c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e",
+              "directory": "children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e"
+            }
+          },
+          "stage": "validation"
+        },
+        "phase": "complete",
+        "selection": "selected"
+      },
+      {
+        "arm": "mechanical",
+        "caseId": "public-spreadsheet-families",
+        "repetition": 0,
+        "job": {
+          "allocation": {
+            "assessmentTasks": 4,
+            "candidates": 3,
+            "optimizerSeconds": 1200,
+            "probes": 0,
+            "searchTasks": 12
+          },
+          "assessmentRoot": "assessments/6614b047df83fd6563357168ec31a3131fd268c80d1c6414410c6fd4a94e57ac",
+          "assessmentSpecDigest": "e81e0a4b2982491e26933e16e62a7ade6f704a753ec2341650ef9492bfd21e32",
+          "caseId": "public-spreadsheet-families",
+          "childRoot": "children/6614b047df83fd6563357168ec31a3131fd268c80d1c6414410c6fd4a94e57ac",
+          "childSpecDigest": "4d35b8bdb061cf9c9545cfd04fd65529c68e2df8e5a524957ef4eccf7a2a0410",
+          "comparisonArm": "bbe96f5d91796da8294129863c23a46c009e17945d8d84736d8cb48d9a7e5950",
+          "id": "6614b047df83fd6563357168ec31a3131fd268c80d1c6414410c6fd4a94e57ac",
+          "method": "5b94096f0be49b146effcba990e2e262ec244a82e138ce4df3c7eaab6cde7ebe",
+          "phase": "complete",
+          "repetition": 0,
+          "result": {
+            "constraintsSatisfied": true,
+            "denominator": 4,
+            "failures": 0,
+            "reportDigest": "5a08ab3511fc50e71d3a814c14e0f953abf17eb521d32fb4a8722c436a9eaeac",
+            "score": 0.8125
+          },
+          "selectedHarness": {
+            "artifact": {
+              "directory": "children/6614b047df83fd6563357168ec31a3131fd268c80d1c6414410c6fd4a94e57ac/artifacts/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+              "identity": {
+                "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+                "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+                "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+                "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+              }
+            },
+            "source": {
+              "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+              "directory": "children/6614b047df83fd6563357168ec31a3131fd268c80d1c6414410c6fd4a94e57ac/candidates/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b"
+            }
+          },
+          "stage": "validation"
+        },
+        "phase": "complete",
+        "selection": "selected"
+      },
+      {
+        "arm": "mechanical",
+        "caseId": "public-spreadsheet-families",
+        "repetition": 1,
+        "job": {
+          "allocation": {
+            "assessmentTasks": 4,
+            "candidates": 3,
+            "optimizerSeconds": 1200,
+            "probes": 0,
+            "searchTasks": 12
+          },
+          "assessmentRoot": "assessments/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9",
+          "assessmentSpecDigest": "e81e0a4b2982491e26933e16e62a7ade6f704a753ec2341650ef9492bfd21e32",
+          "caseId": "public-spreadsheet-families",
+          "childRoot": "children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9",
+          "childSpecDigest": "4d35b8bdb061cf9c9545cfd04fd65529c68e2df8e5a524957ef4eccf7a2a0410",
+          "comparisonArm": "bbe96f5d91796da8294129863c23a46c009e17945d8d84736d8cb48d9a7e5950",
+          "id": "a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9",
+          "method": "5b94096f0be49b146effcba990e2e262ec244a82e138ce4df3c7eaab6cde7ebe",
+          "phase": "complete",
+          "repetition": 1,
+          "result": {
+            "constraintsSatisfied": true,
+            "denominator": 4,
+            "failures": 0,
+            "reportDigest": "79a2859aa221cbb3b78b4aeda834b42ddfe1a67f147c9a1d0ced3cbd6f6a5a7c",
+            "score": 0.8125
+          },
+          "selectedHarness": {
+            "artifact": {
+              "directory": "children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/artifacts/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c",
+              "identity": {
+                "artifactDigest": "d617587c7676976e1ee0bc7f0eb9bcdab50642f506c720093cdff84adf6ad695",
+                "bundleDigest": "e3d3a681d769acb636356bb5b12fc07962fd07463e7df0550a34f12d993e7fae",
+                "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+                "lockDigest": "f16c2c5b4b12a53fe8d28b9235ef3190acd56a9124cab8479b3381381f7fc444",
+                "tarballDigest": "3b3413e262cef670f8bbcfa1d0d2c3720ec1d53595668d09ce320f0b96ac2756"
+              }
+            },
+            "source": {
+              "digest": "9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c",
+              "directory": "children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c"
+            }
+          },
+          "stage": "validation"
+        },
+        "phase": "complete",
+        "selection": "selected"
+      }
+    ],
+    "packages": [
+      {
+        "id": "412f9776af34dab372e2729a8d2d16802e6bfee4f91d1ce25049fdcb6c6eb2c1",
+        "sourceDigest": "e15fb2ff38d229a19424ea6c2c2f26866c0ec585dd57fecf7ccbb52f2d809490",
+        "identity": {
+          "artifactDigest": "4b1d834d72cbd81f1458cff33f0edda46ad0c74b7ccb3cc9b8cfae0a06385974",
+          "bundleDigest": "0d676760f9a51b96fb1bd2ff0d3f1bb695795cd1ac61b4e8e7757a5477dc87a0",
+          "tarballDigest": "770bdfb3d7f618aab139b5d694db7b0e525781b44ed206c4df7322b0be771c30",
+          "lockDigest": "a21e29ad6c572a582cf5d410d8f1454646eced3d5d248db39ee54f830d2cd2b2",
+          "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f"
+        },
+        "references": [
+          {
+            "origin": "inputs",
+            "bundle": {
+              "source": {
+                "directory": "bundles/g/source",
+                "digest": "e15fb2ff38d229a19424ea6c2c2f26866c0ec585dd57fecf7ccbb52f2d809490"
+              },
+              "artifact": {
+                "directory": "bundles/g/artifact",
+                "identity": {
+                  "artifactDigest": "4b1d834d72cbd81f1458cff33f0edda46ad0c74b7ccb3cc9b8cfae0a06385974",
+                  "bundleDigest": "0d676760f9a51b96fb1bd2ff0d3f1bb695795cd1ac61b4e8e7757a5477dc87a0",
+                  "tarballDigest": "770bdfb3d7f618aab139b5d694db7b0e525781b44ed206c4df7322b0be771c30",
+                  "lockDigest": "a21e29ad6c572a582cf5d410d8f1454646eced3d5d248db39ee54f830d2cd2b2",
+                  "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f"
+                }
+              },
+              "composition": "plugins.yml"
+            },
+            "placement": {
+              "role": "G",
+              "arm": "full",
+              "caseId": "public-spreadsheet-families"
+            }
+          },
+          {
+            "origin": "inputs",
+            "bundle": {
+              "source": {
+                "directory": "bundles/g/source",
+                "digest": "e15fb2ff38d229a19424ea6c2c2f26866c0ec585dd57fecf7ccbb52f2d809490"
+              },
+              "artifact": {
+                "directory": "bundles/g/artifact",
+                "identity": {
+                  "artifactDigest": "4b1d834d72cbd81f1458cff33f0edda46ad0c74b7ccb3cc9b8cfae0a06385974",
+                  "bundleDigest": "0d676760f9a51b96fb1bd2ff0d3f1bb695795cd1ac61b4e8e7757a5477dc87a0",
+                  "tarballDigest": "770bdfb3d7f618aab139b5d694db7b0e525781b44ed206c4df7322b0be771c30",
+                  "lockDigest": "a21e29ad6c572a582cf5d410d8f1454646eced3d5d248db39ee54f830d2cd2b2",
+                  "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f"
+                }
+              },
+              "composition": "plugins.yml"
+            },
+            "placement": {
+              "role": "G",
+              "arm": "mechanical",
+              "caseId": "public-spreadsheet-families"
+            }
+          }
+        ],
+        "contexts": [
+          {
+            "id": "ca12b54482f54041c8991bffe478dea13b4e688c32801af3b2815216d0e9594c",
+            "role": "optimizer",
+            "composition": "plugins.yml",
+            "runtime": {
+              "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+              "dshVersion": "0.2.1-rc.4",
+              "profile": "sdk",
+              "environment": {
+                "directory": "runtime",
+                "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+                "patch": "cordis.patch.yml"
+              }
+            },
+            "model": {
+              "provider": "venus",
+              "model": "deepseek/deepseek-v4.1-flash-1017",
+              "reasoningEffort": "off",
+              "maxTokens": 32768,
+              "credentialEnv": [
+                "VENUS_API_KEY"
+              ]
+            },
+            "isolation": {
+              "runtime": "runc",
+              "user": {
+                "uid": 501,
+                "gid": 20
+              },
+              "memoryMiB": 4096,
+              "cpus": 2,
+              "pids": 256,
+              "tmpMiB": 512,
+              "homeMiB": 128,
+              "network": {
+                "egressPool": "10.230.0.0/16",
+                "egressDns": [
+                  "0.250.250.200"
+                ],
+                "optimizer": "controlled",
+                "executor": "controlled",
+                "build": "bridge",
+                "qa": "none",
+                "evaluator": "none"
+              }
+            },
+            "environment": {
+              "directory": "cases/development/runtime",
+              "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+              "patch": "cordis.patch.yml"
+            },
+            "placements": [
+              {
+                "role": "G",
+                "arm": "full",
+                "caseId": "public-spreadsheet-families"
+              },
+              {
+                "role": "G",
+                "arm": "mechanical",
+                "caseId": "public-spreadsheet-families"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cfab32db7a437a4fb2f62e63bd436382355fc0dd1eefa67d314fbbe53100ca81",
+        "sourceDigest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+        "identity": {
+          "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+          "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+          "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+          "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+          "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+        },
+        "references": [
+          {
+            "origin": "study",
+            "bundle": {
+              "artifact": {
+                "directory": "children/3635b67d52b6c76bcf3efb5b88f34908e09652bc880f2c517fa936707a7339d8/artifacts/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+                "identity": {
+                  "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+                  "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+                  "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+                  "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                  "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+                }
+              },
+              "source": {
+                "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+                "directory": "children/3635b67d52b6c76bcf3efb5b88f34908e09652bc880f2c517fa936707a7339d8/candidates/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b"
+              }
+            },
+            "placement": {
+              "role": "selectedHarness",
+              "arm": "full",
+              "caseId": "public-spreadsheet-families",
+              "repetition": 0,
+              "job": "3635b67d52b6c76bcf3efb5b88f34908e09652bc880f2c517fa936707a7339d8"
+            }
+          },
+          {
+            "origin": "study",
+            "bundle": {
+              "artifact": {
+                "directory": "children/6614b047df83fd6563357168ec31a3131fd268c80d1c6414410c6fd4a94e57ac/artifacts/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+                "identity": {
+                  "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+                  "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+                  "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+                  "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                  "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+                }
+              },
+              "source": {
+                "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b",
+                "directory": "children/6614b047df83fd6563357168ec31a3131fd268c80d1c6414410c6fd4a94e57ac/candidates/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b"
+              }
+            },
+            "placement": {
+              "role": "selectedHarness",
+              "arm": "mechanical",
+              "caseId": "public-spreadsheet-families",
+              "repetition": 0,
+              "job": "6614b047df83fd6563357168ec31a3131fd268c80d1c6414410c6fd4a94e57ac"
+            }
+          },
+          {
+            "origin": "inputs",
+            "bundle": {
+              "source": {
+                "directory": "bundles/h0/source",
+                "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b"
+              },
+              "artifact": {
+                "directory": "bundles/h0/artifact",
+                "identity": {
+                  "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+                  "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+                  "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a",
+                  "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                  "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f"
+                }
+              }
+            },
+            "placement": {
+              "role": "H0",
+              "caseId": "public-spreadsheet-families",
+              "split": "search"
+            }
+          },
+          {
+            "origin": "inputs",
+            "bundle": {
+              "source": {
+                "directory": "bundles/h0/source",
+                "digest": "686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b"
+              },
+              "artifact": {
+                "directory": "bundles/h0/artifact",
+                "identity": {
+                  "artifactDigest": "78bd56d6e4aabdbb8b087a29c98cafa5db7e4c5161990cba8a2d8e7078f070d6",
+                  "bundleDigest": "cf4f7e369db81fe16051117473420e731fc661f6c485aa3ab2ab2fa1f891ad41",
+                  "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a",
+                  "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                  "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f"
+                }
+              }
+            },
+            "placement": {
+              "role": "H0",
+              "caseId": "public-spreadsheet-families",
+              "split": "assessment"
+            }
+          }
+        ],
+        "contexts": [
+          {
+            "id": "a6dfc89e7535c69ed44d51bcf65c903021d14611a86d6191b0b930df242d8057",
+            "role": "executor",
+            "composition": null,
+            "runtime": {
+              "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+              "dshVersion": "0.2.1-rc.4",
+              "profile": "sdk",
+              "environment": {
+                "directory": "runtime",
+                "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+                "patch": "cordis.patch.yml"
+              }
+            },
+            "model": {
+              "provider": "venus",
+              "model": "deepseek/deepseek-v4.1-flash-1017",
+              "reasoningEffort": "off",
+              "maxTokens": 32768,
+              "credentialEnv": [
+                "VENUS_API_KEY"
+              ]
+            },
+            "isolation": {
+              "runtime": "runc",
+              "user": {
+                "uid": 501,
+                "gid": 20
+              },
+              "memoryMiB": 4096,
+              "cpus": 2,
+              "pids": 256,
+              "tmpMiB": 512,
+              "homeMiB": 128,
+              "network": {
+                "egressPool": "10.230.0.0/16",
+                "egressDns": [
+                  "0.250.250.200"
+                ],
+                "optimizer": "controlled",
+                "executor": "controlled",
+                "build": "bridge",
+                "qa": "none",
+                "evaluator": "none"
+              }
+            },
+            "environment": {
+              "directory": "cases/validation/runtime",
+              "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+              "patch": "cordis.patch.yml"
+            },
+            "placements": [
+              {
+                "role": "selectedHarness",
+                "arm": "full",
+                "caseId": "public-spreadsheet-families",
+                "repetition": 0,
+                "job": "3635b67d52b6c76bcf3efb5b88f34908e09652bc880f2c517fa936707a7339d8"
+              },
+              {
+                "role": "selectedHarness",
+                "arm": "mechanical",
+                "caseId": "public-spreadsheet-families",
+                "repetition": 0,
+                "job": "6614b047df83fd6563357168ec31a3131fd268c80d1c6414410c6fd4a94e57ac"
+              },
+              {
+                "role": "H0",
+                "caseId": "public-spreadsheet-families",
+                "split": "assessment"
+              }
+            ]
+          },
+          {
+            "id": "212b851e41c289fa448c6eaef17573838940f1e6f4c013f30461031c3bf81109",
+            "role": "executor",
+            "composition": null,
+            "runtime": {
+              "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+              "dshVersion": "0.2.1-rc.4",
+              "profile": "sdk",
+              "environment": {
+                "directory": "runtime",
+                "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+                "patch": "cordis.patch.yml"
+              }
+            },
+            "model": {
+              "provider": "venus",
+              "model": "deepseek/deepseek-v4.1-flash-1017",
+              "reasoningEffort": "off",
+              "maxTokens": 32768,
+              "credentialEnv": [
+                "VENUS_API_KEY"
+              ]
+            },
+            "isolation": {
+              "runtime": "runc",
+              "user": {
+                "uid": 501,
+                "gid": 20
+              },
+              "memoryMiB": 4096,
+              "cpus": 2,
+              "pids": 256,
+              "tmpMiB": 512,
+              "homeMiB": 128,
+              "network": {
+                "egressPool": "10.230.0.0/16",
+                "egressDns": [
+                  "0.250.250.200"
+                ],
+                "optimizer": "controlled",
+                "executor": "controlled",
+                "build": "bridge",
+                "qa": "none",
+                "evaluator": "none"
+              }
+            },
+            "environment": {
+              "directory": "cases/development/runtime",
+              "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+              "patch": "cordis.patch.yml"
+            },
+            "placements": [
+              {
+                "role": "H0",
+                "caseId": "public-spreadsheet-families",
+                "split": "search"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "a101053687a5317feadc0056065b4ea1baf19bb9aa2597bd84d97c8c48ea2945",
+        "sourceDigest": "c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e",
+        "identity": {
+          "artifactDigest": "1a52c99b79e1c49fd45bc055be53cb63316786463e9ae99cd136d951d9df5259",
+          "bundleDigest": "f71608c12d23b286e1df128bf50dfca9aae7b0339e98608f88107d1893a52843",
+          "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+          "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+          "tarballDigest": "f2a10a848ce3cd069fc7145662f8b507b4f139f8652e1ba145128cd72c1f37bf"
+        },
+        "references": [
+          {
+            "origin": "study",
+            "bundle": {
+              "artifact": {
+                "directory": "children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/artifacts/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e",
+                "identity": {
+                  "artifactDigest": "1a52c99b79e1c49fd45bc055be53cb63316786463e9ae99cd136d951d9df5259",
+                  "bundleDigest": "f71608c12d23b286e1df128bf50dfca9aae7b0339e98608f88107d1893a52843",
+                  "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+                  "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+                  "tarballDigest": "f2a10a848ce3cd069fc7145662f8b507b4f139f8652e1ba145128cd72c1f37bf"
+                }
+              },
+              "source": {
+                "digest": "c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e",
+                "directory": "children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e"
+              }
+            },
+            "placement": {
+              "role": "selectedHarness",
+              "arm": "full",
+              "caseId": "public-spreadsheet-families",
+              "repetition": 1,
+              "job": "2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586"
+            }
+          }
+        ],
+        "contexts": [
+          {
+            "id": "a6dfc89e7535c69ed44d51bcf65c903021d14611a86d6191b0b930df242d8057",
+            "role": "executor",
+            "composition": null,
+            "runtime": {
+              "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+              "dshVersion": "0.2.1-rc.4",
+              "profile": "sdk",
+              "environment": {
+                "directory": "runtime",
+                "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+                "patch": "cordis.patch.yml"
+              }
+            },
+            "model": {
+              "provider": "venus",
+              "model": "deepseek/deepseek-v4.1-flash-1017",
+              "reasoningEffort": "off",
+              "maxTokens": 32768,
+              "credentialEnv": [
+                "VENUS_API_KEY"
+              ]
+            },
+            "isolation": {
+              "runtime": "runc",
+              "user": {
+                "uid": 501,
+                "gid": 20
+              },
+              "memoryMiB": 4096,
+              "cpus": 2,
+              "pids": 256,
+              "tmpMiB": 512,
+              "homeMiB": 128,
+              "network": {
+                "egressPool": "10.230.0.0/16",
+                "egressDns": [
+                  "0.250.250.200"
+                ],
+                "optimizer": "controlled",
+                "executor": "controlled",
+                "build": "bridge",
+                "qa": "none",
+                "evaluator": "none"
+              }
+            },
+            "environment": {
+              "directory": "cases/validation/runtime",
+              "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+              "patch": "cordis.patch.yml"
+            },
+            "placements": [
+              {
+                "role": "selectedHarness",
+                "arm": "full",
+                "caseId": "public-spreadsheet-families",
+                "repetition": 1,
+                "job": "2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "841fc656508aaabc1807a329d14af04f893b90b3202cb192fa9060ba26b2f7f8",
+        "sourceDigest": "9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c",
+        "identity": {
+          "artifactDigest": "d617587c7676976e1ee0bc7f0eb9bcdab50642f506c720093cdff84adf6ad695",
+          "bundleDigest": "e3d3a681d769acb636356bb5b12fc07962fd07463e7df0550a34f12d993e7fae",
+          "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+          "lockDigest": "f16c2c5b4b12a53fe8d28b9235ef3190acd56a9124cab8479b3381381f7fc444",
+          "tarballDigest": "3b3413e262cef670f8bbcfa1d0d2c3720ec1d53595668d09ce320f0b96ac2756"
+        },
+        "references": [
+          {
+            "origin": "study",
+            "bundle": {
+              "artifact": {
+                "directory": "children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/artifacts/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c",
+                "identity": {
+                  "artifactDigest": "d617587c7676976e1ee0bc7f0eb9bcdab50642f506c720093cdff84adf6ad695",
+                  "bundleDigest": "e3d3a681d769acb636356bb5b12fc07962fd07463e7df0550a34f12d993e7fae",
+                  "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+                  "lockDigest": "f16c2c5b4b12a53fe8d28b9235ef3190acd56a9124cab8479b3381381f7fc444",
+                  "tarballDigest": "3b3413e262cef670f8bbcfa1d0d2c3720ec1d53595668d09ce320f0b96ac2756"
+                }
+              },
+              "source": {
+                "digest": "9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c",
+                "directory": "children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c"
+              }
+            },
+            "placement": {
+              "role": "selectedHarness",
+              "arm": "mechanical",
+              "caseId": "public-spreadsheet-families",
+              "repetition": 1,
+              "job": "a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9"
+            }
+          }
+        ],
+        "contexts": [
+          {
+            "id": "a6dfc89e7535c69ed44d51bcf65c903021d14611a86d6191b0b930df242d8057",
+            "role": "executor",
+            "composition": null,
+            "runtime": {
+              "image": "sha256:ed2c995b6233c41995925b9407d6ab01312f052015cae60a22a4b8871e09715f",
+              "dshVersion": "0.2.1-rc.4",
+              "profile": "sdk",
+              "environment": {
+                "directory": "runtime",
+                "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+                "patch": "cordis.patch.yml"
+              }
+            },
+            "model": {
+              "provider": "venus",
+              "model": "deepseek/deepseek-v4.1-flash-1017",
+              "reasoningEffort": "off",
+              "maxTokens": 32768,
+              "credentialEnv": [
+                "VENUS_API_KEY"
+              ]
+            },
+            "isolation": {
+              "runtime": "runc",
+              "user": {
+                "uid": 501,
+                "gid": 20
+              },
+              "memoryMiB": 4096,
+              "cpus": 2,
+              "pids": 256,
+              "tmpMiB": 512,
+              "homeMiB": 128,
+              "network": {
+                "egressPool": "10.230.0.0/16",
+                "egressDns": [
+                  "0.250.250.200"
+                ],
+                "optimizer": "controlled",
+                "executor": "controlled",
+                "build": "bridge",
+                "qa": "none",
+                "evaluator": "none"
+              }
+            },
+            "environment": {
+              "directory": "cases/validation/runtime",
+              "digest": "77d53b3289a84036e06cbfb2e294387fc12f41888e95dc6c0d2e741ca4509ae9",
+              "patch": "cordis.patch.yml"
+            },
+            "placements": [
+              {
+                "role": "selectedHarness",
+                "arm": "mechanical",
+                "caseId": "public-spreadsheet-families",
+                "repetition": 1,
+                "job": "a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "inferenceRequested": false,
+  "boundary": "Installation and native composition only; no quality improvement or mechanism claim.",
+  "verifier": {
+    "scriptDigest": "72c6792c81b1757e0c7d6856594b7133b6270b5a81235245a659d2427a02c27a",
+    "installationProgramDigest": "f33beb7296e72060ebff922df40b415676cc9714e44879c16b0b3e51545b8d5f",
+    "commandDigest": "69529248bb53f9e165a284f73ebd7aba2246846db12686df84d0e1ac2a5c6edf",
+    "timeoutSeconds": 480,
+    "runtimeBoundary": "Original study image and archives; separately hashed post-study command runner"
+  },
+  "originalMarkers": {
+    "registration.json": "e6e6386c1a27b990ba956b8de5038d061d0829676a79d9e051eef84776467cb3",
+    "inputs-digest.json": "b24d0303c1fdafc411f0be4144083228a3a5e5836d4c340e0d3a0a7f1ec045fe",
+    "study.sqlite": "38b5c03a4037fe4b3c1873401a2fd6aaa326cf79109eb27243ad3c5597d31eb0",
+    "study.sqlite-wal": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "frameworkSupport": {
+    "path": "/Users/apple/code/spark-harness-evolution/.evolution/feedback-delivery-20261028/harness-evolution-dsh-bundle-0.0.0-development.tgz",
+    "sha256": "a26b900352ad7ba5b55f7c7e6f5a053df8c7010d0c21278d7863d9489689e2c6",
+    "role": "independent installation support; not a study G or H artifact"
+  },
+  "installations": [
+    {
+      "artifact": "412f9776af34dab372e2729a8d2d16802e6bfee4f91d1ce25049fdcb6c6eb2c1",
+      "context": "ca12b54482f54041c8991bffe478dea13b4e688c32801af3b2815216d0e9594c",
+      "status": "passed",
+      "installed": {
+        "composition": "plugins.yml",
+        "inferenceRequested": false,
+        "installed": true,
+        "nativeComposition": true,
+        "package": "@harness-evolution/optimizer-evidence-driven",
+        "profile": "sdk",
+        "tarballDigest": "770bdfb3d7f618aab139b5d694db7b0e525781b44ed206c4df7322b0be771c30"
+      }
+    },
+    {
+      "artifact": "cfab32db7a437a4fb2f62e63bd436382355fc0dd1eefa67d314fbbe53100ca81",
+      "context": "a6dfc89e7535c69ed44d51bcf65c903021d14611a86d6191b0b930df242d8057",
+      "status": "passed",
+      "installed": {
+        "composition": null,
+        "inferenceRequested": false,
+        "installed": true,
+        "nativeComposition": true,
+        "package": "@harness-evolution/spreadsheet",
+        "profile": "sdk",
+        "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+      }
+    },
+    {
+      "artifact": "cfab32db7a437a4fb2f62e63bd436382355fc0dd1eefa67d314fbbe53100ca81",
+      "context": "212b851e41c289fa448c6eaef17573838940f1e6f4c013f30461031c3bf81109",
+      "status": "passed",
+      "installed": {
+        "composition": null,
+        "inferenceRequested": false,
+        "installed": true,
+        "nativeComposition": true,
+        "package": "@harness-evolution/spreadsheet",
+        "profile": "sdk",
+        "tarballDigest": "27acd1a2cbc6f3c222d54e3022406f210855af948fb6169800573363aab20f3a"
+      }
+    },
+    {
+      "artifact": "a101053687a5317feadc0056065b4ea1baf19bb9aa2597bd84d97c8c48ea2945",
+      "context": "a6dfc89e7535c69ed44d51bcf65c903021d14611a86d6191b0b930df242d8057",
+      "status": "passed",
+      "installed": {
+        "composition": null,
+        "inferenceRequested": false,
+        "installed": true,
+        "nativeComposition": true,
+        "package": "@harness-evolution/spreadsheet",
+        "profile": "sdk",
+        "tarballDigest": "f2a10a848ce3cd069fc7145662f8b507b4f139f8652e1ba145128cd72c1f37bf"
+      }
+    },
+    {
+      "artifact": "841fc656508aaabc1807a329d14af04f893b90b3202cb192fa9060ba26b2f7f8",
+      "context": "a6dfc89e7535c69ed44d51bcf65c903021d14611a86d6191b0b930df242d8057",
+      "status": "passed",
+      "installed": {
+        "composition": null,
+        "inferenceRequested": false,
+        "installed": true,
+        "nativeComposition": true,
+        "package": "@harness-evolution/spreadsheet",
+        "profile": "sdk",
+        "tarballDigest": "3b3413e262cef670f8bbcfa1d0d2c3720ec1d53595668d09ce320f0b96ac2756"
+      }
+    }
+  ],
+  "originalMarkersAfter": {
+    "registration.json": "e6e6386c1a27b990ba956b8de5038d061d0829676a79d9e051eef84776467cb3",
+    "inputs-digest.json": "b24d0303c1fdafc411f0be4144083228a3a5e5836d4c340e0d3a0a7f1ec045fe",
+    "study.sqlite": "38b5c03a4037fe4b3c1873401a2fd6aaa326cf79109eb27243ad3c5597d31eb0",
+    "study.sqlite-wal": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "originalControlEvidenceUnchanged": true,
+  "frozenReferencesUnchanged": true,
+  "deliveryComplete": true,
+  "installationsPassed": true,
+  "completedAt": "2026-10-28T01:28:33.926Z"
+}

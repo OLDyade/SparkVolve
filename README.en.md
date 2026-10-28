@@ -110,7 +110,9 @@ The example creates public synthetic XLSX tasks and grades actual files through 
 
 An earlier [preregistered development study](docs/acceptance-joint-development.md) improved the mean from 65.625% to 81.25%, with 24 scored executions, one retained native QA failure and 326 adapter calls. Its selected candidate introduced heuristic source restoration and is **not accepted for capability distribution**. This development result does not establish stable gains.
 
-The latest [independent joint-candidate validation](docs/experiments/2026-10-28-joint-independent-results.md) completed 24/24 scored executions: baseline 93.75%, candidate 77.08%, promotion rejected. Three repetitions per task, frozen source/build identities, complete usage and native tool counterexamples are retained. These public synthetic task families were previously used during development; this is not an unseen holdout claim.
+The [independent joint-candidate validation](docs/experiments/2026-10-28-joint-independent-results.md) completed 24/24 scored executions: baseline 93.75%, candidate 77.08%, promotion rejected. Three repetitions per task, frozen source/build identities, complete usage and native tool counterexamples are retained. These public synthetic task families were previously used during development; this is not an unseen holdout claim.
+
+The latest [same-optimizer feedback comparison](docs/experiments/2026-10-28-paired-feedback-results.md) completed four independent searches, eight autonomous mutations, 60 scored task executions and 692 recorded requests. Independent arm means were 90.625% / 81.25%, but the difference came from the paired block that selected the identical H0, so it cannot be attributed to mutation. Original packages, three QA failures and mechanism counterexamples are retained; the new candidates are not published as accepted general capabilities.
 
 Use `node dist/cli.js report --root <experiment> --output <new-report.json>` to aggregate scores, failures, executor usage and optimizer expenditure without rerunning tasks.
 

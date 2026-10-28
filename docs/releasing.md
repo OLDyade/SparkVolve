@@ -33,15 +33,34 @@ shasum -a 256 -c SHA256SUMS
 
 输出目录必须尚不存在，失败证据不覆盖。命令实际执行构建与 `npm pack`，核对 tarball 完整性、必要入口和禁入的运行目录，再生成：
 
-| 文件 | 用途 |
-|---|---|
-| `*.tgz` | 本次实际 npm 包；沿用 `dsh plugin --profile sdk add /absolute/package.tgz` 安装 |
-| `artifact.json` | 源提交、工作树是否有修改、运行版本、包内文件、包与依赖清单摘要 |
-| `dependencies.cdx.json` | npm 原生 CycloneDX SBOM，来自锁文件，排除仅开发依赖 |
-| `package-lock.json` | 生成该清单时的完整仓库锁快照 |
-| `SHA256SUMS` | 检查本次交付的字节身份 |
+| 文件                    | 用途                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------- |
+| `*.tgz`                 | 本次实际 npm 包；沿用 `dsh plugin --profile sdk add /absolute/package.tgz` 安装 |
+| `artifact.json`         | 源提交、工作树是否有修改、运行版本、包内文件、包与依赖清单摘要                  |
+| `dependencies.cdx.json` | npm 原生 CycloneDX SBOM，来自锁文件，排除仅开发依赖                             |
+| `package-lock.json`     | 生成该清单时的完整仓库锁快照                                                    |
+| `SHA256SUMS`            | 检查本次交付的字节身份                                                          |
 
 安装测试通过 `HE_INSTALL_PACKAGE` 指定同一实际 tarball，并核对安装前后摘要；未指定时测试自行打包。包名或版本改变时使用 `artifact.json` 的 `archive.file`，CI 也从该字段读取。SBOM 描述仓库依赖快照，消费者 DSH Profile 的最终解析仍需实际安装验证。摘要可检测字节变化，不能证明发布者身份。脏工作树会明确记录，不能把该包归称为某个干净提交的产物。当前 `0.0.0-development` 是开发标识，不声称稳定发布。
+
+## 固定研究的原包安装验收
+
+固定方法比较结束后，可一次验收原注册 G、H0 和实际选出的 H。入口读取原 SQLite 与冻结身份，在研究目录外产生新的安装记录；不会启动搜索、评分、打包或模型推理。在途研究直接拒绝。
+
+```bash
+node scripts/verify-study-artifacts.mjs \
+  --evidence-root <existing-study-evidence-root> \
+  --output <new-installation-evidence-directory> \
+  --framework-tarball <existing-evolution-framework.tgz> \
+  --install-policy <pnpm-install-policy.json> \
+  --timeout-seconds 480
+```
+
+输入研究目录采用 `verify-feedback-study.mjs` 的布局，包含 `study/registration.json`、`study/study.sqlite` 与原冻结输入。安装策略文件显式声明 `{ "allowBuilds": { "package@exact-version": true } }`，批准的包和版本由实际安装环境确定；脚本不隐式扩大构建权限。支持包单独记录摘要，不冒充本轮 G/H 构建产物。
+
+每个安装上下文共用一个期限（默认 480 秒），包含冷依赖安装和原生装配，不再为每条命令重新计时。验收脚本、安装程序和进程管理模块分别记录摘要；进程管理模块只读挂载，原研究镜像、G/H tarball 与评分结果保持不变。该入口不发送模型请求；候选初始化仍是实际代码执行，网络与权限按登记的安装环境约束。
+
+同一原包按内容身份去重，不同原注册 Profile、模型、环境和装配入口分别验证。结果保留完整作业清单、未选出的槽位、逐包失败与全部原身份。安装失败后仍记录其他包的实际结果；任何失败或未完成的交付槽位都会使整体 `passed` 为 false。安装与装配通过只证明这条交付路径，质量收益另见独立研究报告。
 
 ## 实际发布决定
 

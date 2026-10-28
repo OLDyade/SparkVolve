@@ -1,0 +1,1517 @@
+{
+  "createdAt": "2026-10-27T21:45:28.703279+00:00",
+  "scope": "Post-hoc host-only pure-function and source/authorized-development-trace diagnostics. No container/native-tool E2E claim, no model calls, no assessment/private grading reads.",
+  "host": {
+    "python": "3.14.5",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "scriptSha256": "ee2d417dcffbb1fe0705e42381aebc203cdab592ad951ec640bd1756866490ba",
+  "sourceFilesBefore": {
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/LICENSE": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/index.mjs": "0d9e7c63c5056d3154f0b952fe84f97121f12090e8e11542362b7e8b5ea089d2",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/package-lock.json": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/package.json": "03c8d3644ca12490500a9a97d7c5d7404b1d6a6b7ce7944447866f5f9d47a98e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/workbook.py": "4d62c8a5fe0c4c067e4e7d5bf395e644f05f3cd91411f619192e7d427be0c6e5",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b/cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/LICENSE": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/index.mjs": "5f143e2cb2e2c548a24ff2229eaff70257d9fef9e247ecc303256ca0c8b43e6a",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/package-lock.json": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/package.json": "03c8d3644ca12490500a9a97d7c5d7404b1d6a6b7ce7944447866f5f9d47a98e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/workbook.py": "ae2e616a033cc679cbe2a63fde68da9190d6cb274fcaea948030f5f91392baa8",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/LICENSE": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/index.mjs": "4e3b8d76b6f82dcf3770e29464e22dd84f7316fd4b7e89230503cbdff4e84ea4",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/package-lock.json": "f16c2c5b4b12a53fe8d28b9235ef3190acd56a9124cab8479b3381381f7fc444",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/package.json": "7164f2b9ebe925a5f69294f9ed5b44da2b38959f98ca9cf7b515bd947af17a0d",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/workbook.py": "5d6977d6075a30e628dd2887430fc2da52de222e81b44ded3eda1c666fac6e94",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b/cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/LICENSE": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/index.mjs": "25887b8f948f8761402f7d0b43814618213f6489279e40f4a6c072a0080eef1e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/package-lock.json": "f16c2c5b4b12a53fe8d28b9235ef3190acd56a9124cab8479b3381381f7fc444",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/package.json": "7164f2b9ebe925a5f69294f9ed5b44da2b38959f98ca9cf7b515bd947af17a0d",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/workbook.py": "da915ea2131c58353fcb6b44a6c71137485251e61fdd21061e081d235e305469"
+  },
+  "structural": {
+    "full-layout": {
+      "patch": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/cordis.patch.yml",
+      "sha256": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+      "samePatchAsBaseline": true,
+      "patchText": "- insert:\n    - name: ./index.mjs\n",
+      "registeredToolNames": [
+        "workbook_inspect",
+        "workbook_show",
+        "workbook_write",
+        "workbook_recalc"
+      ]
+    },
+    "full-checks": {
+      "patch": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/cordis.patch.yml",
+      "sha256": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+      "samePatchAsBaseline": true,
+      "patchText": "- insert:\n    - name: ./index.mjs\n",
+      "registeredToolNames": [
+        "workbook_inspect",
+        "workbook_show",
+        "workbook_write",
+        "workbook_recalc",
+        "workbook_check_model",
+        "workbook_rate_rule"
+      ]
+    },
+    "mechanical-verify": {
+      "patch": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/cordis.patch.yml",
+      "sha256": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+      "samePatchAsBaseline": true,
+      "patchText": "- insert:\n    - name: ./index.mjs\n",
+      "registeredToolNames": [
+        "workbook_inspect",
+        "workbook_write",
+        "workbook_verify",
+        "workbook_build"
+      ]
+    },
+    "mechanical-finish": {
+      "patch": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/cordis.patch.yml",
+      "sha256": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+      "samePatchAsBaseline": true,
+      "patchText": "- insert:\n    - name: ./index.mjs\n",
+      "registeredToolNames": [
+        "workbook_inspect",
+        "workbook_write",
+        "workbook_build",
+        "workbook_finish"
+      ]
+    },
+    "staticHeuristicSites": [
+      {
+        "source": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/workbook.py",
+        "line": 52,
+        "code": "if isinstance(c.value, (int, float)) and 1900 <= c.value <= 2100}))"
+      },
+      {
+        "source": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/workbook.py",
+        "line": 347,
+        "code": "if len(present) >= 2 and all(0 < v < 1 for v in present):"
+      }
+    ]
+  },
+  "referenceShift": {
+    "source": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/workbook.py",
+    "sha256": "5d6977d6075a30e628dd2887430fc2da52de222e81b44ded3eda1c666fac6e94",
+    "selectedAst": [
+      {
+        "symbol": [
+          "REFERENCE"
+        ],
+        "start": 17,
+        "end": 17
+      },
+      {
+        "symbol": [
+          "TOKEN"
+        ],
+        "start": 18,
+        "end": 18
+      },
+      {
+        "symbol": [
+          "STRING_START"
+        ],
+        "start": 19,
+        "end": 19
+      },
+      {
+        "symbol": "column_index",
+        "start": 179,
+        "end": 183
+      },
+      {
+        "symbol": "column_name",
+        "start": 186,
+        "end": 191
+      },
+      {
+        "symbol": "skip_literal",
+        "start": 194,
+        "end": 205
+      },
+      {
+        "symbol": "shift_references",
+        "start": 208,
+        "end": 253
+      }
+    ],
+    "cases": [
+      {
+        "input": "=A1",
+        "drow": 0,
+        "dcol": 1,
+        "expected": "=B1",
+        "actual": "=B1",
+        "matchesExpectedCaseInsensitive": true,
+        "meaning": "ordinary relative A1 reference"
+      },
+      {
+        "input": "=a1",
+        "drow": 0,
+        "dcol": 1,
+        "expected": "=b1",
+        "actual": "=a1",
+        "matchesExpectedCaseInsensitive": false,
+        "meaning": "lowercase relative reference retains its relative semantics"
+      },
+      {
+        "input": "=A1!B2",
+        "drow": 0,
+        "dcol": 1,
+        "expected": "=A1!C2",
+        "actual": "=B1!C2",
+        "matchesExpectedCaseInsensitive": false,
+        "meaning": "sheet name A1 is not a relative cell reference"
+      },
+      {
+        "input": "=SUM(A1_name)",
+        "drow": 0,
+        "dcol": 1,
+        "expected": "=SUM(A1_name)",
+        "actual": "=SUM(B1_name)",
+        "matchesExpectedCaseInsensitive": false,
+        "meaning": "defined name is not an A1 cell reference"
+      },
+      {
+        "input": "=XFD1",
+        "drow": 0,
+        "dcol": 1,
+        "expectedBehavior": "Reject or represent the out-of-bounds reference; XFE exceeds the XLSX maximum column XFD",
+        "actual": "=XFE1",
+        "invalidReferenceEmitted": true
+      }
+    ]
+  },
+  "sourcePreservation": {
+    "source": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/workbook.py",
+    "sha256": "ae2e616a033cc679cbe2a63fde68da9190d6cb274fcaea948030f5f91392baa8",
+    "selectedAst": [
+      {
+        "symbol": "_number",
+        "start": 311,
+        "end": 312
+      },
+      {
+        "symbol": "model_check",
+        "start": 374,
+        "end": 433
+      }
+    ],
+    "fixture": {
+      "source": {
+        "S!A1": 17
+      },
+      "filledFormula": {
+        "S!A1": "=1"
+      },
+      "filledCached": {
+        "S!A1": 1
+      }
+    },
+    "expected": {
+      "preserves_original_values": false,
+      "overwrittenSourceCell": "S!A1"
+    },
+    "actual": {
+      "sheets": [
+        {
+          "sheet": "S",
+          "overwritten_non_formula_source_cells": {},
+          "cleared_non_formula_source_cells": [],
+          "formula_errors": [],
+          "source_cells_unchanged": 0,
+          "formulas_written": 1,
+          "source_inputs": 1
+        }
+      ],
+      "preserves_original_values": true,
+      "formula_errors": [],
+      "baseline_formulas_overwritten": 0
+    },
+    "substitutions": "_load returns the explicit dictionaries above; coordinate_to_tuple is fixed for the only address A1. No XLSX read or candidate module import.",
+    "undefinedCall": {
+      "symbol": "_independent_values",
+      "definedInModule": false,
+      "callLines": [
+        389
+      ]
+    }
+  },
+  "anchorResolution": {
+    "source": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/workbook.py",
+    "sha256": "4d62c8a5fe0c4c067e4e7d5bf395e644f05f3cd91411f619192e7d427be0c6e5",
+    "selectedAst": [
+      {
+        "symbol": "norm",
+        "start": 26,
+        "end": 33
+      },
+      {
+        "symbol": "resolve_target_row",
+        "start": 113,
+        "end": 155
+      }
+    ],
+    "substitutions": "row_map is a fixed explicit duplicate-label map; no workbook loaded, no full candidate module import",
+    "cases": [
+      {
+        "labelRows": [
+          2,
+          8,
+          12
+        ],
+        "anchor_cell": "A5",
+        "expectedBehavior": "Reject ambiguous matching rows 8 and 12",
+        "actualSelectedRow": 8
+      },
+      {
+        "labelRows": [
+          2,
+          8,
+          12
+        ],
+        "anchor_cell": "A20",
+        "expectedBehavior": "Reject: no matching label at or after the anchor",
+        "actualSelectedRow": 12
+      }
+    ]
+  },
+  "developmentCalls": {
+    "full-layout": {
+      "job": "2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586",
+      "candidate": "c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e",
+      "developmentDatabase": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/experiment.sqlite",
+      "phaseAtRead": "champion",
+      "meanAtRead": 0.8125,
+      "toolCallTotals": {
+        "bash": 13,
+        "workbook_inspect": 4,
+        "workbook_recalc": 5,
+        "workbook_write": 2
+      },
+      "runs": [
+        {
+          "run": "a9b8cebf48719b129df53244252d2e79c1712cb5a07f5cac2ea294f0eaa4dbcc",
+          "task": "normalization",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 0.25,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/runs/a9b8cebf48719b129df53244252d2e79c1712cb5a07f5cac2ea294f0eaa4dbcc/trace/notifications.jsonl",
+          "sha256": "03c9c6ca9142dc19d1cedc3058ef46a3c087f9d6872213b030ed1eb4c0a94478",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 18,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 24,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 32,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 40,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 48,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 56,
+              "name": "workbook_recalc",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 62,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 70,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 78,
+              "name": "workbook_recalc",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 80,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            }
+          ]
+        },
+        {
+          "run": "bc71fa60ca63108e2394f534b8a2bff1ad76af8fcff21e584a40f0e54c46e103",
+          "task": "weighted-portfolio",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/runs/bc71fa60ca63108e2394f534b8a2bff1ad76af8fcff21e584a40f0e54c46e103/trace/notifications.jsonl",
+          "sha256": "6a6464088ba8661b25a9baf016c2242f0bb242f7924898f11451f3fc368f1b2f",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 22,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 30,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 38,
+              "name": "workbook_recalc",
+              "argumentKeys": [
+                "file"
+              ]
+            }
+          ]
+        },
+        {
+          "run": "b3d6e8656f4b50a4c3882f7d3cb09ce14d32515be7698aea8c3b34bdd02d2cce",
+          "task": "debt-rollforward",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/runs/b3d6e8656f4b50a4c3882f7d3cb09ce14d32515be7698aea8c3b34bdd02d2cce/trace/notifications.jsonl",
+          "sha256": "25939d68f8c4fc9a70e451a3ddc5fc27b82f25bf93d915f9efe4fb480910b059",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 18,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 24,
+              "name": "workbook_write",
+              "argumentKeys": [
+                "destination",
+                "edits",
+                "source"
+              ]
+            },
+            {
+              "seq": 30,
+              "name": "workbook_recalc",
+              "argumentKeys": [
+                "file"
+              ]
+            }
+          ]
+        },
+        {
+          "run": "62eaac4e9cf2c33f588ac2df22ffec17011c09990b7f2fa801b4aacdf41b1ac9",
+          "task": "scenario-valuation",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/runs/62eaac4e9cf2c33f588ac2df22ffec17011c09990b7f2fa801b4aacdf41b1ac9/trace/notifications.jsonl",
+          "sha256": "45cb8ef7fad4bc40c208d81d70fe7489e904b9a8aae462def723a4be6b12e6af",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 16,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 24,
+              "name": "workbook_write",
+              "argumentKeys": [
+                "destination",
+                "edits",
+                "source"
+              ]
+            },
+            {
+              "seq": 30,
+              "name": "workbook_recalc",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 32,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "full-checks": {
+      "job": "2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586",
+      "candidate": "05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1",
+      "developmentDatabase": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/experiment.sqlite",
+      "phaseAtRead": "rejected",
+      "meanAtRead": 0.8125,
+      "toolCallTotals": {
+        "bash": 30,
+        "workbook_check_model": 5,
+        "workbook_inspect": 3,
+        "workbook_recalc": 5,
+        "workbook_write": 1
+      },
+      "runs": [
+        {
+          "run": "09e9c9db47bb78a6fc9f93e58d384d65f6402137f6cb089a702e7d5024223a71",
+          "task": "normalization",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 0.25,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/runs/09e9c9db47bb78a6fc9f93e58d384d65f6402137f6cb089a702e7d5024223a71/trace/notifications.jsonl",
+          "sha256": "363c2d55a3f6615e20269bd1c0b356938ba0fa9d37a0c92ab3f29de6fb741175",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 18,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 24,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 32,
+              "name": "workbook_write",
+              "argumentKeys": [
+                "destination",
+                "edits",
+                "source"
+              ]
+            },
+            {
+              "seq": 38,
+              "name": "workbook_recalc",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 40,
+              "name": "workbook_check_model",
+              "argumentKeys": [
+                "filled",
+                "source"
+              ]
+            },
+            {
+              "seq": 46,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            }
+          ]
+        },
+        {
+          "run": "348a6b793dfc02307f3612f37751b15e68fb116ef88b07f4ed9e5d287a31b47d",
+          "task": "weighted-portfolio",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/runs/348a6b793dfc02307f3612f37751b15e68fb116ef88b07f4ed9e5d287a31b47d/trace/notifications.jsonl",
+          "sha256": "f3ef3b0465099060baf5284d8c557727b5ab75dba7e910898fda136df50a0afd",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 18,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 24,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 32,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 40,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 48,
+              "name": "workbook_recalc",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 50,
+              "name": "workbook_check_model",
+              "argumentKeys": [
+                "filled",
+                "source"
+              ]
+            },
+            {
+              "seq": 56,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 64,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 72,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 80,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 88,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 96,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 104,
+              "name": "workbook_check_model",
+              "argumentKeys": [
+                "filled",
+                "recalc_from",
+                "source"
+              ]
+            },
+            {
+              "seq": 110,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            }
+          ]
+        },
+        {
+          "run": "b8a495bb073edd0528fde7efb18c7162d9961b008625c3ee9a60eda69a2cf117",
+          "task": "debt-rollforward",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/runs/b8a495bb073edd0528fde7efb18c7162d9961b008625c3ee9a60eda69a2cf117/trace/notifications.jsonl",
+          "sha256": "a91bdb03f7b5e7323cc0dffa526277d646206edca51ba0523e3351a0fde06663",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 18,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 24,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 32,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 40,
+              "name": "workbook_recalc",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 42,
+              "name": "workbook_check_model",
+              "argumentKeys": [
+                "filled",
+                "source"
+              ]
+            },
+            {
+              "seq": 48,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 56,
+              "name": "workbook_recalc",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 62,
+              "name": "workbook_check_model",
+              "argumentKeys": [
+                "filled",
+                "recalc_from",
+                "source"
+              ]
+            },
+            {
+              "seq": 64,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 72,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 80,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 88,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 96,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            }
+          ]
+        },
+        {
+          "run": "3ebb49b40aea6e1889ba12b264898795ceebf305f927003f2ce3daf9a26be972",
+          "task": "scenario-valuation",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/runs/3ebb49b40aea6e1889ba12b264898795ceebf305f927003f2ce3daf9a26be972/trace/notifications.jsonl",
+          "sha256": "2ab79f36a60e3d1db2fca8f82314fdb5ddcfd7c4471f84d1c503fac32886706d",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 22,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 30,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 38,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description",
+                "justification",
+                "sandbox_permissions"
+              ]
+            },
+            {
+              "seq": 46,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 54,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 62,
+              "name": "workbook_recalc",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 64,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "mechanical-verify": {
+      "job": "a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9",
+      "candidate": "9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c",
+      "developmentDatabase": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/experiment.sqlite",
+      "phaseAtRead": "champion",
+      "meanAtRead": 1,
+      "toolCallTotals": {
+        "bash": 18,
+        "workbook_inspect": 3,
+        "workbook_verify": 3,
+        "workbook_write": 1
+      },
+      "runs": [
+        {
+          "run": "1bd7548e354888edfd5b6385f6bed66a16424705282ebb82a55fa0d0729abd04",
+          "task": "normalization",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/runs/1bd7548e354888edfd5b6385f6bed66a16424705282ebb82a55fa0d0729abd04/trace/notifications.jsonl",
+          "sha256": "851b89bc64f37a80d22555822ded658f1d6c9dc63554b017dcebe12c49bf1e36",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 22,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 30,
+              "name": "workbook_verify",
+              "argumentKeys": [
+                "file"
+              ]
+            }
+          ]
+        },
+        {
+          "run": "3f26b726823dd06be71d2f8d390676f72b4efc0670cce34a5c3419059e83af7c",
+          "task": "weighted-portfolio",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/runs/3f26b726823dd06be71d2f8d390676f72b4efc0670cce34a5c3419059e83af7c/trace/notifications.jsonl",
+          "sha256": "0621ebdd748e920356ccb58bbcb9f3b569310be9810e11a6638fafff9442aaa5",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 22,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 30,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 38,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 46,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            }
+          ]
+        },
+        {
+          "run": "ec55501e043daea8a34a9da4f59785ca4fd37d35b18cb4ea572ddbe2b79897a5",
+          "task": "debt-rollforward",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/runs/ec55501e043daea8a34a9da4f59785ca4fd37d35b18cb4ea572ddbe2b79897a5/trace/notifications.jsonl",
+          "sha256": "a7384e2474f9b45d2c9899e047287a7253a96f32ba9fca93657fd9da1b374de8",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 18,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 24,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 32,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 40,
+              "name": "workbook_verify",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 46,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            }
+          ]
+        },
+        {
+          "run": "6f836603e702f78ae5c3d55ebc2374c816b28a907a081e00893a33cc4dd814ce",
+          "task": "scenario-valuation",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/runs/6f836603e702f78ae5c3d55ebc2374c816b28a907a081e00893a33cc4dd814ce/trace/notifications.jsonl",
+          "sha256": "521cb3758e16e345863fb904b9dd942787f57fadad5e1400cd1e7bb7e9d56c4f",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 20,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 28,
+              "name": "workbook_write",
+              "argumentKeys": [
+                "destination",
+                "edits",
+                "source"
+              ]
+            },
+            {
+              "seq": 34,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 42,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description",
+                "justification",
+                "sandbox_permissions"
+              ]
+            },
+            {
+              "seq": 50,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 58,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 66,
+              "name": "workbook_verify",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 68,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 74,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 82,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "mechanical-finish": {
+      "job": "a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9",
+      "candidate": "da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49",
+      "developmentDatabase": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/experiment.sqlite",
+      "phaseAtRead": "rejected",
+      "meanAtRead": 1,
+      "toolCallTotals": {
+        "bash": 24,
+        "workbook_inspect": 3,
+        "workbook_write": 2
+      },
+      "runs": [
+        {
+          "run": "f3fea0a265482cc8539e5a914305eb7ce9125c51e3d89e45d1591d0010481013",
+          "task": "normalization",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/runs/f3fea0a265482cc8539e5a914305eb7ce9125c51e3d89e45d1591d0010481013/trace/notifications.jsonl",
+          "sha256": "129e32766f9b54f3f81f67e55121c382b4cbb3f57e5f3b6ba30798a69b2a9909",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 22,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 30,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 38,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 46,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 54,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            }
+          ]
+        },
+        {
+          "run": "35a61e0d55c5fa5a98e6dee91705bdc9c7b58609e1b58ab056bcd5f2c5c17a77",
+          "task": "weighted-portfolio",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/runs/35a61e0d55c5fa5a98e6dee91705bdc9c7b58609e1b58ab056bcd5f2c5c17a77/trace/notifications.jsonl",
+          "sha256": "2e9edefd1d5e348ccf4459fe049c0b364651aad3acebfafe489e18779058dd6e",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 20,
+              "name": "workbook_write",
+              "argumentKeys": [
+                "destination",
+                "edits",
+                "source"
+              ]
+            },
+            {
+              "seq": 26,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 34,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 42,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 50,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            }
+          ]
+        },
+        {
+          "run": "7668e9a52eb57a95fbc03a84ef742f96eb9d7b3c82da363049c2a71f8dc73c16",
+          "task": "debt-rollforward",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/runs/7668e9a52eb57a95fbc03a84ef742f96eb9d7b3c82da363049c2a71f8dc73c16/trace/notifications.jsonl",
+          "sha256": "27ec08b4e8d4d6afc415391dab722708ed56e213dabbfa7974dad62fc795744f",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 22,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 30,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 38,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 46,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            }
+          ]
+        },
+        {
+          "run": "9cc32f18fad2fbad67a75956b0ec0a6390b8d079f4271cd623c389d46914a68d",
+          "task": "scenario-valuation",
+          "phaseAtRead": "scored",
+          "scoreAtRead": 1,
+          "sourceTrace": ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/runs/9cc32f18fad2fbad67a75956b0ec0a6390b8d079f4271cd623c389d46914a68d/trace/notifications.jsonl",
+          "sha256": "a8a033b00b9bc219064dee9a0c17d3df1531a7fc4303c4bddff0eb513e1368be",
+          "traceStableDuringRead": true,
+          "calls": [
+            {
+              "seq": 14,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 18,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            },
+            {
+              "seq": 24,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 32,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 40,
+              "name": "workbook_write",
+              "argumentKeys": [
+                "destination",
+                "edits",
+                "source"
+              ]
+            },
+            {
+              "seq": 46,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 54,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 62,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 70,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 78,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 86,
+              "name": "bash",
+              "argumentKeys": [
+                "command",
+                "description"
+              ]
+            },
+            {
+              "seq": 94,
+              "name": "workbook_inspect",
+              "argumentKeys": [
+                "file"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sourceFilesAfter": {
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/LICENSE": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/index.mjs": "0d9e7c63c5056d3154f0b952fe84f97121f12090e8e11542362b7e8b5ea089d2",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/package-lock.json": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/package.json": "03c8d3644ca12490500a9a97d7c5d7404b1d6a6b7ce7944447866f5f9d47a98e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/c159a72a64bc22edacaf66eb7f15d51c959878835bed4b91ba54073e02aec13e/workbook.py": "4d62c8a5fe0c4c067e4e7d5bf395e644f05f3cd91411f619192e7d427be0c6e5",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b/cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/LICENSE": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/index.mjs": "5f143e2cb2e2c548a24ff2229eaff70257d9fef9e247ecc303256ca0c8b43e6a",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/package-lock.json": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/package.json": "03c8d3644ca12490500a9a97d7c5d7404b1d6a6b7ce7944447866f5f9d47a98e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/2055d52b48575b21330b2b03f23beea5f1d8a95d7dea4c04ac986908a2ad0586/candidates/05787c51c8601147156c2de04faa6fdcaa2fcb3f3b93ae393f4d0d75d0cc2ca1/workbook.py": "ae2e616a033cc679cbe2a63fde68da9190d6cb274fcaea948030f5f91392baa8",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/LICENSE": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/index.mjs": "4e3b8d76b6f82dcf3770e29464e22dd84f7316fd4b7e89230503cbdff4e84ea4",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/package-lock.json": "f16c2c5b4b12a53fe8d28b9235ef3190acd56a9124cab8479b3381381f7fc444",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/package.json": "7164f2b9ebe925a5f69294f9ed5b44da2b38959f98ca9cf7b515bd947af17a0d",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/9635872e8443d2634615cbac85ab19faae6a08b6ee9530b61da4dcf2d71d5d1c/workbook.py": "5d6977d6075a30e628dd2887430fc2da52de222e81b44ded3eda1c666fac6e94",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/686ad0b0c9dbf59f2bcada8c7c93605942b198273ec1c113f4b59d50c090218b/cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/LICENSE": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/cordis.patch.yml": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/index.mjs": "25887b8f948f8761402f7d0b43814618213f6489279e40f4a6c072a0080eef1e",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/package-lock.json": "f16c2c5b4b12a53fe8d28b9235ef3190acd56a9124cab8479b3381381f7fc444",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/package.json": "7164f2b9ebe925a5f69294f9ed5b44da2b38959f98ca9cf7b515bd947af17a0d",
+    ".evolution/feedback-study-live-paired-20261028/study/children/a7954305947b88f6f02ba6ccaee45d76a81274199fe9f6c8bcc6b91bea8453a9/candidates/da0531cbe416ebf1cb7a3110385a1e676173d80eca749a0de04941eb67acff49/workbook.py": "da915ea2131c58353fcb6b44a6c71137485251e61fdd21061e081d235e305469"
+  },
+  "frozenSourcesUnchanged": true
+}

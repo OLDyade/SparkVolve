@@ -1,0 +1,62 @@
+{
+  "exportedAt": "2026-10-28T01:31:05.364Z",
+  "studyCommit": "cf32125f4dcffbaf652bd97b51db246970e6107a",
+  "registeredBeforeExecution": "docs/evidence/2026-10-28-paired-feedback-registration.json",
+  "boundary": "Exact bytes of terminal reports and post-hoc diagnostics. No task input workbooks, evaluator-private materials, model prompts or credentials. Installation does not certify task quality or authorize capability publication.",
+  "records": [
+    {
+      "source": ".evolution/feedback-study-live-paired-20261028/acceptance.json",
+      "file": "docs/evidence/paired-feedback-20261028/acceptance.json",
+      "sha256": "1b3d3bbdc504a5288f1cffe0774149c78748e8c5b5c91586d0540581e68536e8",
+      "bytes": 8960
+    },
+    {
+      "source": ".evolution/feedback-study-live-paired-20261028/authoritative-study-report.json",
+      "file": "docs/evidence/paired-feedback-20261028/study-report.json",
+      "sha256": "e890de3d248e400cf47c612afd8028118fcaea72262e648d415dd650295c7e6a",
+      "bytes": 104129
+    },
+    {
+      "source": ".evolution/feedback-study-live-paired-20261028/authoritative-h0-report.json",
+      "file": "docs/evidence/paired-feedback-20261028/h0-report.json",
+      "sha256": "61f9fb95b2f09491c6b8b447eba259a72318ced6f987c269704f250ca5050271",
+      "bytes": 9061
+    },
+    {
+      "source": ".evolution/feedback-study-live-paired-20261028/validation-comparison.json",
+      "file": "docs/evidence/paired-feedback-20261028/comparison.json",
+      "sha256": "2ef64fbd8bc273d94bf769833df8cd6cf23cdf6e8cfb0a3d0c3a50ef29e47eec",
+      "bytes": 8867
+    },
+    {
+      "source": ".evolution/feedback-study-artifacts-20261028-deadline/acceptance.json",
+      "file": "docs/evidence/paired-feedback-20261028/artifact-installation.json",
+      "sha256": "416b89b45a13907fac2ca4ef13d38f64beaae31e882ff60da3aab8e58a86b3e3",
+      "bytes": 40161
+    },
+    {
+      "source": ".evolution/feedback-study-artifacts-20261028/acceptance.json",
+      "file": "docs/evidence/paired-feedback-20261028/artifact-installation-interrupted.json",
+      "sha256": "c99f70cadd574f6d58bb53896d5fe871d5b42923691cca8ee70a81894f653a92",
+      "bytes": 39425
+    },
+    {
+      "source": ".evolution/feedback-study-artifacts-20261028-recheck/acceptance.json",
+      "file": "docs/evidence/paired-feedback-20261028/artifact-installation-timeout.json",
+      "sha256": "ff0f45eb4096c3fcbdb284cecebb173122a7b26435ba3340c2c106b031449e83",
+      "bytes": 39609
+    },
+    {
+      "source": ".evolution/feedback-study-artifacts-20261028/host-interruption.json",
+      "file": "docs/evidence/paired-feedback-20261028/host-interruption.json",
+      "sha256": "4bdb15fb2801ec5eeeaaf18f648b26863d796fea6d0ea5b57f40329bf07bc64b",
+      "bytes": 2599
+    },
+    {
+      "source": ".evolution/feedback-study-mechanism-audit-20261028/diagnostic.json",
+      "file": "docs/evidence/paired-feedback-20261028/mechanism-diagnostic.json",
+      "sha256": "926f397e581184d0ee63f91e5f108a5191faadda360728173abc28a261057e7f",
+      "bytes": 59246
+    }
+  ]
+}

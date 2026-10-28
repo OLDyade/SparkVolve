@@ -4,6 +4,8 @@ import path from 'node:path';
 import { Isolation, type IsolationSpec } from './contracts.js';
 import { atomicJSON } from './artifacts.js';
 import { networkArgs, type NetworkSpec } from './network.js';
+import { command } from './command.js';
+export { command } from './command.js';
 import {
   containerIdentity,
   isolationReceipt,
@@ -13,40 +15,6 @@ import {
   type InspectedContainer,
 } from './isolation.js';
 
-export async function command(
-  program: string,
-  args: string[],
-  options: { env?: NodeJS.ProcessEnv; timeoutMs?: number; signal?: AbortSignal } = {},
-): Promise<string> {
-  return await new Promise((resolve, reject) => {
-    const child = spawn(program, args, {
-      stdio: ['ignore', 'pipe', 'pipe'],
-      env: options.env,
-      ...(options.signal ? { signal: options.signal } : {}),
-    });
-    const stdout: Buffer[] = [],
-      stderr: Buffer[] = [];
-    child.stdout.on('data', (chunk: Buffer) => stdout.push(chunk));
-    child.stderr.on('data', (chunk: Buffer) => stderr.push(chunk));
-    const timer = setTimeout(() => {
-      child.kill('SIGKILL');
-    }, options.timeoutMs ?? 60_000);
-    child.on('error', (error) => {
-      clearTimeout(timer);
-      reject(error);
-    });
-    child.on('close', (code, signal) => {
-      clearTimeout(timer);
-      if (code !== 0)
-        reject(
-          new Error(
-            `${program} failed (${code ?? signal}): ${Buffer.concat(stdout).toString()}\n${Buffer.concat(stderr).toString()}`,
-          ),
-        );
-      else resolve(Buffer.concat(stdout).toString().trim());
-    });
-  });
-}
 export interface ContainerSpec {
   name: string;
   image: string;

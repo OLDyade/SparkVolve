@@ -156,10 +156,15 @@ export function apply(ctx: Context, config: Config): void {
     defineTool({
       name: 'evolution_finish',
       description:
-        'Conclude search with an evidence-based reason and remaining limitations. Pending evaluations must settle first. This records a stop decision; it does not publish or certify a capability.',
+        'Conclude search with an evidence-based reason and remaining limitations. Pending evaluations must settle first. After the host records the conclusion, mark the current native turn complete at its committed result batch; DSH drains already submitted steering and context first. This does not publish or certify a capability.',
       parameters: { reason: { type: 'string', required: true } },
       output,
-      execute: async (args, exec) => request('/finish', args, exec.signal),
+      execute: async (args, exec) => {
+        const result = await request('/finish', args, exec.signal);
+        exec.signal.throwIfAborted();
+        exec.concludeTurn();
+        return result;
+      },
     }),
   );
   ctx.tools.register(
