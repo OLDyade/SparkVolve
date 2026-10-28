@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { cp, mkdir, mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import os from 'node:os';
 import { Context } from '@deepseek-ai/cordis';
 import SystemPrompt from '@deepseek-ai/dsh-system-prompt';
 import Tools from '@deepseek-ai/dsh-tools';
@@ -76,8 +77,7 @@ test(
     assert.ok(image, 'HE_TEST_IMAGE must name the immutable tested runtime image');
     assert.match(image, /^sha256:[0-9a-f]{64}$/);
     const base = containerSpecification();
-    await mkdir('.evolution', { recursive: true });
-    const root = await mkdtemp(path.resolve('.evolution/host-feedback-native-'));
+    const root = await mkdtemp(path.join(os.tmpdir(), 'he-host-feedback-native-'));
     console.log(`Host feedback native evidence retained: ${root}`);
     const runtimeFiles = [
       'runtime/worker.js',

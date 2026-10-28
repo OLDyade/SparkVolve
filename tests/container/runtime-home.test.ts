@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile, readFile, cp } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, readFile, readdir, cp } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { Docker } from '../../src/docker.js';
@@ -50,5 +50,10 @@ test(
     const csv = await readFile(path.join(root, 'work/convert/input.csv'), 'utf8');
     assert.match(csv, /7,42/);
     await docker.remove(await docker.executionReference(container));
+    assert.deepEqual(
+      await readdir(path.join(root, 'work/.harness-home')),
+      [],
+      'HOME contents must remain ephemeral, never enter host delivery files',
+    );
   },
 );

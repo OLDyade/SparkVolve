@@ -21,3 +21,11 @@ macOS runner `macos-26-arm64` 的 actionlint 步骤报告 `go: command not found
 [Docker 官方说明](https://docs.docker.com/reference/cli/dockerd/#configure-host-gateway-ip)明确 `host-gateway` 默认取默认 bridge 的地址；[GitHub gh-aw 的运行时集成记录](https://github.com/github/gh-aw/issues/44795)记录了 reload 后同一错误及完整 restart 的要求。安装脚本改为在专用宿主机完整重启 Docker，不写固定网关 IP，不更换运行时，不降低隔离。脚本头部明确告知 Docker 重启副作用。
 
 同时修正测试自身资源生命周期：本地 HTTP fixture 创建后立即注册清理，保证在 host-gateway 探测失败、尚未进入后续测试体时也关闭服务。CI 使用 TAP 即时输出失败堆栈，保留容器 stdout/stderr；失败不会因为测试服务残留而长期隐藏。
+
+## 原生工具沙箱与临时 HOME
+
+修正网关后，公开 CI `40627364489` 的 gVisor 矩阵完成 23 项测试，21 项通过；原生 bash/LibreOffice HOME 和依赖 bash 的反馈协议测试失败。专用 gVisor 20261019.0/systrap 宿主实测：DSH Landlock probe 返回 `unusable`，镜像中没有 `bwrap`。安装 Debian Bubblewrap 后，DSH 原生只读探测命令成功；保留 `--cap-drop=ALL`、非 root、只读根、`no-new-privileges`，未放宽容器权限。
+
+[DSH 官方说明](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/sandbox/sandbox-local/README.md)及锁定的 `@deepseek-ai/dsh-sandbox-local@0.2.1-rc.4` 实现都说明 Linux 原生选择 Bubblewrap/Landlock；无可用实现时明确失败。镜像现在安装 [Bubblewrap](https://github.com/containers/bubblewrap)，继续使用原生选择机制，不新增自定义执行器或绕过内层隔离。
+
+该版本 `bwrapProfileArgs` 对 workspace-write 创建独立 `/tmp`，再 bind 工作区。实测这会遮住先前的 `/tmp/evolution-home`。因此 HOME/XDG 统一迁到 `/workspace/.harness-home` 的独立 128MiB、0700 tmpfs：原生工作区 bind 保留该挂载及配额，工具调用间持久，容器销毁即释放。实际探测确认其容量为 134217728 字节、可写且外部路径仍拒绝写入。宿主仅保留空挂载点，HOME 内容不进入交付快照。回归通过连续两次真实原生 bash 检查配置可用性、配额、跨调用内容和容器删除后的空挂载点；完整矩阵以新提交实际结果为准。

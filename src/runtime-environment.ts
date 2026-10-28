@@ -1,13 +1,15 @@
 import { mkdir, chmod } from 'node:fs/promises';
 
-/** Writable inside the native workspace-write sandbox and separately quota-bound by Docker. */
+/** The native workspace bind preserves this private, quota-bound tmpfs across tool processes.
+ * DSH Bubblewrap creates a new /tmp per command, so HOME must not live below /tmp.
+ */
 export const runtimeEnvironment = Object.freeze({
-  HOME: '/tmp/evolution-home',
-  XDG_CONFIG_HOME: '/tmp/evolution-home/config',
-  XDG_CACHE_HOME: '/tmp/evolution-home/cache',
-  XDG_DATA_HOME: '/tmp/evolution-home/data',
-  XDG_STATE_HOME: '/tmp/evolution-home/state',
-  XDG_RUNTIME_DIR: '/tmp/evolution-home/run',
+  HOME: '/workspace/.harness-home',
+  XDG_CONFIG_HOME: '/workspace/.harness-home/config',
+  XDG_CACHE_HOME: '/workspace/.harness-home/cache',
+  XDG_DATA_HOME: '/workspace/.harness-home/data',
+  XDG_STATE_HOME: '/workspace/.harness-home/state',
+  XDG_RUNTIME_DIR: '/workspace/.harness-home/run',
 });
 
 export async function initializeRuntimeEnvironment(): Promise<void> {
