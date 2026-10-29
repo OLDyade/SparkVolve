@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/brand/logo.png" alt="SparkVolve — an evolving double helix around a spark" width="160" height="160">
+<img src="docs/assets/brand/logo.png" alt="SparkVolve — an evolving double helix around a spark" width="112" height="112">
 
 # SparkVolve
 
@@ -8,122 +8,114 @@
 
 Keep model weights fixed. Let the harness evolve through real tasks.
 
-[![CI](https://github.com/OLDyade/SparkVolve/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/OLDyade/SparkVolve/actions/workflows/verify.yml)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-202124?style=flat-square)](LICENSE)
-[![DSH](https://img.shields.io/badge/DSH-Native_plugins-DDEAF5?style=flat-square&labelColor=202124)](docs/components.md)
+**Evolve capabilities. Evolve the way they evolve. Ship both as plugins.**
 
-[English](README.md) · [中文](README.zh-CN.md) · **[Explore live](https://oldyade.github.io/SparkVolve/)** · [Quick start](#quick-start) · [Blueprint](11.md)
+[![CI](https://github.com/OLDyade/SparkVolve/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/OLDyade/SparkVolve/actions/workflows/verify.yml) [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-202124?style=flat-square)](LICENSE) [![DSH](https://img.shields.io/badge/DSH-Native_plugins-DDEAF5?style=flat-square&labelColor=202124)](docs/components.md)
 
-![SparkVolve: fixed model, evolving plugin code, configuration and composition, reusable Bundles](docs/assets/readme/hero.png)
+[English](README.md) · [中文](README.zh-CN.md) · **[Live tour ↗](https://oldyade.github.io/SparkVolve/)** · [Quick start](#quick-start) · [Blueprint](11.md)
 
 </div>
 
 A plugin-based harness evolution framework: agents use real task feedback to reshape their capability structure and turn useful improvements into reusable plugins.
 
-**Diagnose failures. Evolve plugins. Ship reusable capabilities.**
-
 > We used to equip agents with capabilities. Now agents can decide which capabilities they need, which to change, and which to create.
 
-## Three core designs
+## 🧬 Three core designs
 
-**Plugins are the genes of evolution: from manual assembly to autonomous restructuring.**<br>
-Configuration, implementation and composition belong to one evolution space. Agents can enable, disable, tune, replace, compose and author plugins.
+| Plugins are the genes of evolution | Evolution is a plugin | Evolution results are plugins |
+|:---|:---|:---|
+| **From manual assembly to autonomous restructuring.** Evolve plugin code, configuration and composition together. | **Equip an existing harness with the ability to evolve.** Research, coding and experiments run inside native DSH / Cordis. | **From benchmark scores to installable capabilities.** Carry improvements forward with Bundles, lineage and reproducible evidence. |
 
-**Evolution is a plugin: equip an existing harness with the ability to evolve.**<br>
-An Evolution Bundle and Preset bring research, coding and experimentation into the native DeepSeek Harness / Cordis ecosystem.
+**Enable · Disable · Tune · Replace · Compose · Create**
 
-**Evolution results are plugins: from benchmark scores to installable capabilities.**<br>
-Ship improvements with the original Bundle, candidate lineage, capability card and reproducible experiments.
+## 🔁 A harness that evolves harnesses
 
-## Quick start
+**The executor can evolve its capabilities. The optimizer can evolve its own approach.**
 
-**Explore a real experiment → [Open the interactive tour](https://oldyade.github.io/SparkVolve/)**<br>
-See an autonomous source change, compare per-task results across search / validation / reuse, and download the records. No installation, API key or model calls. [Read the code walkthrough](docs/experiments/anatomy-of-a-mutation.md).
+![Two levels of native Harness evolution: an optimizer changes executor plugins; a separate Optimizer Study compares optimizer candidates through matched searches. Independent evaluation and an experiment controller keep rules fixed.](docs/assets/readme/two-level-evolution.png)
 
-**Run SparkVolve → [Prepare your environment](docs/quick-start.md#preparation)**<br>
-Clone the repository. You need **Node.js 24, Python 3, Docker, an official DeepSeek key and a reserved private network pool**. Keep credentials outside the repository. First launch builds container images; model calls consume your provider quota.
+| Evolution target | What can change | What decides |
+|:---|:---|:---|
+| **H · Executor Harness** | Business tools, plugin code, configuration and assembly | Independently graded task deliveries |
+| **G · Optimizer Harness** | How it investigates, develops plugins and conducts experiments | The H candidates it produces from the same H0 under matched budget caps |
+
+**Evidence → Mutation → Build + QA → Execute → Grade → Select**
+
+Both run on **DeepSeek Harness / Cordis**. The Controller owns experiment rules, version identity, budgets and records; the Grader evaluates deliveries. Optimizer evolution runs as a separate **Optimizer Study**.
+
+[Native plugin authoring](docs/native-authoring.md) · [Behavioral probes](docs/behavioral-probes.md) · [Optimizer Studies](docs/optimizer-studies.md) · [Architecture](docs/architecture.md)
+
+## 📦 Take the capability with you
+
+**Install it. Inspect its history. Run it on your tasks.**
+
+![Three reusable outputs: Capability Bundle, Evolution Lineage and Evidence Package. A separate Optimizer Study can additionally deliver an Optimizer Bundle for future searches.](docs/assets/readme/evolution-deliverables.png)
+
+| Deliverable | Inside | Put it to work |
+|:---|:---|:---|
+| **Capability Bundle · H\*** | Original `bundle.tgz`, source, assembly and capability card | [Install into a fresh DSH Profile](docs/use-capability.md) |
+| **Evolution Lineage** | Candidate ancestry, source diffs, proposals and selection decisions | [Inspect a real mutation](docs/experiments/anatomy-of-a-mutation.md) |
+| **Evidence Package** | Scores, failures, usage, trace inventories and independent validation | [Audit and reproduce](docs/experiments/README.md) |
+| **Optimizer Bundle · G\*** | Selected optimizer source and frozen artifact, from a **separate study** | [Reuse an optimization method](docs/optimizer-studies.md) |
+
+Installed capabilities run in the native Agent Loop. Using them does not require running the evolution process again.
+
+<a id="quick-start"></a>
+
+## 🚀 Start evolving
+
+| Explore an experiment | Run your own |
+|:---|:---|
+| **[Open the live tour ↗](https://oldyade.github.io/SparkVolve/)** — source diffs, task results and downloadable records. No setup or API calls. | **[Prepare your environment](docs/quick-start.md#preparation)** — clone the repo; Node.js 24, Python 3, Docker, an official DeepSeek key and a reserved private network pool. |
 
 ```bash
 npm ci
 npm start -- --env-file /absolute/private/deepseek.env
 ```
 
-One entry builds the environment, freezes three task splits, runs the native DSH optimizer, independently validates H0 and the selected candidate, then installs the unchanged Bundle in clean Profiles for fresh reuse tasks. Defaults: official DeepSeek, a structured-data example and **600 seconds per task**. Replace tasks and the seed plugin with `--recipe`; Excel is an optional example. Scores, failures and original-package identity remain inspectable at every stage.
+**One entry: autonomous development → independent validation → original-package installation → fresh reuse.** Defaults: official DeepSeek, structured-data tasks, **600 seconds per task**. Keep credentials outside the repository. First launch builds images; model calls use your provider quota.
 
-| Your goal | Start here |
+**Bring your domain:** 🗂 Tasks + ⚙️ Runtime + 🧩 Seed plugins + ⚖️ Grader.
+
+Use `--recipe` to select a task setup; implement and validate an adapter for a new domain. [Structured data](docs/structured-data.md) and [Excel](examples/spreadsheet) are examples. Runtime integration is native to DSH / Cordis.
+
+[Full quick start](docs/quick-start.md) · [Add a domain](docs/domain-adapters.md) · [Install a capability](docs/use-capability.md)
+
+## 📊 From source change to shipped capability
+
+A real official DeepSeek run added **`workbook_recalculate`**, backed by LibreOffice, to a read/write plugin. The next candidate refined its tool descriptions.
+
+| Autonomous development | Independent validation | Original-package reuse |
+|:---:|:---:|:---:|
+| **56.25% → 81.25% → 100%** | **81.25% → 100%** | **4 / 4 tasks passed** |
+| H0 → H1 → H2 | Fresh H0 vs. H2 execution | Unchanged archive, clean Profiles |
+
+**[Read the actual source diff →](docs/experiments/anatomy-of-a-mutation.md)** · [Explore every phase](https://oldyade.github.io/SparkVolve/#experiment)
+
+Recorded synthetic-task results. Stable gains, cross-domain transfer and optimizer superiority remain open research questions.
+
+<details>
+<summary><strong>Research ledger — results, regressions and remaining work</strong></summary>
+
+| Record | What it establishes |
 |:---|:---|
-| Complete an evolution run | [Environment and startup](docs/quick-start.md) |
-| Use your own tasks | [Domain adapter interface](docs/domain-adapters.md) |
-| Use an evolved capability | [Install a capability Bundle](docs/use-capability.md) |
+| [Executor evolution](docs/experiments/2026-10-28-official-deepseek-results.md) | Real plugin implementation changes, independent validation and unchanged-archive reuse. This case did not change plugin topology. |
+| [Optimizer evolution](docs/experiments/2026-10-28-optimizer-study-results.md) | G1 was autonomously authored, built and run. It tied G0; G0 was retained. Added tools recorded zero native calls. |
+| [Mutation-space comparison](docs/experiments/2026-10-29-closure-study-results.md) | Three arms, six searches, twelve patches, 124 task scorings. Five searches retained H0; one candidate passed validation and reuse at 100%. No demonstrated method advantage. |
+| [One-command startup](docs/experiments/2026-10-29-official-closure-results.md) | Structured-data search, independent validation and original-package reuse completed; H0 was retained. |
 
-## How it works
+Complex cross-plugin behavioral acceptance and stronger research evidence remain open. [Implementation status](docs/completion.md) · [All experiments](docs/experiments/README.md) · [Research protocol](docs/research-protocol.md)
 
-![Native loop: task contract, DSH optimizer, plugin mutation, build and QA, DSH executor, independent grading; evidence feeds the optimizer and validated candidates become installable Bundles](docs/assets/readme/evolution-loop.png)
+</details>
 
-**The optimizer chooses what to change. The experiment system keeps comparisons grounded.**<br>
-A native DSH optimizer reads tasks, traces and deliveries, investigates causes and writes code. The controller freezes versions, enforces budgets, schedules work and records usage. An independent grader evaluates actual deliveries against fixed rules.
+## 🧭 Build on SparkVolve
 
-| Mutation | Evolution surface |
-|:---|:---|
-| **Enable / Disable** | Capabilities, dependencies and redundant plugins |
-| **Tune / Swap** | Configuration, prompts, Skills, tool implementations and interfaces |
-| **Compose / Author** | Plugin topology, scopes, event wiring and new capabilities |
+| Understand | Extend | Research | Ship |
+|:---|:---|:---|:---|
+| [Blueprint](11.md)<br>[Architecture](docs/architecture.md)<br>[Components](docs/components.md) | [User journey](docs/user-journey.md)<br>[Domain adapters](docs/domain-adapters.md)<br>[Compatibility](docs/compatibility.md) | [Experiment protocol](docs/research-protocol.md)<br>[Optimizer Studies](docs/optimizer-studies.md)<br>[Evidence index](docs/experiments/README.md) | [Install Bundles](docs/use-capability.md)<br>[Releasing](docs/releasing.md)<br>[Contributing](CONTRIBUTING.md) |
 
-Native authoring references, tool contracts and behavioral probes help the optimizer test its hypotheses. Candidates pass build and QA before real tasks. Improvements, regressions, failures and costs remain in the record. Independently validated changes can become installable capabilities.<br>
-Explore: [Native authoring](docs/native-authoring.md) · [Behavioral probes](docs/behavioral-probes.md) · [Architecture and recovery](docs/architecture.md)
-
-## Bring your tasks
-
-![Replace domain adapters while keeping the evolution engine: inputs, runtime, seed plugins and grader produce installable Bundles and reproducible evidence](docs/assets/readme/bring-your-task.png)
-
-**A general evolution framework, with tasks you define.** Business spreadsheets are the first example. Structured events and logs already use the same controller through a second domain adapter.
-
-| You provide | Purpose |
-|:---|:---|
-| **Tasks and inputs** | Goals, files, delivery format and stable task IDs |
-| **Runtime** | Model, dependencies and execution image |
-| **Seed plugins** | The starting capability, configuration and composition |
-| **Independent grader** | Scores and authorized feedback from actual deliveries |
-
-Set budgets and selection rules in the experiment contract, then run the same evolution loop. A new domain requires implementing and validating its adapter. **Task domains are replaceable; runtime integration is native to DSH / Cordis.** Integration with another Agent runtime requires its own implementation.
-
-[Spreadsheet example](examples/spreadsheet) · [Structured-data example](docs/structured-data.md) · **[Build your domain adapter →](docs/domain-adapters.md)**
-
-## Ship capabilities with evidence
-
-Each experiment produces three reusable assets:
-
-| Asset | What you receive | How to use it |
-|:---|:---|:---|
-| **Capability Bundle** | Original archive, plugin code, composition and file identity | [Install into a fresh Profile](docs/use-capability.md) |
-| **Evolution Lineage** | Versioned candidates, declared parents and source changes | [Inspect a real mutation](docs/experiments/anatomy-of-a-mutation.md) |
-| **Evidence Package** | Task scores, failures, usage and independent validation records | [Audit and reproduce the experiment](docs/experiments/README.md) |
-
-The [official DeepSeek end-to-end experiment](docs/experiments/2026-10-28-official-deepseek-results.md) completed autonomous plugin modification, independent validation and original-package installation:
-
-| Stage | Observed result |
-|:---|:---|
-| Autonomous development | H0 **56.25%** → H1 **81.25%** → H2 **100%** |
-| Independent execution | H0 **81.25%** → H2 **100%** |
-| Business tasks after original-archive installation | **4 / 4** synthetic tasks passed |
-
-**What changed?** H1 added `workbook_recalculate`, backed by LibreOffice, to a plugin that could only inspect and write. H2 kept that implementation and refined the tool descriptions. The [complete source diffs](docs/experiments/anatomy-of-a-mutation.md) and [phase-by-phase online results](https://oldyade.github.io/SparkVolve/#experiment) connect the mechanism to the recorded outcomes. This case did not change plugin topology.
-
-These are engineering acceptance results on public synthetic tasks. They do not establish stable improvement or cross-domain transfer. Regressions, semantic errors and transport failures remain public in the [experiment index](docs/experiments/README.md).
-
-The latest [mutation-space comparison and package reuse](docs/experiments/2026-10-29-closure-study-results.md) completed three arms, six independent searches and 124 task scorings. One autonomous candidate achieved 100% in independent validation and fresh original-package reuse. All twelve source patches, regression scores and semantic counterexamples are public; an advantage for unrestricted plugin mutation remains unproven. The [one-command startup acceptance](docs/experiments/2026-10-29-official-closure-results.md) separately verifies all stages on structured-data tasks.
-
-## Explore further
-
-| Direction | Documentation |
-|:---|:---|
-| **Understand the method** | [Blueprint](11.md) · [Architecture](docs/architecture.md) · [Components](docs/components.md) |
-| **Run and extend** | [Full walkthrough](docs/user-journey.md) · [Domain adapters](docs/domain-adapters.md) · [Compatibility](docs/compatibility.md) |
-| **Research and reproduce** | [Independent protocols](docs/research-protocol.md) · [Optimizer evolution](docs/optimizer-studies.md) · [Experiments](docs/experiments/README.md) |
-| **Ship and contribute** | [Install capabilities](docs/use-capability.md) · [Releasing](docs/releasing.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) |
-
-Contributions of task adapters, mutation mechanisms and reproducible studies are welcome. Bring your failure cases to [Issues](https://github.com/OLDyade/SparkVolve/issues).
+Bring a new domain, a mutation mechanism or a reproducible failure case. [Contribute](CONTRIBUTING.md) · [Open an issue](https://github.com/OLDyade/SparkVolve/issues) · [Security](SECURITY.md)
 
 ---
 
-Built on **DeepSeek Harness / Cordis** native plugins. [Apache-2.0](LICENSE) · [Attribution](NOTICE) · [Citation](CITATION.cff). This is a development version; npm publication and versioned releases are managed separately.
+Built on **DeepSeek Harness / Cordis** native plugins. [Apache-2.0](LICENSE) · [Attribution](NOTICE) · [Citation](CITATION.cff). Development version; registry publication and versioned releases are managed separately.
