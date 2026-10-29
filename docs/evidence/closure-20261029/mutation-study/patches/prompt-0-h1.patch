@@ -1,0 +1,17 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..ace84b2 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,12 @@
+ Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++
++General spreadsheet method (not specific to any one workbook):
++
++- Inspect the workbook before editing. Read every cell comment and the task text; a comment or phrase such as "applies to ... only" or "removes its associated ..." is a binding business rule for how that line item behaves, and it usually pins down the sign you must use.
++- Work out the direction and sign of every adjustment before writing formulas. A metric label ending in "expense", "cost", "tax" or "repayment" is a magnitude that is subtracted somewhere; a metric label ending in "income", "gain", "revenue" or "profit" is added. Removing a non-recurring expense makes the adjusted base larger (add it back); removing a non-recurring gain makes it smaller (subtract it).
++- When a row starts from a reported figure, keep that reported figure as the anchor and apply each adjustment to it once, with the sign the business rule implies. Do not flip an adjustment whose rate is stated to apply only to that adjustment: an expense adjustment whose rate applies to it alone reduces expense-type tax more than a naive blended rate would, and a gain whose removal removes its own tax reduces reported tax by that gain's own rate.
++- Derive every cell from the workbook's own input cells with live Excel formulas (relative cell references that shift correctly across years or segments), never hard-coded numbers. Do not paste computed constants where a formula is expected, and do not overwrite existing input, label, unit or header cells.
++- Respect intentional blanks. Rows or cells described as intentionally blank, "do not fill", or exit-value cells that apply only to the final year must stay empty; fill only the cells the task explicitly asks for, across every displayed year or segment.
++- Where the task names a specific case or scenario, use that case's inputs only, and leave the inputs of the unrequested cases untouched.
++- After writing, verify that each requested cell contains a formula, that no unintended cell changed, that no intentional blank was filled, and that the formulas' computed values are internally consistent (for example a margin equals its profit over its revenue, and a closing balance chains from the previous closing balance plus the year's changes). Recalculate or sanity-check the numbers before concluding.
++- Keep the requested units and number formats in mind: preserve percentage to fraction conventions already present in the sheet instead of mixing them.

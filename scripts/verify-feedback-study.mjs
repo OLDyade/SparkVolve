@@ -259,6 +259,38 @@ export function assertBaselineComplete(result, spec) {
       assert.ok(keys.has(`${task.id}:${repetition}`), 'Independent H0 validation has an unobserved slot');
 }
 
+/** Deliver every predeclared selection, including H0 selections and negative scores. */
+export async function deliverSelections(study, execute) {
+  const rows = [];
+  for (const job of study.jobs) {
+    const row = {
+      job: job.id,
+      comparisonArm: job.comparisonArm,
+      repetition: job.repetition,
+      selectedHarness: job.selectedHarness,
+      status: 'unavailable',
+      result: null,
+      error: null,
+    };
+    if (job.phase === 'complete' && job.selectedHarness) {
+      try {
+        row.result = await execute(job);
+        row.status = row.result.passed ? 'complete' : 'failed';
+      } catch (error) {
+        row.status = 'failed';
+        row.error = String(error);
+      }
+    }
+    rows.push(row);
+  }
+  return {
+    passed: rows.every((row) => row.status === 'complete'),
+    rows,
+    boundary:
+      'Fresh original-package installation and reuse. No method or candidate selection from reuse scores; no recommended release or semantic certification.',
+  };
+}
+
 export function validationComparison(study, baseline, spec) {
   const tasks = spec.cases[0].assessment.specification.tasks.map((task) => task.id);
   const base = baseline?.candidates?.[0];
@@ -353,7 +385,7 @@ export async function main(args = process.argv.slice(2)) {
   });
   if (values.help) {
     console.log(
-      'node --env-file=<private-env> scripts/verify-feedback-study.mjs --root <NEW> --image <immutable> --isolation <JSON file> --model <JSON file> --provider-directory <directory> --controller-ip <IPv4> [--comparison feedback|mutation-space] [--check-contracts] [--task-timeout-seconds 600]\nReal inference: feedback <=72 task executions; mutation-space <=104, plus optimizer calls. --check-contracts performs no inference. Existing roots and automatic retries are forbidden.',
+      'node --env-file=<private-env> scripts/verify-feedback-study.mjs --root <NEW> --image <immutable> --isolation <JSON file> --model <JSON file> --provider-directory <directory> --controller-ip <IPv4> [--comparison feedback|mutation-space] [--check-contracts] [--task-timeout-seconds 600]\nReal inference including original-package reuse: feedback <=88 task executions; mutation-space <=128, plus optimizer calls. --check-contracts performs no inference. Existing roots and automatic retries are forbidden.',
     );
     return;
   }
@@ -585,7 +617,8 @@ export async function main(args = process.argv.slice(2)) {
       return { specification, dataset: { directory: `cases/${split}`, digest: await treeDigest(directory) } };
     }
     const search = await dataset('development', 'search'),
-      assessment = await dataset('validation', 'validation');
+      assessment = await dataset('validation', 'validation'),
+      reuse = await dataset('reuse', 'validation');
     spec = (values.comparison === 'mutation-space' ? mutationRegistration : comparisonRegistration)(
       method,
       seed,
@@ -598,12 +631,21 @@ export async function main(args = process.argv.slice(2)) {
       repetitions: 2,
     });
     const allocation = validateStudyShape(spec, baseline, values.comparison);
+    const deliveryAllocation = {
+      taskExecutions: spec.arms.length * spec.repetitions * reuse.specification.tasks.length,
+      rule: 'Install each completed search selection once, using its original archive and a fresh Profile per registered reuse task. Unavailable selections are explicit, never replaced.',
+    };
+    const reuseFile = path.join(root, 'reuse-spec.json');
+    await atomicJSON(reuseFile, reuse.specification);
     await atomicJSON(path.join(root, 'study-spec.json'), spec);
     await atomicJSON(path.join(root, 'h0-validation-spec.json'), baseline);
     await atomicJSON(path.join(root, 'research-registration.json'), {
       studyDigest: digest(spec),
       baselineDigest: digest(baseline),
       allocation,
+      reuse,
+      deliveryAllocation,
+      totalTaskExecutionCeiling: allocation.totalTaskExecutions + deliveryAllocation.taskExecutions,
       generator: await fileDigest(path.join(generator, 'research.py')),
       evaluator: await fileDigest(path.join(generator, 'grade.py')),
       method,
@@ -622,6 +664,7 @@ export async function main(args = process.argv.slice(2)) {
     });
     receipt.registrationDigest = digest(spec);
     receipt.allocation = allocation;
+    receipt.deliveryAllocation = deliveryAllocation;
     await atomicJSON(path.join(root, 'contract-check.json'), {
       passed: true,
       inferenceRequested: false,
@@ -673,6 +716,68 @@ export async function main(args = process.argv.slice(2)) {
       } catch (error) {
         receipt.failures.push({ stage: 'h0-validation', error: redact(error.stack ?? error) });
       }
+      abort.signal.throwIfAborted();
+      const reports = await snapshotReports(root);
+      assert.ok(reports.study, 'No authoritative study report for delivery');
+      const delivery = path.join(root, 'delivery');
+      await mkdir(delivery);
+      const policy = path.join(root, 'install-policy.json');
+      await atomicJSON(
+        policy,
+        JSON.parse(
+          await run('runtime-install-policy', 'docker', [
+            'run',
+            '--rm',
+            '--network=none',
+            image,
+            'node',
+            '-e',
+            "process.stdout.write(JSON.stringify({allowBuilds:require('/app/package.json').allowScripts}))",
+          ]),
+        ),
+      );
+      receipt.delivery = await deliverSelections(reports.study, async (job) => {
+        abort.signal.throwIfAborted();
+        const output = path.join(delivery, job.id);
+        await mkdir(output);
+        const archive = path.join(output, 'capability');
+        await cli(`export-${job.id}`, [
+          'export',
+          '--root',
+          confined(studyRoot, job.childRoot),
+          '--candidate',
+          job.selectedHarness.source.digest,
+          '--output',
+          archive,
+        ]);
+        await run(`reuse-${job.id}`, process.execPath, [
+          'scripts/verify-installed-capability.mjs',
+          '--root',
+          path.join(output, 'installed'),
+          '--artifact',
+          path.join(archive, 'artifact'),
+          '--spec',
+          reuseFile,
+          '--dataset',
+          confined(inputs, reuse.dataset.directory),
+          '--install-policy',
+          policy,
+        ]);
+        const result = JSON.parse(await readFile(path.join(output, 'installed/acceptance.json'), 'utf8'));
+        return {
+          passed: result.passed,
+          bundleSha256: await fileDigest(path.join(archive, 'bundle.tgz')),
+          registeredBundleSha256: job.selectedHarness.artifact.identity.tarballDigest,
+          result: result.result,
+        };
+      });
+      await atomicJSON(path.join(root, 'delivery-report.json'), receipt.delivery);
+      if (!receipt.delivery.passed)
+        receipt.failures.push({
+          stage: 'delivery',
+          error:
+            'Incomplete original-package reuse; inspect delivery-report.json and retained per-task evidence',
+        });
     }
     receipt.passed = receipt.failures.length === 0;
   } catch (error) {

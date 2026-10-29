@@ -1,0 +1,513 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..0b59c18 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,15 @@
+ Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++
++1. Inspect first. Run `workbook_inspect` on the source and read every label, unit and comment. Note which cells are intentionally blank so they stay blank, and identify which rows are inputs and which are outputs.
++
++2. Derive each formula from the row and column labels, units and comments - not from a number you expect to see. Formulas must use A1 references to the workbook's own input cells so the model stays live; a hard-coded result is not an acceptable answer. When a metric builds on another computed row, reference that row rather than repeating its arithmetic.
++
++3. Write with `workbook_write`, `recalculate: true`, and a `checks` array for any model with arithmetic relationships (ratios, totals, roll-forwards, schedules). A check is an independent statement about the recalculated values that must hold for the model to be internally consistent, for example a margin equal to profit over revenue, a closing balance equal to opening minus repayments, or a total equal to the sum of its parts. Checks that fail are reported as warnings - fix the formula, do not relax the check.
++
++4. Verify before you stop:
++- `recalculation.recalculated` must be true; if it is false, fix the cause instead of delivering an unchecked file.
++- every formula you wrote has a numeric value in `values`, with no engine error such as `#VALUE!`, `#REF!` or `#NAME?`;
++- no `warnings` remain; a cell whose value was stored as text must be rewritten as a formula;
++- the numbers agree with the plan from the labels (units, signs, ratio ranges).
++
++5. Only write into destination cells the request asks for. Never overwrite source inputs, labels, year headers, units or intentional blanks, and keep the original comments.
+diff --git a/index.mjs b/index.mjs
+index 8b8f20c..88dfbd9 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -25,12 +25,27 @@ export function apply(ctx) {
+       child.stdin.end(JSON.stringify(args));
+     });
+   const output = { schema: { type: 'string' }, render: (_args, value) => [{ type: 'text', text: value }] };
++  const editItem = {
++    type: 'object',
++    additionalProperties: false,
++    properties: {
++      sheet: { type: 'string', required: true },
++      cell: { type: 'string', required: true },
++      value: { type: 'json', required: true },
++    },
++  };
+   ctx.tools.register(
+     defineTool({
+       name: 'workbook_inspect',
+       description:
+-        'Read exact occupied cells, formulas and comments in an XLSX workbook. Source labels are facts; this tool does not infer business semantics.',
+-      parameters: { file: { type: 'string', required: true } },
++        'Read exact occupied cells, formulas and comments in an XLSX workbook, plus sheet dimensions and merged ranges. Source labels are facts; this tool does not infer business semantics.',
++      parameters: {
++        file: { type: 'string', required: true },
++        values: {
++          type: 'boolean',
++          description: 'Also report cached formula results when the file stores them.',
++        },
++      },
+       output,
+       execute: (args, exec) => invoke({ operation: 'inspect', ...args }, exec.signal),
+     }),
+@@ -39,20 +54,28 @@ export function apply(ctx) {
+     defineTool({
+       name: 'workbook_write',
+       description:
+-        'Apply explicit caller-supplied values or formulas to a copy of an XLSX workbook. Preserve original input. Destination must be inside /workspace. Does not calculate formulas or certify correctness.',
++        'Apply explicit caller-supplied values or formulas to a copy of an XLSX workbook. Preserve original input. Destination must be inside /workspace. With recalculate=true the written file is recalculated by LibreOffice, so cells that do not recalculate on their own still hold current results; the response then lists the resulting value of each written cell and any engine errors or values accidentally stored as text.',
+       parameters: {
+         source: { type: 'string', required: true },
+         destination: { type: 'string', required: true },
+-        edits: {
++        edits: { type: 'array', required: true, items: editItem },
++        recalculate: {
++          type: 'boolean',
++          description:
++            'Recalculate the saved workbook with LibreOffice and report the resulting values (recommended before delivering).',
++        },
++        checks: {
+           type: 'array',
+-          required: true,
++          description:
++            'Self-consistency checks evaluated against the recalculated values, separate from expected answers. Each check names a sheet and the cells it uses; the expression is a Python expression that refers to those cells by their A1 name (e.g. "D9 == D8*(1+F4)"). The response reports ok/failure per check and emits a warning when a check fails or a written cell has no value.',
+           items: {
+             type: 'object',
+             additionalProperties: false,
+             properties: {
++              name: { type: 'string' },
+               sheet: { type: 'string', required: true },
+-              cell: { type: 'string', required: true },
+-              value: { type: 'json', required: true },
++              cells: { type: 'array', required: true, items: { type: 'string' } },
++              expression: { type: 'string', required: true },
+             },
+           },
+         },
+@@ -61,4 +84,17 @@ export function apply(ctx) {
+       execute: (args, exec) => invoke({ operation: 'write', ...args }, exec.signal),
+     }),
+   );
++  ctx.tools.register(
++    defineTool({
++      name: 'workbook_recalc',
++      description:
++        'Recalculate any XLSX workbook with LibreOffice and save the result inside /workspace, returning every computed value. Use it to check formulas against an independent engine or to refresh cached values before delivery.',
++      parameters: {
++        source: { type: 'string', required: true },
++        destination: { type: 'string', required: true },
++      },
++      output,
++      execute: (args, exec) => invoke({ operation: 'recalc', ...args }, exec.signal),
++    }),
++  );
+ }
+diff --git a/workbook.py b/workbook.py
+index 5b58d96..f363838 100644
+--- a/workbook.py
++++ b/workbook.py
+@@ -1,29 +1,377 @@
++"""Workbook helper used by the spreadsheet harness plugin.
++
++Operations (selected with the JSON `operation` field on stdin):
++
++  inspect  -- dump occupied cells, formulas and comments of a workbook.
++  write    -- apply caller-supplied values/formulas to a copy of a workbook,
++              verify the result and (optionally) recalculate it with an
++              independent engine so cached values are available to consumers
++              that do not recalculate.
++  recalc   -- recalculate any existing workbook to a destination.
++
++Design notes
++------------
++* The helper never decides what a formula should be: every value comes from
++  the caller. It only detects engine-level problems (formulas stored as text,
++  error values, out-of-range references) so a wrong edit is visible.
++* The standard library's ``zipfile`` writes a zip layout that the bundled
++  LibreOffice sometimes refuses to open, while openpyxl's own save path is
++  readable. The workbook is therefore always produced through openpyxl and
++  the recalculation input is always a fresh openpyxl save.
++"""
++
+ import json
++import os
++import re
++import shutil
++import subprocess
+ import sys
++import tempfile
+ from pathlib import Path
+-from openpyxl import load_workbook
+-from openpyxl.utils.cell import coordinate_to_tuple
+-
+-args = json.load(sys.stdin)
+-if args['operation'] == 'inspect':
+-    workbook = load_workbook(args['file'])
+-    print(json.dumps({sheet.title: [{'cell': cell.coordinate, 'value': cell.value, 'comment': cell.comment.text if cell.comment else None}
+-                                  for row in sheet for cell in row if cell.value is not None or cell.comment]
+-                      for sheet in workbook}, default=str))
+-elif args['operation'] == 'write':
+-    target = Path(args['destination']).resolve()
+-    if not target.is_relative_to('/workspace'):
+-        raise ValueError('Destination must be inside /workspace')
+-    workbook = load_workbook(args['source'])
++
++sys.dont_write_bytecode = True
++
++ERROR_TEXT = re.compile(r"^#(?:NULL!|DIV/0!|VALUE!|REF!|NAME\?|NUM!|N/A)$")
++
++from openpyxl import load_workbook  # noqa: E402
++from openpyxl.utils.cell import (  # noqa: E402
++    column_index_from_string,
++    coordinate_to_tuple,
++)
++
++
++# --------------------------------------------------------------------------
++# small helpers
++# --------------------------------------------------------------------------
++def resolve_inside(path, roots):
++    """Absolute path for `path`; reject anything outside an allowed root."""
++    target = Path(path).expanduser().resolve()
++    for root in roots:
++        try:
++            if target.is_relative_to(root):
++                return target
++        except OSError:
++            continue
++    raise ValueError(
++        "Path must be inside " + " or ".join(str(r) for r in roots) + f": {target}"
++    )
++
++
++def drop_readonly(path):
++    try:
++        if path.exists() and not os.access(path, os.W_OK):
++            path.chmod(path.stat().st_mode | 0o200)
++    except OSError:
++        pass
++
++
++def validate_formula(sheet, text):
++    """Return a list of engine-level problems with a formula string."""
++    problems = []
++    body = text[1:] if text[:1] == "=" else text
++    if not body.strip():
++        return ["empty formula"]
++    if body.count("(") != body.count(")"):
++        problems.append("unbalanced parentheses")
++    if body.count('"') % 2:
++        problems.append("unbalanced quotes")
++    # Drop sheet-qualified and function tokens before scanning references.
++    scrubbed = re.sub(r"'[^']*'!", "", body)
++    scrubbed = re.sub(r"[A-Za-z_][A-Za-z0-9_.]*!", "", scrubbed)
++    for match in re.finditer(r"\$?([A-Za-z]{1,3})\$?([0-9]{1,7})", scrubbed):
++        letters, digits = match.group(1), int(match.group(2))
++        try:
++            column_index_from_string(letters.upper())
++        except (ValueError, KeyError):
++            continue
++        if sheet.max_column and sheet.max_column + 1:
++            pass
++        if digits > 1048576:
++            problems.append(f"reference beyond the sheet grid ({match.group(0)})")
++    return problems
++
++
++def libreoffice_binary():
++    for name in ("soffice", "libreoffice"):
++        found = shutil.which(name)
++        if found:
++            return found
++    return None
++
++
++def recalculate(source, destination):
++    """Recalculate `source` with LibreOffice into `destination`.
++
++    The input is re-saved through openpyxl first: a zip layout produced by the
++    stdlib is not always readable by the bundled engine, while the openpyxl
++    writer is. Returns a dict describing the outcome; never raises for engine
++    problems so the caller can report them.
++    """
++    binary = libreoffice_binary()
++    if binary is None:
++        return {"recalculated": False, "reason": "LibreOffice not installed"}
++    work = Path(tempfile.mkdtemp(prefix="recalc-"))
++    try:
++        staged = work / "input" / "workbook.xlsx"
++        staged.parent.mkdir(parents=True, exist_ok=True)
++        load_workbook(source).save(staged)
++        out = work / "out"
++        out.mkdir()
++        proc = subprocess.run(
++            [binary, "--headless", "--convert-to", "xlsx", "--outdir", str(out), str(staged)],
++            capture_output=True,
++            text=True,
++            timeout=300,
++            cwd=str(work),
++        )
++        produced = out / "workbook.xlsx"
++        if not produced.is_file():
++            return {
++                "recalculated": False,
++                "reason": (proc.stderr or proc.stdout or "no output").strip()[-400:],
++            }
++        if compiled_values(produced) is None:
++            return {"recalculated": False, "reason": "recalculated file has no cached values"}
++        destination.parent.mkdir(parents=True, exist_ok=True)
++        drop_readonly(destination)
++        shutil.copyfile(produced, destination)
++        return {"recalculated": True}
++    except subprocess.TimeoutExpired:
++        return {"recalculated": False, "reason": "recalculation timed out"}
++    except Exception as exc:  # pragma: no cover - defensive
++        return {"recalculated": False, "reason": f"{type(exc).__name__}: {exc}"}
++    finally:
++        shutil.rmtree(work, ignore_errors=True)
++
++
++def compiled_values(path):
++    """Cached values of every non-empty cell, keyed Sheet!CELL; None if none."""
++    cached = load_workbook(path, data_only=True)
++    found = {}
++    for sheet in cached.worksheets:
++        for row in sheet.iter_rows():
++            for item in row:
++                if item.value is not None:
++                    found[f"{sheet.title}!{item.coordinate}"] = item.value
++    return found or None
++
++
++def formula_plan(book):
++    """Every formula cell in a workbook, with its stored text."""
++    plan = {}
++    for sheet in book.worksheets:
++        for row in sheet.iter_rows():
++            for item in row:
++                if isinstance(item.value, str) and item.value.startswith("="):
++                    plan[f"{sheet.title}!{item.coordinate}"] = str(item.value)
++    return plan
++
++
++def text_formula_cells(book):
++    """Cells whose stored value looks like a formula but is plain text."""
++    suspicious = []
++    for sheet in book.worksheets:
++        for row in sheet.iter_rows():
++            for item in row:
++                value = item.value
++                if isinstance(value, str) and not value.startswith("="):
++                    if re.search(r"[A-Za-z_]+\s*\(", value) and re.search(
++                        r"\d|[A-Za-z]{1,3}[0-9]+", value
++                    ):
++                        suspicious.append(f"{sheet.title}!{item.coordinate}")
++    return suspicious
++
++
++# --------------------------------------------------------------------------
++# operations
++# --------------------------------------------------------------------------
++def op_inspect(args):
++    path = resolve_inside(args["file"], [Path("/")])
++    book = load_workbook(path, data_only=bool(args.get("values")))
++    formulas = formula_plan(load_workbook(path))
++    payload = {"sheets": [sheet.title for sheet in book.worksheets], "cells": {}}
++    for sheet in book.worksheets:
++        cells = []
++        for row in sheet.iter_rows():
++            for item in row:
++                comment = item.comment.text if item.comment else None
++                if item.value is None and not comment:
++                    continue
++                entry = {
++                    "cell": item.coordinate,
++                    "comment": comment,
++                    "type": item.data_type,
++                    "value": item.value,
++                }
++                key = f"{sheet.title}!{item.coordinate}"
++                if key in formulas:
++                    entry["formula"] = formulas[key]
++                cells.append(entry)
++        payload["cells"][sheet.title] = cells
++        payload.setdefault("dimensions", {})[sheet.title] = sheet.dimensions
++        payload.setdefault("merged", {})[sheet.title] = [
++            str(span) for span in sheet.merged_cells.ranges
++        ]
++        payload.setdefault("comments", {})
++        payload["comments"][sheet.title] = {
++            f"{sheet.title}!{item.coordinate}": item.comment.text
++            for row in sheet.iter_rows()
++            for item in row
++            if item.comment
++        }
++    payload["formula_count"] = len(formulas)
++    payload["formulas"] = formulas
++    return payload
++
++
++def op_write(args):
++    source = resolve_inside(args["source"], [Path("/")])
++    destination = resolve_inside(args["destination"], [Path("/workspace")])
++    book = load_workbook(source)
+     seen = set()
+-    for edit in args['edits']:
+-        position = (edit['sheet'], coordinate_to_tuple(edit['cell']))
+-        if position in seen:
+-            raise ValueError('Duplicate target')
+-        seen.add(position)
+-        workbook[edit['sheet']][edit['cell']] = edit['value']
+-    target.parent.mkdir(parents=True, exist_ok=True)
+-    workbook.save(target)
+-    print(json.dumps({'saved': str(target), 'submitted_cells': len(seen), 'formula_values_recalculated': False}))
+-else:
+-    raise ValueError('Unknown workbook operation')
++    warnings = []
++    for edit in args["edits"]:
++        name = edit["sheet"]
++        if name not in book.sheetnames:
++            raise ValueError(f"unknown sheet: {name!r}; available: {book.sheetnames}")
++        sheet = book[name]
++        reference = str(edit["cell"]).replace("$", "")
++        row, col = coordinate_to_tuple(reference)
++        if row > 1048576 or col > 16384:
++            raise ValueError(f"cell outside the sheet grid: {reference}")
++        key = (name, row, col)
++        if key in seen:
++            raise ValueError(f"duplicate target {name}!{reference}")
++        seen.add(key)
++        value = edit["value"]
++        if isinstance(value, str) and value[:1] == "=":
++            problems = validate_formula(sheet, value)
++            if problems:
++                warnings.append(f"{name}!{reference}: " + ", ".join(problems))
++        sheet.cell(row=row, column=col).value = value
++    destination.parent.mkdir(parents=True, exist_ok=True)
++    drop_readonly(destination)
++    book.save(destination)
++
++    result = {
++        "saved": str(destination),
++        "submitted_cells": len(seen),
++        "formula_values_recalculated": False,
++    }
++    recalculated = None
++    if args.get("recalculate"):
++        recalculated = recalculate(destination, destination)
++        result["formula_values_recalculated"] = bool(recalculated.get("recalculated"))
++        result["recalculation"] = recalculated
++
++    final = load_workbook(destination)
++    textish = text_formula_cells(final)
++    if textish:
++        warnings.append("values stored as text rather than formulas: " + ", ".join(textish[:20]))
++
++    if result["formula_values_recalculated"]:
++        formulas = formula_plan(final)
++        values = compiled_values(destination) or {}
++        error_cells = [
++            f"{cell} (formula {formulas.get(cell)})"
++            for cell, value in values.items()
++            if isinstance(value, str) and ERROR_TEXT.match(value.strip())
++        ]
++        if error_cells:
++            warnings.append("engine returned error values at " + ", ".join(error_cells[:20]))
++        written = {
++            f"{edit['sheet']}!{str(edit['cell']).replace('$', '')}" for edit in args["edits"]
++        }
++        blank = [name for name in written if name not in values]
++        if blank:
++            warnings.append(
++                "written cells have no computed result (check the formula): "
++                + ", ".join(sorted(blank)[:20])
++            )
++        unwritten = [name for name in formulas if name not in values and name not in written]
++        if unwritten:
++            warnings.append(
++                "other formula cells produced no value: " + ", ".join(sorted(unwritten)[:20])
++            )
++        checks = args.get("checks") or []
++        check_report = []
++        for check in checks:
++            cells = [str(item).replace("$", "") for item in check.get("cells", [])]
++            missing_checks = [name for name in cells if f"{check['sheet']}!{name}" not in values]
++            if missing_checks:
++                check_report.append(
++                    {
++                        "name": check.get("name"),
++                        "ok": False,
++                        "reason": "no computed value at " + ", ".join(missing_checks[:10]),
++                    }
++                )
++                continue
++            expressions = {}
++            for name in cells:
++                if not re.fullmatch(r"[A-Za-z]{1,3}[0-9]+", name):
++                    continue
++                expressions[name] = values[f"{check['sheet']}!{name}"]
++            try:
++                expression = str(check["expression"])
++                outcome = bool(eval(expression, {"__builtins__": {}}, dict(expressions)))
++                check_report.append(
++                    {"name": check.get("name"), "ok": outcome, "expression": expression}
++                )
++            except Exception as exc:  # malformed expression or non-numeric cells
++                check_report.append(
++                    {
++                        "name": check.get("name"),
++                        "ok": False,
++                        "reason": f"{type(exc).__name__}: {exc}",
++                    }
++                )
++        failures = [entry for entry in check_report if not entry.get("ok")]
++        if failures:
++            warnings.append(
++                "independent check failed: "
++                + ", ".join(str(entry.get("name") or entry.get("expression")) for entry in failures)
++            )
++        if check_report:
++            result["checks"] = check_report
++        filled = {}
++        for edit in args["edits"]:
++            key = f"{edit['sheet']}!{str(edit['cell']).replace('$', '')}"
++            if key in values:
++                filled[key] = values[key]
++        result["values"] = filled
++    if warnings:
++        result["warnings"] = warnings
++    return result
++
++
++def op_recalc(args):
++    source = resolve_inside(args["source"], [Path("/")])
++    destination = resolve_inside(args["destination"], [Path("/workspace")])
++    outcome = recalculate(source, destination)
++    if outcome.get("recalculated"):
++        outcome["saved"] = str(destination)
++        outcome["values"] = compiled_values(destination)
++    return outcome
++
++
++def main():
++    args = json.loads(sys.stdin.read())
++    operation = args.get("operation")
++    if operation == "inspect":
++        result = op_inspect(args)
++    elif operation == "write":
++        result = op_write(args)
++    elif operation == "recalc":
++        result = op_recalc(args)
++    else:
++        raise ValueError("Unknown workbook operation")
++    print(json.dumps(result, default=str))
++
++
++if __name__ == "__main__":
++    try:
++        main()
++    except Exception as exc:
++        sys.stderr.write(f"{type(exc).__name__}: {exc}\n")
++        sys.exit(1)

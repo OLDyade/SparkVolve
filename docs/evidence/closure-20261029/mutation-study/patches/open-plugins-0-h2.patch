@@ -1,0 +1,498 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..d155f85 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,12 @@
+ Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++
++A workbook is a small model, not a guess. Read the whole sheet before editing anything: labels, units, time periods, input values and every cell comment. Comments often carry the intended business rule, so treat them as the primary specification. Then verify the layout — figure out where each requested output truly belongs from the surrounding labels, and how values flow left to right across periods and top to bottom through the statements.
++
++Rules of thumb:
++- Enter live Excel formulas rather than hard-coded numbers. Reference the cells that hold the inputs (and blank cells that will later hold previous-period outputs) so that changing an assumption recalculates the model. Build the first period, then use relative references to extend across the remaining periods.
++- Keep every original input, label, unit and intentional blank untouched. A blank the task calls intentional stays blank unless the task asks you to fill it. Do not add helper rows, headers or scratch cells to the delivered workbook.
++- Respect units, signs and scaling. Tax rates, margins and growth rates are fractions as stored; check whether a rate cell is annual or per-period.
++- When the prompt names only some years, cells, or a specific final year, fill exactly that subset.
++- After writing, reread the delivered file with recalculation and confirm that every derived cell resolves to a plausible number with no #REF!, #DIV/0!, #NAME? or #VALUE! errors, that totals reconcile with their components, and that untouched inputs are unchanged.
++- A workbook may contain more than one sheet, and the requested output may sit on a different sheet from the inputs; check every sheet before concluding a number is missing. When labels, cells or sheets are ambiguous, resolve the ambiguity from the source file rather than assuming a layout.
++- If a function returns #NAME? in this environment, that function is unsupported here; rewrite it with functions that compute instead.
+diff --git a/index.mjs b/index.mjs
+index 8b8f20c..23fea76 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -29,8 +29,11 @@ export function apply(ctx) {
+     defineTool({
+       name: 'workbook_inspect',
+       description:
+-        'Read exact occupied cells, formulas and comments in an XLSX workbook. Source labels are facts; this tool does not infer business semantics.',
+-      parameters: { file: { type: 'string', required: true } },
++        'Read every occupied cell of an XLSX (or CSV) workbook as JSON: raw values, formulas, cell comments, column widths, and per-sheet layout. Set recalculate=true to also return each formula\'s computed result from a real spreadsheet engine, which reveals broken references or formula errors. Source labels are facts; this tool does not infer business semantics.',
++      parameters: {
++        file: { type: 'string', required: true },
++        recalculate: { type: 'boolean' },
++      },
+       output,
+       execute: (args, exec) => invoke({ operation: 'inspect', ...args }, exec.signal),
+     }),
+@@ -39,10 +42,11 @@ export function apply(ctx) {
+     defineTool({
+       name: 'workbook_write',
+       description:
+-        'Apply explicit caller-supplied values or formulas to a copy of an XLSX workbook. Preserve original input. Destination must be inside /workspace. Does not calculate formulas or certify correctness.',
++        'Apply explicit caller-supplied values or formulas to a copy of an XLSX (or CSV) workbook and save it inside /workspace. Each edit sets either "value" (literal) or "formula" (a string beginning with "="), never both. Optionally add "fill": {"rows": n, "columns": m} or "fill": {"range": "B4:E4"} to repeat that cell across a rectangle, translating relative references automatically ($ anchors stay fixed) and overwriting every target it reaches. Set recalculate=true to have a real spreadsheet engine compute every formula and store the results before saving, so the delivered file carries up-to-date cached values. Disable Excel auto-dates for date serials. Does not certify business correctness.',
+       parameters: {
+         source: { type: 'string', required: true },
+         destination: { type: 'string', required: true },
++        recalculate: { type: 'boolean' },
+         edits: {
+           type: 'array',
+           required: true,
+@@ -52,7 +56,16 @@ export function apply(ctx) {
+             properties: {
+               sheet: { type: 'string', required: true },
+               cell: { type: 'string', required: true },
+-              value: { type: 'json', required: true },
++              value: { type: 'json' },
++              formula: { type: 'string' },
++              fill: {
++                type: 'object',
++                properties: {
++                  rows: { type: 'number' },
++                  columns: { type: 'number' },
++                  range: { type: 'string' },
++                },
++              },
+             },
+           },
+         },
+@@ -61,4 +74,23 @@ export function apply(ctx) {
+       execute: (args, exec) => invoke({ operation: 'write', ...args }, exec.signal),
+     }),
+   );
++  ctx.tools.register(
++    defineTool({
++      name: 'workbook_extract',
++      description:
++        'Return the literal contents of selected cells or ranges from an XLSX workbook, so you can read a source file as values without guessing its layout. "values" maps a label you choose to {"sheet": "<sheet name>", "range": "<A1 range or single cell>"}; omit "sheet" to use the top-level sheet. Set recalculate=true to also return computed results for formulas. Reports comments and any formula error.',
++      parameters: {
++        source: { type: 'string', required: true },
++        sheet: { type: 'string' },
++        recalculate: { type: 'boolean' },
++        values: {
++          type: 'object',
++          additionalProperties: true,
++          required: true,
++        },
++      },
++      output,
++      execute: (args, exec) => invoke({ operation: 'extract', ...args }, exec.signal),
++    }),
++  );
+ }
+diff --git a/workbook.py b/workbook.py
+index 5b58d96..b85c4dc 100644
+--- a/workbook.py
++++ b/workbook.py
+@@ -1,29 +1,379 @@
++import csv
+ import json
++import os
++import shutil
++import subprocess
+ import sys
++import tempfile
++import re
+ from pathlib import Path
+-from openpyxl import load_workbook
++
++from openpyxl import Workbook, load_workbook
+ from openpyxl.utils.cell import coordinate_to_tuple
++from openpyxl.utils import get_column_letter
++
++WORKSPACE_ROOT = Path('/workspace')
++SOFFICE = shutil.which('soffice') or shutil.which('libreoffice')
++
++
++def plain(value):
++    if value is None or isinstance(value, (bool, int, float, str)):
++        return value
++    return str(value)
++
++
++def _coerce(value):
++    if value is None or isinstance(value, (bool, int, float)):
++        return value
++    if isinstance(value, str):
++        text = value.strip()
++        if text == '':
++            return None
++        try:
++            return int(text)
++        except ValueError:
++            pass
++        try:
++            return float(text)
++        except ValueError:
++            pass
++        return value
++    raise ValueError('Unsupported cell value {!r}'.format(value))
++
++
++def is_formula(value):
++    return isinstance(value, str) and value.lstrip().startswith('=')
++
++
++def describe(source, values_path=None):
++    workbook = load_workbook(source, data_only=False)
++    values = load_workbook(values_path, data_only=True) if values_path else None
++    out = {'file': str(source), 'sheets': workbook.sheetnames, 'data': {}}
++    for sheet in workbook:
++        entries = []
++        value_sheet = values[sheet.title] if values and sheet.title in values.sheetnames else None
++        for row in sheet.iter_rows():
++            for cell in row:
++                value = cell.value
++                comment = cell.comment.text if cell.comment else None
++                recalc = None
++                if is_formula(value) and value_sheet is not None:
++                    recalc = plain(value_sheet[cell.coordinate].value)
++                if value is None and comment is None and recalc is None:
++                    continue
++                entry = {'cell': cell.coordinate}
++                if is_formula(value):
++                    entry['formula'] = plain(value)
++                    entry['type'] = 'f'
++                    if value_sheet is not None:
++                        entry['computed'] = recalc
++                        if isinstance(recalc, str):
++                            entry['error'] = recalc
++                else:
++                    entry['value'] = plain(value)
++                    entry['type'] = cell.data_type
++                if comment is not None:
++                    entry['comment'] = comment
++                entries.append(entry)
++        block = {'cells': entries}
++        widths = {key: round(dim.width, 2) for key, dim in sheet.column_dimensions.items() if dim.width}
++        if widths:
++            block['column_widths'] = widths
++        out['data'][sheet.title] = block
++    return out
++
++
++def shift_formula(formula, drow, dcol):
++    """Translate relative A1 references in a formula, keeping $ anchors fixed."""
++    if not drow and not dcol:
++        return formula
++    pattern = re.compile(r"(?<![A-Za-z0-9_'!])(\$?)([A-Z]{1,3})(\$?)([0-9]{1,7})(?![A-Za-z0-9_(])")
++    def move(match):
++        col_abs, col, row_abs, row = match.groups()
++        column = 0
++        for char in col:
++            column = column * 26 + ord(char) - 64
++        row_number = int(row)
++        if not col_abs:
++            column += dcol
++        if not row_abs:
++            row_number += drow
++        if column < 1 or row_number < 1:
++            raise ValueError('Formula fill would move a reference off the sheet: {}'.format(formula))
++        letters = ''
++        value = column
++        while value:
++            value, remainder = divmod(value - 1, 26)
++            letters = chr(65 + remainder) + letters
++        return ''.join([col_abs, letters, row_abs, str(row_number)])
++    try:
++        return pattern.sub(move, formula)
++    except ValueError:
++        raise
++
++
++def expand_edits(edits):
++    order = {}
++    for index, edit in enumerate(edits):
++        order[(edit['sheet'], edit['cell'].replace('$', ''))] = index
++    expanded = list(edits)
++    for edit in edits:
++        spec = edit.get('fill')
++        if not spec:
++            continue
++        sheet = edit['sheet']
++        start = coordinate_to_tuple(edit['cell'].replace('$', ''))
++        if 'range' in spec:
++            end = coordinate_to_tuple(spec['range'].split(':')[-1].replace('$', ''))
++        else:
++            end = (start[0] + int(spec.get('rows', 0)), start[1] + int(spec.get('columns', 0)))
++        if end[0] < start[0] or end[1] < start[1]:
++            raise ValueError('Fill range must extend from {}'.format(edit['cell']))
++        base_formula = edit.get('formula')
++        base_value = edit.get('value')
++        for row in range(start[0], end[0] + 1):
++            for col in range(start[1], end[1] + 1):
++                if row == start[0] and col == start[1]:
++                    continue
++                from openpyxl.utils import get_column_letter
++                coordinate = '{}{}'.format(get_column_letter(col), row)
++                drow, dcol = row - start[0], col - start[1]
++                generated = {'sheet': sheet, 'cell': coordinate}
++                if base_formula is not None:
++                    generated['formula'] = shift_formula(base_formula, drow, dcol)
++                else:
++                    generated['value'] = base_value
++                key = (sheet, coordinate)
++                if key in order:
++                    expanded[order[key]] = generated
++                else:
++                    order[key] = len(expanded)
++                    expanded.append(generated)
++    for item in expanded:
++        item.pop('fill', None)
++    ordered = []
++    final = set()
++    for item in reversed(expanded):
++        key = (item['sheet'], item['cell'].replace('$', ''))
++        if key in final:
++            continue
++        final.add(key)
++        ordered.append(item)
++    ordered.reverse()
++    return ordered
++
++
++def resolve_sheet(workbook, name):
++    """Find a worksheet tolerating case and spacing differences."""
++    target = str(name or '').strip().strip("'")
++    if target in workbook.sheetnames:
++        return target
++    for candidate in workbook.sheetnames:
++        if candidate.strip().lower() == target.lower():
++            return candidate
++    if len(workbook.sheetnames) == 1:
++        return workbook.sheetnames[0]
++    raise ValueError('Unknown sheet {!r}; sheets: {}'.format(name, workbook.sheetnames))
++
++
++def read_sheet_values(workbook, name):
++    """Raw contents of one worksheet as {normalized address: cell value}."""
++    canonical = resolve_sheet(workbook, name)
++    sheet = workbook[canonical]
++    cells = {}
++    for row in sheet.iter_rows():
++        for cell in row:
++            if cell.value is None:
++                continue
++            cells[str(cell.coordinate).replace('$', '').upper()] = cell.value
++    return canonical, cells
++
++
++def extract_workbook(source_path, values_path, selection):
++    """Return the literal contents selected by a caller-supplied query.
++
++    Selection keys name a source sheet and a set of cells or rectangular ranges.
++    """
++    source = load_workbook(source_path, data_only=False)
++    values = load_workbook(values_path, data_only=True) if values_path else None
++    default_sheet = selection.get('sheet')
++    out = {}
++    for key, spec in (selection.get('values') or {}).items():
++        if isinstance(spec, str):
++            spec = {'sheet': default_sheet, 'range': spec}
++        sheet_name = spec.get('sheet') or default_sheet
++        canonical = resolve_sheet(source, sheet_name)
++        block = extract_block(source, values, canonical, spec)
++        out[key] = block
++    return out
++
++
++def extract_block(source, values, sheet_name, spec):
++    from openpyxl.utils.cell import range_boundaries
++    sheet = source[sheet_name]
++    value_sheet = values[sheet_name] if values and sheet_name in values.sheetnames else None
++    area = spec.get('range') or spec.get('cell')
++    addresses = []
++    if not area:
++        raise ValueError('An extraction needs a range or cell')
++    cleaned = str(area).replace('$', '').replace(' ', '')
++    if ':' in cleaned:
++        left, right = cleaned.split(':')
++        min_col, min_row, max_col, max_row = range_boundaries('{}:{}'.format(left, right))
++    else:
++        min_col, min_row, max_col, max_row = range_boundaries('{}:{}'.format(cleaned, cleaned))
++    entries = []
++    for row in range(min_row, max_row + 1):
++        line = []
++        for col in range(min_col, max_col + 1):
++            cell = sheet.cell(row=row, column=col)
++            entry = {'cell': cell.coordinate}
++            if is_formula(cell.value):
++                entry['formula'] = plain(cell.value)
++                if value_sheet is not None:
++                    entry['computed'] = plain(value_sheet[cell.coordinate].value)
++                    if isinstance(entry['computed'], str) and entry['computed'].startswith('#'):
++                        entry['error'] = entry['computed']
++            else:
++                entry['value'] = plain(cell.value)
++            if cell.comment:
++                entry['comment'] = cell.comment.text
++            line.append(entry)
++        entries.append(line)
++    return {'sheet': sheet_name, 'range': '{}{}:{}{}'.format(
++        get_column_letter(min_col), min_row, get_column_letter(max_col), max_row), 'cells': entries}
++
++
++def recalculate(path):
++    """Open a copy in LibreOffice and re-save so stored formula values exist.
++
++    Returns the path of a self-contained copy of the computed workbook that the
++    caller owns."""
++    root = Path(tempfile.mkdtemp(prefix='recalc-'))
++    try:
++        source_dir = root / 'in'
++        target_dir = root / 'out'
++        source_dir.mkdir()
++        target_dir.mkdir()
++        staged = source_dir / 'workbook.xlsx'
++        shutil.copyfile(path, staged)
++        env = dict(os.environ)
++        env['HOME'] = str(root)
++        command = [SOFFICE, '--headless', '--norestore', '--nolockcheck',
++                   '-env:UserInstallation=file://' + str(root / 'profile'),
++                   '--convert-to', 'xlsx', '--outdir', str(target_dir), str(staged)]
++        try:
++            subprocess.run(command, check=True, capture_output=True, timeout=240, env=env)
++        except (subprocess.SubprocessError, OSError) as error:
++            raise RuntimeError('LibreOffice recalculation failed: {}'.format(error))
++        produced = target_dir / 'workbook.xlsx'
++        if not produced.exists():
++            raise RuntimeError('LibreOffice produced no workbook')
++        owned = Path(tempfile.mkdtemp(prefix='computed-')) / 'workbook.xlsx'
++        shutil.copyfile(produced, owned)
++        return owned
++    finally:
++        shutil.rmtree(root, ignore_errors=True)
++
++
++def main():
++    args = json.load(sys.stdin)
++    operation = args['operation']
++    if operation == 'inspect':
++        file = args['file']
++        if args.get('recalculate'):
++            produced = recalculate(file)
++            try:
++                report = describe(file, values_path=str(produced))
++            finally:
++                shutil.rmtree(produced.parent, ignore_errors=True)
++            report['recalculated'] = True
++        else:
++            report = describe(file)
++            report['recalculated'] = False
++            report['note'] = 'Formula results are only included when recalculate is true.'
++        print(json.dumps(report, default=str))
++    elif operation == 'extract':
++        values = args.get('recalculated') or {}
++        if args.get('recalculate'):
++            produced = recalculate(args['source'])
++            try:
++                report = extract_workbook(args['source'], str(produced), args)
++            finally:
++                shutil.rmtree(produced.parent, ignore_errors=True)
++            report['computed'] = True
++        else:
++            report = extract_workbook(args['source'], None, args)
++            report['computed'] = False
++        print(json.dumps(report, default=str))
++    elif operation == 'write':
++        target = Path(args['destination']).resolve()
++        if not target.is_relative_to(WORKSPACE_ROOT):
++            raise ValueError('Destination must be inside /workspace')
++        source = args['source']
++        if not Path(source).exists():
++            candidates = [Path(WORKSPACE_ROOT) / Path(source).name]
++            if len(candidates) == 1 and candidates[0].exists():
++                source = str(candidates[0])
++                print('note: read missing source from ' + source, file=sys.stderr)
++            else:
++                raise ValueError('Source workbook {} does not exist'.format(args['source']))
++        if source.lower().endswith('.csv'):
++            workbook = Workbook()
++            sheet = workbook.active
++            sheet.title = args.get('sheet') or 'Sheet1'
++            with open(source, newline='', encoding='utf-8-sig') as handle:
++                for row in csv.reader(handle):
++                    sheet.append([None if value == '' else _coerce(value) for value in row])
++        else:
++            workbook = load_workbook(source)
++        edits = expand_edits(args['edits'])
++        seen = set()
++        notes = []
++        for edit in edits:
++            formula = edit.get('formula')
++            if formula is not None:
++                if not is_formula(formula):
++                    raise ValueError('formula must start with "=" in {}'.format(edit['cell']))
++                value = formula
++            else:
++                value = _coerce(edit.get('value'))
++            try:
++                sheet_name = resolve_sheet(workbook, edit['sheet'])
++            except ValueError:
++                raise ValueError('Unknown sheet {!r}; sheets: {}'.format(edit['sheet'], workbook.sheetnames))
++            if sheet_name != edit['sheet']:
++                notes.append('sheet {} -> {}'.format(edit['sheet'], sheet_name))
++            coordinate = edit['cell'].replace('$', '')
++            position = coordinate_to_tuple(coordinate)
++            seen.add((sheet_name, position))
++            workbook[sheet_name][coordinate] = value
++        target.parent.mkdir(parents=True, exist_ok=True)
++        recalc = bool(args.get('recalculate'))
++        staged = target.with_name('.staged-' + target.name)
++        workbook.save(staged)
++        try:
++            if recalc:
++                produced = recalculate(staged)
++                shutil.copyfile(produced, target)
++                shutil.rmtree(produced.parent, ignore_errors=True)
++            else:
++                shutil.copyfile(staged, target)
++        finally:
++            if staged.exists():
++                staged.unlink()
++        result = {'saved': str(target), 'submitted_cells': len(seen),
++                  'formula_values_recalculated': recalc}
++        if notes:
++            result['notes'] = sorted(set(notes))
++        print(json.dumps(result))
++    else:
++        raise ValueError('Unknown workbook operation')
++
+ 
+-args = json.load(sys.stdin)
+-if args['operation'] == 'inspect':
+-    workbook = load_workbook(args['file'])
+-    print(json.dumps({sheet.title: [{'cell': cell.coordinate, 'value': cell.value, 'comment': cell.comment.text if cell.comment else None}
+-                                  for row in sheet for cell in row if cell.value is not None or cell.comment]
+-                      for sheet in workbook}, default=str))
+-elif args['operation'] == 'write':
+-    target = Path(args['destination']).resolve()
+-    if not target.is_relative_to('/workspace'):
+-        raise ValueError('Destination must be inside /workspace')
+-    workbook = load_workbook(args['source'])
+-    seen = set()
+-    for edit in args['edits']:
+-        position = (edit['sheet'], coordinate_to_tuple(edit['cell']))
+-        if position in seen:
+-            raise ValueError('Duplicate target')
+-        seen.add(position)
+-        workbook[edit['sheet']][edit['cell']] = edit['value']
+-    target.parent.mkdir(parents=True, exist_ok=True)
+-    workbook.save(target)
+-    print(json.dumps({'saved': str(target), 'submitted_cells': len(seen), 'formula_values_recalculated': False}))
+-else:
+-    raise ValueError('Unknown workbook operation')
++if __name__ == '__main__':
++    try:
++        main()
++    except Exception as error:
++        print(str(error), file=sys.stderr)
++        sys.exit(1)

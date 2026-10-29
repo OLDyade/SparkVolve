@@ -1,0 +1,199 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..5bcea7c 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,13 @@
+-Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++Spreadsheet task guidance.
++
++A. INSPECT API. Call workbook_inspect on the source. It returns every occupied cell with its stored value/formula, comment, computed value and column width, the used range and each column's dominant type (numeric / text). Read all comments, note the header row, and note intentional blanks.
++
++B. LAYOUT & PERIOD ALIGNMENT. Map header columns to output columns. If a value lives in a column whose header year precedes the first forecast year (a "historical" / "opening" / "pre-period" input), that column anchors the forecast and is NOT itself a forecast period: forecast growth applies to the NEXT column. Comments such as "precedes the first displayed forecast year" confirm this. When in doubt, check whether a cell in the anchoring column already holds a value; if yes it is an input, not a forecast output.
++
++C. SCENARIO SELECTION. If base-case rows and requested/selected-case rows coexist (base growth vs requested case growth, base margin vs requested case margin), forecast outputs use the REQUESTED case only. Only fall back to the base rows when no requested-case row exists.
++
++D. FORMULAS ONLY. Every computed output cell must be an Excel formula referencing in-workbook input cells. Typed constants count as wrong because the workbook is recalculated independently. Use a consistent relative-reference pattern across periods and check the first cell of each row before mirroring.
++
++E. COVERAGE. The task enumerates sections: fill every enumerated output row across every period the task asks for, and leave the cells the task calls intentionally blank untouched. If the task names a final-year-only value, compute it only there.
++
++F. VERIFY. Call workbook_audit on the delivered file. It reports: which cells hold formulas, whether each has a computed value or an error, every enumerated formula range, formula errors, and a diff versus the source confirming original inputs, labels, units, comments and intentional blanks are preserved. Fix any formula error, any requested output that is still empty, and any unintended change to source inputs, writing a fresh copy before completing. Deliver to the exact path the task requests (commonly /workspace/result.xlsx).
+diff --git a/index.mjs b/index.mjs
+index 8b8f20c..d86a593 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -61,4 +61,28 @@ export function apply(ctx) {
+       execute: (args, exec) => invoke({ operation: 'write', ...args }, exec.signal),
+     }),
+   );
++  ctx.tools.register(
++    defineTool({
++      name: 'workbook_audit',
++      description:
++        'Audit a delivered XLSX: recalculates it, lists every formula cell, flags formulas with no computed value or an error, reports the contents of caller-declared cell ranges so you can check every requested output is filled, and diffs against the source workbook to confirm original inputs, labels and comments are preserved.',
++      parameters: {
++        file: { type: 'string', required: true },
++        source: { type: 'string' },
++        enumerated_ranges: {
++          type: 'array',
++          items: {
++            type: 'object',
++            additionalProperties: false,
++            properties: {
++              sheet: { type: 'string', required: true },
++              range: { type: 'string', required: true },
++            },
++          },
++        },
++      },
++      output,
++      execute: (args, exec) => invoke({ operation: 'audit', ...args }, exec.signal),
++    }),
++  );
+ }
+diff --git a/workbook.py b/workbook.py
+index 5b58d96..2c30c64 100644
+--- a/workbook.py
++++ b/workbook.py
+@@ -1,16 +1,74 @@
+ import json
++import re
++import subprocess
+ import sys
++import tempfile
+ from pathlib import Path
++
+ from openpyxl import load_workbook
+-from openpyxl.utils.cell import coordinate_to_tuple
++from openpyxl.utils.cell import coordinate_to_tuple, column_index_from_string, get_column_letter, range_boundaries
++
++
++def recalc_values(path):
++    with tempfile.TemporaryDirectory() as tmp:
++        subprocess.run(
++            ['soffice', '--headless', '--calc', '--convert-to', 'xlsx', '--outdir', tmp, str(path)],
++            check=True,
++            capture_output=True,
++            timeout=240,
++        )
++        converted = Path(tmp) / (Path(path).stem + '.xlsx')
++        if not converted.exists():
++            raise RuntimeError('LibreOffice produced no recalculated workbook')
++        data = load_workbook(converted, data_only=True)
++        return {(sheet.title, cell.coordinate): cell.value for sheet in data for row in sheet for cell in row}
++
++
++def cell_value(values, sheet, coord):
++    return values.get((sheet, coord))
++
++
++def is_error(value):
++    return isinstance(value, str) and value.startswith('#')
++
++
++def column_types(sheet):
++    types = {}
++    for col_letters in sorted({re.sub(r"[0-9]+", "", c.coordinate) for row in sheet for c in row}):
++        numeric = text = 0
++        for cell in sheet[col_letters]:
++            if isinstance(cell.value, (int, float)) and not isinstance(cell.value, bool):
++                numeric += 1
++            elif isinstance(cell.value, str) and not cell.value.startswith('='):
++                text += 1
++        types[col_letters] = 'numeric' if numeric > text else ('text' if text else 'empty')
++    return types
++
++
++def snapshot(sheet, values):
++    return {cell.coordinate: {'stored': cell.value,
++                              'computed': cell_value(values, sheet.title, cell.coordinate),
++                              'comment': cell.comment.text if cell.comment else None}
++            for row in sheet for cell in row
++            if cell.value is not None or cell.comment}
++
+ 
+ args = json.load(sys.stdin)
+-if args['operation'] == 'inspect':
++operation = args['operation']
++
++if operation == 'inspect':
+     workbook = load_workbook(args['file'])
+-    print(json.dumps({sheet.title: [{'cell': cell.coordinate, 'value': cell.value, 'comment': cell.comment.text if cell.comment else None}
+-                                  for row in sheet for cell in row if cell.value is not None or cell.comment]
+-                      for sheet in workbook}, default=str))
+-elif args['operation'] == 'write':
++    values = recalc_values(args['file'])
++    out = {}
++    for sheet in workbook:
++        out[sheet.title] = {
++            'used_range': sheet.calculate_dimension(),
++            'column_types': column_types(sheet),
++            'cells': [{'cell': coord, **info} for coord, info in snapshot(sheet, values).items()],
++        }
++    print(json.dumps(out, default=str))
++
++elif operation == 'write':
+     target = Path(args['destination']).resolve()
+     if not target.is_relative_to('/workspace'):
+         raise ValueError('Destination must be inside /workspace')
+@@ -25,5 +83,61 @@ elif args['operation'] == 'write':
+     target.parent.mkdir(parents=True, exist_ok=True)
+     workbook.save(target)
+     print(json.dumps({'saved': str(target), 'submitted_cells': len(seen), 'formula_values_recalculated': False}))
++
++elif operation == 'audit':
++    target = Path(args['file'])
++    workbook = load_workbook(target)
++    values = recalc_values(target)
++    report = {}
++    for sheet in workbook:
++        formula_cells, empty_formula_results, formula_errors = [], [], []
++        for row in sheet:
++            for cell in row:
++                if isinstance(cell.value, str) and cell.value.startswith('='):
++                    computed = cell_value(values, sheet.title, cell.coordinate)
++                    formula_cells.append(cell.coordinate)
++                    if computed is None:
++                        empty_formula_results.append(cell.coordinate)
++                    if is_error(computed):
++                        formula_errors.append({'cell': cell.coordinate, 'value': computed})
++        enumerated = {}
++        for region in args.get('enumerated_ranges', []) or []:
++            if region.get('sheet') != sheet.title:
++                continue
++            min_col, min_row, max_col, max_row = range_boundaries(region['range'])
++            cells = []
++            for r in range(min_row, max_row + 1):
++                for c in range(min_col, max_col + 1):
++                    coord = f'{get_column_letter(c)}{r}'
++                    val = cell_value(values, sheet.title, coord)
++                    cells.append({'cell': coord, 'value': val,
++                                  'blank': val is None or val == '',
++                                  'is_formula': isinstance(sheet[coord].value, str) and sheet[coord].value.startswith('=')})
++            enumerated[region['range']] = {
++                'cells': cells,
++                'blank_count': sum(1 for c in cells if c['blank']),
++            }
++        report[sheet.title] = {
++            'formula_cells': formula_cells,
++            'formula_cells_without_value': empty_formula_results,
++            'formula_errors': formula_errors,
++            'enumerated_ranges': enumerated,
++        }
++    preserved = {}
++    if args.get('source'):
++        base = load_workbook(args['source'])
++        for sheet in base:
++            changes = []
++            for row in sheet:
++                for cell in row:
++                    if cell.value is None and not cell.comment:
++                        continue
++                    other = workbook[sheet.title][cell.coordinate]
++                    if other.value != cell.value or (cell.comment and (other.comment is None or other.comment.text != cell.comment.text)):
++                        changes.append({'cell': cell.coordinate, 'source': cell.value, 'delivered': other.value})
++            preserved[sheet.title] = changes
++    print(json.dumps({'file': str(target), 'sheets': report, 'source_changes': preserved,
++                      'source_inputs_preserved': all(len(v) == 0 for v in preserved.values())}, default=str))
++
+ else:
+     raise ValueError('Unknown workbook operation')

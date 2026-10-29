@@ -6,6 +6,8 @@ This page preserves actual run results, including gains, regressions, failures, 
 
 | Experiment | Observations and Boundaries |
 |---|---|
+| [One-Command Complete Native Closure](2026-10-29-official-closure-results.md) | 15 real task scorings across search, independent validation and original-package reuse; selected H0 retained, rejected mutation and counterexamples preserved |
+| [Mutation Methods with Original-Package Reuse](2026-10-29-closure-study-results.md) | Six searches, twelve mutations, 124 task scorings, six unchanged installed selections; autonomous H2 validates and reuses at 100%, method superiority unproven; separate four-task archive check retained |
 | [Official DeepSeek Simplified Entry](2026-10-29-official-startup-results.md) | A single command completes real autonomous modification, six task scorings, and export of the original package; H0/H1 both 100%, ties retain H0 |
 | [Plugin Mutation Space Comparison](2026-10-29-mutation-space-results.md) | Three groups, six independent searches, 100 executions; five selected the original H0, the only selected mutation has a semantic counterexample, open-space advantage not proven; [pre-registration](2026-10-29-mutation-space-registration.md) retained |
 | [Official DeepSeek Native Closed Loop](2026-10-28-official-deepseek-results.md) | Autonomous modification, independent validation, installation of the original archive, and reuse across four task types; also retains the business regression of the manually repaired derived package |

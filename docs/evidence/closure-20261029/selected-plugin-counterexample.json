@@ -1,0 +1,96 @@
+{
+  "boundary": "Independent native counterexample of the unchanged selected artifact. False warnings are reproduced; explicit values and formulas remain saved. No model inference, source repair or regrading.",
+  "sourceDigest": "9f7f6ce3f522055829d12867c923492be26df01871342014490d5f9eae2abd8f",
+  "build": {
+    "bundleDigest": "b4ae68d49b09c4c81599640d93bf5537bfcbe8501945b6f1d9e2bb05a781ea7f",
+    "commands": [
+      "npm ci --omit=peer --no-audit --no-fund",
+      "npm run build",
+      "npm pack --ignore-scripts"
+    ],
+    "lockDigest": "0e2c01ed544d608ae347e913d0072f10446af02cc6172bcbea87ae50c78aec85",
+    "node": "v24.22.1",
+    "npm": "12.2.0",
+    "sourceDigest": "9f7f6ce3f522055829d12867c923492be26df01871342014490d5f9eae2abd8f",
+    "tarballDigest": "8ad5f3da1ab5798942e536b1b81d27c4a280f25f4c139cde72674f495ae2a68c"
+  },
+  "image": "sha256:564a698484a436ecf8ef9d946a6bb0e6087d69c5caa11570fda4feda94642271",
+  "state": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-29T06:37:20.660065776Z",
+    "FinishedAt": "2026-10-29T06:37:21.417454359Z"
+  },
+  "observation": {
+    "observations": [
+      {
+        "arguments": {
+          "destination": "/workspace/delivery.xlsx",
+          "edits": [
+            {
+              "cell": "A1",
+              "sheet": "Observations",
+              "value": "=\"(\""
+            },
+            {
+              "cell": "A2",
+              "sheet": "Observations",
+              "value": "Version (Q1)"
+            }
+          ],
+          "source": "/workspace/source.xlsx"
+        },
+        "kind": "tool",
+        "name": "workbook_write",
+        "result": {
+          "content": [
+            {
+              "text": "{\"saved\": \"/workspace/delivery.xlsx\", \"submitted_cells\": 2, \"formula_values_recalculated\": false, \"warnings\": [\"Observations!A1: unbalanced parentheses\", \"values stored as text rather than formulas: Observations!A2\"]}\n",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "value": "{\"saved\": \"/workspace/delivery.xlsx\", \"submitted_cells\": 2, \"formula_values_recalculated\": false, \"warnings\": [\"Observations!A1: unbalanced parentheses\", \"values stored as text rather than formulas: Observations!A2\"]}\n"
+        },
+        "sequence": 1
+      },
+      {
+        "kind": "value",
+        "label": "valid-formula-and-literal-misclassified",
+        "sequence": 2,
+        "value": {
+          "formula_values_recalculated": false,
+          "saved": "/workspace/delivery.xlsx",
+          "submitted_cells": 2,
+          "warnings": [
+            "Observations!A1: unbalanced parentheses",
+            "values stored as text rather than formulas: Observations!A2"
+          ]
+        }
+      },
+      {
+        "kind": "value",
+        "label": "actual-delivery-preserved",
+        "sequence": 3,
+        "value": {
+          "A1": {
+            "type": "f",
+            "value": "=\"(\""
+          },
+          "A2": {
+            "type": "s",
+            "value": "Version (Q1)"
+          }
+        }
+      }
+    ],
+    "status": "passed"
+  }
+}

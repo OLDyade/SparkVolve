@@ -25,16 +25,12 @@ import { usageAt, sumUsage } from '../dist/report.js';
 import { installationConfig } from './verify-study-artifacts.mjs';
 
 const json = async (file) => JSON.parse(await readFile(file, 'utf8'));
-export const taskSeconds = 600;
 export const installationSeconds = 480;
 
 export function acceptanceSpec(raw) {
   const spec = Experiment.parse(raw);
   assert.equal(spec.purpose, 'validation', 'Use the registered validation contract');
-  assert.equal(spec.tasks.length, 4, 'Exactly four registered tasks are required');
-  assert.equal(spec.concurrency, 4, 'Four registered tasks run concurrently');
   assert.equal(spec.repetitions, 1, 'Exactly one attempt per registered task');
-  assert.equal(spec.timeoutSeconds, taskSeconds, 'Task contract must resolve to 600 seconds');
   assert.equal(
     spec.isolation.network.executor,
     'controlled',
@@ -42,7 +38,7 @@ export function acceptanceSpec(raw) {
   );
   assert.ok(spec.egress.executor.length, 'No registered model route');
   for (const route of spec.egress.executor)
-    assert.equal(route.timeoutSeconds, taskSeconds, 'Model route and task deadlines must match');
+    assert.ok(route.timeoutSeconds <= spec.timeoutSeconds, 'Model route exceeds task deadline');
   return spec;
 }
 
@@ -160,7 +156,7 @@ export function taskWorkerSpec({ root, task, spec, network, prefix, installed })
     env: Object.fromEntries(spec.executor.credentialEnv.map((key) => [key, 'egress-client-placeholder'])),
     isolation: spec.isolation,
     network,
-    timeoutSeconds: taskSeconds,
+    timeoutSeconds: spec.timeoutSeconds,
   };
 }
 
@@ -214,7 +210,7 @@ export function summarize(rows, spec) {
   };
 }
 
-/** Each effect runs at most once per task; individual failures preserve all four rows. */
+/** Each effect runs at most once per task; individual failures preserve the full registered denominator. */
 export async function runRegisteredTasks(spec, effects) {
   const rows = spec.tasks.map((task) => ({
     task: task.id,
@@ -356,7 +352,7 @@ export async function main(args = process.argv.slice(2)) {
       files,
     });
     receipt.registration = {
-      kind: 'installed-capability-four-task-acceptance',
+      kind: 'installed-capability-acceptance',
       artifact,
       sourceDigest: candidate.digest,
       build: candidate.build,
@@ -368,10 +364,10 @@ export async function main(args = process.argv.slice(2)) {
       helperDigest: digest(nativeInstallationProgram),
       driverSha256: await fileDigest(fileURLToPath(import.meta.url)),
       taskOrder: spec.tasks.map((task) => task.id),
-      taskExecutions: 4,
+      taskExecutions: spec.tasks.length,
       repetitions: 1,
       installationSeconds,
-      taskSeconds,
+      taskSeconds: spec.timeoutSeconds,
       scoringSeconds: spec.evaluator.timeoutSeconds,
       boundary:
         'Independent post-installation delivery experiment; no build or mutation, no task/score retry, no borrowed scores. Model credentials remain exclusively in controlled egress.',
@@ -392,7 +388,7 @@ export async function main(args = process.argv.slice(2)) {
         patch: '/empty.yml',
         environmentPatch: spec.runtime.environment ? `/environment/${spec.runtime.environment.patch}` : null,
         prompt: task.prompt,
-        timeoutSeconds: taskSeconds,
+        timeoutSeconds: spec.timeoutSeconds,
       });
     }
     const id = (task) => `${prefix}-${digest(task.id).slice(0, 12)}`;
@@ -453,7 +449,7 @@ export async function main(args = process.argv.slice(2)) {
             image: spec.runtime.image,
             isolation: spec.isolation,
             routes: spec.egress.executor,
-            timeoutSeconds: taskSeconds,
+            timeoutSeconds: spec.timeoutSeconds,
           },
           docker,
         );

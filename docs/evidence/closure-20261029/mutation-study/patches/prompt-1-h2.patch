@@ -1,0 +1,12 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..e5b0b9c 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,7 @@
+ Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++
++Read every comment before writing; they carry rules and unit switches, and the labels and headers are authoritative. Fill only the cells the task asks for: leave cells the task calls intentionally blank empty, and do not add rows, columns or labels.
++
++Reference input cells in formulas rather than repeating their numbers as literals, so a rule holds across every period. Apply standard financial conventions as stated in the comments; do not re-derive a convention that the comments already determine.
++
++After saving, recalculate the file with LibreOffice and confirm the values against your own arithmetic before reporting.

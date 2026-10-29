@@ -12,10 +12,10 @@ from openpyxl.comments import Comment
 
 root = Path(sys.argv[1])
 split = sys.argv[2]
-if split not in ('development', 'validation'):
-    raise ValueError('split must be development or validation')
+if split not in ('development', 'validation', 'reuse'):
+    raise ValueError('split must be development, validation or reuse')
 root.mkdir()
-shift = 0 if split == 'development' else 137
+shift = {'development': 0, 'validation': 137, 'reuse': 283}[split]
 tasks = []
 
 def emit(name, rows, expected, instruction, notes):

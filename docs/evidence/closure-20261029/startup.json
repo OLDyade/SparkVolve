@@ -1,0 +1,1592 @@
+{
+  "boundary": "Real official DeepSeek startup closure. Strict search selection retained H0; installed results are H0 reuse, not acceptance of the rejected autonomous candidate. Public within-family synthetic instances only.",
+  "startup": {
+    "bundleSha256": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c",
+    "driverSha256": "00f29cecf81d4c61acafbbf063f0b62a10637b61e2da70a2abfc5bb90eb8d3f9",
+    "endedAt": "2026-10-29T06:17:35.276Z",
+    "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+    "model": {
+      "credentialEnv": [
+        "DEEPSEEK_API_KEY"
+      ],
+      "maxTokens": 32768,
+      "model": "deepseek-flash",
+      "provider": "deepseek-official",
+      "reasoningEffort": "off"
+    },
+    "recipe": "structured-data",
+    "recipeSha256": "e16689bbc60c34489957c1ee5df003ff65af48753ad13a1998b27d56d3fd334d",
+    "reuse": {
+      "executionAttempts": 3,
+      "failed": 0,
+      "passed": true,
+      "quality": {
+        "boundary": "Installed delivery acceptance only. Scores are fresh observations; no improvement or transfer claim and no reuse of search/validation scores.",
+        "meanWithRegisteredFailureValue": 1,
+        "metric": {
+          "direction": "maximize",
+          "failure": 0,
+          "maximum": 1,
+          "minimum": 0,
+          "name": "structured_output_accuracy"
+        },
+        "scoringComplete": true
+      },
+      "registered": 3,
+      "rows": [
+        {
+          "deliveryDigest": "6a19999ec282c8a153afceab5b0f3bafd5ac90fe5655460cddd3622c0289cb36",
+          "error": null,
+          "execution": {
+            "Dead": false,
+            "Error": "",
+            "ExitCode": 0,
+            "FinishedAt": "2026-10-29T06:17:31.40849956Z",
+            "OOMKilled": false,
+            "Paused": false,
+            "Pid": 0,
+            "Restarting": false,
+            "Running": false,
+            "StartedAt": "2026-10-29T06:17:24.133968964Z",
+            "Status": "exited"
+          },
+          "executionAttempted": true,
+          "grade": {
+            "feedback": "{\"checks\": {\"entities\": true, \"exact_top_level_keys\": true, \"tombstones\": true, \"unique_event_count\": true}}",
+            "metrics": {
+              "valid_json": 1
+            },
+            "score": 1
+          },
+          "installation": {
+            "files": [
+              {
+                "executable": false,
+                "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+                "path": "LICENSE"
+              },
+              {
+                "executable": false,
+                "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                "path": "cordis.patch.yml"
+              },
+              {
+                "executable": false,
+                "hash": "314905c8b80461765ac74c75df8b53f45afcfaad49c246c989cf8bf38e5a3e32",
+                "path": "index.mjs"
+              },
+              {
+                "executable": false,
+                "hash": "11eda7a05691fba732f7207d7b4962a18dfd1dcf9e45f16f47065bbf48d31220",
+                "path": "package.json"
+              }
+            ],
+            "inferenceRequested": false,
+            "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/structured-data",
+            "package": "@harness-evolution/structured-data",
+            "profile": "sdk",
+            "profileFiles": {
+              "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+              "package.json": "1db72d31fc8baf3dab0af863f1f4873313e02b1741c732f59ef61e5bb523c2a7",
+              "pnpm-lock.yaml": "59edec1cafa3ebca7b62d8fdcb67673e7eef5f00d9ba149f3cbf0dada9220660",
+              "pnpm-workspace.yaml": "72177f8ba7d4d8012538704c49343cf448c3de4348b64e0fabc9543155827d70"
+            },
+            "resolvedPatches": [
+              {
+                "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                "path": "cordis.patch.yml"
+              }
+            ],
+            "tarballDigest": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c"
+          },
+          "integrity": {
+            "files": [
+              {
+                "executable": false,
+                "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+                "path": "LICENSE"
+              },
+              {
+                "executable": false,
+                "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                "path": "cordis.patch.yml"
+              },
+              {
+                "executable": false,
+                "hash": "314905c8b80461765ac74c75df8b53f45afcfaad49c246c989cf8bf38e5a3e32",
+                "path": "index.mjs"
+              },
+              {
+                "executable": false,
+                "hash": "11eda7a05691fba732f7207d7b4962a18dfd1dcf9e45f16f47065bbf48d31220",
+                "path": "package.json"
+              }
+            ],
+            "inferenceRequested": false,
+            "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/structured-data",
+            "package": "@harness-evolution/structured-data",
+            "profile": "sdk",
+            "profileFiles": {
+              "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+              "package.json": "1db72d31fc8baf3dab0af863f1f4873313e02b1741c732f59ef61e5bb523c2a7",
+              "pnpm-lock.yaml": "59edec1cafa3ebca7b62d8fdcb67673e7eef5f00d9ba149f3cbf0dada9220660",
+              "pnpm-workspace.yaml": "72177f8ba7d4d8012538704c49343cf448c3de4348b64e0fabc9543155827d70"
+            },
+            "resolvedPatches": [
+              {
+                "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                "path": "cordis.patch.yml"
+              }
+            ],
+            "tarballDigest": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c"
+          },
+          "phase": "scored",
+          "task": "revision-events",
+          "usage": {
+            "failed": 0,
+            "inputTokensReported": 1514,
+            "missingUsage": 0,
+            "outputTokensReported": 643,
+            "requestDurationMsSum": 6436.630352,
+            "results": 4,
+            "started": 4,
+            "unfinished": 0,
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+          }
+        },
+        {
+          "deliveryDigest": "f518a9ebd5ac3204e4ca1febe97d362b0bd4c952758d8c2b4f8f9f3da51aeaf0",
+          "error": null,
+          "execution": {
+            "Dead": false,
+            "Error": "",
+            "ExitCode": 0,
+            "FinishedAt": "2026-10-29T06:17:30.643361562Z",
+            "OOMKilled": false,
+            "Paused": false,
+            "Pid": 0,
+            "Restarting": false,
+            "Running": false,
+            "StartedAt": "2026-10-29T06:17:23.971311993Z",
+            "Status": "exited"
+          },
+          "executionAttempted": true,
+          "grade": {
+            "feedback": "{\"checks\": {\"exact_top_level_keys\": true, \"groups\": true, \"server_errors\": true, \"total_requests\": true}}",
+            "metrics": {
+              "valid_json": 1
+            },
+            "score": 1
+          },
+          "installation": {
+            "files": [
+              {
+                "executable": false,
+                "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+                "path": "LICENSE"
+              },
+              {
+                "executable": false,
+                "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                "path": "cordis.patch.yml"
+              },
+              {
+                "executable": false,
+                "hash": "314905c8b80461765ac74c75df8b53f45afcfaad49c246c989cf8bf38e5a3e32",
+                "path": "index.mjs"
+              },
+              {
+                "executable": false,
+                "hash": "11eda7a05691fba732f7207d7b4962a18dfd1dcf9e45f16f47065bbf48d31220",
+                "path": "package.json"
+              }
+            ],
+            "inferenceRequested": false,
+            "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/structured-data",
+            "package": "@harness-evolution/structured-data",
+            "profile": "sdk",
+            "profileFiles": {
+              "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+              "package.json": "1db72d31fc8baf3dab0af863f1f4873313e02b1741c732f59ef61e5bb523c2a7",
+              "pnpm-lock.yaml": "59edec1cafa3ebca7b62d8fdcb67673e7eef5f00d9ba149f3cbf0dada9220660",
+              "pnpm-workspace.yaml": "72177f8ba7d4d8012538704c49343cf448c3de4348b64e0fabc9543155827d70"
+            },
+            "resolvedPatches": [
+              {
+                "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                "path": "cordis.patch.yml"
+              }
+            ],
+            "tarballDigest": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c"
+          },
+          "integrity": {
+            "files": [
+              {
+                "executable": false,
+                "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+                "path": "LICENSE"
+              },
+              {
+                "executable": false,
+                "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                "path": "cordis.patch.yml"
+              },
+              {
+                "executable": false,
+                "hash": "314905c8b80461765ac74c75df8b53f45afcfaad49c246c989cf8bf38e5a3e32",
+                "path": "index.mjs"
+              },
+              {
+                "executable": false,
+                "hash": "11eda7a05691fba732f7207d7b4962a18dfd1dcf9e45f16f47065bbf48d31220",
+                "path": "package.json"
+              }
+            ],
+            "inferenceRequested": false,
+            "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/structured-data",
+            "package": "@harness-evolution/structured-data",
+            "profile": "sdk",
+            "profileFiles": {
+              "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+              "package.json": "1db72d31fc8baf3dab0af863f1f4873313e02b1741c732f59ef61e5bb523c2a7",
+              "pnpm-lock.yaml": "59edec1cafa3ebca7b62d8fdcb67673e7eef5f00d9ba149f3cbf0dada9220660",
+              "pnpm-workspace.yaml": "72177f8ba7d4d8012538704c49343cf448c3de4348b64e0fabc9543155827d70"
+            },
+            "resolvedPatches": [
+              {
+                "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                "path": "cordis.patch.yml"
+              }
+            ],
+            "tarballDigest": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c"
+          },
+          "phase": "scored",
+          "task": "request-logs",
+          "usage": {
+            "failed": 0,
+            "inputTokensReported": 1468,
+            "missingUsage": 0,
+            "outputTokensReported": 697,
+            "requestDurationMsSum": 5831.131037,
+            "results": 4,
+            "started": 4,
+            "unfinished": 0,
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+          }
+        },
+        {
+          "deliveryDigest": "235d3c506f56827b801e4faeada137e053b18f74359c8a426775d229563ca589",
+          "error": null,
+          "execution": {
+            "Dead": false,
+            "Error": "",
+            "ExitCode": 0,
+            "FinishedAt": "2026-10-29T06:17:29.97755707Z",
+            "OOMKilled": false,
+            "Paused": false,
+            "Pid": 0,
+            "Restarting": false,
+            "Running": false,
+            "StartedAt": "2026-10-29T06:17:24.267260971Z",
+            "Status": "exited"
+          },
+          "executionAttempted": true,
+          "grade": {
+            "feedback": "{\"checks\": {\"exact_top_level_keys\": true, \"findings\": true, \"suppressed\": true, \"unmatched_advisories\": true}}",
+            "metrics": {
+              "valid_json": 1
+            },
+            "score": 1
+          },
+          "installation": {
+            "files": [
+              {
+                "executable": false,
+                "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+                "path": "LICENSE"
+              },
+              {
+                "executable": false,
+                "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                "path": "cordis.patch.yml"
+              },
+              {
+                "executable": false,
+                "hash": "314905c8b80461765ac74c75df8b53f45afcfaad49c246c989cf8bf38e5a3e32",
+                "path": "index.mjs"
+              },
+              {
+                "executable": false,
+                "hash": "11eda7a05691fba732f7207d7b4962a18dfd1dcf9e45f16f47065bbf48d31220",
+                "path": "package.json"
+              }
+            ],
+            "inferenceRequested": false,
+            "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/structured-data",
+            "package": "@harness-evolution/structured-data",
+            "profile": "sdk",
+            "profileFiles": {
+              "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+              "package.json": "1db72d31fc8baf3dab0af863f1f4873313e02b1741c732f59ef61e5bb523c2a7",
+              "pnpm-lock.yaml": "59edec1cafa3ebca7b62d8fdcb67673e7eef5f00d9ba149f3cbf0dada9220660",
+              "pnpm-workspace.yaml": "72177f8ba7d4d8012538704c49343cf448c3de4348b64e0fabc9543155827d70"
+            },
+            "resolvedPatches": [
+              {
+                "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                "path": "cordis.patch.yml"
+              }
+            ],
+            "tarballDigest": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c"
+          },
+          "integrity": {
+            "files": [
+              {
+                "executable": false,
+                "hash": "0e54b2e9e9f23887dff0bb18af52550afff1253fbac64abdbed3240938fee16e",
+                "path": "LICENSE"
+              },
+              {
+                "executable": false,
+                "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                "path": "cordis.patch.yml"
+              },
+              {
+                "executable": false,
+                "hash": "314905c8b80461765ac74c75df8b53f45afcfaad49c246c989cf8bf38e5a3e32",
+                "path": "index.mjs"
+              },
+              {
+                "executable": false,
+                "hash": "11eda7a05691fba732f7207d7b4962a18dfd1dcf9e45f16f47065bbf48d31220",
+                "path": "package.json"
+              }
+            ],
+            "inferenceRequested": false,
+            "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@harness-evolution/structured-data",
+            "package": "@harness-evolution/structured-data",
+            "profile": "sdk",
+            "profileFiles": {
+              "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+              "package.json": "1db72d31fc8baf3dab0af863f1f4873313e02b1741c732f59ef61e5bb523c2a7",
+              "pnpm-lock.yaml": "59edec1cafa3ebca7b62d8fdcb67673e7eef5f00d9ba149f3cbf0dada9220660",
+              "pnpm-workspace.yaml": "72177f8ba7d4d8012538704c49343cf448c3de4348b64e0fabc9543155827d70"
+            },
+            "resolvedPatches": [
+              {
+                "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                "path": "cordis.patch.yml"
+              }
+            ],
+            "tarballDigest": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c"
+          },
+          "phase": "scored",
+          "task": "dependency-join",
+          "usage": {
+            "failed": 0,
+            "inputTokensReported": 1079,
+            "missingUsage": 0,
+            "outputTokensReported": 565,
+            "requestDurationMsSum": 4943.5760629999995,
+            "results": 3,
+            "started": 3,
+            "unfinished": 0,
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+          }
+        }
+      ],
+      "scored": 3,
+      "terminalExecutions": 3,
+      "usage": {
+        "availableLedgers": 3,
+        "complete": true,
+        "ledgers": 3,
+        "reportedTotals": {
+          "failed": 0,
+          "inputTokensReported": 4061,
+          "missingUsage": 0,
+          "outputTokensReported": 1905,
+          "requestDurationMsSum": 17211.337452,
+          "results": 11,
+          "started": 11,
+          "unfinished": 0
+        },
+        "unavailableLedgers": 0
+      }
+    },
+    "root": "<experiment>",
+    "selectedCandidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+    "startedAt": "2026-10-29T06:05:17.058Z",
+    "state": "complete",
+    "taskSeconds": 600,
+    "validation": {
+      "boundary": "Paired descriptive results, full denominator. Repetitions share tasks; sample SD is not a confidence interval. Validation feedback must not be reused as unseen evaluation. No automatic release.",
+      "comparisons": [
+        {
+          "arm": "selected",
+          "meanDelta": 0,
+          "pairs": [
+            {
+              "baseline": 1,
+              "delta": 0,
+              "repetition": 0,
+              "score": 1,
+              "task": "revision-events"
+            },
+            {
+              "baseline": 1,
+              "delta": 0,
+              "repetition": 0,
+              "score": 1,
+              "task": "request-logs"
+            },
+            {
+              "baseline": 1,
+              "delta": 0,
+              "repetition": 0,
+              "score": 1,
+              "task": "dependency-join"
+            }
+          ],
+          "perTask": [
+            {
+              "meanDelta": 0,
+              "task": "revision-events"
+            },
+            {
+              "meanDelta": 0,
+              "task": "request-logs"
+            },
+            {
+              "meanDelta": 0,
+              "task": "dependency-join"
+            }
+          ],
+          "sampleSd": 0,
+          "status": "complete",
+          "strictImprovement": false
+        }
+      ],
+      "order": [
+        "h0",
+        "selected"
+      ],
+      "registrationDigest": "8c3450ebad07651f5b42e51e39fa7a4f8b4998151afe423e3bd4553b3b0ad6aa",
+      "results": [
+        {
+          "build": {
+            "artifactDigest": "bfd24e954a36140ce1a4864853eaef4bdfd614b7b5fad097d8e926ede10fee5a",
+            "bundleDigest": "abc9b3f59f78447739fb1a91d87cfbebcc9f54c1eb89d948496a798f16f3df15",
+            "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+            "lockDigest": "7f7cc85ce60901ab75d08e27cf0bc705ca4c580b78e50d0a0a0062bf71e10238",
+            "tarballDigest": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c"
+          },
+          "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+          "complete": true,
+          "constraints": [],
+          "failures": 0,
+          "id": "h0",
+          "mean": 1,
+          "samples": [
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "revision-events"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "request-logs"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "dependency-join"
+            }
+          ]
+        },
+        {
+          "build": {
+            "artifactDigest": "bfd24e954a36140ce1a4864853eaef4bdfd614b7b5fad097d8e926ede10fee5a",
+            "bundleDigest": "abc9b3f59f78447739fb1a91d87cfbebcc9f54c1eb89d948496a798f16f3df15",
+            "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+            "lockDigest": "7f7cc85ce60901ab75d08e27cf0bc705ca4c580b78e50d0a0a0062bf71e10238",
+            "tarballDigest": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c"
+          },
+          "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+          "complete": true,
+          "constraints": [],
+          "failures": 0,
+          "id": "selected",
+          "mean": 1,
+          "samples": [
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "revision-events"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "request-logs"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "dependency-join"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "registration": {
+    "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+    "model": {
+      "credentialEnv": [
+        "DEEPSEEK_API_KEY"
+      ],
+      "maxTokens": 32768,
+      "model": "deepseek-flash",
+      "provider": "deepseek-official",
+      "reasoningEffort": "off"
+    },
+    "recipeSha256": "e16689bbc60c34489957c1ee5df003ff65af48753ad13a1998b27d56d3fd334d",
+    "registeredAt": "2026-10-29T06:05:20.589Z",
+    "reuse": "Install the original selected archive in a fresh native DSH Profile for each reuse task; no rebuild.",
+    "selection": "Select H* strictly from search scores; independent validation and reuse never select or mutate candidates.",
+    "splits": {
+      "reuse": {
+        "datasetDigest": "38b2ed41f5413d9c077915f08ed53d57497e2197f1f5d71f385806dc38362fc6",
+        "specificationDigest": "18d4cdf6773d408a45366c2f962266a6705dc567be9577001da55ff8a1ac05e4",
+        "tasks": [
+          {
+            "evaluationDigest": "cf6d2dca9da2d0eaf5d2dd979e422ad80de4f6bb0e0fd40f6ae315f5cd701f47",
+            "id": "revision-events",
+            "inputDigest": "2a5d448a76ed8c9d6a80a6337e702c349299d6aa03b6c9e98350cfbbfc1606ce"
+          },
+          {
+            "evaluationDigest": "e15596857154f561aa897df20672046cec801a519ecbe7914b8f712cf3da011f",
+            "id": "request-logs",
+            "inputDigest": "0752f716b55cc4944d2fe61c0a175914c7e164dc87107de5c98c412d74e3cb7c"
+          },
+          {
+            "evaluationDigest": "08acd2e2d9b4a6f1c502414cfb8553ed0e8ae0964348436522febff459299bc0",
+            "id": "dependency-join",
+            "inputDigest": "c5acc6831bf28383fb0513ca42724155a69c6f255110bce44f1c834e0299339d"
+          }
+        ]
+      },
+      "search": {
+        "datasetDigest": "518489028001c031ac6f5ac1b73d2eefa56322baff09431e7cd3d07c74db1677",
+        "specificationDigest": "b90a77126308cb57662f3e0c34729368d1eae7c0d09dcb9ca08fb7ea1bb7163d",
+        "tasks": [
+          {
+            "evaluationDigest": "20e9e8eb3ae54abc8bb4d8b118fb4be016025f63b94006acc2722782622fd5f5",
+            "id": "revision-events",
+            "inputDigest": "452885f4bb2c30cddd6774e2c26a61536d36677dca7ffa34b0392424c1887a06"
+          },
+          {
+            "evaluationDigest": "69fc4aa84eb9cd19fcb1ef8ed9358c1518db7f7458ee4489ffe6fcdb54f7ef3d",
+            "id": "request-logs",
+            "inputDigest": "7b6ad38dfc03ca1699a821ade4fb0990bdf98adcdc028c3420d537607735c521"
+          },
+          {
+            "evaluationDigest": "d4369244c7885f107c4085d12aa6a9e62c1dcc867f6a9d75a90955ae065f6c31",
+            "id": "dependency-join",
+            "inputDigest": "e93429889e7ced3374e679cf9ea950d736c2bf137ae8275416c05a4632ce7934"
+          }
+        ]
+      },
+      "validation": {
+        "datasetDigest": "dfc89cf88ab92fc568f6d5f7732b420dce05b3c001ad0b618c49b12de8cd0476",
+        "specificationDigest": "dcca10e31f5e134d59a5c74f9f75e47ddac1668b9c5b455a9d258fa182975a3c",
+        "tasks": [
+          {
+            "evaluationDigest": "3f1fb61c35d72e2a74838e2065306468e22a9f8e5c619993166bd9f99e472f3b",
+            "id": "revision-events",
+            "inputDigest": "061b01e4556dca8659449474a6360e2f5be451d6c0ee428a677056a992e9e793"
+          },
+          {
+            "evaluationDigest": "c0969cad1e9f005304fe66c11f359c190f43921421678d875a969690f48476fe",
+            "id": "request-logs",
+            "inputDigest": "bbafa175595d9dd2e8d2847f93badb20414b044fe9b8ccf2bf74a5917067292d"
+          },
+          {
+            "evaluationDigest": "c14feafb0d07740a66e35b89648e3b1158f63e97953ced236bab88f5b4bcb1d5",
+            "id": "dependency-join",
+            "inputDigest": "052ae746dcf9e3c14f3a8b677a387cd08e725daaab44036cd09417896ef1499b"
+          }
+        ]
+      }
+    }
+  },
+  "search": {
+    "boundary": "Full-denominator descriptive results. QA/build failures consume candidate budget but have no task score. Usage is recomputed from durable DSH adapter stream ledgers; hidden provider retries and prices are unknown. Missing ledgers and missing usage are explicit; reported totals are partial when complete=false. Request durations sum streams and are not wall time. Execution elapsed excludes grading; build/QA time is not token cost. Search selection is not independent validation or causal attribution. No inferred accuracy from optimizer narrative.",
+    "candidateBudget": 2,
+    "candidates": [
+      {
+        "build": {
+          "artifactDigest": "bfd24e954a36140ce1a4864853eaef4bdfd614b7b5fad097d8e926ede10fee5a",
+          "bundleDigest": "abc9b3f59f78447739fb1a91d87cfbebcc9f54c1eb89d948496a798f16f3df15",
+          "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+          "lockDigest": "7f7cc85ce60901ab75d08e27cf0bc705ca4c580b78e50d0a0a0062bf71e10238",
+          "tarballDigest": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c"
+        },
+        "buildError": null,
+        "complete": true,
+        "decision": {
+          "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+          "constraints": [],
+          "constraintsSatisfied": true,
+          "denominator": 3,
+          "failureBudgetSatisfied": true,
+          "failures": 0,
+          "mean": 1,
+          "previousChampion": null,
+          "promoted": true,
+          "qualityImproved": true
+        },
+        "digest": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+        "executionElapsedMsReported": 35168,
+        "expectedRuns": 3,
+        "failedRuns": 0,
+        "mean": 1,
+        "missingExecutionDurations": 0,
+        "observedRuns": 3,
+        "ordinal": 0,
+        "phase": "champion",
+        "qaError": null,
+        "samples": [
+          {
+            "attempt": 0,
+            "auxiliary": {
+              "valid_json": 1
+            },
+            "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+            "completedAt": "2026-10-29T06:05:36.635Z",
+            "deliveryDigest": "eb2572d003717e8c2579d5c6893cc30ebb1e182c5d7592c371ee9a9f565ea2f8",
+            "error": null,
+            "executionElapsedMs": 11869,
+            "gradeAttempt": 0,
+            "id": "16feebfb76ff870f2afbed1af2084ad92bad189f0b5151bb58cb27be66995aca",
+            "phase": "scored",
+            "repetition": 0,
+            "score": 1,
+            "startedAt": "2026-10-29T06:05:24.766Z",
+            "task": "revision-events",
+            "usage": {
+              "failed": 0,
+              "inputTokensReported": 1407,
+              "missingUsage": 0,
+              "outputTokensReported": 521,
+              "requestDurationMsSum": 6568.401027,
+              "results": 4,
+              "started": 4,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          },
+          {
+            "attempt": 0,
+            "auxiliary": {
+              "valid_json": 1
+            },
+            "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+            "completedAt": "2026-10-29T06:05:38.093Z",
+            "deliveryDigest": "ba04a818bcf99ed7f0ce5af846aace3fa1b431f5111f8e951806ae6181a2022c",
+            "error": null,
+            "executionElapsedMs": 13326,
+            "gradeAttempt": 0,
+            "id": "054f676bac1d67d622fb1b20a4765ec9b77a35bc22d166ed967a4d59d1f72df4",
+            "phase": "scored",
+            "repetition": 0,
+            "score": 1,
+            "startedAt": "2026-10-29T06:05:24.767Z",
+            "task": "request-logs",
+            "usage": {
+              "failed": 0,
+              "inputTokensReported": 1654,
+              "missingUsage": 0,
+              "outputTokensReported": 816,
+              "requestDurationMsSum": 7795.094077,
+              "results": 5,
+              "started": 5,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          },
+          {
+            "attempt": 0,
+            "auxiliary": {
+              "valid_json": 1
+            },
+            "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+            "completedAt": "2026-10-29T06:05:34.740Z",
+            "deliveryDigest": "a21e74577cf688957634df912930c94cde597a1ed11312f836b3662066d0a86e",
+            "error": null,
+            "executionElapsedMs": 9973,
+            "gradeAttempt": 0,
+            "id": "1bd5ce00bc0390dc5f07cd111b157cf8c16d3c2cd057369fe645e45de2054da1",
+            "phase": "scored",
+            "repetition": 0,
+            "score": 1,
+            "startedAt": "2026-10-29T06:05:24.767Z",
+            "task": "dependency-join",
+            "usage": {
+              "failed": 0,
+              "inputTokensReported": 506,
+              "missingUsage": 0,
+              "outputTokensReported": 360,
+              "requestDurationMsSum": 4836.825744,
+              "results": 3,
+              "started": 3,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          }
+        ],
+        "scoredRuns": 3,
+        "usage": {
+          "availableLedgers": 3,
+          "complete": true,
+          "ledgers": 3,
+          "reportedTotals": {
+            "failed": 0,
+            "inputTokensReported": 3567,
+            "missingUsage": 0,
+            "outputTokensReported": 1697,
+            "requestDurationMsSum": 19200.320848,
+            "results": 12,
+            "started": 12,
+            "unfinished": 0
+          },
+          "unavailableLedgers": 0
+        }
+      },
+      {
+        "build": {
+          "artifactDigest": "5ea0ff6ed57f2ea7bb85c74055a6fb9c8810259eb1166b6f3ac31366e632041f",
+          "bundleDigest": "5c743fe63fe78c02799b3a85e05ecf1dc72f3910facbbc69d62021bdca27171b",
+          "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+          "lockDigest": "7f7cc85ce60901ab75d08e27cf0bc705ca4c580b78e50d0a0a0062bf71e10238",
+          "tarballDigest": "1dbfdda011992c6d64d457bd508b6c94e7659706b19a6abf9f5ee5a2731cd48f"
+        },
+        "buildError": null,
+        "complete": true,
+        "decision": {
+          "candidate": "fc07b38d059417da824c44e608dcc5d37c9a47789be76bbef72ec52bd6eb2506",
+          "constraints": [],
+          "constraintsSatisfied": true,
+          "denominator": 3,
+          "failureBudgetSatisfied": true,
+          "failures": 0,
+          "mean": 0.9166666666666666,
+          "previousChampion": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+          "promoted": false,
+          "qualityImproved": false
+        },
+        "digest": "fc07b38d059417da824c44e608dcc5d37c9a47789be76bbef72ec52bd6eb2506",
+        "executionElapsedMsReported": 39957,
+        "expectedRuns": 3,
+        "failedRuns": 0,
+        "mean": 0.9166666666666666,
+        "missingExecutionDurations": 0,
+        "observedRuns": 3,
+        "ordinal": 1,
+        "phase": "rejected",
+        "qaError": null,
+        "samples": [
+          {
+            "attempt": 0,
+            "auxiliary": {
+              "valid_json": 1
+            },
+            "candidate": "fc07b38d059417da824c44e608dcc5d37c9a47789be76bbef72ec52bd6eb2506",
+            "completedAt": "2026-10-29T06:15:43.568Z",
+            "deliveryDigest": "7456c5ea9cd4ebe2d9b17545428d46e0a28280c7c56a9ba5cdb772e5d8ec31c5",
+            "error": null,
+            "executionElapsedMs": 12090,
+            "gradeAttempt": 0,
+            "id": "fd89fabb203e1044c23a52b6245685f88494941e0cd71a8ed0caf76b526358fa",
+            "phase": "scored",
+            "repetition": 0,
+            "score": 0.75,
+            "startedAt": "2026-10-29T06:15:31.478Z",
+            "task": "revision-events",
+            "usage": {
+              "failed": 0,
+              "inputTokensReported": 6931,
+              "missingUsage": 0,
+              "outputTokensReported": 548,
+              "requestDurationMsSum": 7310.033741000001,
+              "results": 5,
+              "started": 5,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          },
+          {
+            "attempt": 0,
+            "auxiliary": {
+              "valid_json": 1
+            },
+            "candidate": "fc07b38d059417da824c44e608dcc5d37c9a47789be76bbef72ec52bd6eb2506",
+            "completedAt": "2026-10-29T06:15:48.944Z",
+            "deliveryDigest": "d5b598f03e47d3eeccec08f370ddf3ba9049a4c50f88c0985463e607d6a727bb",
+            "error": null,
+            "executionElapsedMs": 17466,
+            "gradeAttempt": 0,
+            "id": "078bd95c8447fe872c0212f032269872a296614daf5d4c0504b28f1f13c93257",
+            "phase": "scored",
+            "repetition": 0,
+            "score": 1,
+            "startedAt": "2026-10-29T06:15:31.478Z",
+            "task": "request-logs",
+            "usage": {
+              "failed": 0,
+              "inputTokensReported": 7471,
+              "missingUsage": 0,
+              "outputTokensReported": 1083,
+              "requestDurationMsSum": 12522.793228000002,
+              "results": 6,
+              "started": 6,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          },
+          {
+            "attempt": 0,
+            "auxiliary": {
+              "valid_json": 1
+            },
+            "candidate": "fc07b38d059417da824c44e608dcc5d37c9a47789be76bbef72ec52bd6eb2506",
+            "completedAt": "2026-10-29T06:15:41.880Z",
+            "deliveryDigest": "e92a3116fc9b22a819542e76df916c936960aebd317a610d120c73739e0ea491",
+            "error": null,
+            "executionElapsedMs": 10401,
+            "gradeAttempt": 0,
+            "id": "1b0c496422fa3ad90d7c8b2143b19000fb62a8d3664c67162ef0a76a1d8f507d",
+            "phase": "scored",
+            "repetition": 0,
+            "score": 1,
+            "startedAt": "2026-10-29T06:15:31.479Z",
+            "task": "dependency-join",
+            "usage": {
+              "failed": 0,
+              "inputTokensReported": 6266,
+              "missingUsage": 0,
+              "outputTokensReported": 309,
+              "requestDurationMsSum": 5530.221697999999,
+              "results": 3,
+              "started": 3,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          }
+        ],
+        "scoredRuns": 3,
+        "usage": {
+          "availableLedgers": 3,
+          "complete": true,
+          "ledgers": 3,
+          "reportedTotals": {
+            "failed": 0,
+            "inputTokensReported": 20668,
+            "missingUsage": 0,
+            "outputTokensReported": 1940,
+            "requestDurationMsSum": 25363.048667000003,
+            "results": 14,
+            "started": 14,
+            "unfinished": 0
+          },
+          "unavailableLedgers": 0
+        }
+      }
+    ],
+    "candidatesConsumed": 2,
+    "currentChampion": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+    "experimentId": "3a4692d0-3423-4bef-a676-b7007fd7e712",
+    "lastEvent": 55,
+    "metric": {
+      "direction": "maximize",
+      "failure": 0,
+      "maximum": 1,
+      "minimum": 0,
+      "name": "structured_output_accuracy"
+    },
+    "monetaryCost": null,
+    "optimizer": {
+      "accounting": {
+        "consumedSeconds": 663.357,
+        "episodes": 1,
+        "optimizerHarness": {
+          "build": {
+            "artifactDigest": "b2ff60474520bffde584d1ed933855913f8b34164dc3c4804d741ca3f771e0fa",
+            "bundleDigest": "9e9a2b3fefc4b2aad9465a2adc00495e8865db112d3bb3bb1d398a6761f86e91",
+            "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+            "lockDigest": "a21e29ad6c572a582cf5d410d8f1454646eced3d5d248db39ee54f830d2cd2b2",
+            "tarballDigest": "c623cbab56796d5389cb0f24f1bbfb772d7434eb5a8aefccf5b6a48b2b3d34a1"
+          },
+          "composition": "plugins.yml",
+          "sourceDigest": "1704b7125a6af8929b53e80128a43bcd8565e0d7642f08abcc8075ecaed2cb96"
+        },
+        "reason": "optimizer_concluded"
+      },
+      "episodes": [
+        {
+          "episode": 0,
+          "usage": {
+            "failed": 0,
+            "inputTokensReported": 174069,
+            "missingUsage": 0,
+            "outputTokensReported": 53664,
+            "requestDurationMsSum": 640710.1382629996,
+            "results": 253,
+            "started": 253,
+            "unfinished": 0,
+            "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+          }
+        }
+      ],
+      "usage": {
+        "availableLedgers": 1,
+        "complete": true,
+        "ledgers": 1,
+        "reportedTotals": {
+          "failed": 0,
+          "inputTokensReported": 174069,
+          "missingUsage": 0,
+          "outputTokensReported": 53664,
+          "requestDurationMsSum": 640710.1382629996,
+          "results": 253,
+          "started": 253,
+          "unfinished": 0
+        },
+        "unavailableLedgers": 0
+      }
+    },
+    "pendingSubmissions": [],
+    "probes": {
+      "boundary": "Optimizer-authored behavioral experiments, not task scores or independent validation. Build and execution logs are retained under probes/<id>. No model credentials or network are supplied to probe execution.",
+      "budget": {
+        "limit": 4,
+        "timeoutSeconds": 600
+      },
+      "consumed": 4,
+      "records": [
+        {
+          "build": {
+            "artifactDigest": "9ec7a2934a2bbdbd4569f7a87cd3df807861651a39608d4048c7b61fb0c83189",
+            "bundleDigest": "03efa1d1bde9533dffd65e31eadd000e33a9de04338420488b178c96a4bb0eb3",
+            "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+            "lockDigest": "7f7cc85ce60901ab75d08e27cf0bc705ca4c580b78e50d0a0a0062bf71e10238",
+            "tarballDigest": "7ba32d308ff9d232ea30113c6e1e1abb1da3923d41ca96fddc4da579156b5121"
+          },
+          "completedAt": "2026-10-29T06:08:53.306Z",
+          "error": "Probe container exited 1; inspect original logs",
+          "executionMilliseconds": 564,
+          "exitCode": 1,
+          "id": "f4ca750d5199824a239fb3caef92489097a6f632d331048fcb54f88fbe4be6ac",
+          "phase": "failed",
+          "queuedAt": "2026-10-29T06:08:50.507Z",
+          "request": {
+            "draft": "structured-commit",
+            "entry": "probe.mjs",
+            "hypothesis": "Composing data_read (byte-cited verbatim read), data_write (exact-bytes JSON commit reporting written keys/digest), data_verify (explicit-shape structural check with no repair) and a write_intent guard that refuses content-blind file creation through the generic `write` tool will, in the real native profile, give the caller a verifiable commit path: writes reproduce caller values byte-exactly, verification reports independent structural facts, and a `write` creation is refused naming data_write instead of silently returning a content-blind success.",
+            "suite": "probe-commit"
+          },
+          "sourceDigest": "6c33eb56d68c45d42c77fb792c4dc338d28b03533beeebdcd4c34100b5d43c5c",
+          "suiteDigest": "103917ee47d55254c72e503773b3fe097dc198b5698c10d9046b11407706fd7f"
+        },
+        {
+          "build": {
+            "artifactDigest": "9ec7a2934a2bbdbd4569f7a87cd3df807861651a39608d4048c7b61fb0c83189",
+            "bundleDigest": "03efa1d1bde9533dffd65e31eadd000e33a9de04338420488b178c96a4bb0eb3",
+            "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+            "lockDigest": "7f7cc85ce60901ab75d08e27cf0bc705ca4c580b78e50d0a0a0062bf71e10238",
+            "tarballDigest": "7ba32d308ff9d232ea30113c6e1e1abb1da3923d41ca96fddc4da579156b5121"
+          },
+          "completedAt": "2026-10-29T06:09:16.121Z",
+          "error": "Probe container exited 1; inspect original logs",
+          "executionMilliseconds": 540,
+          "exitCode": 1,
+          "id": "ed314d828a1f873c14104ee1e772f9892257200be437ab7bd37b43db070281d5",
+          "phase": "failed",
+          "queuedAt": "2026-10-29T06:09:13.291Z",
+          "request": {
+            "draft": "structured-commit",
+            "entry": "probe.mjs",
+            "hypothesis": "In the real native profile: data_read returns the suite fixture verbatim with its exact byte count and a 64-hex digest; data_write reproduces caller values byte-exactly (compact, newline-free, key order preserved) and reports written keys; data_verify independently reports valid/mismatched structure and record/extra-field counts; and the write_intent guard refuses a `write` creation naming data_write while still allowing replacement of an existing file.",
+            "suite": "probe-commit"
+          },
+          "sourceDigest": "6c33eb56d68c45d42c77fb792c4dc338d28b03533beeebdcd4c34100b5d43c5c",
+          "suiteDigest": "5e8bce711924342b659efae0a3adf3f166d422132e4d930b4d545b5926e27a68"
+        },
+        {
+          "build": {
+            "artifactDigest": "b8cc32dfc9a307096b7abc715a0d3c5f0f0e59924b88a2dc2945662658e4e64e",
+            "bundleDigest": "2bba8504a93fb62d3d95420a11c425ffe0cad967edaa0cf7c4d99d252add11f9",
+            "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+            "lockDigest": "7f7cc85ce60901ab75d08e27cf0bc705ca4c580b78e50d0a0a0062bf71e10238",
+            "tarballDigest": "ad366e3b9240670ad350309bd1055772c87c5e9bc195a5ac2468fdbd3f234a7b"
+          },
+          "completedAt": "2026-10-29T06:10:29.293Z",
+          "error": "Probe container exited 1; inspect original logs",
+          "executionMilliseconds": 686,
+          "exitCode": 1,
+          "id": "974692d22723ad54e966edabd32a48fe0c5312a41e99db084e1d0a4fe3537eb3",
+          "phase": "failed",
+          "queuedAt": "2026-10-29T06:10:26.333Z",
+          "request": {
+            "draft": "structured-commit",
+            "entry": "probe.mjs",
+            "hypothesis": "In the real native profile, data_read cites the suite fixture verbatim (exact byte count, 64-hex digest); data_write reproduces caller values byte-exactly (compact and newline-free, key order preserved, path escape refused); data_verify independently reports valid shapes, type mismatches, and per-record missing/extra fields; and the state-independent write_intent guard refuses `write` for both a new and an existing file (leaving bytes untouched) while `edit` still repairs a file.",
+            "suite": "probe-commit"
+          },
+          "sourceDigest": "9492ac2d4d4a083e7fbdf72927f5d6abe6ffbaac52e2b4e3b8c3015d7496931a",
+          "suiteDigest": "8562bba5a77949971934da8211e6185d8a897aa257702526ff7de48ef6112afa"
+        },
+        {
+          "build": {
+            "artifactDigest": "5ea0ff6ed57f2ea7bb85c74055a6fb9c8810259eb1166b6f3ac31366e632041f",
+            "bundleDigest": "5c743fe63fe78c02799b3a85e05ecf1dc72f3910facbbc69d62021bdca27171b",
+            "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+            "lockDigest": "7f7cc85ce60901ab75d08e27cf0bc705ca4c580b78e50d0a0a0062bf71e10238",
+            "tarballDigest": "1dbfdda011992c6d64d457bd508b6c94e7659706b19a6abf9f5ee5a2731cd48f"
+          },
+          "completedAt": "2026-10-29T06:11:46.747Z",
+          "executionMilliseconds": 601,
+          "exitCode": 0,
+          "id": "504f0465bc9e1ba921ff01af9ae7144da5d7905579706146580f8d3b2eb7b7f8",
+          "phase": "passed",
+          "queuedAt": "2026-10-29T06:11:43.927Z",
+          "request": {
+            "draft": "structured-commit",
+            "entry": "probe.mjs",
+            "hypothesis": "After removing the unenforced scheduler guard: data_read cites the suite fixture verbatim, data_write reproduces caller values byte-exactly, data_verify reports independent structural facts, and data_replace (which owns the commit path inside the bundle) commits a targeted repair reporting a new digest, writes nothing when the literal count does not match, and rejects an edit that would break JSON parsing. The probe also records whether the mounted composition still applies the bundle's system-prompt guidance section.",
+            "suite": "probe-commit"
+          },
+          "sourceDigest": "fc07b38d059417da824c44e608dcc5d37c9a47789be76bbef72ec52bd6eb2506",
+          "suiteDigest": "ec8e27bf9040794b5646daff8e884331522f8ffc57c4d28a1086fdc18cd6f0fc"
+        }
+      ]
+    },
+    "purpose": "search",
+    "repetitions": 1,
+    "specificationDigest": "b90a77126308cb57662f3e0c34729368d1eae7c0d09dcb9ca08fb7ea1bb7163d",
+    "taskOrder": [
+      "revision-events",
+      "request-logs",
+      "dependency-join"
+    ],
+    "totalUsage": {
+      "availableLedgers": 7,
+      "complete": true,
+      "ledgers": 7,
+      "reportedTotals": {
+        "failed": 0,
+        "inputTokensReported": 198304,
+        "missingUsage": 0,
+        "outputTokensReported": 57301,
+        "requestDurationMsSum": 685273.5077779996,
+        "results": 279,
+        "started": 279,
+        "unfinished": 0
+      },
+      "unavailableLedgers": 0
+    }
+  },
+  "validationReports": [
+    {
+      "arm": "h0",
+      "report": {
+        "experimentId": "0f97eeee-e7e1-4e76-9b66-de770818b773",
+        "specificationDigest": "dcca10e31f5e134d59a5c74f9f75e47ddac1668b9c5b455a9d258fa182975a3c",
+        "purpose": "validation",
+        "metric": {
+          "direction": "maximize",
+          "failure": 0,
+          "maximum": 1,
+          "minimum": 0,
+          "name": "structured_output_accuracy"
+        },
+        "taskOrder": [
+          "revision-events",
+          "request-logs",
+          "dependency-join"
+        ],
+        "repetitions": 1,
+        "candidateBudget": 1,
+        "candidatesConsumed": 1,
+        "pendingSubmissions": [],
+        "probes": {
+          "budget": null,
+          "consumed": 0,
+          "records": [],
+          "boundary": "Optimizer-authored behavioral experiments, not task scores or independent validation. Build and execution logs are retained under probes/<id>. No model credentials or network are supplied to probe execution."
+        },
+        "currentChampion": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+        "candidates": [
+          {
+            "digest": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+            "ordinal": 0,
+            "phase": "champion",
+            "build": {
+              "artifactDigest": "bfd24e954a36140ce1a4864853eaef4bdfd614b7b5fad097d8e926ede10fee5a",
+              "bundleDigest": "abc9b3f59f78447739fb1a91d87cfbebcc9f54c1eb89d948496a798f16f3df15",
+              "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+              "lockDigest": "7f7cc85ce60901ab75d08e27cf0bc705ca4c580b78e50d0a0a0062bf71e10238",
+              "tarballDigest": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c"
+            },
+            "buildError": null,
+            "qaError": null,
+            "expectedRuns": 3,
+            "observedRuns": 3,
+            "scoredRuns": 3,
+            "failedRuns": 0,
+            "complete": true,
+            "mean": 1,
+            "decision": {
+              "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+              "constraints": [],
+              "constraintsSatisfied": true,
+              "denominator": 3,
+              "failureBudgetSatisfied": true,
+              "failures": 0,
+              "mean": 1,
+              "previousChampion": null,
+              "promoted": true,
+              "qualityImproved": true
+            },
+            "executionElapsedMsReported": 33995,
+            "missingExecutionDurations": 0,
+            "usage": {
+              "ledgers": 3,
+              "availableLedgers": 3,
+              "unavailableLedgers": 0,
+              "reportedTotals": {
+                "started": 11,
+                "results": 11,
+                "failed": 0,
+                "unfinished": 0,
+                "inputTokensReported": 3346,
+                "outputTokensReported": 1853,
+                "missingUsage": 0,
+                "requestDurationMsSum": 18482.039049000003
+              },
+              "complete": true
+            },
+            "samples": [
+              {
+                "id": "b01485fd93ea249b993a63521da7996e24efe8bd3a987b442aec3830165dc766",
+                "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+                "task": "revision-events",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "valid_json": 1
+                },
+                "error": null,
+                "deliveryDigest": "a7f60d75c828d423a8ff0dd08ef81fe3d2d1447288e647f3fe0311a37ab52a4b",
+                "startedAt": "2026-10-29T06:16:50.940Z",
+                "completedAt": "2026-10-29T06:17:01.575Z",
+                "executionElapsedMs": 10635,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 3,
+                  "results": 3,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 923,
+                  "outputTokensReported": 583,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 5650.797420000001
+                }
+              },
+              {
+                "id": "99f41b68ba707d845b4c7f4d7cd914c867dd8f901054608aba3c801afb2833de",
+                "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+                "task": "request-logs",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "valid_json": 1
+                },
+                "error": null,
+                "deliveryDigest": "75f49677fae6f0273568230102a6556c9d1ccc978f60331851bbc6242783c7b9",
+                "startedAt": "2026-10-29T06:16:50.941Z",
+                "completedAt": "2026-10-29T06:17:04.027Z",
+                "executionElapsedMs": 13086,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 5,
+                  "results": 5,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 1502,
+                  "outputTokensReported": 894,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 7798.900423000001
+                }
+              },
+              {
+                "id": "d1a2791d78bc0f6b66ce03af4c00ccf8ae060ef918040601b711ceb3f3f15f63",
+                "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+                "task": "dependency-join",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "valid_json": 1
+                },
+                "error": null,
+                "deliveryDigest": "68756599999ee06ee8f57883cd231bc94e577d1b8b12e21801806907d47d8c2d",
+                "startedAt": "2026-10-29T06:16:50.941Z",
+                "completedAt": "2026-10-29T06:17:01.215Z",
+                "executionElapsedMs": 10274,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 3,
+                  "results": 3,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 921,
+                  "outputTokensReported": 376,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 5032.341206
+                }
+              }
+            ]
+          }
+        ],
+        "optimizer": {
+          "episodes": [],
+          "accounting": null,
+          "usage": {
+            "ledgers": 0,
+            "availableLedgers": 0,
+            "unavailableLedgers": 0,
+            "reportedTotals": null,
+            "complete": true
+          }
+        },
+        "totalUsage": {
+          "ledgers": 3,
+          "availableLedgers": 3,
+          "unavailableLedgers": 0,
+          "reportedTotals": {
+            "started": 11,
+            "results": 11,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 3346,
+            "outputTokensReported": 1853,
+            "missingUsage": 0,
+            "requestDurationMsSum": 18482.039049000003
+          },
+          "complete": true
+        },
+        "monetaryCost": null,
+        "lastEvent": 21,
+        "boundary": "Full-denominator descriptive results. QA/build failures consume candidate budget but have no task score. Usage is recomputed from durable DSH adapter stream ledgers; hidden provider retries and prices are unknown. Missing ledgers and missing usage are explicit; reported totals are partial when complete=false. Request durations sum streams and are not wall time. Execution elapsed excludes grading; build/QA time is not token cost. Search selection is not independent validation or causal attribution. No inferred accuracy from optimizer narrative."
+      }
+    },
+    {
+      "arm": "selected",
+      "report": {
+        "experimentId": "6d910521-db60-4f85-bda4-fb2d680fc9ca",
+        "specificationDigest": "dcca10e31f5e134d59a5c74f9f75e47ddac1668b9c5b455a9d258fa182975a3c",
+        "purpose": "validation",
+        "metric": {
+          "direction": "maximize",
+          "failure": 0,
+          "maximum": 1,
+          "minimum": 0,
+          "name": "structured_output_accuracy"
+        },
+        "taskOrder": [
+          "revision-events",
+          "request-logs",
+          "dependency-join"
+        ],
+        "repetitions": 1,
+        "candidateBudget": 1,
+        "candidatesConsumed": 1,
+        "pendingSubmissions": [],
+        "probes": {
+          "budget": null,
+          "consumed": 0,
+          "records": [],
+          "boundary": "Optimizer-authored behavioral experiments, not task scores or independent validation. Build and execution logs are retained under probes/<id>. No model credentials or network are supplied to probe execution."
+        },
+        "currentChampion": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+        "candidates": [
+          {
+            "digest": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+            "ordinal": 0,
+            "phase": "champion",
+            "build": {
+              "artifactDigest": "bfd24e954a36140ce1a4864853eaef4bdfd614b7b5fad097d8e926ede10fee5a",
+              "bundleDigest": "abc9b3f59f78447739fb1a91d87cfbebcc9f54c1eb89d948496a798f16f3df15",
+              "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+              "lockDigest": "7f7cc85ce60901ab75d08e27cf0bc705ca4c580b78e50d0a0a0062bf71e10238",
+              "tarballDigest": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c"
+            },
+            "buildError": null,
+            "qaError": null,
+            "expectedRuns": 3,
+            "observedRuns": 3,
+            "scoredRuns": 3,
+            "failedRuns": 0,
+            "complete": true,
+            "mean": 1,
+            "decision": {
+              "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+              "constraints": [],
+              "constraintsSatisfied": true,
+              "denominator": 3,
+              "failureBudgetSatisfied": true,
+              "failures": 0,
+              "mean": 1,
+              "previousChampion": null,
+              "promoted": true,
+              "qualityImproved": true
+            },
+            "executionElapsedMsReported": 33715,
+            "missingExecutionDurations": 0,
+            "usage": {
+              "ledgers": 3,
+              "availableLedgers": 3,
+              "unavailableLedgers": 0,
+              "reportedTotals": {
+                "started": 11,
+                "results": 11,
+                "failed": 0,
+                "unfinished": 0,
+                "inputTokensReported": 3186,
+                "outputTokensReported": 2018,
+                "missingUsage": 0,
+                "requestDurationMsSum": 18348.465544000002
+              },
+              "complete": true
+            },
+            "samples": [
+              {
+                "id": "63179b200a7a4c1eb816bf46d6d0761b428eade8dfbdcf81be89abdbd06226a7",
+                "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+                "task": "revision-events",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "valid_json": 1
+                },
+                "error": null,
+                "deliveryDigest": "a7f60d75c828d423a8ff0dd08ef81fe3d2d1447288e647f3fe0311a37ab52a4b",
+                "startedAt": "2026-10-29T06:17:07.200Z",
+                "completedAt": "2026-10-29T06:17:18.629Z",
+                "executionElapsedMs": 11429,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 4,
+                  "results": 4,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 1188,
+                  "outputTokensReported": 653,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 6284.764535000001
+                }
+              },
+              {
+                "id": "e462277f41d2e5daf066ae1b0eb23be1f87a3fcef5064a2d772766632deff855",
+                "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+                "task": "request-logs",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "valid_json": 1
+                },
+                "error": null,
+                "deliveryDigest": "75f49677fae6f0273568230102a6556c9d1ccc978f60331851bbc6242783c7b9",
+                "startedAt": "2026-10-29T06:17:07.201Z",
+                "completedAt": "2026-10-29T06:17:19.119Z",
+                "executionElapsedMs": 11918,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 4,
+                  "results": 4,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 1326,
+                  "outputTokensReported": 760,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 6671.867402
+                }
+              },
+              {
+                "id": "989870562d21a90813d5b3283a535f94712c64f2f72e52f641f53448b03c62ea",
+                "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+                "task": "dependency-join",
+                "repetition": 0,
+                "attempt": 0,
+                "gradeAttempt": 0,
+                "phase": "scored",
+                "score": 1,
+                "auxiliary": {
+                  "valid_json": 1
+                },
+                "error": null,
+                "deliveryDigest": "80e212f4b5bafbb9d2d106777fdcfa75d38d0a7bba41a8bb3747c69e2453ac92",
+                "startedAt": "2026-10-29T06:17:07.201Z",
+                "completedAt": "2026-10-29T06:17:17.569Z",
+                "executionElapsedMs": 10368,
+                "usage": {
+                  "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable",
+                  "started": 3,
+                  "results": 3,
+                  "failed": 0,
+                  "unfinished": 0,
+                  "inputTokensReported": 672,
+                  "outputTokensReported": 605,
+                  "missingUsage": 0,
+                  "requestDurationMsSum": 5391.833607
+                }
+              }
+            ]
+          }
+        ],
+        "optimizer": {
+          "episodes": [],
+          "accounting": null,
+          "usage": {
+            "ledgers": 0,
+            "availableLedgers": 0,
+            "unavailableLedgers": 0,
+            "reportedTotals": null,
+            "complete": true
+          }
+        },
+        "totalUsage": {
+          "ledgers": 3,
+          "availableLedgers": 3,
+          "unavailableLedgers": 0,
+          "reportedTotals": {
+            "started": 11,
+            "results": 11,
+            "failed": 0,
+            "unfinished": 0,
+            "inputTokensReported": 3186,
+            "outputTokensReported": 2018,
+            "missingUsage": 0,
+            "requestDurationMsSum": 18348.465544000002
+          },
+          "complete": true
+        },
+        "monetaryCost": null,
+        "lastEvent": 21,
+        "boundary": "Full-denominator descriptive results. QA/build failures consume candidate budget but have no task score. Usage is recomputed from durable DSH adapter stream ledgers; hidden provider retries and prices are unknown. Missing ledgers and missing usage are explicit; reported totals are partial when complete=false. Request durations sum streams and are not wall time. Execution elapsed excludes grading; build/QA time is not token cost. Search selection is not independent validation or causal attribution. No inferred accuracy from optimizer narrative."
+      }
+    }
+  ],
+  "mechanisms": [
+    {
+      "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+      "task": "revision-events",
+      "guidanceInFirstRequest": false,
+      "tools": {
+        "bash": 2,
+        "read": 1
+      }
+    },
+    {
+      "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+      "task": "request-logs",
+      "guidanceInFirstRequest": false,
+      "tools": {
+        "bash": 2,
+        "read": 1,
+        "write": 1
+      }
+    },
+    {
+      "candidate": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+      "task": "dependency-join",
+      "guidanceInFirstRequest": false,
+      "tools": {
+        "read": 1,
+        "write": 1
+      }
+    },
+    {
+      "candidate": "fc07b38d059417da824c44e608dcc5d37c9a47789be76bbef72ec52bd6eb2506",
+      "task": "revision-events",
+      "guidanceInFirstRequest": false,
+      "tools": {
+        "bash": 2,
+        "read": 1,
+        "write": 1
+      }
+    },
+    {
+      "candidate": "fc07b38d059417da824c44e608dcc5d37c9a47789be76bbef72ec52bd6eb2506",
+      "task": "request-logs",
+      "guidanceInFirstRequest": false,
+      "tools": {
+        "bash": 2,
+        "read": 2,
+        "data_verify": 1
+      }
+    },
+    {
+      "candidate": "fc07b38d059417da824c44e608dcc5d37c9a47789be76bbef72ec52bd6eb2506",
+      "task": "dependency-join",
+      "guidanceInFirstRequest": false,
+      "tools": {
+        "read": 1,
+        "data_write": 1
+      }
+    }
+  ],
+  "patch": {
+    "path": "structured-h1.patch",
+    "sha256": "0d1337f85aa3ec35d5cb6bfb2636cce68e35053dcedcfd8455d8d0548c997a88",
+    "reconstructedSourceDigest": "fc07b38d059417da824c44e608dcc5d37c9a47789be76bbef72ec52bd6eb2506"
+  },
+  "usage": {
+    "ledgers": 4,
+    "availableLedgers": 4,
+    "unavailableLedgers": 0,
+    "reportedTotals": {
+      "started": 312,
+      "results": 312,
+      "failed": 0,
+      "unfinished": 0,
+      "inputTokensReported": 208897,
+      "outputTokensReported": 63077,
+      "missingUsage": 0,
+      "requestDurationMsSum": 739315.3498229997
+    },
+    "complete": true
+  }
+}

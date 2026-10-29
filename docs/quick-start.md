@@ -14,7 +14,7 @@ Install Node.js 24.16.0 or later, npm, Python 3, and Docker. Start the Docker da
 
 ```bash
 npm ci
-npm start -- --env-file /absolute/private/deepseek.env --pool "$HE_EGRESS_POOL"
+npm start -- --env-file /absolute/private/deepseek.env
 ```
 
 The entry point uses `deepseek-flash` through the official Anthropic-compatible API. Only the trusted egress proxy receives credentials. See [DeepSeek configuration](../examples/deepseek/README.md). Real model calls consume your account quota.
@@ -25,13 +25,16 @@ The entry point uses `deepseek-flash` through the official Anthropic-compatible 
 Task recipe + model Provider
        │
        ▼
-Build runtime image → discover DNS / host addresses → freeze task, model, and isolation contract
+Build runtime image → discover DNS / host addresses → freeze search / validation / reuse tasks
        │
        ▼
 Run H0 → DSH optimizer reads evidence → autonomously modifies plugins → independent build and scoring
        │
        ▼
-Save reports, traces, and failures → export the selected candidate's original Bundle
+Freeze H* from search scores → independently assess H0 and H* on validation tasks
+       │
+       ▼
+Export the original Bundle → native install into fresh Profiles → execute and grade reuse tasks
 ```
 
 Each task defaults to 600 seconds, adjustable explicitly with `--task-seconds`; the optimizer's total budget is computed from the full plan. Addresses and DNS are read from the actual Docker deployment, and `--dns` can explicitly specify a deployment-approved resolver. Runtime ports are allocated automatically and persisted.
@@ -41,22 +44,25 @@ Output is located in `.evolution/<recipe>-<time>/`:
 | Artifact | Content |
 |---|---|
 | `startup.json` | Startup phase, configuration identity, and failure reasons |
-| `spec.json`, `search/` | Frozen contract, event ledger, candidates, trajectories, and per-task deliverables |
+| `registration.json`, `*-data/spec.json` | All three frozen task splits, model and runtime identities, selection rule |
+| `search/` | Event ledger, candidates, trajectories, and per-task deliverables |
 | `report.json` | Actual scores, verdicts, and model usage |
+| `validation/comparison.json` | Fresh independent H0/H* scores and paired differences |
+| `installed/acceptance.json` | Original-package installation, per-task execution, grading, identity checks and usage |
 | `capability/bundle.tgz` | Raw build package of the selected candidate |
 | `command-logs/` | Per-phase logs, preserving original failures |
 
-Startup prints a command for watching events. Failures report an error and preserve the run directory; use the [native CLI](events.md) for recovery. The entry point never resamples failed tasks. The selected candidate may still be H0: completing a run does not establish a quality gain. This entry completes the development-task loop with independent grading. Method comparisons use a separate validation set and a [pre-registered protocol](experiments/2026-10-29-mutation-space-registration.md).
+Startup prints a command for watching events. Failures report an error and preserve the run directory; use the [native CLI](events.md) to inspect or recover the original controller. The entry point never resamples failed tasks. The selected candidate may still be H0: completing the loop does not establish a quality gain. Validation and reuse scores never change the selected version. Default synthetic splits vary inputs within the same task families; they do not establish cross-domain generalization. Task counts, concurrency and deadlines come from the recipe's contract. `HE_EGRESS_POOL` supplies the network pool; `--pool` explicitly overrides it.
 
 ## Bring your tasks
 
-Pass `--recipe path/to/recipe.json` to select another domain. Its generation command runs inside the image, with the recipe directory mounted read-only at `/recipe` and output written to `/workspace/dataset`. The preparation script receives the dataset, image, model, contract output path, isolation settings, Provider directory, and per-task time budget, then creates a generic Experiment contract.
+Pass `--recipe path/to/recipe.json` to select another domain. Each split's generation command runs inside the image, with the recipe directory mounted read-only at `/recipe` and its own output directory at `/workspace/dataset`. The preparation script receives the dataset, image, model, contract output path, isolation settings, Provider directory, and per-task time budget. The launcher derives validation-only contracts for the two independent splits. Identical task input digests across splits or differences in frozen model, runtime, scoring or isolation settings are rejected before inference. These checks establish separation and identity, not statistical independence or hidden-data provenance.
 
 | Recipe Field | Purpose |
 |---|---|
 | `name` | Run name |
 | `dockerfile` | Domain dependency image; `null` uses the generic runtime image |
-| `generate` | argv of the data generation command, no shell concatenation |
+| `generate` | Explicit `search`, `validation`, `reuse` command argv; no shell concatenation |
 | `prepare` | Domain contract preparation script |
 | `seed` | Starting capability Bundle |
 | `preflight` | Optional domain runtime environment validation script |

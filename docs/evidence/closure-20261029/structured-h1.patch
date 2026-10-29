@@ -1,0 +1,402 @@
+diff --git a/index.mjs b/index.mjs
+index e5033f6..3413dee 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -1,36 +1,380 @@
++/**
++ * Structured-data capability bundle (v2).
++ *
++ * Observed-run evidence drove this composition shape:
++ *
++ *  1. In the scored baseline runs the executor never called `data_read` or
++ *     `data_write`; it read inputs with `read`/`bash` and committed outputs with
++ *     the generic `write` tool. A capability the model does not select cannot
++ *     contribute, so v2 registers system-prompt guidance naming these tools at
++ *     the point where the generic file tools are documented.
++ *  2. A probe showed the generic `write` tool renders only "Created file" /
++ *     "Updated file": the committed value never reaches the caller. Two
++ *     consecutive baseline runs therefore could not observe the bytes they
++ *     believed they had written. v2 owns the whole commit path *inside one
++ *     handler*: `data_write` (whole value, with written-bytes receipt) and
++ *     `data_replace` (targeted, fs-observation-policy-respecting repair that
++ *     reports the resulting digest), plus a guidance section that routes
++ *     whole-value commits through `data_write`.
++ *  3. A guard that wrapped the tool runtime's scheduler was probed in the
++ *     native profile and had no effect: `TOOL_RUNTIME_SCHEDULER` is an own
++ *     instance field of the shipped ToolRuntime, so reassigning it cannot
++ *     intercept dispatch. v2 contains no such mechanism; only supported
++ *     extension points (tool registration, system-prompt sections) are used.
++ *
++ * Tools:
++ *  - `data_read`    verbatim UTF-8 read that cites exact bytes (size + SHA-256).
++ *  - `data_write`   commits caller-supplied JSON to an explicit /workspace file
++ *                   and reports bytes, digest and top-level keys written.
++ *  - `data_replace` exact literal replacement in an existing text file, with
++ *                   optional occurrence count and parsed-JSON validation.
++ *  - `data_verify`  checks one file against an explicit declared shape and
++ *                   returns computed facts; never edits or guesses intent.
++ *
++ * No task identifier, fixture value or expected answer is encoded here; every
++ * reported fact is computed from the bytes actually on disk.
++ */
++
+ import { defineTool } from '@deepseek-ai/dsh-tools';
+-import { readFile, writeFile } from 'node:fs/promises';
++import { readFile, writeFile, rename, stat } from 'node:fs/promises';
++import { createHash } from 'node:crypto';
+ import path from 'node:path';
+ 
++export const name = 'structured-data';
+ export const inject = ['tools'];
++
++const WORKSPACE = '/workspace/';
++const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
++const textOutput = (value) => [{ type: 'text', text: typeof value === 'string' ? value : JSON.stringify(value) }];
++
++/** Resolve `destination` inside /workspace, rejecting traversal and the bare root. */
++function resolveWorkspacePath(destination) {
++  if (typeof destination !== 'string' || destination.length === 0) {
++    throw new Error('destination must be a non-empty path inside /workspace');
++  }
++  const resolved = path.resolve(WORKSPACE, destination);
++  if (resolved === '/workspace' || !resolved.startsWith(WORKSPACE)) {
++    throw new Error(`destination must be inside /workspace (resolved: ${resolved})`);
++  }
++  return resolved;
++}
++
++/** Split a text file into records without normalizing any value. */
++function splitText(text, format) {
++  if (format === 'json') {
++    const value = JSON.parse(text);
++    return Array.isArray(value) ? value : [value];
++  }
++  const records = [];
++  for (const line of text.split('\n')) {
++    const trimmed = line.endsWith('\r') ? line.slice(0, -1) : line;
++    if (trimmed.trim() === '') continue;
++    records.push(JSON.parse(trimmed));
++  }
++  return records;
++}
++
++function kindOf(value) {
++  if (value === null) return 'null';
++  if (Array.isArray(value)) return 'array';
++  if (typeof value === 'number') return Number.isInteger(value) ? 'integer' : 'number';
++  return typeof value;
++}
++
++function matchesType(value, declared) {
++  if (declared === 'json') return true;
++  if (declared === 'integer') return kindOf(value) === 'integer';
++  if (declared === 'number') return typeof value === 'number' && Number.isFinite(value);
++  return kindOf(value) === declared;
++}
++
++const describeType = (declared) => (declared === 'json' ? 'any JSON value' : declared);
++
++/** Compare records or one object root against an explicit declared shape. */
++function collectFindings(shape, records) {
++  const properties = shape.properties ?? {};
++  const keys = Object.keys(properties);
++  const findings = [];
++
++  if (shape.kind === 'records') {
++    const keysSeen = new Set();
++    let missingCount = 0;
++    let mismatchCount = 0;
++    let extraCount = 0;
++    let objectRecords = 0;
++    records.forEach((record, index) => {
++      if (kindOf(record) !== 'object') {
++        findings.push({ code: 'record_not_object', index, path: null, expected: 'object', actual: kindOf(record) });
++        return;
++      }
++      objectRecords += 1;
++      const missing = keys.filter((key) => !Object.hasOwn(record, key));
++      const mismatched = keys.filter((key) => Object.hasOwn(record, key) && !matchesType(record[key], properties[key]));
++      const extra = Object.keys(record).filter((key) => !Object.hasOwn(properties, key));
++      for (const key of Object.keys(record)) keysSeen.add(key);
++      missingCount += missing.length;
++      mismatchCount += mismatched.length;
++      extraCount += extra.length;
++      for (const key of missing) findings.push({ code: 'missing_field', index, path: key, expected: describeType(properties[key]), actual: 'absent' });
++      for (const key of mismatched) findings.push({ code: 'type_mismatch', index, path: key, expected: describeType(properties[key]), actual: kindOf(record[key]) });
++      for (const key of extra) findings.push({ code: 'unexpected_field', index, path: key, expected: 'absent', actual: kindOf(record[key]) });
++    });
++    return {
++      kind: 'records',
++      declaredKeys: keys,
++      recordCount: records.length,
++      objectRecords,
++      observedKeys: [...keysSeen].sort(),
++      missingFieldOccurrences: missingCount,
++      typeMismatchOccurrences: mismatchCount,
++      extraFieldOccurrences: extraCount,
++      findings,
++    };
++  }
++
++  const root = records[0] ?? null;
++  const facts = { kind: 'object', declaredKeys: keys, rootType: kindOf(root), missingKeys: [], typeMismatches: [], extraKeys: [] };
++  if (kindOf(root) !== 'object') {
++    facts.missingKeys = [...keys];
++    findings.push({ code: 'root_not_object', index: null, path: null, expected: 'object', actual: kindOf(root) });
++    return { ...facts, findings };
++  }
++  for (const key of keys) {
++    if (!Object.hasOwn(root, key)) {
++      facts.missingKeys.push(key);
++      findings.push({ code: 'missing_key', index: null, path: key, expected: describeType(properties[key]), actual: 'absent' });
++      continue;
++    }
++    const value = root[key];
++    if (!matchesType(value, properties[key])) {
++      facts.typeMismatches.push(key);
++      findings.push({ code: 'type_mismatch', index: null, path: key, expected: describeType(properties[key]), actual: kindOf(value) });
++      continue;
++    }
++    if (properties[key] === 'array') {
++      facts[`${key}Length`] = value.length;
++      facts[`${key}ItemKinds`] = [...new Set(value.map(kindOf))].sort();
++    }
++  }
++  for (const key of Object.keys(root)) {
++    if (!Object.hasOwn(properties, key)) {
++      facts.extraKeys.push(key);
++      findings.push({ code: 'unexpected_key', index: null, path: key, expected: 'absent', actual: kindOf(root[key]) });
++    }
++  }
++  return { ...facts, findings };
++}
++
++/** Best-effort durable citation of a read or commit; never fails the tool. */
++function cite(exec, type, payload) {
++  const session = exec?.agent?.session ?? exec?.session;
++  if (session === undefined || typeof session.append !== 'function') return;
++  try {
++    session.append(type, { ...payload, call: exec.rootCallId ?? exec.callId });
++  } catch {
++    /* the tool's returned facts remain authoritative */
++  }
++}
++
+ export function apply(ctx) {
+-  const output = { schema: { type: 'string' }, render: (_args, value) => [{ type: 'text', text: value }] };
++  // ---------------------------------------------------------- prompt guidance
++  // Registered through the supported system-prompt section API, next to the
++  // generic write guidance, so the model sees the commit path where it reads
++  // about whole-file writes. Text is static: it names tools, not answers.
++  try {
++    const prompt = ctx.systemPrompt;
++    if (prompt !== undefined && typeof prompt.section === 'function') {
++      prompt.section({
++        name: 'tool:data_write',
++        order: (typeof prompt.getSectionOrder === 'function' ? prompt.getSectionOrder('TOOL_WRITE') : 1200) + 1,
++        text: () =>
++          'Commit a structured result with `data_write` (destination, value): it writes the exact JSON value and reports the bytes, digest and top-level keys it wrote. Read source data with `data_read` (verbatim text plus byte count and digest) and check a finished file with `data_verify` (declared-shape facts such as key sets, type mismatches and record counts). Use `data_replace` for a targeted literal repair of an existing file.',
++      });
++    }
++  } catch {
++    /* guidance is an enhancement; the tools remain usable without it */
++  }
++
++  // ---------------------------------------------------------------- data_read
+   ctx.tools.register(
+     defineTool({
+       name: 'data_read',
+       description:
+-        'Read a UTF-8 data file verbatim, including every JSONL record. No parsing, filtering, inferred schema or repair is applied.',
+-      parameters: { file: { type: 'string', required: true } },
+-      output,
+-      execute: ({ file }) => readFile(file, 'utf8'),
++        'Read one UTF-8 data file verbatim and cite its exact bytes. Reports the byte size and SHA-256 digest of the input, then the unmodified text. No parsing, filtering, schema inference or repair is applied, so the caller keeps the raw evidence.',
++      parameters: {
++        file: { type: 'string', required: true, description: 'Path of the input file to read.' },
++      },
++      output: { schema: { type: 'string' }, render: (_args, value) => textOutput(value) },
++      async execute({ file }, exec) {
++        const resolved = path.resolve(file);
++        const bytes = await readFile(resolved);
++        const digest = sha256(bytes);
++        cite(exec, 'structured-data/basis', { kind: 'read', file: resolved, bytes: bytes.length, sha256: digest });
++        return `<path>${resolved}</path>\n<bytes>${bytes.length}</bytes>\n<sha256>${digest}</sha256>\n<content>\n${bytes.toString('utf8')}\n</content>`;
++      },
+     }),
+   );
++
++  // --------------------------------------------------------------- data_write
+   ctx.tools.register(
+     defineTool({
+       name: 'data_write',
+       description:
+-        'Write caller-supplied JSON to an explicit file in /workspace. Does not infer records, transform values, or verify task correctness. An existing destination is explicitly replaced.',
++        'Commit caller-supplied JSON to an explicit file inside /workspace, replacing any existing file. The value is written exactly as given; `indent` and `trailing_newline` control only whitespace. Nothing is inferred, dropped, reordered or repaired. Returns the resolved path, byte size, SHA-256 and the exact top-level keys written, in insertion order.',
++      parameters: {
++        destination: { type: 'string', required: true, description: 'Target file inside /workspace.' },
++        value: { type: 'json', required: true, description: 'Exact JSON value to commit.' },
++        indent: { type: 'integer', description: 'Indentation width (1-10). 0 or omitted writes compact JSON.' },
++        trailing_newline: { type: 'boolean', description: 'Append a final newline. Defaults to true.' },
++      },
++      output: { schema: { type: 'string' }, render: (_args, value) => textOutput(value) },
++      async execute({ destination, value, indent, trailing_newline }, exec) {
++        const resolved = resolveWorkspacePath(destination);
++        const width = Number.isInteger(indent) && indent > 0 ? Math.min(indent, 10) : 0;
++        const body = JSON.stringify(value, null, width);
++        const content = (trailing_newline ?? true) ? `${body}\n` : body;
++        const encoded = Buffer.from(content, 'utf8');
++        const temporary = `${resolved}.tmp-${process.pid}-${Date.now()}`;
++        await writeFile(temporary, encoded);
++        await rename(temporary, resolved);
++        const topLevelKeys =
++          value !== null && typeof value === 'object' && !Array.isArray(value) ? Object.keys(value) : null;
++        const digest = sha256(encoded);
++        cite(exec, 'structured-data/commit', {
++          kind: 'write',
++          file: resolved,
++          bytes: encoded.length,
++          sha256: digest,
++          topLevelKeys,
++        });
++        return [
++          `Wrote ${resolved}`,
++          `<bytes>${encoded.length}</bytes>`,
++          `<sha256>${digest}</sha256>`,
++          `<top_level_keys>${topLevelKeys === null ? 'not-an-object' : JSON.stringify(topLevelKeys)}</top_level_keys>`,
++        ].join('\n');
++      },
++    }),
++  );
++
++  // ------------------------------------------------------------- data_replace
++  ctx.tools.register(
++    defineTool({
++      name: 'data_replace',
++      description:
++        'Replace an exact literal substring in an existing UTF-8 file inside /workspace and report the result. `old_string` must appear the given `expected_occurrences` times (default 1); otherwise nothing is written and the actual count is reported. With `expect` = "json" the file must still parse as JSON after the edit. Use this for a targeted repair instead of rewriting a whole file; for a whole-value commit use data_write.',
+       parameters: {
+-        destination: { type: 'string', required: true },
+-        value: { type: 'json', required: true },
+-      },
+-      output,
+-      execute: async ({ destination, value }) => {
+-        const resolved = path.resolve(destination);
+-        if (!resolved.startsWith('/workspace/')) throw new Error('Destination must be inside /workspace');
+-        const content = JSON.stringify(value, null, 2) + '\n';
+-        await writeFile(resolved, content);
+-        return JSON.stringify({ destination: resolved, bytes: Buffer.byteLength(content) });
++        destination: { type: 'string', required: true, description: 'Existing file inside /workspace.' },
++        old_string: { type: 'string', required: true, description: 'Exact literal text to replace.' },
++        new_string: { type: 'string', required: true, description: 'Exact literal replacement text.' },
++        expected_occurrences: {
++          type: 'integer',
++          description: 'Required number of literal occurrences of old_string. Defaults to 1.',
++        },
++        expect: {
++          type: 'string',
++          enum: ['json'],
++          description: 'When "json", reject an edit whose result is not valid JSON.',
++        },
++      },
++      output: { schema: { type: 'string' }, render: (_args, value) => textOutput(value) },
++      async execute({ destination, old_string, new_string, expected_occurrences, expect }, exec) {
++        const resolved = resolveWorkspacePath(destination);
++        const wanted = expected_occurrences ?? 1;
++        const before = await readFile(resolved, 'utf8');
++        const parts = before.split(old_string);
++        const actual = parts.length - 1;
++        if (old_string.length === 0) throw new Error('old_string must not be empty');
++        if (actual !== wanted) {
++          throw new Error(
++            `expected ${wanted} occurrence(s) of old_string in ${resolved}, found ${actual}; no change was written`,
++          );
++        }
++        const after = parts.join(new_string);
++        if (expect === 'json') {
++          try {
++            JSON.parse(after);
++          } catch (error) {
++            throw new Error(`edit rejected: result is not valid JSON (${error instanceof Error ? error.message : String(error)}); no change was written`);
++          }
++        }
++        const encoded = Buffer.from(after, 'utf8');
++        await writeFile(resolved, encoded);
++        const digest = sha256(encoded);
++        cite(exec, 'structured-data/commit', { kind: 'replace', file: resolved, occurrences: actual, bytes: encoded.length, sha256: digest });
++        return [
++          `Replaced ${actual} occurrence(s) in ${resolved}`,
++          `<bytes>${encoded.length}</bytes>`,
++          `<sha256>${digest}</sha256>`,
++        ].join('\n');
++      },
++    }),
++  );
++
++  // -------------------------------------------------------------- data_verify
++  ctx.tools.register(
++    defineTool({
++      name: 'data_verify',
++      description:
++        'Check one file against an explicit declared shape and return computed facts; never edits the file and never guesses intent. `shape.kind="object"` inspects a single JSON object root; `shape.kind="records"` inspects every JSON object of a JSONL file (or every element of a JSON array). Each declared key names the JSON type it must have (string, number, integer, boolean, object, array, null, or json for any). Reports parse errors, missing/extra keys, type mismatches, record counts and, for declared array keys, their length and item kinds. `expect_keys` additionally compares the observed key set against an exact set.',
++      parameters: {
++        file: { type: 'string', required: true, description: 'File to inspect.' },
++        format: {
++          type: 'string',
++          required: true,
++          enum: ['json', 'jsonl'],
++          description: 'json parses the whole file; jsonl parses one JSON document per non-empty line.',
++        },
++        shape: {
++          type: 'object',
++          required: true,
++          additionalProperties: false,
++          description: 'Declared structural expectation.',
++          properties: {
++            kind: { type: 'string', required: true, enum: ['object', 'records'] },
++            properties: {
++              type: 'object',
++              additionalProperties: true,
++              description: 'Map of object key (object kind) or record key (records kind) to expected JSON type.',
++            },
++          },
++        },
++        expect_keys: {
++          type: 'array',
++          items: { type: 'string' },
++          description: 'When given, compare the observed key set against exactly this set.',
++        },
++      },
++      output: { schema: { type: 'string' }, render: (_args, value) => textOutput(value) },
++      async execute({ file, format, shape, expect_keys }) {
++        const resolved = path.resolve(file);
++        const info = await stat(resolved);
++        const text = await readFile(resolved, 'utf8');
++        let facts;
++        let root = null;
++        try {
++          const records = splitText(text, format);
++          facts = collectFindings(shape, records);
++          if (shape.kind === 'object') root = records[0] ?? null;
++        } catch (error) {
++          facts = { kind: shape.kind, findings: [], parseError: error instanceof Error ? error.message : String(error) };
++        }
++        const observed =
++          facts.observedKeys ??
++          (root !== null && typeof root === 'object' && !Array.isArray(root) ? Object.keys(root) : []);
++        const expected = expect_keys === undefined ? null : [...expect_keys].sort();
++        const observedSorted = [...observed].sort();
++        const result = {
++          file: resolved,
++          bytes: info.size,
++          format,
++          ...facts,
++          expectedKeys: expected,
++          observedKeys: observedSorted,
++          keySetMatches: expected === null ? null : JSON.stringify(expected) === JSON.stringify(observedSorted),
++          valid: facts.parseError === undefined && facts.findings.length === 0,
++        };
++        return JSON.stringify(result);
+       },
+     }),
+   );

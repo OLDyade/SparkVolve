@@ -5,7 +5,8 @@ import shutil
 from pathlib import Path
 
 
-def fixtures():
+def fixtures(split='search'):
+    offset = {'search': 0, 'validation': 11, 'reuse': 29}[split]
     events = [
         {'event_id': 'e4', 'entity': 'alpha', 'revision': 4, 'action': 'upsert', 'value': 'new'},
         {'event_id': 'e1', 'entity': 'alpha', 'revision': 1, 'action': 'upsert', 'value': 'old'},
@@ -31,7 +32,7 @@ def fixtures():
                        {'id': 'A3', 'name': 'orange', 'version': '1.0'}],
         'exceptions': [{'advisory': 'A2', 'name': 'blue', 'version': '1.0'}],
     }
-    return [
+    cases = [
         ('revision-events', 'events.jsonl', events,
          'Read /input/events.jsonl. Deduplicate identical event_id records, then choose the greatest integer revision independently for each entity, regardless of file order. A latest delete is a tombstone; an upsert after a delete restores the entity. Empty strings and null are real values. Write /workspace/result.json with exactly: entities (array of {entity, revision, value}, ordered by entity), tombstones (array of entity strings, sorted), unique_event_count (integer count after event_id deduplication).',
          {'entities': [{'entity': 'alpha', 'revision': 4, 'value': 'new'},
@@ -50,12 +51,45 @@ def fixtures():
           'suppressed': [{'advisory': 'A2', 'name': 'blue', 'version': '1.0'}],
           'unmatched_advisories': ['A3']}),
     ]
+    # Separate public fixture instances retain the same declared semantics. These
+    # are within-family checks, not a claim of transfer to unknown task families.
+    if offset:
+        for row in events:
+            row['revision'] += offset
+            row['entity'] = f'{split}-{row["entity"]}'
+            row['event_id'] = f'{split}-{row["event_id"]}'
+        event_expected = cases[0][4]
+        for row in event_expected['entities']:
+            row['revision'] += offset
+            row['entity'] = f'{split}-{row["entity"]}'
+        event_expected['tombstones'] = [f'{split}-{name}' for name in event_expected['tombstones']]
+        for row in logs:
+            row['path'] = f'/{split}{row["path"]}'
+            # Preserve the zero boundary while varying positive observations.
+            if row['latency_ms']:
+                row['latency_ms'] += offset
+        log_expected = cases[1][4]
+        means = [f'{2 + offset:.2f}', f'{36 + offset:.2f}', f'{(120 + 2 * offset) / 3:.2f}']
+        for row, mean in zip(log_expected['groups'], means):
+            row['path'] = f'/{split}{row["path"]}'
+            row['mean_ms'] = mean
+            row['p95_ms'] += offset
+        for rows in inventory.values():
+            for row in rows:
+                row['name'] = f'{split}-{row["name"]}'
+                row['version'] = f'{offset}.{row["version"]}'
+        join_expected = cases[2][4]
+        for rows in [join_expected['findings'], join_expected['suppressed']]:
+            for row in rows:
+                row['name'] = f'{split}-{row["name"]}'
+                row['version'] = f'{offset}.{row["version"]}'
+    return cases
 
 
-def generate(root):
+def generate(root, split='search'):
     root.mkdir(parents=True, exist_ok=False)
     tasks = []
-    for name, filename, data, prompt, expected in fixtures():
+    for name, filename, data, prompt, expected in fixtures(split):
         inputs, evaluation = root / 'inputs' / name, root / 'evaluation' / name
         inputs.mkdir(parents=True)
         evaluation.mkdir(parents=True)
@@ -70,4 +104,6 @@ def generate(root):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('output', type=Path)
-    generate(parser.parse_args().output)
+    parser.add_argument('split', choices=['search', 'validation', 'reuse'], nargs='?', default='search')
+    args = parser.parse_args()
+    generate(args.output, args.split)

@@ -37,10 +37,10 @@ Ship improvements with the original Bundle, candidate lineage, capability card a
 
 ```bash
 npm ci
-npm start -- --env-file /absolute/private/deepseek.env --pool "$HE_EGRESS_POOL"
+npm start -- --env-file /absolute/private/deepseek.env
 ```
 
-The entry builds the environment, generates sample tasks, starts the native DSH optimizer, independently grades executions and exports the selected Bundle. Defaults: official DeepSeek, a structured-data example and **600 seconds per task**. Replace tasks and the seed plugin with `--recipe`; Excel is an optional example. Model, tasks, budgets and concurrency enter a frozen contract.
+One entry builds the environment, freezes three task splits, runs the native DSH optimizer, independently validates H0 and the selected candidate, then installs the unchanged Bundle in clean Profiles for fresh reuse tasks. Defaults: official DeepSeek, a structured-data example and **600 seconds per task**. Replace tasks and the seed plugin with `--recipe`; Excel is an optional example. Scores, failures and original-package identity remain inspectable at every stage.
 
 **Explore existing evidence:** open the [interactive experiment tour](docs/tour.html) to inspect candidates, task-level results and downloadable records offline. No API key needed.
 
@@ -102,7 +102,7 @@ The [official DeepSeek end-to-end experiment](docs/experiments/2026-10-28-offici
 
 These are engineering acceptance results on public synthetic tasks. They do not establish stable improvement or cross-domain transfer. Regressions, semantic errors and transport failures remain public in the [experiment index](docs/experiments/README.md).
 
-The latest [mutation-space comparison](docs/experiments/2026-10-29-mutation-space-results.md) completed three arms, six independent searches and 100 task executions. Candidate patches, observed tool calls and counterexamples are public. This study has not established an advantage for unrestricted plugin mutation.
+The latest [mutation-space comparison and package reuse](docs/experiments/2026-10-29-closure-study-results.md) completed three arms, six independent searches and 124 task scorings. One autonomous candidate achieved 100% in independent validation and fresh original-package reuse. All twelve source patches, regression scores and semantic counterexamples are public; an advantage for unrestricted plugin mutation remains unproven. The [one-command startup acceptance](docs/experiments/2026-10-29-official-closure-results.md) separately verifies all stages on structured-data tasks.
 
 ## Explore further
 

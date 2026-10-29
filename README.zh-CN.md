@@ -80,10 +80,10 @@
 
 ```bash
 npm ci
-npm start -- --env-file /absolute/private/deepseek.env --pool "$HE_EGRESS_POOL"
+npm start -- --env-file /absolute/private/deepseek.env
 ```
 
-入口自动构建环境、生成示例任务、启动 DSH 原生优化器、执行独立评分并导出选中的 Bundle。默认使用官方 DeepSeek 和结构化数据示例，每题 **600 秒**；通过 `--recipe` 替换任务与种子插件，Excel 是可选示例。模型、任务、预算和并发均进入冻结合同。
+一个入口完成环境构建、三套任务冻结、DSH 自主改造、H0 与入选版本的独立验证，并在干净 Profile 中安装原始 Bundle，执行新的复用任务。默认使用官方 DeepSeek 和结构化数据示例，每题 **600 秒**；通过 `--recipe` 替换任务与种子插件，Excel 是可选示例。各阶段保留真实分数、失败记录及原包身份。
 
 **先看实际记录**：用浏览器打开[交互式实验导览](docs/tour.html)，离线查看候选、逐题结果和下载记录，无需密钥。
 
@@ -145,7 +145,7 @@ DSH 优化器读取真实任务、轨迹和交付，研究原因并自主编码�
 
 以上为公开合成任务的工程验收，尚不构成稳定提分或跨领域迁移证明。历史实验中的退步、语义错误和传输失败一并公开，详见[实验索引](docs/experiments/README.md)。
 
-最新[插件变异方法对照](docs/experiments/2026-10-29-mutation-space-results.md)已完成三组、六次独立搜索和 100 次任务执行，公开候选源码差异、真实工具调用与反例。当前结果尚未证明开放变异空间占优。
+最新[插件变异方法对照与原包复用](docs/experiments/2026-10-29-closure-study-results.md)已完成三组、六次独立搜索和 124 次任务评分。一份自主候选在独立验证与新实例原包复用中均为 100%；十二份源码差异、退步分数与语义反例全部保留。当前结果尚未证明开放变异空间占优。[单命令启动验收](docs/experiments/2026-10-29-official-closure-results.md)另行验证了结构化数据任务的完整流程。
 
 ## 深入探索
 

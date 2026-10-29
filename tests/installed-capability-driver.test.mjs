@@ -69,26 +69,39 @@ function effects(overrides = {}) {
   };
 }
 
-test('requires four validation tasks, one attempt, controlled egress and 600-second deadlines', () => {
+test('uses registered task count, concurrency and deadlines with one attempt and controlled egress', async () => {
   assert.equal(acceptanceSpec(spec()).tasks.length, 4);
+  const custom = spec();
+  custom.tasks.pop();
+  custom.concurrency = 1;
+  custom.timeoutSeconds = 900;
+  assert.equal(acceptanceSpec(custom).tasks.length, 3);
+  const result = await runRegisteredTasks(custom, effects());
+  assert.equal(result.registered, 3);
+  assert.equal(result.scored, 3);
+  assert.equal(
+    taskWorkerSpec({
+      root: '/fresh',
+      task: custom.tasks[0],
+      spec: custom,
+      installed: { profileFiles: {} },
+      prefix: 'custom',
+      network: 'isolated',
+    }).timeoutSeconds,
+    900,
+  );
   for (const mutate of [
     (s) => {
       s.purpose = 'search';
     },
     (s) => {
-      s.tasks.pop();
-    },
-    (s) => {
       s.repetitions = 2;
-    },
-    (s) => {
-      s.concurrency = 1;
     },
     (s) => {
       s.timeoutSeconds = 300;
     },
     (s) => {
-      s.egress.executor[0].timeoutSeconds = 300;
+      s.egress.executor[0].timeoutSeconds = 900;
     },
     (s) => {
       s.isolation.network.executor = 'none';

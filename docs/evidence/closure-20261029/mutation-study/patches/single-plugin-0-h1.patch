@@ -1,0 +1,213 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..c196037 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,20 @@
+-Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++Spreadsheet work method (follow every step; do not skip the verification loop).
++
++1. Read before writing. Run workbook_inspect on the source and list every non-empty cell, its label, its value and its number format. Read every cell comment: comments carry binding business rules (which rate applies to which adjustment, which cells are intentional blanks, which period is "final"). Quote those rules in your plan before choosing formulas.
++
++2. Map semantics to a formula for every required cell. Build a small table: row label -> meaning -> formula pattern. Common conventions:
++   - Subtotals = SUM(range); differences = end - opening; ratios = numerator / denominator with the denominator row taken from the same column.
++   - Tax and rate adjustments apply only to the specific item they describe, never to the whole base.
++   - Sign and direction matter: e.g. removing an expense adds it back to profit; removing a gain subtracts it; a lower balance grows when a repayment is subtracted.
++   - Items computed "from opening principal", "from original amount" or "per year" use an absolute or original figure, not a prior-period closing balance.
++   - Scenario/case switches: use INDEX/MATCH, CHOOSE or IF on the case cell so the requested case selects the row set; never hard-code the chosen case's numbers.
++   - Only-final or only-last-period cells: compute them in that period only and leave other periods legitimately blank if the sheet is blank there.
++   - Units: currency, units and percent rows differ; keep each row's unit consistent with its label.
++
++3. Write formulas, never constants, into every required cell. Use Excel syntax with commas, quotes around text, and no leading "=" duplication. Make the first column's formulas correct, then use workbook_fill_row so the same relative pattern extends across the remaining columns — this keeps every period consistent. For non-contiguous cells, use workbook_write with one edit per cell.
++
++4. Verify numerically before delivering. Always pass verify=true on your final write (or re-run a write with verify=true). Read the returned computed values for every edited cell and check each against an independent hand calculation you computed yourself (with bash/python3 if useful) from the source inputs. Investigate any difference: wrong reference, reversed sign, absolute-vs-relative reference, wrong unit, division by the wrong row, or a rule from a comment that you missed.
++
++5. Preserve the source. Never edit or overwrite the source file; write to the requested destination path. Do not change original inputs, labels, units, headers or intentional blanks, do not insert or delete rows or columns, and keep number formats as they are unless the task explicitly asks for a format. Do not convert the whole sheet to percentages or add new label rows.
++
++6. Deliver exactly the requested path, then state briefly: the formulas you used per row, and the checked values. Do not claim correctness you did not verify with a recalculation.
+diff --git a/index.mjs b/index.mjs
+index 8b8f20c..9172458 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -29,7 +29,7 @@ export function apply(ctx) {
+     defineTool({
+       name: 'workbook_inspect',
+       description:
+-        'Read exact occupied cells, formulas and comments in an XLSX workbook. Source labels are facts; this tool does not infer business semantics.',
++        'Read exact occupied cells, formulas, number formats and comments in an XLSX workbook. Source labels are facts; this tool does not infer business semantics.',
+       parameters: { file: { type: 'string', required: true } },
+       output,
+       execute: (args, exec) => invoke({ operation: 'inspect', ...args }, exec.signal),
+@@ -39,7 +39,7 @@ export function apply(ctx) {
+     defineTool({
+       name: 'workbook_write',
+       description:
+-        'Apply explicit caller-supplied values or formulas to a copy of an XLSX workbook. Preserve original input. Destination must be inside /workspace. Does not calculate formulas or certify correctness.',
++        'Apply explicit caller-supplied values or formulas to a copy of an XLSX workbook. Preserve original input. Destination must be inside /workspace. Set verify=true to recalculate a temporary copy with LibreOffice and return the computed value of every edited cell (the delivered file keeps its formulas).',
+       parameters: {
+         source: { type: 'string', required: true },
+         destination: { type: 'string', required: true },
+@@ -56,9 +56,38 @@ export function apply(ctx) {
+             },
+           },
+         },
++        verify: { type: 'boolean' },
+       },
+       output,
+       execute: (args, exec) => invoke({ operation: 'write', ...args }, exec.signal),
+     }),
+   );
++  ctx.tools.register(
++    defineTool({
++      name: 'workbook_fill_row',
++      description:
++        'Copy a horizontal formula row across later columns from a single template formula in start_col; Excel relative references shift automatically. Destination must be inside /workspace. Set verify=true to recalculate a temporary copy and return computed values.',
++      parameters: {
++        source: { type: 'string', required: true },
++        destination: { type: 'string', required: true },
++        sheet: { type: 'string', required: true },
++        rows: {
++          type: 'array',
++          required: true,
++          items: {
++            type: 'object',
++            additionalProperties: false,
++            properties: {
++              row: { type: 'integer', required: true },
++              start_col: { type: 'integer', required: true },
++              end_col: { type: 'integer', required: true },
++            },
++          },
++        },
++        verify: { type: 'boolean' },
++      },
++      output,
++      execute: (args, exec) => invoke({ operation: 'fill_row', ...args }, exec.signal),
++    }),
++  );
+ }
+diff --git a/workbook.py b/workbook.py
+index 5b58d96..aaab66a 100644
+--- a/workbook.py
++++ b/workbook.py
+@@ -1,14 +1,62 @@
+ import json
++import os
++import shutil
++import subprocess
+ import sys
++import tempfile
+ from pathlib import Path
+ from openpyxl import load_workbook
+-from openpyxl.utils.cell import coordinate_to_tuple
++from openpyxl.utils.cell import coordinate_to_tuple, get_column_letter
++from openpyxl.formula.translate import Translator
++
++
++def translate_formula(template, origin, destination):
++    """Shift relative references from the template cell to the destination cell,
++    exactly as a spreadsheet fill-right would."""
++    try:
++        return Translator(template, origin=origin).translate_formula(destination)
++    except Exception:  # noqa: BLE001 - keep the raw template if it cannot be parsed
++        return template
++
++
++def recalc(target, requested):
++    """Recalculate a saved workbook with LibreOffice and report cached values."""
++    office = shutil.which('soffice') or shutil.which('libreoffice')
++    if not office:
++        return {'recalculated': False, 'reason': 'LibreOffice not available'}
++    with tempfile.TemporaryDirectory() as tmp:
++        home = Path(tmp) / 'home'
++        home.mkdir()
++        env = dict(os.environ, HOME=str(home))
++        try:
++            subprocess.run(
++                [office, '--headless', '--norestore', '--calc',
++                 '--convert-to', 'xlsx', '--outdir', tmp, str(target)],
++                check=True, capture_output=True, timeout=180, env=env,
++            )
++        except Exception as exc:  # noqa: BLE001 - report, never break the write
++            return {'recalculated': False, 'reason': f'LibreOffice failed: {exc}'}
++        produced = Path(tmp) / Path(target).name
++        if not produced.exists():
++            return {'recalculated': False, 'reason': 'LibreOffice produced no file'}
++        values = load_workbook(produced, data_only=True)
++        report = {}
++        for sheet_name, cells in requested.items():
++            sheet = values[sheet_name] if sheet_name in values.sheetnames else None
++            target_report = report.setdefault(sheet_name, {})
++            for cell in cells:
++                target_report[cell] = sheet[cell].value if sheet is not None else None
++    return {'recalculated': True, 'values': report}
++
+ 
+ args = json.load(sys.stdin)
+ if args['operation'] == 'inspect':
+     workbook = load_workbook(args['file'])
+-    print(json.dumps({sheet.title: [{'cell': cell.coordinate, 'value': cell.value, 'comment': cell.comment.text if cell.comment else None}
+-                                  for row in sheet for cell in row if cell.value is not None or cell.comment]
++    print(json.dumps({sheet.title: [{'cell': cell.coordinate, 'value': cell.value,
++                                     'number_format': cell.number_format,
++                                     'comment': cell.comment.text if cell.comment else None}
++                                    for row in sheet for cell in row
++                                    if cell.value is not None or cell.comment]
+                       for sheet in workbook}, default=str))
+ elif args['operation'] == 'write':
+     target = Path(args['destination']).resolve()
+@@ -23,7 +71,54 @@ elif args['operation'] == 'write':
+         seen.add(position)
+         workbook[edit['sheet']][edit['cell']] = edit['value']
+     target.parent.mkdir(parents=True, exist_ok=True)
++    try:
++        workbook.save(target)
++    except PermissionError:
++        scratch = target.with_name(target.name + '.partial')
++        try:
++            workbook.save(scratch)
++            os.replace(scratch, target)
++        finally:
++            if scratch.exists():
++                scratch.unlink()
++    result = {'saved': str(target), 'submitted_cells': len(seen)}
++    if args.get('verify'):
++        fresh = load_workbook(target)
++        requested = {}
++        for edit in args['edits']:
++            sheet = fresh[edit['sheet']]
++            cell = sheet[edit['cell']]
++            requested.setdefault(edit['sheet'], []).append(cell.coordinate)
++        result.update(recalc(target, requested))
++    print(json.dumps(result, default=str))
++elif args['operation'] == 'fill_row':
++    target = Path(args['destination']).resolve()
++    if not target.is_relative_to('/workspace'):
++        raise ValueError('Destination must be inside /workspace')
++    workbook = load_workbook(args['source'])
++    sheet = workbook[args['sheet']]
++    for spec in args['rows']:
++        row = int(spec['row'])
++        start_col = int(spec['start_col'])
++        end_col = int(spec['end_col'])
++        template = sheet.cell(row=row, column=start_col).value
++        if not isinstance(template, str) or not template.startswith('='):
++            raise ValueError(f'Row {row} has no formula in column {start_col}')
++        origin = sheet.cell(row=row, column=start_col).coordinate
++        for col in range(start_col + 1, end_col + 1):
++            sheet[f'{get_column_letter(col)}{row}'] = translate_formula(template, origin,
++                                                                       f'{get_column_letter(col)}{row}')
++    target.parent.mkdir(parents=True, exist_ok=True)
+     workbook.save(target)
+-    print(json.dumps({'saved': str(target), 'submitted_cells': len(seen), 'formula_values_recalculated': False}))
++    result = {'saved': str(target)}
++    if args.get('verify'):
++        fresh = load_workbook(target)
++        requested = {args['sheet']: [fresh[args['sheet']]
++                                     [f'{get_column_letter(col)}{row}'].coordinate
++                                     for spec in args['rows']
++                                     for col in range(int(spec['start_col']),
++                                                      int(spec['end_col']) + 1)]}
++        result.update(recalc(target, requested))
++    print(json.dumps(result, default=str))
+ else:
+     raise ValueError('Unknown workbook operation')

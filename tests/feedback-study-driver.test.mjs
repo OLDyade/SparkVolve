@@ -13,9 +13,30 @@ import {
   snapshotReports,
   validationComparison,
   assertBaselineComplete,
+  deliverSelections,
   main,
 } from '../scripts/verify-feedback-study.mjs';
 import { studyArmIdentity } from '../dist/optimizer-study-contracts.js';
+
+test('delivery preserves every study selection and never retries failed installation', async () => {
+  const calls = [];
+  const jobs = ['ok', 'broken', 'missing'].map((id) => ({
+    id,
+    phase: id === 'missing' ? 'failed' : 'complete',
+    selectedHarness: id === 'missing' ? null : { source: { digest: id } },
+  }));
+  const result = await deliverSelections({ jobs }, async (job) => {
+    calls.push(job.id);
+    if (job.id === 'broken') throw Error('install failed');
+    return { passed: true };
+  });
+  assert.deepEqual(calls, ['ok', 'broken']);
+  assert.deepEqual(
+    result.rows.map((row) => row.status),
+    ['complete', 'failed', 'unavailable'],
+  );
+  assert.equal(result.passed, false);
+});
 
 function contracts() {
   const method = {

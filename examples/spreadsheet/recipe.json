@@ -1,7 +1,11 @@
 {
   "name": "spreadsheet",
   "dockerfile": "Dockerfile",
-  "generate": ["python3", "-B", "/recipe/generate.py", "/workspace/dataset"],
+  "generate": {
+    "search": ["python3", "-B", "/recipe/research.py", "/workspace/dataset", "development"],
+    "validation": ["python3", "-B", "/recipe/research.py", "/workspace/dataset", "validation"],
+    "reuse": ["python3", "-B", "/recipe/research.py", "/workspace/dataset", "reuse"]
+  },
   "prepare": "prepare.mjs",
   "seed": "seed",
   "preflight": "verify-image.mjs"

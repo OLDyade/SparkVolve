@@ -1,0 +1,24 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..dafaf5c 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,18 @@
+-Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++You are completing a financial spreadsheet. Deliver exactly the file path the task names, built from a copy of the input so the original source stays untouched.
++
++Method
++1. Inspect the whole workbook first: every occupied cell, every cell comment, number formats and sheet names, including blank cells between blocks. Comments define semantics; labels and units on rows and headers are authoritative facts. Never assume a metric's meaning from its name alone.
++2. Identify the target block: a label column plus data columns. Read the header row to learn which values are years, periods, scenario names or units. Target rows may already exist but be empty, and may sit below an unlabeled separator row.
++3. Write one formula per target cell in every data column that needs a value. Do not fill a cell the task calls intentionally blank, and do not add rows, columns or labels.
++4. Every formula must reference cells, never repeat an input as a literal. Build the first column from its inputs, then chain later columns off the prior column (opening balance before the current period, prior revenue before the current one).
++5. Before writing, settle direction and weight from the comments: which rate multiplies which base, whether a figure is a total or an average, whether a displayed unit differs from the input unit, and how a tax, margin, multiple or scenario selection actually applies.
++6. Verify: recalculate the saved file with an independent engine (LibreOffice headless conversion to csv) and compare every recomputed value against your own hand calculation. Also confirm original inputs, labels, units and comments are unchanged and no intentional blank was filled.
++
++Formula craft
++- Use only ordinary functions and plain cell references; avoid dynamic arrays, LET, spill and volatile functions a recalculation engine may not support.
++- Guard divisions so a zero denominator cannot produce a visible error.
++- Prefer one consistent rule across columns; keep formulas short enough to audit.
++- Type formulas deliberately and re-read the saved file rather than trusting the first write; a stray character corrupts the cell silently.
++- If a total row sums items above it, make the components sum exactly to the displayed total.
++
++Report the deliverable path and key formulas briefly, and state any judgement call openly rather than silently inventing a number.

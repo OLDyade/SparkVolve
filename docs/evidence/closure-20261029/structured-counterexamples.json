@@ -1,0 +1,135 @@
+{
+  "boundary": "Maintainer-authored deterministic counterexamples of the frozen rejected model candidate. No model inference, source edits or regrading.",
+  "sourceDigest": "fc07b38d059417da824c44e608dcc5d37c9a47789be76bbef72ec52bd6eb2506",
+  "image": "sha256:ad77d89f612af31db6d804b4021f83349de5287a59364b55d220b04ca409c5cf",
+  "state": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-29T06:18:23.300792874Z",
+    "FinishedAt": "2026-10-29T06:18:23.929022879Z"
+  },
+  "observation": {
+    "observations": [
+      {
+        "arguments": {
+          "file": "/workspace/array.json",
+          "format": "json",
+          "shape": {
+            "kind": "object",
+            "properties": {
+              "amount": "integer"
+            }
+          }
+        },
+        "kind": "tool",
+        "name": "data_verify",
+        "result": {
+          "content": [
+            {
+              "text": "{\"file\":\"/workspace/array.json\",\"bytes\":14,\"format\":\"json\",\"kind\":\"object\",\"declaredKeys\":[\"amount\"],\"rootType\":\"object\",\"missingKeys\":[],\"typeMismatches\":[],\"extraKeys\":[],\"findings\":[],\"expectedKeys\":null,\"observedKeys\":[\"amount\"],\"keySetMatches\":null,\"valid\":true}",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "value": "{\"file\":\"/workspace/array.json\",\"bytes\":14,\"format\":\"json\",\"kind\":\"object\",\"declaredKeys\":[\"amount\"],\"rootType\":\"object\",\"missingKeys\":[],\"typeMismatches\":[],\"extraKeys\":[],\"findings\":[],\"expectedKeys\":null,\"observedKeys\":[\"amount\"],\"keySetMatches\":null,\"valid\":true}"
+        },
+        "sequence": 1
+      },
+      {
+        "kind": "value",
+        "label": "array-accepted-as-object",
+        "sequence": 2,
+        "value": {
+          "input": [
+            {
+              "amount": 7
+            }
+          ],
+          "observed": {
+            "bytes": 14,
+            "declaredKeys": [
+              "amount"
+            ],
+            "expectedKeys": null,
+            "extraKeys": [],
+            "file": "/workspace/array.json",
+            "findings": [],
+            "format": "json",
+            "keySetMatches": null,
+            "kind": "object",
+            "missingKeys": [],
+            "observedKeys": [
+              "amount"
+            ],
+            "rootType": "object",
+            "typeMismatches": [],
+            "valid": true
+          }
+        }
+      },
+      {
+        "arguments": {
+          "expect_keys": [
+            "different"
+          ],
+          "file": "/workspace/object.json",
+          "format": "json",
+          "shape": {
+            "kind": "object",
+            "properties": {
+              "amount": "integer"
+            }
+          }
+        },
+        "kind": "tool",
+        "name": "data_verify",
+        "result": {
+          "content": [
+            {
+              "text": "{\"file\":\"/workspace/object.json\",\"bytes\":12,\"format\":\"json\",\"kind\":\"object\",\"declaredKeys\":[\"amount\"],\"rootType\":\"object\",\"missingKeys\":[],\"typeMismatches\":[],\"extraKeys\":[],\"findings\":[],\"expectedKeys\":[\"different\"],\"observedKeys\":[\"amount\"],\"keySetMatches\":false,\"valid\":true}",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "value": "{\"file\":\"/workspace/object.json\",\"bytes\":12,\"format\":\"json\",\"kind\":\"object\",\"declaredKeys\":[\"amount\"],\"rootType\":\"object\",\"missingKeys\":[],\"typeMismatches\":[],\"extraKeys\":[],\"findings\":[],\"expectedKeys\":[\"different\"],\"observedKeys\":[\"amount\"],\"keySetMatches\":false,\"valid\":true}"
+        },
+        "sequence": 3
+      },
+      {
+        "kind": "value",
+        "label": "key-mismatch-still-valid",
+        "sequence": 4,
+        "value": {
+          "bytes": 12,
+          "declaredKeys": [
+            "amount"
+          ],
+          "expectedKeys": [
+            "different"
+          ],
+          "extraKeys": [],
+          "file": "/workspace/object.json",
+          "findings": [],
+          "format": "json",
+          "keySetMatches": false,
+          "kind": "object",
+          "missingKeys": [],
+          "observedKeys": [
+            "amount"
+          ],
+          "rootType": "object",
+          "typeMismatches": [],
+          "valid": true
+        }
+      }
+    ],
+    "status": "passed"
+  }
+}

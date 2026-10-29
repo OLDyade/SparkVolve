@@ -1,0 +1,16 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..1810133 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,11 @@
+ Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++
++Verification procedure you must actually complete before delivering:
++
++1. Inspect the workbook and read every comment. Restate the task's business rules in plain words, rule by rule.
++2. For each adjustment or restatement row, decide its sign explicitly with this test: does this adjustment raise or lower the reported figure it is applied to? Write the answer next to the rule before touching any formula. Removing an expense or a cost raises the adjusted figure: add it back. Removing a gain, revenue or income lowers the adjusted figure: subtract it. The sign of the shown input value is not the sign of the adjustment.
++3. When a rate or treatment is described as applying "only" to one item, or as "removing its associated" effect, that clause pins down which item the rate touches and the direction the adjustment moves the figure. Apply the rate to that item alone, once, and in the direction your step 2 answer gives. Never re-derive a sign from the reported figure's own formula; the reported figure is the starting point, not the direction of travel.
++4. Recompute every requested cell by hand with explicit numbers for at least the first column or segment, showing the arithmetic. Compare the hand arithmetic with what the formula will produce. If the two disagree, the formula's sign is wrong: fix the formula, not the hand check.
++5. Re-read your own summary and confirm it agrees with step 2 and step 4. A sentence that says an adjustment "reduces" or "raises" something must match the arithmetic you actually wrote into the sheet.
++6. Confirm no unintended cell changed, no intentional blank was filled, and that only cells the task asks for were written. Fill every displayed year, segment or column requested.
++7. Use live formulas derived from the workbook's own input cells, never hard-coded computed numbers.

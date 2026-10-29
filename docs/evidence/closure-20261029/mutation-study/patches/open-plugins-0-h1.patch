@@ -1,0 +1,401 @@
+diff --git a/__pycache__/workbook.cpython-311.pyc b/__pycache__/workbook.cpython-311.pyc
+new file mode 100644
+index 0000000000000000000000000000000000000000..1761db7504b5c0c0901fad843d585599397e58ac
+GIT binary patch
+literal 11423
+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
+O=ANP5`mc7Q`2PZ}(IOWB
+
+literal 0
+HcmV?d00001
+
+diff --git a/guidance.md b/guidance.md
+index a6994b1..dc1db34 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,10 @@
+ Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++
++A workbook is a small model, not a guess. Read the whole sheet before editing anything: labels, units, time periods, input values and every cell comment. Comments often carry the intended business rule, so treat them as the primary specification. Then verify the layout — figure out where each requested output truly belongs from the surrounding labels, and how values flow left to right across periods and top to bottom through the statements.
++
++Rules of thumb:
++- Enter live Excel formulas rather than hard-coded numbers. Reference the cells that hold the inputs (and blank cells that will later hold previous-period outputs) so that changing an assumption recalculates the model. Build the first period, then use relative references to extend across the remaining periods.
++- Keep every original input, label, unit and intentional blank untouched. A blank the task calls intentional stays blank unless the task asks you to fill it. Do not add helper rows, headers or scratch cells to the delivered workbook.
++- Respect units, signs and scaling. Tax rates, margins and growth rates are fractions as stored; check whether a rate cell is annual or per-period.
++- When the prompt names only some years, cells, or a specific final year, fill exactly that subset.
++- After writing, reread the delivered file with recalculation and confirm that every derived cell resolves to a plausible number with no #REF!, #DIV/0!, #NAME? or #VALUE! errors, that totals reconcile with their components, and that untouched inputs are unchanged.
+diff --git a/index.mjs b/index.mjs
+index 8b8f20c..e8606f3 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -29,8 +29,11 @@ export function apply(ctx) {
+     defineTool({
+       name: 'workbook_inspect',
+       description:
+-        'Read exact occupied cells, formulas and comments in an XLSX workbook. Source labels are facts; this tool does not infer business semantics.',
+-      parameters: { file: { type: 'string', required: true } },
++        'Read every occupied cell of an XLSX (or CSV) workbook as JSON: raw values, formulas, cell comments, column widths, and per-sheet layout. Set recalculate=true to also return each formula\'s computed result from a real spreadsheet engine, which reveals broken references or formula errors. Source labels are facts; this tool does not infer business semantics.',
++      parameters: {
++        file: { type: 'string', required: true },
++        recalculate: { type: 'boolean' },
++      },
+       output,
+       execute: (args, exec) => invoke({ operation: 'inspect', ...args }, exec.signal),
+     }),
+@@ -39,10 +42,11 @@ export function apply(ctx) {
+     defineTool({
+       name: 'workbook_write',
+       description:
+-        'Apply explicit caller-supplied values or formulas to a copy of an XLSX workbook. Preserve original input. Destination must be inside /workspace. Does not calculate formulas or certify correctness.',
++        'Apply explicit caller-supplied values or formulas to a copy of an XLSX (or CSV) workbook and save it inside /workspace. Each edit sets either "value" (literal) or "formula" (a string beginning with "="), never both. Set recalculate=true to have a real spreadsheet engine compute every formula and store the results before saving, so the delivered file carries up-to-date cached values. Disable Excel auto-dates for date serials. Does not certify business correctness.',
+       parameters: {
+         source: { type: 'string', required: true },
+         destination: { type: 'string', required: true },
++        recalculate: { type: 'boolean' },
+         edits: {
+           type: 'array',
+           required: true,
+@@ -52,7 +56,8 @@ export function apply(ctx) {
+             properties: {
+               sheet: { type: 'string', required: true },
+               cell: { type: 'string', required: true },
+-              value: { type: 'json', required: true },
++              value: { type: 'json' },
++              formula: { type: 'string' },
+             },
+           },
+         },
+diff --git a/workbook.py b/workbook.py
+index 5b58d96..23c470b 100644
+--- a/workbook.py
++++ b/workbook.py
+@@ -1,29 +1,189 @@
++import csv
+ import json
++import os
++import shutil
++import subprocess
+ import sys
++import tempfile
+ from pathlib import Path
+-from openpyxl import load_workbook
++
++from openpyxl import Workbook, load_workbook
+ from openpyxl.utils.cell import coordinate_to_tuple
+ 
+-args = json.load(sys.stdin)
+-if args['operation'] == 'inspect':
+-    workbook = load_workbook(args['file'])
+-    print(json.dumps({sheet.title: [{'cell': cell.coordinate, 'value': cell.value, 'comment': cell.comment.text if cell.comment else None}
+-                                  for row in sheet for cell in row if cell.value is not None or cell.comment]
+-                      for sheet in workbook}, default=str))
+-elif args['operation'] == 'write':
+-    target = Path(args['destination']).resolve()
+-    if not target.is_relative_to('/workspace'):
+-        raise ValueError('Destination must be inside /workspace')
+-    workbook = load_workbook(args['source'])
+-    seen = set()
+-    for edit in args['edits']:
+-        position = (edit['sheet'], coordinate_to_tuple(edit['cell']))
+-        if position in seen:
+-            raise ValueError('Duplicate target')
+-        seen.add(position)
+-        workbook[edit['sheet']][edit['cell']] = edit['value']
+-    target.parent.mkdir(parents=True, exist_ok=True)
+-    workbook.save(target)
+-    print(json.dumps({'saved': str(target), 'submitted_cells': len(seen), 'formula_values_recalculated': False}))
+-else:
+-    raise ValueError('Unknown workbook operation')
++WORKSPACE_ROOT = Path('/workspace')
++SOFFICE = shutil.which('soffice') or shutil.which('libreoffice')
++
++
++def plain(value):
++    if value is None or isinstance(value, (bool, int, float, str)):
++        return value
++    return str(value)
++
++
++def _coerce(value):
++    if value is None or isinstance(value, (bool, int, float)):
++        return value
++    if isinstance(value, str):
++        text = value.strip()
++        if text == '':
++            return None
++        try:
++            return int(text)
++        except ValueError:
++            pass
++        try:
++            return float(text)
++        except ValueError:
++            pass
++        return value
++    raise ValueError('Unsupported cell value {!r}'.format(value))
++
++
++def is_formula(value):
++    return isinstance(value, str) and value.lstrip().startswith('=')
++
++
++def describe(source, values_path=None):
++    workbook = load_workbook(source, data_only=False)
++    values = load_workbook(values_path, data_only=True) if values_path else None
++    out = {'file': str(source), 'sheets': workbook.sheetnames, 'data': {}}
++    for sheet in workbook:
++        entries = []
++        value_sheet = values[sheet.title] if values and sheet.title in values.sheetnames else None
++        for row in sheet.iter_rows():
++            for cell in row:
++                value = cell.value
++                comment = cell.comment.text if cell.comment else None
++                recalc = None
++                if is_formula(value) and value_sheet is not None:
++                    recalc = plain(value_sheet[cell.coordinate].value)
++                if value is None and comment is None and recalc is None:
++                    continue
++                entry = {'cell': cell.coordinate}
++                if is_formula(value):
++                    entry['formula'] = plain(value)
++                    entry['type'] = 'f'
++                    if value_sheet is not None:
++                        entry['computed'] = recalc
++                        if isinstance(recalc, str):
++                            entry['error'] = recalc
++                else:
++                    entry['value'] = plain(value)
++                    entry['type'] = cell.data_type
++                if comment is not None:
++                    entry['comment'] = comment
++                entries.append(entry)
++        block = {'cells': entries}
++        widths = {key: round(dim.width, 2) for key, dim in sheet.column_dimensions.items() if dim.width}
++        if widths:
++            block['column_widths'] = widths
++        out['data'][sheet.title] = block
++    return out
++
++
++def recalculate(path):
++    """Open a copy in LibreOffice and re-save so stored formula values exist.
++
++    Returns the path of a self-contained copy of the computed workbook that the
++    caller owns."""
++    root = Path(tempfile.mkdtemp(prefix='recalc-'))
++    try:
++        source_dir = root / 'in'
++        target_dir = root / 'out'
++        source_dir.mkdir()
++        target_dir.mkdir()
++        staged = source_dir / 'workbook.xlsx'
++        shutil.copyfile(path, staged)
++        env = dict(os.environ)
++        env['HOME'] = str(root)
++        command = [SOFFICE, '--headless', '--norestore', '--nolockcheck',
++                   '-env:UserInstallation=file://' + str(root / 'profile'),
++                   '--convert-to', 'xlsx', '--outdir', str(target_dir), str(staged)]
++        try:
++            subprocess.run(command, check=True, capture_output=True, timeout=240, env=env)
++        except (subprocess.SubprocessError, OSError) as error:
++            raise RuntimeError('LibreOffice recalculation failed: {}'.format(error))
++        produced = target_dir / 'workbook.xlsx'
++        if not produced.exists():
++            raise RuntimeError('LibreOffice produced no workbook')
++        owned = Path(tempfile.mkdtemp(prefix='computed-')) / 'workbook.xlsx'
++        shutil.copyfile(produced, owned)
++        return owned
++    finally:
++        shutil.rmtree(root, ignore_errors=True)
++
++
++def main():
++    args = json.load(sys.stdin)
++    operation = args['operation']
++    if operation == 'inspect':
++        file = args['file']
++        if args.get('recalculate'):
++            produced = recalculate(file)
++            try:
++                report = describe(file, values_path=str(produced))
++            finally:
++                shutil.rmtree(produced.parent, ignore_errors=True)
++            report['recalculated'] = True
++        else:
++            report = describe(file)
++            report['recalculated'] = False
++            report['note'] = 'Formula results are only included when recalculate is true.'
++        print(json.dumps(report, default=str))
++    elif operation == 'write':
++        target = Path(args['destination']).resolve()
++        if not target.is_relative_to(WORKSPACE_ROOT):
++            raise ValueError('Destination must be inside /workspace')
++        source = args['source']
++        if source.lower().endswith('.csv'):
++            workbook = Workbook()
++            sheet = workbook.active
++            sheet.title = args.get('sheet') or 'Sheet1'
++            with open(source, newline='', encoding='utf-8-sig') as handle:
++                for row in csv.reader(handle):
++                    sheet.append([None if value == '' else _coerce(value) for value in row])
++        else:
++            workbook = load_workbook(source)
++        seen = set()
++        for edit in args['edits']:
++            formula = edit.get('formula')
++            if formula is not None:
++                if not is_formula(formula):
++                    raise ValueError('formula must start with "=" in {}'.format(edit['cell']))
++                value = formula
++            else:
++                value = _coerce(edit.get('value'))
++            sheet_name = edit['sheet']
++            position = coordinate_to_tuple(edit['cell'].replace('$', ''))
++            if sheet_name not in workbook.sheetnames:
++                raise ValueError('Unknown sheet {!r}; sheets: {}'.format(sheet_name, workbook.sheetnames))
++            if (sheet_name, position) in seen:
++                raise ValueError('Duplicate target {}!{}'.format(sheet_name, edit['cell']))
++            seen.add((sheet_name, position))
++            workbook[sheet_name][edit['cell']] = value
++        target.parent.mkdir(parents=True, exist_ok=True)
++        recalc = bool(args.get('recalculate'))
++        staged = target.with_name('.staged-' + target.name)
++        workbook.save(staged)
++        try:
++            if recalc:
++                produced = recalculate(staged)
++                shutil.copyfile(produced, target)
++                shutil.rmtree(produced.parent, ignore_errors=True)
++            else:
++                shutil.copyfile(staged, target)
++        finally:
++            if staged.exists():
++                staged.unlink()
++        print(json.dumps({'saved': str(target), 'submitted_cells': len(seen),
++                          'formula_values_recalculated': recalc}))
++    else:
++        raise ValueError('Unknown workbook operation')
++
++
++if __name__ == '__main__':
++    try:
++        main()
++    except Exception as error:
++        print(str(error), file=sys.stderr)
++        sys.exit(1)

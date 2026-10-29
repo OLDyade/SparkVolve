@@ -1,0 +1,132 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..a6bf888 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,28 @@
+-Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++Spreadsheet task guidance (follow in order).
++
++1. INSPECT FIRST. Always call workbook_inspect on the source file before writing anything. Read every label, value, comment and blank. Never overwrite an existing input, label, unit header, or a cell the task says must stay blank.
++
++2. MAP LAYOUT BEFORE FORMULAS.
++   - List the column headers (years, periods, scenarios, segments), and note exactly which columns the task says to fill.
++   - Note which rows are inputs and which are output rows to compute.
++   - Respect any row/column the task describes as intentionally blank.
++   - Establish the period alignment: a value in a column labelled with an earlier year (for example a "historical" or "opening" input) anchors the forecast and is NOT itself a forecast year even if its column header looks like a year.
++
++3. READ THE SCENARIO CORRECTLY. Workbooks often show a base case and a requested/selected case side by side (base growth vs requested case growth, base margin vs requested case margin, etc.). Unless the task states otherwise, every forecast output uses the REQUESTED case and a comment saying "distinct from the base case" confirms this. Do not mix base-case assumptions into requested-case outputs.
++
++4. WRITE EXCEL FORMULAS, NEVER HARDCODED NUMBERS. Every computed cell must be a formula referencing the workbook's own input cells (for example =B2*(1+C4)). The delivery is recalculated by an independent engine, so a typed-in constant counts as wrong. Apply the semantics stated by the task text and comments exactly, for example:
++   - value grows onto the prior period;
++   - margin = metric / revenue;
++   - an installment is principal / number of years;
++   - interest uses the same-period opening balance;
++   - equity = enterprise value - debt + cash.
++   Build a consistent relative-reference pattern across columns, but check the first cell of each row before mirroring it.
++
++5. HONOUR THE TASK TEXT LITERALLY. Phrases such as "final year only", "earlier years intentionally blank", "do not fill the total X cells", "fill all five rows for every year" are hard constraints. Fill every cell the task enumerates and leave every cell it excludes empty. If a row is named in the task, fill all of its applicable periods; if a row is described as blank, leave it untouched.
++
++6. SELF-VERIFY BEFORE DELIVERY. Use the workbook_recalc tool on the delivered file and review the computed values:
++   - every enumerated output cell is non-empty and plausible;
++   - no #REF!, #DIV/0!, #VALUE!, #NAME?, no NaN, and no missing where a number belongs;
++   - intentionally blank cells are still blank;
++   - original inputs, labels, units and comments are unchanged.
++   If anything is off, correct the formulas, rewrite, recalculate again. Only then finish. Deliver the final workbook to the exact path the task requests (commonly /workspace/result.xlsx).
+diff --git a/index.mjs b/index.mjs
+index 8b8f20c..83fa8c4 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -61,4 +61,14 @@ export function apply(ctx) {
+       execute: (args, exec) => invoke({ operation: 'write', ...args }, exec.signal),
+     }),
+   );
++  ctx.tools.register(
++    defineTool({
++      name: 'workbook_recalc',
++      description:
++        'Recalculate an XLSX workbook with LibreOffice and return each cell\'s formula, computed value and comment. Use it to self-check every output cell and to confirm intentional blanks stay blank before delivery. Does not modify the workbook.',
++      parameters: { file: { type: 'string', required: true } },
++      output,
++      execute: (args, exec) => invoke({ operation: 'recalc', ...args }, exec.signal),
++    }),
++  );
+ }
+diff --git a/workbook.py b/workbook.py
+index 5b58d96..9dfaedf 100644
+--- a/workbook.py
++++ b/workbook.py
+@@ -1,9 +1,39 @@
+ import json
++import subprocess
+ import sys
++import tempfile
+ from pathlib import Path
++
+ from openpyxl import load_workbook
+ from openpyxl.utils.cell import coordinate_to_tuple
+ 
++
++def errors_only(value):
++    return isinstance(value, str) and value.startswith('#')
++
++
++def recalc_values(path):
++    """Recalculate with LibreOffice and return {(sheet, coord): value}."""
++    with tempfile.TemporaryDirectory() as tmp:
++        subprocess.run(
++            ['soffice', '--headless', '--calc', '--convert-to', 'xlsx', '--outdir', tmp, str(path)],
++            check=True,
++            capture_output=True,
++            timeout=240,
++        )
++        converted = Path(tmp) / (Path(path).stem + '.xlsx')
++        if not converted.exists():
++            raise RuntimeError('LibreOffice produced no recalculated workbook')
++        data = load_workbook(converted, data_only=True)
++        values = {}
++        for sheet in data:
++            for row in sheet:
++                for cell in row:
++                    if cell.value is not None:
++                        values[(sheet.title, cell.coordinate)] = cell.value
++        return values
++
++
+ args = json.load(sys.stdin)
+ if args['operation'] == 'inspect':
+     workbook = load_workbook(args['file'])
+@@ -25,5 +55,34 @@ elif args['operation'] == 'write':
+     target.parent.mkdir(parents=True, exist_ok=True)
+     workbook.save(target)
+     print(json.dumps({'saved': str(target), 'submitted_cells': len(seen), 'formula_values_recalculated': False}))
++elif args['operation'] == 'recalc':
++    path = Path(args['file'])
++    workbook = load_workbook(path)
++    values = recalc_values(path)
++    sheets = {}
++    problems = []
++    for sheet in workbook:
++        rows = []
++        for row in sheet:
++            for cell in row:
++                formula = cell.value
++                if formula is None and not cell.comment:
++                    continue
++                computed = values.get((sheet.title, cell.coordinate))
++                entry = {'cell': cell.coordinate}
++                if isinstance(formula, str) and formula.startswith('='):
++                    entry['formula'] = formula
++                elif formula is not None:
++                    entry['value'] = formula
++                if computed is not None:
++                    entry['computed'] = computed
++                if cell.comment:
++                    entry['comment'] = cell.comment.text
++                if errors_only(computed):
++                    problems.append(f'{sheet.title}!{cell.coordinate} {computed}')
++                rows.append(entry)
++        sheets[sheet.title] = rows
++    print(json.dumps({'file': str(path), 'recalculated': True, 'sheets': sheets,
++                      'formula_errors': problems}, default=str))
+ else:
+     raise ValueError('Unknown workbook operation')
