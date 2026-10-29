@@ -47,7 +47,9 @@ export async function prepareExperiment(
     throw new Error('Existing directory has no experiment initialization identity');
   const db = new DatabaseSync(path.join(root, 'initialization.sqlite'), { timeout: 0 });
   try {
-    db.exec(`PRAGMA synchronous=FULL;
+    // Status observers must not block publication; competing writers still fail immediately.
+    db.exec(`PRAGMA journal_mode=WAL;
+      PRAGMA synchronous=FULL;
       CREATE TABLE IF NOT EXISTS initialization (
         id INTEGER PRIMARY KEY CHECK(id=1), identity TEXT NOT NULL,
         phase TEXT NOT NULL CHECK(phase IN ('preparing','prepared'))

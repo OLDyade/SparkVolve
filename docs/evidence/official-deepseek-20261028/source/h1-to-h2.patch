@@ -1,0 +1,34 @@
+diff --git a/h1/index.mjs b/h2/index.mjs
+index d010002..557197e 100644
+--- a/h1/index.mjs
++++ b/h2/index.mjs
+@@ -42,7 +42,8 @@ export function apply(ctx) {
+     defineTool({
+       name: 'workbook_inspect',
+       description:
+-        'Read stored content of an XLSX workbook: literal cell values, formula text and cell comments, per sheet. ' +
++        'Read a workbook as a model: literal cell values, formula text and the text of every cell comment, per sheet. ' +
++        'Comments often carry the task\'s stated adjustments and calculation notes, so read them all before writing. ' +
+         'Formulas are reported as their stored text, never as computed results; this tool does not calculate, ' +
+         'infer business meaning or refresh stored cached results.',
+       parameters: {
+@@ -64,8 +65,9 @@ export function apply(ctx) {
+       description:
+         'Write caller-supplied values and formulas into a copy of an XLSX workbook, preserving every other original ' +
+         'cell, style and comment. Destination must be inside /workspace and differ from the source. The source file ' +
+-        'is never modified, and the destination is only written after every edit validates. This tool does not ' +
+-        'calculate formulas: use workbook_recalculate to observe engine results.',
++        'is never modified, and the destination is only written after every edit validates. Source cells the task ' +
++        'calls intentionally blank (for example per-unit totals or non-final-year exit values) should stay blank. ' +
++        'This tool does not calculate formulas: use workbook_recalculate to observe engine results.',
+       parameters: {
+         source: { type: 'string', required: true, description: 'Absolute path of the template workbook.' },
+         destination: {
+@@ -101,6 +103,7 @@ export function apply(ctx) {
+         'and report, for every formula, its verbatim formula text plus the engine result or engine error such as ' +
+         '#DIV/0!. Results are engine outputs; they are not checked against any expectation. With a destination the ' +
+         'recalculated copy is saved (inside /workspace) for delivery. Engine failures are reported as tool errors. ' +
++        'The engine returns raw numbers (dates as serials, margins as fractions); follow the sheet\'s stated units. ' +
+         'Note: cells whose result the engine leaves without a stored value are reported as null.',
+       parameters: {
+         source: { type: 'string', required: true, description: 'Absolute path of the workbook to calculate.' },

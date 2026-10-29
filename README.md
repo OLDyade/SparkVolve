@@ -12,13 +12,15 @@ Keep model weights fixed. Let the harness evolve through real tasks.
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-202124?style=flat-square)](LICENSE)
 [![DSH](https://img.shields.io/badge/DSH-Native_plugins-DDEAF5?style=flat-square&labelColor=202124)](docs/components.md)
 
-[English](README.md) · [中文](README.zh-CN.md) · [Quick start](#quick-start) · [How it works](#how-it-works) · [Bring your tasks](#bring-your-tasks) · [Blueprint](11.md)
+[English](README.md) · [中文](README.zh-CN.md) · **[Explore live](https://oldyade.github.io/SparkVolve/)** · [Quick start](#quick-start) · [Blueprint](11.md)
 
 ![SparkVolve: fixed model, evolving plugin code, configuration and composition, reusable Bundles](docs/assets/readme/hero.png)
 
 </div>
 
 A plugin-based harness evolution framework: agents use real task feedback to reshape their capability structure and turn useful improvements into reusable plugins.
+
+**Diagnose failures. Evolve plugins. Ship reusable capabilities.**
 
 > We used to equip agents with capabilities. Now agents can decide which capabilities they need, which to change, and which to create.
 
@@ -35,7 +37,11 @@ Ship improvements with the original Bundle, candidate lineage, capability card a
 
 ## Quick start
 
-**Run real evolution:** clone the repository and prepare Node.js 24, Python 3, Docker and an official DeepSeek key. Set `SPARKVOLVE_EGRESS_POOL` to a reserved private subnet and keep credentials in an environment file outside the repository; see the [startup guide](docs/quick-start.md).
+**Explore a real experiment → [Open the interactive tour](https://oldyade.github.io/SparkVolve/)**<br>
+See an autonomous source change, compare per-task results across search / validation / reuse, and download the records. No installation, API key or model calls. [Read the code walkthrough](docs/experiments/anatomy-of-a-mutation.md).
+
+**Run SparkVolve → [Prepare your environment](docs/quick-start.md#preparation)**<br>
+Clone the repository. You need **Node.js 24, Python 3, Docker, an official DeepSeek key and a reserved private network pool**. Keep credentials outside the repository. First launch builds container images; model calls consume your provider quota.
 
 ```bash
 npm ci
@@ -43,8 +49,6 @@ npm start -- --env-file /absolute/private/deepseek.env
 ```
 
 One entry builds the environment, freezes three task splits, runs the native DSH optimizer, independently validates H0 and the selected candidate, then installs the unchanged Bundle in clean Profiles for fresh reuse tasks. Defaults: official DeepSeek, a structured-data example and **600 seconds per task**. Replace tasks and the seed plugin with `--recipe`; Excel is an optional example. Scores, failures and original-package identity remain inspectable at every stage.
-
-**Explore existing evidence:** open the [interactive experiment tour](docs/tour.html) to inspect candidates, task-level results and downloadable records offline. No API key needed.
 
 | Your goal | Start here |
 |:---|:---|
@@ -81,7 +85,7 @@ Explore: [Native authoring](docs/native-authoring.md) · [Behavioral probes](doc
 | **Seed plugins** | The starting capability, configuration and composition |
 | **Independent grader** | Scores and authorized feedback from actual deliveries |
 
-Set budgets and selection rules in the experiment contract, then run the same evolution loop. A new domain requires implementing and validating its adapter.
+Set budgets and selection rules in the experiment contract, then run the same evolution loop. A new domain requires implementing and validating its adapter. **Task domains are replaceable; runtime integration is native to DSH / Cordis.** Integration with another Agent runtime requires its own implementation.
 
 [Spreadsheet example](examples/spreadsheet) · [Structured-data example](docs/structured-data.md) · **[Build your domain adapter →](docs/domain-adapters.md)**
 
@@ -89,10 +93,11 @@ Set budgets and selection rules in the experiment contract, then run the same ev
 
 Each experiment produces three reusable assets:
 
-| Capability | Process | Evidence |
+| Asset | What you receive | How to use it |
 |:---|:---|:---|
-| Frozen native **Bundle** | Source, composition and candidate lineage | Task scores, failures, traces and usage |
-| Install into a fresh Profile | Import variants for further evolution | Independent validation and capability cards |
+| **Capability Bundle** | Original archive, plugin code, composition and file identity | [Install into a fresh Profile](docs/use-capability.md) |
+| **Evolution Lineage** | Versioned candidates, declared parents and source changes | [Inspect a real mutation](docs/experiments/anatomy-of-a-mutation.md) |
+| **Evidence Package** | Task scores, failures, usage and independent validation records | [Audit and reproduce the experiment](docs/experiments/README.md) |
 
 The [official DeepSeek end-to-end experiment](docs/experiments/2026-10-28-official-deepseek-results.md) completed autonomous plugin modification, independent validation and original-package installation:
 
@@ -101,6 +106,8 @@ The [official DeepSeek end-to-end experiment](docs/experiments/2026-10-28-offici
 | Autonomous development | H0 **56.25%** → H1 **81.25%** → H2 **100%** |
 | Independent execution | H0 **81.25%** → H2 **100%** |
 | Business tasks after original-archive installation | **4 / 4** synthetic tasks passed |
+
+**What changed?** H1 added `workbook_recalculate`, backed by LibreOffice, to a plugin that could only inspect and write. H2 kept that implementation and refined the tool descriptions. The [complete source diffs](docs/experiments/anatomy-of-a-mutation.md) and [phase-by-phase online results](https://oldyade.github.io/SparkVolve/#experiment) connect the mechanism to the recorded outcomes. This case did not change plugin topology.
 
 These are engineering acceptance results on public synthetic tasks. They do not establish stable improvement or cross-domain transfer. Regressions, semantic errors and transport failures remain public in the [experiment index](docs/experiments/README.md).
 

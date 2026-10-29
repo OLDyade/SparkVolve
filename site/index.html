@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#F7F2E8" />
+    <meta
+      name="description"
+      content="SparkVolve evolves native DSH plugins through real task feedback. Explore an autonomous code change, independent evaluation and original-package reuse."
+    />
+    <meta property="og:title" content="SparkVolve — Evolve the Harness, Not the Model." />
+    <meta
+      property="og:description"
+      content="From a task failure to a reusable capability. Explore the code, scores and original-package identity of a real experiment."
+    />
+    <meta property="og:image" content="https://oldyade.github.io/SparkVolve/assets/readme/hero.png" />
+    <meta property="og:url" content="https://oldyade.github.io/SparkVolve/" />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href="https://oldyade.github.io/SparkVolve/" />
+    <link rel="icon" href="assets/brand/logo.png" />
+    <link rel="stylesheet" href="style.css" />
+    <title>SparkVolve — Evolve the Harness, Not the Model.</title>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="masthead wrap">
+      <a class="brand" href="./"
+        ><img src="assets/brand/logo.png" alt="" width="40" height="40" />SparkVolve</a
+      >
+      <nav aria-label="Main navigation">
+        <a href="#experiment">Explore</a><a href="#start">Run it</a
+        ><a href="https://github.com/OLDyade/SparkVolve">GitHub ↗</a>
+      </nav>
+    </header>
+    <main id="main" class="wrap">
+      <section class="hero" aria-labelledby="title">
+        <div>
+          <p class="eyebrow">Native DSH / Cordis · Plugin evolution</p>
+          <h1 id="title">Evolve the Harness,<br /><em>Not the Model.</em></h1>
+          <p class="lead">Let agents reshape the capabilities they work with.</p>
+          <p class="intro">
+            Diagnose failures. Evolve plugins. Ship reusable capabilities. SparkVolve turns real task feedback
+            into changes to plugin code, configuration and composition.
+          </p>
+          <div class="actions">
+            <a class="button" href="#experiment"
+              >Explore a real experiment <span aria-hidden="true">↓</span></a
+            ><a class="button secondary" href="https://github.com/OLDyade/SparkVolve#quick-start"
+              >Start evolving ↗</a
+            >
+          </div>
+          <p class="fine">This tour is a recorded experiment. No account, API key or model calls.</p>
+        </div>
+        <div class="hero-mark">
+          <img
+            src="assets/brand/logo.png"
+            alt="An evolving double helix around a spark"
+            width="300"
+            height="300"
+          /><span class="annotation">Same model contract.<br />A different way to work.</span>
+        </div>
+      </section>
+
+      <section class="principles" aria-label="Three core designs">
+        <article class="note blue">
+          <span class="number">01</span>
+          <h2>Plugins are the genes.</h2>
+          <p>
+            Evolve implementation, configuration and composition. Enable, disable, tune, replace, combine or
+            create.
+          </p>
+        </article>
+        <article class="note yellow">
+          <span class="number">02</span>
+          <h2>Evolution is a plugin.</h2>
+          <p>
+            Equip the existing DSH runtime with an optimizer, experiment control and native authoring
+            capabilities.
+          </p>
+        </article>
+        <article class="note green">
+          <span class="number">03</span>
+          <h2>Results are plugins.</h2>
+          <p>
+            Carry an improvement into a fresh Profile as the original Bundle, with its lineage and evidence.
+          </p>
+        </article>
+      </section>
+
+      <section id="experiment" class="section" aria-labelledby="experiment-title">
+        <div class="section-top">
+          <div>
+            <p class="eyebrow">Field notes / 28 October 2026</p>
+            <h2 id="experiment-title">What actually evolved?</h2>
+          </div>
+          <a
+            class="text-link"
+            href="https://github.com/OLDyade/SparkVolve/blob/main/docs/experiments/2026-10-28-official-deepseek-results.md"
+            >Read the experiment ↗</a
+          >
+        </div>
+        <p class="section-intro">
+          A native spreadsheet plugin could read and write formulas, but could not calculate them. The
+          optimizer added a real spreadsheet-engine tool, tested its behavior, then refined the tool
+          contracts.
+        </p>
+        <div class="lineage" aria-label="Observed search sequence">{{lineage}}</div>
+        <p class="fine">
+          Formula-value accuracy on four public synthetic task families. Each version has its own four
+          executions. These are recorded outcomes, not a guarantee of improvement.
+        </p>
+
+        <div class="mechanism">
+          <article>
+            <p class="eyebrow">H0 / Starting capability</p>
+            <h3>Read and write.</h3>
+            <p>Two tools exposed the workbook. Writing a formula did not produce a calculated value.</p>
+            <pre><code>{{before}}</code></pre>
+          </article>
+          <article>
+            <p class="eyebrow">H1 / Autonomous implementation</p>
+            <h3>Add an observable calculation.</h3>
+            <p>
+              A new native tool invokes LibreOffice in an isolated profile and returns formula text alongside
+              engine results.
+            </p>
+            <pre><code>{{after}}</code></pre>
+          </article>
+        </div>
+        <div class="margin-note">
+          <strong>H2 refined the interface.</strong> It kept H1's Python implementation and clarified
+          comments, intentionally blank cells and raw numeric units in tool descriptions. This case changed
+          implementation and interface text; it did not change the plugin assembly graph.
+        </div>
+
+        <details class="source-diff">
+          <summary>Inspect the complete autonomous source changes <span>H0 → H1 → H2</span></summary>
+          <p>
+            Exact historical bytes, verified against the file hashes already in the public experiment record.
+            Original package naming is preserved.
+          </p>
+          <h3>H0 → H1 · implementation and tool interface</h3>
+          <a href="evidence/source/h0-to-h1.patch" download>Download patch</a>
+          <pre><code>{{patch01}}</code></pre>
+          <h3>H1 → H2 · tool-description refinement</h3>
+          <a href="evidence/source/h1-to-h2.patch" download>Download patch</a>
+          <pre><code>{{patch12}}</code></pre>
+        </details>
+
+        <div class="results-heading">
+          <div>
+            <p class="eyebrow">Independent records</p>
+            <h3>Follow the candidate through the loop.</h3>
+          </div>
+          <a class="text-link" href="evidence/case.json" download>Download case data ↓</a>
+        </div>
+        <fieldset class="phase-picker">
+          <legend>Choose an experiment phase</legend>
+          <label><input type="radio" name="phase" value="search" checked /> Search</label>
+          <label><input type="radio" name="phase" value="validation" /> Independent validation</label>
+          <label><input type="radio" name="phase" value="reuse" /> Original-package reuse</label>
+        </fieldset>
+        <p id="phase-note" class="fine" aria-live="polite">
+          Three versions, twelve scored executions. Selection uses this phase only.
+        </p>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Per-task formula-value accuracy">
+          <table id="scores">
+            <caption>
+              Search · per-task formula-value accuracy
+            </caption>
+            {{scoreTable}}
+          </table>
+        </div>
+        <noscript
+          ><p>
+            Phase switching requires JavaScript. All phases are available in the
+            <a href="evidence/case.json">case data</a> and
+            <a
+              href="https://github.com/OLDyade/SparkVolve/blob/main/docs/experiments/2026-10-28-official-deepseek-results.md"
+              >experiment report</a
+            >.
+          </p></noscript
+        >
+        <div class="reuse-proof">
+          <span class="stamp">Same archive</span>
+          <div>
+            <strong>{{reusePassed}} / {{reuseTotal}} installed tasks passed</strong>
+            <p>
+              H2's unchanged archive was installed in four clean DSH Profiles, then each task was executed and
+              graded afresh.
+            </p>
+            <details>
+              <summary>Verify archive identity</summary>
+              <code class="hash">{{archiveHash}}</code
+              ><a href="evidence/installed.json">Installation records and file inventories →</a>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="method-title">
+        <p class="eyebrow">From evidence to capability</p>
+        <h2 id="method-title">The optimizer chooses the change.<br />The experiment decides the result.</h2>
+        <img
+          class="diagram"
+          src="assets/readme/evolution-loop.png"
+          alt="Task contract, native DSH optimizer, plugin mutation, build and QA, executor and independent grader; evidence returns to the optimizer and validated versions become installable Bundles."
+          loading="lazy"
+          width="1536"
+          height="1024"
+        />
+        <div class="ownership">
+          <p>
+            <strong>Autonomous choices</strong><br />Diagnosis, hypotheses, source edits, tool interfaces and
+            plugin composition.
+          </p>
+          <p>
+            <strong>Fixed experiment rules</strong><br />Task manifests, model contract, scoring, budget,
+            candidate identities and independent validation.
+          </p>
+          <p>
+            <strong>Reusable output</strong><br />A capability Bundle, its evolution lineage and the evidence
+            needed to inspect the outcome.
+          </p>
+        </div>
+      </section>
+
+      <section class="section limits" aria-labelledby="limits-title">
+        <p class="eyebrow">Keep the whole record</p>
+        <h2 id="limits-title">A successful run starts a research question.</h2>
+        <p>
+          The case above demonstrates an end-to-end engineering loop on synthetic tasks. It does not establish
+          stable improvement, unseen-domain transfer or which individual edit caused the gain.
+        </p>
+        <div class="limits-grid">
+          <article>
+            <h3>Known semantic defects</h3>
+            <p>
+              The original candidate's optional save path could erase formulas, and its error detector could
+              mistake text beginning with # for an error. These counterexamples remain public alongside the
+              high scores.
+            </p>
+            <a
+              href="https://github.com/OLDyade/SparkVolve/blob/main/docs/evidence/official-deepseek-20261028/original-delivery-counterexample.json"
+              >Inspect the counterexamples ↗</a
+            >
+          </article>
+          <article>
+            <h3>Compare methods, too</h3>
+            <p>
+              The later three-arm study contains six independent searches, twelve source patches and 124 task
+              scorings. Five searches retained H0. An advantage for unrestricted plugin mutation remains
+              unproven.
+            </p>
+            <a
+              href="https://github.com/OLDyade/SparkVolve/blob/main/docs/experiments/2026-10-29-closure-study-results.md"
+              >Read the method comparison ↗</a
+            >
+          </article>
+        </div>
+        <p class="fine">
+          The model configuration stays fixed within an experiment. Remote model aliases can change
+          provider-side weights; provenance records the API model identifier and configuration, not a claim of
+          cryptographically fixed remote weights.
+        </p>
+        <a class="text-link" href="tour.html">Explore an earlier rejected candidate →</a>
+      </section>
+
+      <section id="start" class="section start" aria-labelledby="start-title">
+        <div>
+          <p class="eyebrow">Your tasks. Your next capability.</p>
+          <h2 id="start-title">Run the loop.<br />Bring a different problem.</h2>
+          <p>
+            Start with structured-data tasks, then replace the recipe, seed plugins and independent grader.
+            Excel is another example. The runtime integration is native to DSH / Cordis.
+          </p>
+          <a href="https://github.com/OLDyade/SparkVolve/blob/main/docs/domain-adapters.md"
+            >Build a task adapter ↗</a
+          >
+        </div>
+        <div class="note yellow">
+          <h3>Start a real experiment</h3>
+          <p>
+            Clone the repository. Prepare Node.js 24, Python 3, Docker, a reserved network pool and an
+            official DeepSeek API key.
+          </p>
+          <pre><code>npm ci
+npm start -- --env-file /absolute/private/deepseek.env</code></pre>
+          <p class="fine">
+            Real API usage is billed by your provider. First launch builds container images. Tasks default to
+            600 seconds each.
+          </p>
+          <a class="button" href="https://github.com/OLDyade/SparkVolve/blob/main/docs/quick-start.md"
+            >Setup and expected outputs ↗</a
+          >
+        </div>
+      </section>
+    </main>
+    <footer class="wrap">
+      <a class="brand" href="https://github.com/OLDyade/SparkVolve">SparkVolve ↗</a>
+      <p>
+        Built on DeepSeek Harness / Cordis. Apache-2.0.<br />Open source, inspectable experiments, reusable
+        capabilities.
+      </p>
+      <div>
+        <a href="https://github.com/OLDyade/SparkVolve/blob/main/11.md">Blueprint</a> ·
+        <a href="https://github.com/OLDyade/SparkVolve/blob/main/CITATION.cff">Cite</a> ·
+        <a href="evidence/manifest.json">Provenance</a>
+      </div>
+    </footer>
+    <script id="case-data" type="application/json">
+      {{caseData}}
+    </script>
+    <script src="app.js" defer></script>
+  </body>
+</html>

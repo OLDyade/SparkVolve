@@ -6,6 +6,8 @@ Search finds candidates; independent validation tests them. When publishing resu
 
 Before starting, fix the tasks, repetition count, model, image, metrics, failure rules, and candidate selection method. Baseline and candidates use the same task contract; each comparison group re-runs the full task set and must not mix in old scores from the search. Model temperature and backend service fluctuations may affect results; retain every repetition.
 
+**Fixed-model methodology:** SparkVolve does not train model weights. For hosted APIs, it freezes the requested model identifier and inference configuration; a provider can still update the weights or routing behind an alias. Record the endpoint, model identifier, date and available provider revision, and report this reproducibility boundary. Cryptographic weight identity requires a deployment that exposes an immutable model artifact.
+
 A completed search may use newly generated public tasks to prepare validation. The following commands run at the repository root; `<digest>` is the completed mutation selected before the search ended.
 
 ```bash

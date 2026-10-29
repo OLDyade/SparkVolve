@@ -1,0 +1,458 @@
+diff --git a/h0/index.mjs b/h1/index.mjs
+index aebfb07..d010002 100644
+--- a/h0/index.mjs
++++ b/h1/index.mjs
+@@ -1,55 +1,89 @@
+ import { defineTool } from '@deepseek-ai/dsh-tools';
+ import { spawn } from 'node:child_process';
+ import { fileURLToPath } from 'node:url';
++
+ export const inject = ['tools'];
+-export function apply(ctx) {
+-  const invoke = (args, signal) =>
+-    new Promise((resolve, reject) => {
+-      const child = spawn('python3', [fileURLToPath(new URL('./workbook.py', import.meta.url))], {
+-        signal,
+-        stdio: ['pipe', 'pipe', 'pipe'],
+-      });
+-      const out = [],
+-        err = [];
+-      child.stdout.on('data', (chunk) => out.push(chunk));
+-      child.stderr.on('data', (chunk) => err.push(chunk));
+-      child.on('error', reject);
+-      child.on('close', (code) =>
+-        code === 0
+-          ? resolve(Buffer.concat(out).toString())
+-          : reject(new Error(Buffer.concat(err).toString())),
+-      );
+-      child.stdin.end(JSON.stringify(args));
++
++const WORKER = fileURLToPath(new URL('./workbook.py', import.meta.url));
++
++function invoke(args, signal) {
++  return new Promise((resolve, reject) => {
++    const child = spawn('python3', [WORKER], { signal, stdio: ['pipe', 'pipe', 'pipe'] });
++    const out = [];
++    const err = [];
++    child.stdout.on('data', (chunk) => out.push(chunk));
++    child.stderr.on('data', (chunk) => err.push(chunk));
++    child.on('error', (error) => reject(error));
++    child.on('close', (code) => {
++      if (code === 0) {
++        const text = Buffer.concat(out).toString();
++        try {
++          resolve(JSON.parse(text));
++        } catch {
++          reject(new Error(`workbook worker returned unreadable output: ${text.slice(0, 500)}`));
++        }
++        return;
++      }
++      const detail = Buffer.concat(err).toString().trim();
++      reject(new Error(detail || `workbook worker exited with code ${code}`));
+     });
+-  const output = { schema: { type: 'string' }, render: (_args, value) => [{ type: 'text', text: value }] };
++    child.stdin.on('error', () => {});
++    child.stdin.end(JSON.stringify(args));
++  });
++}
++
++const output = {
++  schema: { type: 'json' },
++  render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
++};
++
++export function apply(ctx) {
+   ctx.tools.register(
+     defineTool({
+       name: 'workbook_inspect',
+       description:
+-        'Read exact occupied cells, formulas and comments in an XLSX workbook. Source labels are facts; this tool does not infer business semantics.',
+-      parameters: { file: { type: 'string', required: true } },
++        'Read stored content of an XLSX workbook: literal cell values, formula text and cell comments, per sheet. ' +
++        'Formulas are reported as their stored text, never as computed results; this tool does not calculate, ' +
++        'infer business meaning or refresh stored cached results.',
++      parameters: {
++        file: { type: 'string', required: true, description: 'Absolute path of the XLSX file to read.' },
++        sheets: {
++          type: 'array',
++          items: { type: 'string' },
++          description: 'Optional sheet names to limit the output to.',
++        },
++      },
+       output,
+       execute: (args, exec) => invoke({ operation: 'inspect', ...args }, exec.signal),
+     }),
+   );
++
+   ctx.tools.register(
+     defineTool({
+       name: 'workbook_write',
+       description:
+-        'Apply explicit caller-supplied values or formulas to a copy of an XLSX workbook. Preserve original input. Destination must be inside /workspace. Does not calculate formulas or certify correctness.',
++        'Write caller-supplied values and formulas into a copy of an XLSX workbook, preserving every other original ' +
++        'cell, style and comment. Destination must be inside /workspace and differ from the source. The source file ' +
++        'is never modified, and the destination is only written after every edit validates. This tool does not ' +
++        'calculate formulas: use workbook_recalculate to observe engine results.',
+       parameters: {
+-        source: { type: 'string', required: true },
+-        destination: { type: 'string', required: true },
++        source: { type: 'string', required: true, description: 'Absolute path of the template workbook.' },
++        destination: {
++          type: 'string',
++          required: true,
++          description: 'Absolute output path inside /workspace.',
++        },
+         edits: {
+           type: 'array',
+           required: true,
++          description: 'Cells to overwrite. A null value clears the cell; a leading "=" is stored as a formula.',
+           items: {
+             type: 'object',
+             additionalProperties: false,
+             properties: {
+-              sheet: { type: 'string', required: true },
+-              cell: { type: 'string', required: true },
+-              value: { type: 'json', required: true },
++              sheet: { type: 'string', required: true, description: 'Existing worksheet name.' },
++              cell: { type: 'string', required: true, description: 'A1-style cell reference such as "B7".' },
++              value: { type: 'json', required: true, description: 'String, number, null, or formula text.' },
+             },
+           },
+         },
+@@ -58,4 +92,31 @@ export function apply(ctx) {
+       execute: (args, exec) => invoke({ operation: 'write', ...args }, exec.signal),
+     }),
+   );
++
++  ctx.tools.register(
++    defineTool({
++      name: 'workbook_recalculate',
++      description:
++        'Calculate an XLSX workbook with the installed spreadsheet engine (LibreOffice headless, isolated profile) ' +
++        'and report, for every formula, its verbatim formula text plus the engine result or engine error such as ' +
++        '#DIV/0!. Results are engine outputs; they are not checked against any expectation. With a destination the ' +
++        'recalculated copy is saved (inside /workspace) for delivery. Engine failures are reported as tool errors. ' +
++        'Note: cells whose result the engine leaves without a stored value are reported as null.',
++      parameters: {
++        source: { type: 'string', required: true, description: 'Absolute path of the workbook to calculate.' },
++        destination: {
++          type: 'string',
++          description: 'Optional absolute output path inside /workspace for the recalculated workbook.',
++        },
++        sheets: {
++          type: 'array',
++          items: { type: 'string' },
++          description: 'Optional sheet names whose formulas are reported.',
++        },
++        calc_mode: { type: 'string', description: 'Accepted for compatibility; the engine always recalculates on load.' },
++      },
++      output,
++      execute: (args, exec) => invoke({ operation: 'recalculate', ...args }, exec.signal),
++    }),
++  );
+ }
+diff --git a/h0/workbook.py b/h1/workbook.py
+index 5b58d96..09e7827 100644
+--- a/h0/workbook.py
++++ b/h1/workbook.py
+@@ -1,29 +1,279 @@
++"""XLSX workbook operations for the spreadsheet bundle.
++
++Calculation is delegated to the installed spreadsheet engine (LibreOffice in
++headless mode with an isolated temporary user profile). This module does not
++interpret, patch or guess formula results.
++
++Request (stdin JSON): {"operation": "inspect" | "write" | "recalculate", ...}
++Response (stdout JSON): one JSON document; engine failures raise and are
++reported by the caller through a non-zero exit code and stderr text.
++"""
+ import json
++import os
++import shutil
++import subprocess
+ import sys
++import tempfile
++import time
+ from pathlib import Path
++
+ from openpyxl import load_workbook
+ from openpyxl.utils.cell import coordinate_to_tuple
+ 
+-args = json.load(sys.stdin)
+-if args['operation'] == 'inspect':
+-    workbook = load_workbook(args['file'])
+-    print(json.dumps({sheet.title: [{'cell': cell.coordinate, 'value': cell.value, 'comment': cell.comment.text if cell.comment else None}
+-                                  for row in sheet for cell in row if cell.value is not None or cell.comment]
+-                      for sheet in workbook}, default=str))
+-elif args['operation'] == 'write':
+-    target = Path(args['destination']).resolve()
+-    if not target.is_relative_to('/workspace'):
+-        raise ValueError('Destination must be inside /workspace')
+-    workbook = load_workbook(args['source'])
++WORKSPACE_ROOT = '/workspace'
++ENGINE_BINARY = os.environ.get('LIBREOFFICE_BINARY', 'soffice')
++
++
++def emit(payload):
++    sys.stdout.write(json.dumps(payload, default=str))
++    sys.stdout.write('\n')
++
++
++def resolve_inside_workspace(raw, label):
++    resolved = Path(raw).resolve()
++    if not resolved.is_relative_to(Path(WORKSPACE_ROOT).resolve()):
++        raise ValueError('%s must be inside %s' % (label, WORKSPACE_ROOT))
++    return resolved
++
++
++def normalize_value(value):
++    """Model-facing representation: integral floats -> int, nothing else changed."""
++    if isinstance(value, bool):
++        return value
++    if isinstance(value, float) and value.is_integer() and abs(value) < 2 ** 53:
++        return int(value)
++    return value
++
++
++def is_formula(value):
++    return isinstance(value, str) and value.startswith('=')
++
++
++def operation_inspect(args):
++    source = Path(args['file']).resolve()
++    book = load_workbook(source)
++    only = args.get('sheets')
++    if only:
++        missing = [name for name in only if name not in book.sheetnames]
++        if missing:
++            raise ValueError('Unknown sheet(s): %s' % ', '.join(missing))
++    result = {}
++    for sheet in book:
++        if only and sheet.title not in only:
++            continue
++        cells = {}
++        for row in sheet.iter_rows():
++            for cell in row:
++                if cell.value is None and cell.comment is None:
++                    continue
++                entry = {}
++                if is_formula(cell.value):
++                    entry['formula'] = cell.value
++                else:
++                    entry['value'] = normalize_value(cell.value)
++                if cell.comment is not None:
++                    entry['comment'] = cell.comment.text
++                cells[cell.coordinate] = entry
++        result[sheet.title] = {
++            'state': sheet.sheet_state,
++            'dimensions': sheet.dimensions,
++            'merged': [str(rng) for rng in sheet.merged_cells.ranges],
++            'cells': cells,
++        }
++    return {
++        'sheetnames': list(book.sheetnames),
++        'sheets': result,
++        'calculation_engine_invoked': False,
++        'stored_values_only': True,
++        'note': 'Reads stored cell content: literal values, formula text and comments. '
++                'Stored cached results of formulas are not refreshed here; use the '
++                'recalculate operation for engine results.',
++    }
++
++
++def coerce_edit_value(value):
++    if isinstance(value, (int, float, str)) or value is None:
++        return value
++    raise ValueError('Cell value must be a string, number or null')
++
++
++def operation_write(args):
++    destination = resolve_inside_workspace(args['destination'], 'destination')
++    source = Path(args['source']).resolve()
++    if destination == source:
++        raise ValueError('Destination must differ from source')
++    book = load_workbook(source)
+     seen = set()
+     for edit in args['edits']:
+-        position = (edit['sheet'], coordinate_to_tuple(edit['cell']))
+-        if position in seen:
+-            raise ValueError('Duplicate target')
+-        seen.add(position)
+-        workbook[edit['sheet']][edit['cell']] = edit['value']
+-    target.parent.mkdir(parents=True, exist_ok=True)
+-    workbook.save(target)
+-    print(json.dumps({'saved': str(target), 'submitted_cells': len(seen), 'formula_values_recalculated': False}))
+-else:
+-    raise ValueError('Unknown workbook operation')
++        sheet = edit['sheet']
++        if sheet not in book.sheetnames:
++            raise ValueError('Unknown sheet: %s' % sheet)
++        try:
++            position = coordinate_to_tuple(edit['cell'])
++        except (TypeError, ValueError):
++            raise ValueError('Invalid cell reference: %r' % (edit['cell'],))
++        if (sheet, position) in seen:
++            raise ValueError('Duplicate target %s!%s' % (sheet, edit['cell']))
++        seen.add((sheet, position))
++        book[sheet][edit['cell']].value = coerce_edit_value(edit.get('value'))
++    destination.parent.mkdir(parents=True, exist_ok=True)
++    book.save(destination)
++    return {
++        'saved': str(destination),
++        'submitted_cells': len(seen),
++        'calculation_engine_invoked': False,
++        'note': 'Formulas were written exactly as supplied. Use the recalculate '
++                'operation to observe engine results.',
++    }
++
++
++def find_engine():
++    candidates = []
++    if os.path.sep in ENGINE_BINARY:
++        candidates.append(ENGINE_BINARY)
++    else:
++        located = shutil.which(ENGINE_BINARY)
++        if located:
++            candidates.append(located)
++    for name in ('soffice', 'libreoffice'):
++        located = shutil.which(name)
++        if located:
++            candidates.append(located)
++    for candidate in candidates:
++        if Path(candidate).is_file():
++            return candidate
++    raise RuntimeError('No spreadsheet calculation engine (LibreOffice) was found')
++
++
++def convert_with_engine(source, out_dir, profile_dir):
++    """Run the engine headless on a private copy with an isolated user profile."""
++    engine = find_engine()
++    profile_dir.mkdir(parents=True, exist_ok=True)
++    out_dir.mkdir(parents=True, exist_ok=True)
++    command = [
++        engine,
++        '-env:UserInstallation={0}'.format(profile_dir.resolve().as_uri()),
++        '--headless',
++        '--norestore',
++        '--invisible',
++        '--nodefault',
++        '--nofirststartwizard',
++        '--convert-to',
++        'xlsx:Calc MS Excel 2007 XML',
++        '--outdir',
++        str(out_dir),
++        str(source),
++    ]
++    env = dict(os.environ)
++    env['HOME'] = str(profile_dir)
++    env['TMPDIR'] = str(profile_dir)
++    started = time.time()
++    try:
++        completed = subprocess.run(
++            command,
++            capture_output=True,
++            text=True,
++            timeout=180,
++            env=env,
++        )
++    except subprocess.TimeoutExpired as error:
++        raise RuntimeError('Spreadsheet calculation engine timed out: %s' % error)
++    detail = {
++        'engine': engine,
++        'exit_code': completed.returncode,
++        'elapsed_seconds': round(time.time() - started, 3),
++        'stdout': completed.stdout.strip()[-2000:],
++        'stderr': completed.stderr.strip()[-2000:],
++    }
++    converted = out_dir / (source.stem + '.xlsx')
++    detail['output_present'] = converted.is_file()
++    if completed.returncode != 0 or not converted.is_file():
++        raise RuntimeError('Spreadsheet calculation engine failed: %s' % json.dumps(detail))
++    return converted, detail
++
++
++def operation_recalculate(args):
++    source = Path(args['source']).resolve()
++    if not source.is_file():
++        raise ValueError('Source workbook does not exist: %s' % source)
++    destination = None
++    if args.get('destination'):
++        destination = resolve_inside_workspace(args['destination'], 'destination')
++        if destination == source:
++            raise ValueError('Destination must differ from source')
++    requested = args.get('sheets')
++    with tempfile.TemporaryDirectory(prefix='xl-engine-') as tmp:
++        tmp_path = Path(tmp)
++        isolated = tmp_path / 'source.xlsx'
++        shutil.copyfile(source, isolated)
++        converted, detail = convert_with_engine(
++            isolated, tmp_path / 'out', tmp_path / 'profile'
++        )
++        original_book = load_workbook(source)
++        # data_only reads the cached results the engine stored beside each formula.
++        calculated_book = load_workbook(converted, data_only=True)
++        if requested:
++            missing = [name for name in requested if name not in original_book.sheetnames]
++            if missing:
++                raise ValueError('Unknown sheet(s): %s' % ', '.join(missing))
++        rows = []
++        errors = 0
++        for sheet in original_book:
++            if requested and sheet.title not in requested:
++                continue
++            counterpart = calculated_book[sheet.title]
++            for row in sheet.iter_rows():
++                for cell in row:
++                    if not is_formula(cell.value):
++                        continue
++                    result = counterpart[cell.coordinate].value
++                    error_value = result if isinstance(result, str) and result.startswith('#') else None
++                    if error_value:
++                        errors += 1
++                    rows.append({
++                        'sheet': sheet.title,
++                        'cell': cell.coordinate,
++                        'formula': cell.value,
++                        'engine_value': None if error_value else normalize_value(result),
++                        'engine_error': error_value,
++                    })
++        delivery = None
++        if destination is not None:
++            destination.parent.mkdir(parents=True, exist_ok=True)
++            calculated_book.save(destination)
++            delivery = str(destination)
++    return {
++        'source': str(source),
++        'delivery': delivery,
++        'engine': detail,
++        'formula_count': len(rows),
++        'error_value_count': errors,
++        'values_are_engine_results': True,
++        'note': 'engine_value/engine_error are outputs produced by the installed '
++                'spreadsheet engine from the source bytes; null means the engine '
++                'produced no value for that cell. Formula text is reported verbatim.',
++        'formulas': rows,
++    }
++
++
++OPERATIONS = {
++    'inspect': operation_inspect,
++    'write': operation_write,
++    'recalculate': operation_recalculate,
++}
++
++
++def main():
++    args = json.load(sys.stdin)
++    operation = OPERATIONS.get(args.get('operation'))
++    if operation is None:
++        raise ValueError('Unknown workbook operation')
++    emit(operation(args))
++
++
++if __name__ == '__main__':
++    try:
++        main()
++    except Exception as error:  # validation and engine failures must propagate
++        sys.stderr.write('%s: %s\n' % (type(error).__name__, error))
++        sys.exit(1)

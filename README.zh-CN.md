@@ -12,13 +12,15 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-202124?style=flat-square)](LICENSE)
 [![DSH](https://img.shields.io/badge/DSH-Native_plugins-DDEAF5?style=flat-square&labelColor=202124)](docs/components.md)
 
-[English](README.md) · [快速开始](#quick-start) · [工作原理](#工作原理) · [接入任务](#把你的任务接进来) · [项目全景](11.md)
+[English](README.md) · **[在线体验](https://oldyade.github.io/SparkVolve/)** · [快速开始](#quick-start) · [工作原理](#工作原理) · [项目全景](11.md)
 
 ![SparkVolve：固定模型，进化插件代码、配置与组合，以任务反馈沉淀可复用 Bundle](docs/assets/readme/hero.png)
 
 </div>
 
 一个基于插件化架构的 Harness 自进化框架，让 Agent 通过真实任务反馈，自主改造自己的能力结构，并将有效改进沉淀为可复用的插件。
+
+**诊断失败，进化插件，交付可复用能力。**
 
 > 过去我们给 Agent 装能力，现在让 Agent 自己决定需要什么能力、修改什么能力，甚至创造新能力。
 
@@ -78,7 +80,11 @@
 
 ## Quick start
 
-**启动真实进化**：克隆仓库，准备 Node.js 24、Python 3、Docker 和官方 DeepSeek 密钥。将 `SPARKVOLVE_EGRESS_POOL` 设为部署方预留的私有网段，凭证放在仓库外的环境文件中，详见[启动指南](docs/quick-start.md)。
+**先看真实实验 → [打开交互式导览](https://oldyade.github.io/SparkVolve/)**<br>
+直接查看自主生成的源码改动，切换搜索、独立验证和原包复用的逐题结果，下载实验记录。无需安装、密钥或模型调用。[查看插件变异实例](docs/experiments/anatomy-of-a-mutation.md)。
+
+**启动 SparkVolve → [准备运行环境](docs/quick-start.md#preparation)**<br>
+克隆仓库，准备 **Node.js 24、Python 3、Docker、官方 DeepSeek 密钥及预留的私有网段**。凭证放在仓库外。首次启动会构建容器镜像，真实模型调用会消耗供应商额度。
 
 ```bash
 npm ci
@@ -86,8 +92,6 @@ npm start -- --env-file /absolute/private/deepseek.env
 ```
 
 一个入口完成环境构建、三套任务冻结、DSH 自主改造、H0 与入选版本的独立验证，并在干净 Profile 中安装原始 Bundle，执行新的复用任务。默认使用官方 DeepSeek 和结构化数据示例，每题 **600 秒**；通过 `--recipe` 替换任务与种子插件，Excel 是可选示例。各阶段保留真实分数、失败记录及原包身份。
-
-**先看实际记录**：用浏览器打开[交互式实验导览](docs/tour.html)，离线查看候选、逐题结果和下载记录，无需密钥。
 
 | 想做什么 | 从这里进入 |
 |:---|:---|
@@ -124,7 +128,7 @@ DSH 优化器读取真实任务、轨迹和交付，研究原因并自主编码�
 | **种子插件** | 给出进化起点，开放配置、实现和组合结构 |
 | **独立评分器** | 将实际交付转为分数与获准反馈 |
 
-准备好这些接口后，在实验合同中设置预算和选择规则，即可运行同一套进化循环。新领域需要实现并验证对应适配器。
+准备好这些接口后，在实验合同中设置预算和选择规则，即可运行同一套进化循环。新领域需要实现并验证对应适配器。**任务领域可替换，运行时原生接入 DSH / Cordis。** 接入其他 Agent Runtime 需要实现对应集成。
 
 [Excel 示例](examples/spreadsheet) · [结构化数据示例](docs/structured-data.md) · **[编写你的领域适配器 →](docs/domain-adapters.md)**
 
@@ -132,10 +136,11 @@ DSH 优化器读取真实任务、轨迹和交付，研究原因并自主编码�
 
 一次进化留下三种可复用资产：
 
-| 能力 | 过程 | 证据 |
+| 资产 | 包含什么 | 怎么使用 |
 |:---|:---|:---|
-| 冻结的原生 **Bundle** | 插件源码、装配配置与候选谱系 | 逐题评分、失败、轨迹与用量 |
-| 安装到新 Profile 执行任务 | 导入历史变体继续改造 | 独立复验与能力卡 |
+| **Capability Bundle · 能力包** | 原始归档、插件源码、装配配置及文件身份 | [安装到新 Profile](docs/use-capability.md) |
+| **Evolution Lineage · 进化谱系** | 版本化候选、声明的父版本及源码差异 | [查看真实变异](docs/experiments/anatomy-of-a-mutation.md) |
+| **Evidence Package · 实验证据** | 逐题评分、失败、用量与独立验证记录 | [检查和复现实验](docs/experiments/README.md) |
 
 [官方 DeepSeek 端到端实验](docs/experiments/2026-10-28-official-deepseek-results.md)已完成自主插件改造、独立验证和原包安装复用：
 
@@ -144,6 +149,8 @@ DSH 优化器读取真实任务、轨迹和交付，研究原因并自主编码�
 | 自主开发搜索 | H0 **56.25%** → H1 **81.25%** → H2 **100%** |
 | 独立执行验证 | H0 **81.25%** → H2 **100%** |
 | 原归档安装后业务复用 | **4 / 4** 合成任务通过 |
+
+**具体改了什么？** H1 为原本只能读取和写入的插件新增了 `workbook_recalculate`，接入 LibreOffice 计算；H2 保留实现并完善工具说明。[完整源码差异](docs/experiments/anatomy-of-a-mutation.md)和[在线分阶段结果](https://oldyade.github.io/SparkVolve/#experiment)把机制与实验记录连接起来。本次实例没有修改插件组合拓扑。
 
 以上为公开合成任务的工程验收，尚不构成稳定提分或跨领域迁移证明。历史实验中的退步、语义错误和传输失败一并公开，详见[实验索引](docs/experiments/README.md)。
 

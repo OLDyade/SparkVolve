@@ -100,6 +100,32 @@ test('embedded initialization resumes the same baseline and refuses changed inpu
   }
 });
 
+test('a status reader can hold its snapshot while initialization commits', async () => {
+  const f = await fixture(),
+    root = path.join(f.root, 'experiment');
+  const observations = channel('sparkvolve:initialization');
+  let reader: DatabaseSync | undefined;
+  const holdSnapshot = (message: unknown) => {
+    const event = message as { root: string; phase: string };
+    if (event.root !== root || event.phase !== 'baseline_published') return;
+    reader = new DatabaseSync(path.join(root, 'initialization.sqlite'), { readOnly: true, timeout: 0 });
+    reader.exec('BEGIN;');
+    assert.equal(reader.prepare('SELECT phase FROM initialization').get()!.phase, 'preparing');
+  };
+  observations.subscribe(holdSnapshot);
+  try {
+    await prepareExperiment(root, f.spec, f.dataset, f.seed, new NoExecution());
+    assert.ok(reader);
+    assert.equal(reader.prepare('SELECT phase FROM initialization').get()!.phase, 'preparing');
+    reader.exec('COMMIT;');
+    assert.equal(reader.prepare('SELECT phase FROM initialization').get()!.phase, 'prepared');
+  } finally {
+    observations.unsubscribe(holdSnapshot);
+    reader?.close();
+    await f.cleanup();
+  }
+});
+
 test('SIGKILL at initialization publication boundaries resumes without duplicate baselines or task attempts', async (t) => {
   for (const phase of ['reserved', 'dataset_published', 'baseline_published', 'prepared']) {
     await t.test(phase, async () => {

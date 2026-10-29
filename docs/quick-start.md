@@ -4,6 +4,8 @@
 
 The default setup uses the official DeepSeek API and three public synthetic structured-data tasks: event merging, request-log aggregation, and dependency-manifest matching. Replace the task adapter to use the same evolution controller in another domain.
 
+**Explore first:** the [online experiment tour](https://oldyade.github.io/SparkVolve/) shows real source changes, per-task results and original-package identity without installing anything or calling a model.
+
 ## Preparation
 
 Install Node.js 24.16.0 or later, npm, Python 3, and Docker. Start the Docker daemon. The host must support Unix directory file descriptor operations. The default runtime is Docker's runc; existing gVisor deployments can select `--runtime runsc`. See [runtime isolation](isolation.md).
@@ -18,6 +20,10 @@ npm start -- --env-file /absolute/private/deepseek.env
 ```
 
 The entry point uses `deepseek-flash` through the official Anthropic-compatible API. Only the trusted egress proxy receives credentials. See [DeepSeek configuration](../examples/deepseek/README.md). Real model calls consume your account quota.
+
+### Time, resources and cost
+
+The first launch downloads dependencies and builds container images, then runs the optimizer and the task executions declared by the recipe. It can take substantially longer than one 600-second task budget. Keep Docker running with enough capacity for the recipe's declared concurrency; image size and peak memory depend on the domain adapter. Container-build logs, phase timing and model usage are retained in the run directory. API cost depends on your provider, task lengths and search budget; the online tour makes no API calls. No background evolution starts when you only install dependencies.
 
 ## What the command does
 

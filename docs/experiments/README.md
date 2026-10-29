@@ -35,7 +35,7 @@ The chart comes from [machine records](../evidence/2026-10-27-continuous-accepta
 - [Capability Cards and Usage](../capability-cards.md)
 - [Release and Registration Failure Recovery](../research/2026-10-28-publication-recovery.md)
 - [Research Asset Reuse](../research-assets.md)
-- [Ecosystem and Design In-Depth Review](../research/2026-10-27-sparkvolve-design-review.md)
+- [Ecosystem and Design In-Depth Review](../research/2026-10-27-harness-evolution-design-review.md)
 - [Review Implementation Ledger](../review-ledger.md)
 - [Historical Materials and Synchronization Sources](../research/archive/README.md)
 

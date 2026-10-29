@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .evolution/
+.site/
+.site-test-results/
 .dsh/
 *.tgz
 .env

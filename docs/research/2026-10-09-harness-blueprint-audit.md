@@ -1,6 +1,6 @@
 # Panorama Ecosystem Audit and Design Rationale
 
-> Historical record retained. For the 2026-10-27 ecosystem update, search mechanism, and experimental protocol refinements, see [follow-up in-depth audit](2026-10-27-sparkvolve-design-review.md); the current main diagram already cites the new rationale.
+> Historical record retained. For the 2026-10-27 ecosystem update, search mechanism, and experimental protocol refinements, see [follow-up in-depth audit](2026-10-27-harness-evolution-design-review.md); the current main diagram already cites the new rationale.
 
 Verification date: 2026-10-09<br>
 Main document: [11.md](../../11.md)
