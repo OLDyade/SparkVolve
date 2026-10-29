@@ -1,46 +1,46 @@
-# 用 DSH 自己的开发能力改造 Harness
+# Transforming the Harness with DSH's Own Development Capabilities
 
-Evolution Preset 为优化器装配 DSH 原生的 Cordis 检查工具和官方插件开发 Skills。优化器可以先查当前运行版本的作者契约，再自主修改插件配置、实现和组合；框架不预写修复策略。
+The Evolution Preset equips the optimizer with DSH-native Cordis inspection tools and official plugin development Skills. The optimizer can first inspect the authoring contract of the currently running version, then autonomously modify plugin configuration, implementation, and composition; the framework does not pre-write repair strategies.
 
 ```text
-锁定镜像与方法 Bundle
+Lock image and method Bundle
         │
         ▼
-DSH 优化器 G
-  ├─ cordis_inspect_list / query ──► 服务、事件、配置和工具契约
-  ├─ skill ──► 安装包自带的插件开发 / 组合编辑资料
-  └─ 原生编码工具 ──► 包 README、类型与实际实现
+DSH optimizer G
+  ├─ cordis_inspect_list / query ──► service, event, configuration, and tool contracts
+  ├─ skill ──► plugin development / composition editing materials bundled with the installation package
+  └─ native coding tools ──► package README, types, and actual implementation
         │
         ▼
-独立草稿：插件代码 / 配置 / 装配结构
+Independent draft: plugin code / configuration / composition structure
         │
-        ├── 可选原生 probe ──► 实际工具、服务与生命周期观察
+        ├── optional native probe ──► actual tools, services, and lifecycle observations
         ▼
-冻结构建 → 原生 QA → 任务执行 → 独立评分 → 同一原包交付
+Frozen build → native QA → task execution → independent scoring → delivered as the same original package
 ```
 
-## 装配方式
+## How It Is Wired In
 
-Host 只注册一份原生 `dsh-cordis-host-runner` 和 `dsh-tool-cordis/host`。作者工具和官方 Skill Provider 随 Evolution Preset 进入选定 Agent 的作用域。执行器仍按冻结候选装配，评分端权限不变。
+The Host registers only one native `dsh-cordis-host-runner` and `dsh-tool-cordis/host`. The authoring tools and the official Skill Provider enter the scope of the selected Agent along with the Evolution Preset. The executor is still assembled from the frozen candidate, and the scoring side's permissions are unchanged.
 
-SDK 装配显式选择 Profile：`sdk` 复用已有的原生 Skill 服务，`sdk-minimal` 补入原生 Skill 服务；Agent 的 `skill` 工具和资料 Provider 随 Preset 生命周期注册与释放。
+SDK assembly explicitly selects a Profile: `sdk` reuses the existing native Skill service, while `sdk-minimal` adds the native Skill service; the Agent's `skill` tools and material Providers are registered and released with the Preset lifecycle.
 
-官方资料由实际安装的 `@deepseek-ai/dsh-agent-preset` 解析定位。新增 Skill Provider 关闭默认目录扫描和文件监视，原文按需加载；其他原生 Skill Provider 保持自己的配置。包版本、入口与资料摘要随作者来源记录呈现，实际运行镜像绑定这些文件，不在已登记实验中动态替换为网上最新内容。
+Official materials are resolved and located by the actually installed `@deepseek-ai/dsh-agent-preset`. The newly added Skill Provider disables default directory scanning and file watching, and loads original text on demand; other native Skill Providers keep their own configuration. Package version, entry points, and material digests are presented alongside the authoring source record; the actual running image binds these files and does not dynamically replace them with the latest online content in registered experiments.
 
-这个接入不添加 `plugin_manager`。研究中的变异通过 `evolution_branch` 创建草稿，使用 `evolution_probe` 检验获准的机制，再由 `evolution_submit` 冻结并交给独立实验服务。
+This integration does not add `plugin_manager`. Mutations in research create drafts via `evolution_branch`, use `evolution_probe` to test approved mechanisms, and are then frozen by `evolution_submit` and handed to the independent experiment service.
 
-## 每种观察究竟说明什么
+## What Each Kind of Observation Actually Shows
 
-| 原生入口 | 能得到的事实 | 使用边界 |
+| Native entry point | Facts obtainable | Usage boundaries |
 |---|---|---|
-| `Service` / `Event` | 发行包中的接口声明目录 | 查到声明不代表当前服务已激活 |
-| `Config` | Host Loader 的插件配置 Schema、包位置与投影限制 | 不代表 detached Preset 的完整树，也不读取实际配置值 |
-| `Tool` | 请求 Agent 当前可见的工具 Schema | 不返回工具执行函数 |
-| 官方 Skill / 包源码 | 当前安装版本的作者说明、类型和实现 | 原文中的操作示例不能改变实验合同权限 |
-| 候选原生 QA / probe | 冻结 H 实际装配与运行观察 | G 的目录查询不能代替候选 H 的验证 |
+| `Service` / `Event` | Interface declaration catalog in the distribution package | Finding a declaration does not mean the current service is active |
+| `Config` | Host Loader's plugin configuration Schema, package locations, and projection limits | Does not represent the full tree of a detached Preset, nor does it read actual configuration values |
+| `Tool` | Tool Schema currently visible to the requesting Agent | Does not return tool execution functions |
+| Official Skill / package source | Authoring documentation, types, and implementation of the currently installed version | Operational examples in the original text cannot change the experiment contract permissions |
+| Candidate native QA / probe | Actual assembly and runtime observations of the frozen H | G's catalog queries cannot substitute for validation of candidate H |
 
-这些能力帮助优化器核实 API，不保证其选择的机制或生成的算法正确。真实模型是否使用资料、改了什么、候选是否通过 QA、质量是否改善，分别从轨迹、源码和独立评分记录判断。
+These capabilities help the optimizer verify APIs; they do not guarantee that the mechanism it chooses or the algorithm it generates is correct. Whether the real model uses the materials, what it changed, whether the candidate passes QA, and whether quality improves are judged from trajectories, source code, and independent scoring records, respectively.
 
-实现入口：[`preset.ts`](../src/preset.ts)、[`native-authoring.ts`](../src/native-authoring.ts)、[默认方法 Bundle](../optimizers/evidence-driven)。完整验收状态见 [completion.md](completion.md)。
+Implementation entry points: [`preset.ts`](../src/preset.ts), [`native-authoring.ts`](../src/native-authoring.ts), [default method Bundle](../optimizers/evidence-driven). For the full acceptance status, see [completion.md](completion.md).
 
-真实模型已实际查询契约、加载官方 Skill 并提交两个实现变异；该轮 20 次执行中 1 次触发原 300 秒上限，总体验收保留失败，详见[原始结果](experiments/2026-10-28-native-authoring-results.md)。新运行默认任务预算为 600 秒，模型出口、流空闲和优化器等待预算同步声明，见[执行预算](execution-budgets.md)。
+A real model actually queried the contract, loaded the official Skill, and submitted two implementation mutations; in that round of 20 executions, 1 hit the original 300-second limit, and the overall acceptance remains failed; see [original results](experiments/2026-10-28-native-authoring-results.md) for details. New runs default to a task budget of 600 seconds, with model output, stream idle, and optimizer wait budgets declared together; see [execution budget](execution-budgets.md).

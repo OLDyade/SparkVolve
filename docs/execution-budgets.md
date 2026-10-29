@@ -1,46 +1,46 @@
-# 执行预算与超时
+# Execution Budgets and Timeouts
 
-单任务默认 **600 秒**。这是整次任务容器的运行预算，包含 DSH 启动、模型等待、工具执行和交付。显式实验配置可以调整；解析后的实际值写入冻结合同，恢复运行不会套用新的默认值。
+The default for a single task is **600 seconds**. This is the runtime budget for the entire task container, including DSH startup, model waiting, tool execution, and delivery. Explicit experiment configuration can adjust it; the resolved actual value is written into the frozen contract, and resuming a run does not apply a new default value.
 
 ```text
-实验合同 timeoutSeconds（默认 600）
-  ├─ 任务容器总时限：由宿主执行和恢复时共同遵守
-  ├─ SDK 初始化／协议请求：使用任务预算，无固定 60 秒初始化截断
-  └─ 示例模型配置
-       ├─ HTTP 出口请求：默认 600 秒，可显式配置
-       └─ Provider 流空闲：默认 600 秒，可显式配置
+Experiment contract timeoutSeconds (default 600)
+  ├─ Total task container time limit: jointly observed by the host during execution and resume
+  ├─ SDK initialization/protocol requests: use the task budget, with no fixed 60-second initialization cutoff
+  └─ Example model configuration
+       ├─ HTTP egress requests: default 600 seconds, explicitly configurable
+       └─ Provider stream idle: default 600 seconds, explicitly configurable
 
-优化器总预算
-  = 实现与归因时间
-  + 授权候选的构建、QA、任务批次和评分等待
-  + 授权行为探针的构建与执行等待
+Optimizer total budget
+  = implementation and attribution time
+  + build, QA, task batches, and scoring waits for authorized candidates
+  + build and execution waits for authorized behavior probes
 ```
 
-预算是允许的上限，完成后立即结束。扩大时限不会增加候选数、题数或重试次数。`optimizerSeconds` 包含优化器存活期间等待实验的时间，因此扩大单题预算时，必须同时核算其完整计划；真实验收驱动将预算分量写入事前登记。
+The budget is an allowed upper limit; the run ends immediately upon completion. Enlarging the time limit does not increase the number of candidates, questions, or retries. `optimizerSeconds` includes the time spent waiting for experiments while the optimizer is alive, so when enlarging the per-question budget, its full plan must be accounted for at the same time; the real acceptance driver writes the budget components into the pre-registration.
 
-原生开发验收可用 `--task-timeout-seconds 600` 显式设定。当前 3 个候选槽位、3 次可选 probe 的计划，按原构建与评分预算派生出 7,140 秒优化器上限，其中保留 1,200 秒实现与归因时间；任务执行上限仍为 20 次。
+Native development acceptance can be set explicitly with `--task-timeout-seconds 600`. The current plan of 3 candidate slots and 3 optional probes derives a 7,140-second optimizer upper limit from the original build and scoring budgets, of which 1,200 seconds are reserved for implementation and attribution time; the task execution limit remains 20.
 
-| 时限 | 含义与处理 |
+| Time limit | Meaning and handling |
 |---|---|
-| 任务总时限 | 单次执行的墙钟预算；超时仍明确失败并保留原产物 |
-| 模型 HTTP | 单次请求及响应传输期限，与整任务独立；较短的显式值会提前结束请求 |
-| 模型流空闲 | 等待 provider 数据的无活动期限；持续流式返回与总耗时不同 |
-| SDK requestTimeoutMs | SDK 协议请求期限，不能替代任务总预算 |
-| 原生行为探针 | 示例完整运行与 QA 采用 600 秒；自定义探针显式声明预算，纯机械测试可采用更短时间 |
-| 构建、评分、安装 | 各自的显式合同；安装各阶段共享总剩余预算，避免逐阶段隐藏短门 |
-| Bash 工具 | DSH 原生默认可能将长命令转入后台；不能把前台等待窗口当作任务终止 |
-| 事件长轮询、取消与清理 | 独立的观察或资源管理操作，保留短时限，不随任务预算批量扩大 |
+| Total task time limit | Wall-clock budget for a single execution; on timeout it still fails explicitly and preserves the original artifacts |
+| Model HTTP | Deadline for a single request and response transfer, independent of the whole task; a shorter explicit value ends the request earlier |
+| Model stream idle | Inactivity deadline for waiting on provider data; continuous streaming returns differ from total elapsed time |
+| SDK requestTimeoutMs | SDK protocol request deadline; cannot replace the total task budget |
+| Native behavior probe | The example full run and QA use 600 seconds; custom probes declare their budget explicitly, and purely mechanical tests may use a shorter time |
+| Build, scoring, installation | Each has its own explicit contract; installation stages share the total remaining budget, avoiding hidden short gates per stage |
+| Bash tool | The DSH native default may move long commands to the background; the foreground wait window must not be treated as task termination |
+| Event long polling, cancellation, and cleanup | Independent observation or resource management operations; keep short time limits and do not expand them in bulk with the task budget |
 
-任意自定义 provider、工具或插件仍可声明自己的时限；框架不会静默覆盖它们。检查新运行时，应核对冻结任务合同、模型出口配置和实际 provider 配置，而非只查看一个 `timeoutSeconds` 字段。
+Any custom provider, tool, or plugin can still declare its own time limits; the framework does not silently override them. When inspecting a new runtime, check the frozen task contract, model egress configuration, and actual provider configuration, rather than looking at only one `timeoutSeconds` field.
 
-## 本次排查依据
+## Basis for This Investigation
 
-核对了 DSH 官方 [timeout 文档](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/util/timeout/README.md)，以及项目锁定的 `0.2.1-rc.4` SDK、`dsh-llm-pi-ai` 和 Bash provider 实现。发现原示例同时存在任务 300 秒、出口 300 秒、provider 空闲 300 秒和初始化 60 秒等独立限制；真实验收外层也存在比任务预算短的等待窗口。
+Checked the DSH official [timeout documentation](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/util/timeout/README.md), as well as the project-locked `0.2.1-rc.4` SDK, `dsh-llm-pi-ai`, and the Bash provider implementation. Found that the original example simultaneously had independent limits of 300 seconds for the task, 300 seconds for egress, 300 seconds for provider idle, and 60 seconds for initialization; the real acceptance outer layer also had a wait window shorter than the task budget.
 
-上一轮 [原生开发验收](experiments/2026-10-28-native-authoring-results.md) 保留原 300 秒合同和失败结论。最后一个请求约 284 秒未取得上游 HTTP 状态；提高时限不能直接证明网络或模型服务故障已经解决。新的预算适用于新登记运行，历史结果不会被改写。
+The previous round of [native development acceptance](experiments/2026-10-28-native-authoring-results.md) retains the original 300-second contract and failure conclusion. The last request took about 284 seconds without obtaining an upstream HTTP status; raising the time limit cannot directly prove that the network or model service failure has been resolved. The new budget applies to newly registered runs; historical results will not be rewritten.
 
-## 验证结果
+## Verification Results
 
-[原字节证据与摘要](evidence/execution-budgets-20261028/index.json)：236 项单测、24 项原生测试、2 项容器回归通过；后补的 2 项 StartedAt 截止测试独立通过。新镜像预检及真实模型任务通过，2 次模型请求均完成，0 失败、0 未完成。该任务约 4 秒完成，用于验证配置与真实调用接线；超过 300 秒的截止语义由确定性测试验证，不把短任务通过称为长响应已实测。
+[Original byte evidence and summary](evidence/execution-budgets-20261028/index.json): 236 unit tests, 24 native tests, and 2 container regressions passed; the 2 subsequently added StartedAt deadline tests passed independently. The new image precheck and real model task passed, with both model requests completed, 0 failures, and 0 incomplete. The task completed in about 4 seconds and was used to verify configuration and real call wiring; the deadline semantics beyond 300 seconds are verified by deterministic tests, and a short task passing is not called a measured long response.
 
-干净提交 `136f4ab` 的实际 npm tarball 已通过原生 DSH 安装与能力调用，归档 SHA256 为 `648db5046a0298c211120f915c9280a6c081a437a3ba0c7969c37148aeadb059`。GitHub 托管运行 `40620133728` 因账户支付／额度限制未执行任何步骤，本地验收不替代云端结果。
+The actual npm tarball of clean commit `136f4ab` has passed native DSH installation and capability invocation, with archive SHA256 `648db5046a0298c211120f915c9280a6c081a437a3ba0c7969c37148aeadb059`. The GitHub-hosted run `40620133728` did not execute any steps due to account payment/quota limits; local acceptance does not replace cloud results.

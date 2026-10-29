@@ -1,46 +1,46 @@
-# 正式出口接入：独立复核与剩余实现
+# Formal Egress Integration: Independent Review and Remaining Implementation
 
-本轮工作基于 `174a702e1b9d156cbb1f4d320a0424891358a50b`，在 `feat/controlled-egress` 工作树实现并逐项验收。核心思想、宣传定位与 `11.md` 不改。
+This round of work is based on `174a702e1b9d156cbb1f4d320a0424891358a50b`, implemented and accepted item by item in the `feat/controlled-egress` working tree. The core idea, promotional positioning, and `11.md` are unchanged.
 
-## 已验证
+## Verified
 
-1. 路由进入实验身份，优化器和执行器真实凭证留在各自可信 broker；候选只收到占位值。控制 API 固定路径与外部模型路由分别声明，外部路由不能覆盖控制能力。
-2. 正式 Controller 实际模型调用、工具写入、独立评分成立。宿主等待中断后接回原 worker/broker，attempt=0，4 次模型请求全部有结果；终态再次 pump 无新增请求。
-3. 原生优化器通过实际 broker 完成控制 API 生命周期；独立容器测试检查直连拒绝、认证替换、外来端点、准备中断和原容器消失。
-4. `prepareExecution` 的持久准备/创建意图/已创建状态已修复首次独立审查发现的准备窗口。复审确认本项解决，无新增阻断。
+1. Routing enters the experimental identity; the optimizer's and executor's real credentials remain in their respective trusted brokers; candidates receive only placeholder values. The control API fixed path and the external model route are declared separately, and the external route cannot override control capabilities.
+2. The formal Controller's actual model calls, tool writes, and independent scoring hold. After the host wait is interrupted, it reconnects to the original worker/broker, attempt=0, and all 4 model requests have results; pumping again in the terminal state produces no new requests.
+3. The native optimizer completes the control API lifecycle through the actual broker; independent container tests check direct-connection rejection, authentication replacement, foreign endpoints, preparation interruption, and disappearance of the original container.
+4. The persistent preparation/creation intent/created state of `prepareExecution` has fixed the preparation window found in the first independent review. Re-review confirms this item is resolved, with no new blockers.
 
-首次真实模型验收夹具遗漏构建脚本，构建即失败、0 模型调用；原报告保留。修正验收夹具后使用新目录，不覆盖失败或混合 attempt。[机读回执](../evidence/2026-10-28-controlled-controller-integration.json)
+The first real-model acceptance fixture was missing the build script, so the build failed immediately with 0 model calls; the original report is retained. After fixing the acceptance fixture, a new directory is used, without overwriting failed or mixed attempts. [Machine-readable receipt](../evidence/2026-10-28-controlled-controller-integration.json)
 
-## 网络资源生命周期：问题与修复
+## Network Resource Lifecycle: Problems and Fixes
 
-原接线每次执行分配两个默认 bridge，并将停止的容器和网络完整保留。实际 Docker 默认只有 30 个 IPv4 `/24` 地址池；30 题并发需要至少 60 个网络，运行前就可能耗尽。串行实验也会积累。测试的 finally 清理仅清理测试夹具，不能代表正式系统具备回收能力。
+The original wiring allocated two default bridges per execution and fully retained stopped containers and networks. In practice, Docker by default has only 30 IPv4 `/24` address pools; 30 concurrent questions require at least 60 networks, which may be exhausted before running. Serial experiments also accumulate. The test's finally cleanup only cleans up test fixtures and cannot represent that the formal system has reclamation capability.
 
-现实现采用合同声明的有限私有 IPv4 地址池和持久 `/29` 租约，并将执行终态归档与资源回收分开：
+The current implementation uses a contract-declared finite private IPv4 address pool and persistent `/29` leases, and separates execution terminal-state archiving from resource reclamation:
 
 ```text
-合同冻结地址池与容量 → 准备租约 → 运行原容器 → 收齐原始证据
+Contract freezes address pool and capacity → prepare lease → run original container → collect all raw evidence
                            │                    │
-                     宿主中断保留          持久化执行终态
-                     同一租约/容器               │
-                                          解除端点并释放租约
+                     host interruption retains          persist execution terminal state
+                     same lease/container               │
+                                           detach endpoint and release lease
                                                │
-                                          归档证据可复查
-                                  回收中断只继续清理，不重建执行
+                                           archived evidence is reviewable
+                                  reclamation interruption only continues cleanup, does not rebuild execution
 ```
 
-必须覆盖：目标并发容量、跨进程分配冲突、准备中断、运行中断、终态写入与回收之间的中断、重复清理，以及归档后恢复零新增模型请求。运行证据应保留原容器 ID、配置、日志、请求账本和内容身份。不得用自动重跑、无限扩池或只修改测试清理来通过验收。
+Must cover: target concurrency capacity, cross-process allocation conflicts, preparation interruption, run interruption, interruption between terminal-state write and reclamation, repeated cleanup, and zero new model requests after archive recovery. Run evidence should retain the original container ID, configuration, logs, request ledger, and content identity. Acceptance must not be passed by automatic reruns, unbounded pool expansion, or only modifying test cleanup.
 
-实际已通过 62 网段容量、8 独立进程首选租约竞争、成功终态回收中断、失败回收中断和原 worker 恢复校验失败收尾。独立复审另外发现失败清理过早终态及恢复异常时原 worker 合同丢失，已新增 `execution-failure.json` 和创建前持久 `execution-spec.json`，Controller/优化器先接续清理，再记录业务失败，不进入新执行。Controller 故障注入确认一次 create、一次 collect、两次 cleanup。
+In practice, it has passed 62 subnet capacity, first-choice lease contention among 8 independent processes, successful terminal-state reclamation interruption, failed reclamation interruption, and original worker recovery validation failure wrap-up. Independent re-review additionally found premature terminal state on failed cleanup and loss of the original worker contract on recovery exceptions; `execution-failure.json` and pre-creation persistent `execution-spec.json` have been added, so the Controller/optimizer first continue cleanup, then record the business failure, without entering a new execution. Controller fault injection confirms one create, one collect, and two cleanups.
 
-真实模型新目录验收通过：原 worker/broker ID 保留，3 次调用全部返回，独立评分 1、attempt=0；归档后原容器移除，终态再次 pump 无新增请求。完整资源证据见[机读回执](../evidence/2026-10-28-egress-resource-lifecycle.json)。运行时间和调用次数仅报告；本项不是提分实验。
+Real-model acceptance in a new directory passed: original worker/broker IDs retained, all 3 calls returned, independent score 1, attempt=0; after archiving the original container is removed, and pumping again in the terminal state produces no new requests. Full resource evidence is in the [machine-readable receipt](../evidence/2026-10-28-egress-resource-lifecycle.json). Runtime and call counts are reported only; this item is not a score-improvement experiment.
 
-还实测了复用默认 `bridge` 作为 broker uplink 的方案：Docker 拒绝多网络创建同时附着默认网络与用户定义网络，原错误为 `cannot attach both user-defined and non-user-defined network-modes`。因此保持双用户网络，显式小网段分配与终态回收，无共享默认网络降级。池选择属于部署网络规划，Docker IPAM 只能检测 daemon 网络，不能替代 LAN/VPN 冲突核对。
+Also tested in practice was the approach of reusing the default `bridge` as the broker uplink: Docker rejects multi-network creation that attaches both the default network and a user-defined network at the same time; the original error was `cannot attach both user-defined and non-user-defined network-modes`. Therefore dual user networks are retained, with explicit small-subnet allocation and terminal-state reclamation, and no shared-default-network downgrade. Pool selection is part of deployment network planning; Docker IPAM can only detect daemon networks and cannot replace LAN/VPN conflict checks.
 
-## 核实来源
+## Verified Sources
 
-- Docker 官方 [网络及多网络网关优先级](https://docs.docker.com/engine/network/)；Docker 29.8.2 真实验证多次 `--network name=...,gw-priority=...,ip=...`。
-- Docker 官方 [bridge 网络管理](https://docs.docker.com/engine/network/drivers/bridge/)：删除网络前解除容器连接；停止进程不等于资源回收。
-- Docker 官方 [IPAM 配置](https://docs.docker.com/reference/compose-file/networks/#ipam)：显式 subnet / ip_range / gateway / aux_addresses；不能假设宿主默认地址池支持目标规模。
-- 本机 `docker info --format '{{json .DefaultAddressPools}}'` 实测为 30 个 IPv4 `/24` 池，以及一个独立 IPv6 池；IPv6 不作为当前 IPv4 合同的替代。
+- Docker official [network and multi-network gateway priority](https://docs.docker.com/engine/network/); Docker 29.8.2 real verification of multiple `--network name=...,gw-priority=...,ip=...`.
+- Docker official [bridge network management](https://docs.docker.com/engine/network/drivers/bridge/): detach container connections before deleting a network; stopping a process does not equal resource reclamation.
+- Docker official [IPAM configuration](https://docs.docker.com/reference/compose-file/networks/#ipam): explicit subnet / ip_range / gateway / aux_addresses; one cannot assume the host default address pool supports the target scale.
+- The local `docker info --format '{{json .DefaultAddressPools}}'` was measured in practice as 30 IPv4 `/24` pools, plus one independent IPv6 pool; IPv6 is not a substitute for the current IPv4 contract.
 
-行业方案和版本来源继续沿用 [受控出口研究](2026-10-28-controlled-egress.md)。以上发现改变的是正式基础设施实现，不更改项目的核心定位。
+Industry solutions and version sources continue to follow the [controlled egress research](2026-10-28-controlled-egress.md). What the above findings change is the formal infrastructure implementation, not the project's core positioning.

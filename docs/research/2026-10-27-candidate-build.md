@@ -1,43 +1,43 @@
-# CandidateBuild：让受测能力与分发能力具有同一身份
+# CandidateBuild: Giving the Tested Capability and the Distributed Capability the Same Identity
 
-## 核实与设计
+## Verification and Design
 
-此前冻结源码、执行源码、导出时另行打包，无法覆盖编译语言、新运行依赖和打包差异。现在将候选源身份与产物身份分别记录：
+Previously, freezing the source, executing the source, and packaging separately at export time could not cover compiled languages, new runtime dependencies, and packaging differences. Now the candidate source identity and the artifact identity are recorded separately:
 
 ```text
-源码 / package-lock.json / 固定 builder 镜像
+Source / package-lock.json / fixed builder image
                   │
-        独立容器 npm ci → scripts.build → npm pack
+        isolated container npm ci → scripts.build → npm pack
                   │
-           bundle.tgz + 解包目录 + receipt
-                  │ 内容哈希与只读冻结
+           bundle.tgz + unpacked directory + receipt
+                  │ content hash and read-only freeze
              ┌────┼─────────┬──────────┐
              ▼    ▼         ▼          ▼
-          原生QA  任务执行  独立复验    原包导出
+          native QA  task execution  independent validation    original package export
                                       │
-                              source → 新草稿继续变异
+                              source → new draft continues mutation
 ```
 
-构建容器没有任务、评分材料、模型凭证或 Docker socket。网络权限、镜像和超时由实验合同固定。原始源码只读；单独的构建工作副本恢复可写权限。安装或编译失败保留 `build_failed` 和原日志，不启动任务、不自动重试。
+The build container has no tasks, scoring materials, model credentials, or Docker socket. Network permissions, images, and timeouts are fixed by the experiment contract. The original source is read-only; a separate build working copy has write permissions restored. If installation or compilation fails, `build_failed` and the original logs are retained, no tasks are started, and no automatic retry occurs.
 
-原生 npm 12.2.0 实测 `npm pack --json` 返回按包名索引的对象。依赖通过 v3 lock 固定，执行 `npm ci`；运行依赖随包分发，DSH 宿主依赖通过 peer 声明保留宿主所有权。构建产物包含编译器结果，QA 和执行不再读取未编译源码。导出复制已受测的原 tarball；独立复验也登记并使用既有产物，禁止重新构建替换被选版本。
+Native npm 12.2.0 was measured to have `npm pack --json` return an object indexed by package name. Dependencies are fixed via the v3 lock, and `npm ci` is executed; runtime dependencies are distributed with the package, and DSH host dependencies retain host ownership through peer declarations. The build artifact contains the compiler output, and QA and execution no longer read uncompiled source. Export copies the original tarball that was tested; independent validation also registers and uses the existing artifact, and rebuilding to replace the selected version is prohibited.
 
-中断恢复使用同一个命名构建容器收集原输出。宿主独立核对源码、lock、解包目录、tarball 和完整产物哈希。身份证明字节一致，不证明构建脚本业务正确或跨系统二进制可移植；目标平台由冻结镜像及独立安装验收约束。
+Interruption recovery uses the same named build container to collect the original output. The host independently verifies the source, lock, unpacked directory, tarball, and full artifact hash. Identity proves byte consistency, not that the build script's business logic is correct or that binaries are portable across systems; the target platform is constrained by the frozen image and independent installation acceptance.
 
-## 官方来源
+## Official Sources
 
-- [npm ci](https://docs.npmjs.com/cli/v12/commands/npm-ci/)：依赖与 lock 不符时直接失败，安装不改写 lock；peer 可保留解析记录而不落盘。
-- [npm bundleDependencies](https://docs.npmjs.com/cli/v12/configuring-npm/package-json/#bundledependencies)：运行依赖可包含在单个安装 tarball 中；宿主 peer 与包内运行依赖分开。
-- [AutoSaddler V2 固定版本](https://github.com/microsoft/AutoSaddler/tree/e841543ce6cf6bdf690e65134b12a829ec9f66d1)：参考内容寻址及可恢复实验思想，本项目以 DSH 原生 Bundle 作为执行能力产物。
+- [npm ci](https://docs.npmjs.com/cli/v12/commands/npm-ci/): fails directly when dependencies do not match the lock, and installation does not rewrite the lock; peers may retain resolution records without writing them to disk.
+- [npm bundleDependencies](https://docs.npmjs.com/cli/v12/configuring-npm/package-json/#bundledependencies): runtime dependencies can be included in a single installation tarball; host peers and in-package runtime dependencies are kept separate.
+- [AutoSaddler V2 pinned version](https://github.com/microsoft/AutoSaddler/tree/e841543ce6cf6bdf690e65134b12a829ec9f66d1): references the ideas of content addressing and recoverable experiments; this project uses the DSH native Bundle as the execution capability artifact.
 
-## 验收记录
+## Acceptance Record
 
-首次真实容器验收暴露工作副本继承只读权限的问题；原始失败日志保留，已修正副本权限。只读方向评审发现复验重新构建的身份漂移风险，已修改验证臂协议并复核通过。
+The first real container acceptance exposed the problem that the working copy inherited read-only permissions; the original failure logs are retained, and the copy permissions have been fixed. A read-only direction review found the identity drift risk of rebuilding during validation, and the validation arm protocol has been modified and re-reviewed and passed.
 
-- 18 项单测通过，包括构建失败终态、不进入 QA/任务、不重复构建、研究档案保留失败，以及复验直接使用原产物。
-- 6 项原生 DSH 测试、1 项框架 Bundle 原生安装测试通过。
-- 真实容器完成构建 → 原生装配 QA → 两任务 → 控制器 SIGKILL → 收集原容器 → 独立评分 → 原包导出；导出 tarball、Bundle、source 哈希逐项一致。
-- 独立 TypeScript 候选安装锁定的 `is-number@7.0.0` 与开发类型依赖并编译；运行依赖进入 tarball，在全新、禁网、只读容器中安装并调用成功。已验证原构建容器复用，以及修改编译产物后拒绝运行。
-- 复验测试将源码值设为 -1、已选产物值设为 0.25/0.75，并禁止 builder 调用；八次配对运行均消费已选产物，恢复无新增执行。
+- 18 unit tests passed, including build failure terminal state, not entering QA/tasks, no duplicate builds, research archive retaining failures, and validation directly using the original artifact.
+- 6 native DSH tests and 1 framework Bundle native installation test passed.
+- The real container completed build → native assembly QA → two tasks → controller SIGKILL → collect original container → independent scoring → original package export; the exported tarball, Bundle, and source hashes matched item by item.
+- An independent TypeScript candidate installed the locked `is-number@7.0.0` and development type dependencies and compiled; runtime dependencies entered the tarball and were installed and invoked successfully in a fresh, network-disabled, read-only container. Reuse of the original build container was verified, as was refusal to run after modifying the compiled artifact.
+- The validation test set the source value to -1 and the selected artifact values to 0.25/0.75, and prohibited builder invocation; all eight paired runs consumed the selected artifact, and recovery produced no new executions.
 
-本项验收证明构建和交付身份链。真实模型搜索、稳定收益、联合变异与跨领域结论由各自实验验证，不借用本项协议夹具分数。
+This acceptance proves the build and delivery identity chain. Real model search, stable gains, joint mutation, and cross-domain conclusions are verified by their respective experiments and do not borrow scores from this protocol's fixtures.

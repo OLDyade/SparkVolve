@@ -1,65 +1,65 @@
-# 连续进化与产品闭环验收
+# Continuous Evolution and Product Closed-Loop Acceptance
 
-2026-10-27，真实模型使用 Venus `deepseek/deepseek-v4.1-flash-1017`，thinking off；DSH `0.2.1-rc.4`。所有运行使用独立目录和固定合同，失败未覆盖，模型权重、裁判和任务清单没有随变异改变。
+2026-10-27, the real model used Venus `deepseek/deepseek-v4.1-flash-1017`, thinking off; DSH `0.2.1-rc.4`. All runs used independent directories and fixed contracts, failures were not overwritten, and model weights, judges, and task lists did not change with mutations.
 
-机器记录：[候选谱系、逐题分数、调用用量、复验和包哈希](evidence/2026-10-27-continuous-acceptance.json)。
+Machine records: [candidate lineage, per-task scores, call usage, re-validation, and package hashes](evidence/2026-10-27-continuous-acceptance.json).
 
-## 实际验证了什么
+## What Was Actually Verified
 
 ```text
-一条 evolve 命令
-  └─ 原生 DSH 优化器 → 插件代码 / 工具 Schema / 提示贡献变异
-       └─ 冻结 → 原生 QA → 真实任务 → 独立重算评分
-            └─ 原结果反馈 → 下一变异 → 严格择优 / 保留负结果
+One evolve command
+  └─ native DSH optimizer → plugin code / tool Schema / prompt contribution mutation
+       └─ freeze → native QA → real tasks → independent recomputed scoring
+            └─ original result feedback → next mutation → strict selection / retain negative results
 
-冻结基线 + 冻结候选
-  └─ 新任务协议注册 → 两组 × 四题 × 两次重复 → 完整分母配对报告
+Frozen baseline + frozen candidate
+  └─ new task protocol registration → two groups × four tasks × two repetitions → full-denominator paired report
 
-终态候选
-  └─ npm 包 + 研究档案 → 本地检索 → 新实验草稿（无旧成绩）
+Final-state candidate
+  └─ npm package + research archive → local retrieval → new experiment draft (no prior scores)
 
-另列生命周期验收
-  └─ 真实会话 0 结束 → 自动会话 1 → 读取前次回执 → evolution_finish
+Separately listed lifecycle acceptance
+  └─ real session 0 ends → automatic session 1 → read previous receipt → evolution_finish
 ```
 
-搜索确实修改了插件实现、工具 Schema 与原生提示贡献。`cordis.patch` 在这些变异中未改变，因此本轮不用于证明组合拓扑搜索有效。模型没有遵守产品验收目标中“每个会话只提交一个候选”的节奏；多次变异发生于同一会话。框架支持跨会话继续，另用真实双会话生命周期实验单独检验，不将两个实验拼成一个质量结果。
+The search did modify the plugin implementation, tool Schema, and native prompt contribution. `cordis.patch` did not change in these mutations, so this round is not used to prove that combinatorial topology search is effective. The model did not follow the product acceptance goal's cadence of "only one candidate submitted per session"; multiple mutations occurred in the same session. The framework supports cross-session continuation, which was tested separately with a real two-session lifecycle experiment; the two experiments are not combined into a single quality result.
 
-| 版本 | 实际机制变更 | 三题均值 | 裁决 |
+| Version | Actual mechanism change | Three-task mean | Verdict |
 |---|---|---:|---|
-| 基线 `090461bf…` | 原始读写能力 | 100% | 保留冠军 |
-| `8c6ad260…` | 新增验证工具与对应提示贡献 | 100% | 同分拒绝 |
-| `b326c779…` | 从上一变异派生，合并填表与验证工具 | 90.4762% | 退步拒绝 |
-| `8918fdbe…` | 从 `8c6ad260…` 分叉，吸收 `b326c779…` 失败证据修复填表实现 | 100% | 同分拒绝 |
+| Baseline `090461bf…` | Original read/write capability | 100% | Champion retained |
+| `8c6ad260…` | Added validation tool and corresponding prompt contribution | 100% | Rejected on tie |
+| `b326c779…` | Derived from previous mutation, merged form-filling and validation tools | 90.4762% | Rejected as regression |
+| `8918fdbe…` | Forked from `8c6ad260…`, incorporated `b326c779…` failure evidence to fix form-filling implementation | 100% | Rejected on tie |
 
-四个版本各 3/3 成功评分，无执行失败。优化器主动结束，容器累计时间 925.547 秒；121 次 adapter stream 均返回，供应商报告输入 311,631、输出 36,517 tokens。供应商内部 HTTP 重试和未知费用不推算为零。完成后导出最终档案；没有发布退步候选。
+All four versions scored successfully 3/3 each, with no execution failures. The optimizer terminated on its own; cumulative container time was 925.547 seconds; all 121 adapter streams returned, and the provider reported 311,631 input and 36,517 output tokens. Provider-internal HTTP retries and unknown costs are not extrapolated as zero. The final archive was exported after completion; no regressed candidate was published.
 
-## 独立复验：负结果同样完整保留
+## Independent Re-validation: Negative Results Are Equally Fully Retained
 
-选定已完成变异中搜索分最高者，同分取最早版本；所选变异已达到指标上限，后续候选无法按此规则替代它。比较协议在开始前注册，使用四类新合成业务任务，每题两次，基线和候选均重新执行。优化器没有收到复验反馈。
+Among completed mutations, the one with the highest search score was selected, with the earliest version chosen on ties; the selected mutation had reached the metric ceiling, so subsequent candidates could not replace it under this rule. The comparison protocol was registered before starting, using four new synthetic business tasks, each run twice, with both baseline and candidate re-executed. The optimizer received no re-validation feedback.
 
-| 组 | 成功评分 | 执行失败 | 取消 | 完整分母均值 |
+| Group | Successful scores | Execution failures | Cancellations | Full-denominator mean |
 |---|---:|---:|---:|---:|
-| 基线 | 8 | 0 | 0 | 78.125% |
-| 候选 `8c6ad260…` | 5 | 1 | 2 | 53.125% |
+| Baseline | 8 | 0 | 0 | 78.125% |
+| Candidate `8c6ad260…` | 5 | 1 | 2 | 53.125% |
 
-候选在第二次债务表任务中遇到上游 `TRANSPORT: Connection error.`，预注册失败预算为 0，剩余两题被取消并计入失败分值。平均差为 −25 个百分点，`strictImprovement=false`。该差距同时包含业务表现和基础设施失败的影响，不能全部归因插件质量。原报告保留，不重试、不补题、不改变分母。
+The candidate encountered an upstream `TRANSPORT: Connection error.` during the second debt-schedule task; the pre-registered failure budget was 0, so the remaining two tasks were cancelled and counted as failing scores. The mean difference is −25 percentage points, `strictImprovement=false`. This gap includes the effects of both business performance and infrastructure failure and cannot be attributed entirely to plugin quality. The original report is retained; no retries, no supplementary tasks, and no change to the denominator.
 
-这组任务覆盖调整项与税基、加权利润率与单位、债务摊还、场景估值，均为本项目合成材料。它检验复验协议和新任务表现，不代表官方 SpreadsheetBench 分数或统计显著性。
+This task set covers adjustments and tax basis, weighted profit margin and units, debt amortization, and scenario valuation, all of which are synthetic materials for this project. It tests the re-validation protocol and performance on new tasks and does not represent an official SpreadsheetBench score or statistical significance.
 
-## 生命周期、安装与复用
+## Lifecycle, Installation, and Reuse
 
-- **真实双会话**：会话 0 调用状态后正常结束；会话 1 读取 `/previous/receipt.json`、再读取状态、调用 `evolution_finish`。两次均完成，累计优化器容器时间 17.685 秒。此为纯生命周期测试，不涉及变异收益。
-- **真实分发安装**：将当前仓库打包，在干净 DSH Home 中执行原生 `plugin add`；六项进化工具进入实际 SDK 请求，状态工具执行成功。Provider 为明确标记的确定性协议夹具，不计作模型质量成绩。此前安装后真实模型完成 XLSX 的证据见[原验收](acceptance.md)。
-- **研究资产**：已将真实未晋级候选导出并存入研究库，查询后导入新实验；导入字节与冻结候选 digest 完全相同，记录来源且未继承成绩。新实验未启动任务，不作为额外抽样。
-- **中断恢复**：真实容器集成测试中强制终止控制器，再次启动收集原容器；原容器 ID 保持不变，完成独立评分与归档。
-- **工程验证**：17 项单元、5 项原生、1 项分发安装、1 项真实容器集成测试通过；类型和格式检查通过，依赖审计 0 漏洞。
+- **Real two-session**: Session 0 called status and then ended normally; session 1 read `/previous/receipt.json`, then read status, and called `evolution_finish`. Both completed, with cumulative optimizer container time of 17.685 seconds. This is a pure lifecycle test and does not involve mutation gains.
+- **Real distribution installation**: The current repository was packaged, and the native `plugin add` was executed in a clean DSH Home; six evolution tools entered actual SDK requests, and the status tool executed successfully. The Provider was an explicitly marked deterministic protocol fixture and is not counted as a model quality score. For evidence that a real model completed XLSX after installation earlier, see [original acceptance](acceptance.md).
+- **Research assets**: A real non-advancing candidate was exported and stored in the research library, then queried and imported into a new experiment; the imported bytes were exactly identical to the frozen candidate digest, the source was recorded, and no scores were inherited. The new experiment did not start any tasks and is not treated as additional sampling.
+- **Interruption recovery**: In a real container integration test, the controller was forcibly terminated, then restarted to collect the original container; the original container ID remained unchanged, and independent scoring and archiving were completed.
+- **Engineering verification**: 17 unit tests, 5 native tests, 1 distribution installation test, and 1 real container integration test passed; type and format checks passed; dependency audit found 0 vulnerabilities.
 
-## 实际故障与边界
+## Actual Failures and Boundaries
 
-首次连续搜索遇到上游连接故障，优化器未提交候选。还发现了遥测记账缺陷：通过原生 finish 事件返回的错误曾被记为成功返回；修复后由真实 SDK 测试覆盖。原失败报告未改写，其 14 次开始应解释为 13 次返回、1 次失败。
+The first continuous search encountered an upstream connection failure, and the optimizer submitted no candidate. A telemetry accounting defect was also found: errors returned via the native finish event had been recorded as successful returns; after the fix, this was covered by a real SDK test. The original failure report was not rewritten; its 14 starts should be interpreted as 13 returns and 1 failure.
 
-分发测试先暴露 npm 12 JSON 输出变化，又暴露目标 Profile 缺少原生依赖构建授权。分别按已核实的新格式和精确依赖配置修正，最终原生安装验收通过，没有源码挂载替代安装。
+The distribution test first exposed a change in npm 12 JSON output, then exposed that the target Profile lacked native dependency build authorization. Both were corrected according to the verified new format and the exact dependency configuration respectively, and the native installation acceptance ultimately passed, with no source mount substituting for installation.
 
-生成的未晋级变异包含强制 verify-ready 流程措辞，它属于待检验实验产物，不作为框架推荐默认策略。当前证据未证明稳定提分；优化器方法虽可作为 Bundle 独立替换，自动优化优化器本身的收益仍待研究。
+The generated non-advancing mutation contains mandatory verify-ready process wording; it is an experimental artifact pending testing and is not recommended as a default framework strategy. Current evidence does not prove stable score improvement; although the optimizer method can be independently replaced as a Bundle, the benefit of automatically optimizing the optimizer itself remains to be studied.
 
-本次历史验收时，GitHub Actions 因账号支付/消费额度限制未启动任何步骤，仓库仍为私有；这些旧记录保持不变。2026-10-28 按用户指令公开后的云端结果见[新记录](experiments/2026-10-28-public-ci-and-delivery.md)。采用 Apache-2.0，未发布 npm 包；`11.md` 核心原句未修改。
+At the time of this historical acceptance, GitHub Actions did not start any steps due to account payment/spending quota limits, and the repository remained private; these old records remain unchanged. For cloud results after it was made public on 2026-10-28 per user instruction, see [new records](experiments/2026-10-28-public-ci-and-delivery.md). Apache-2.0 is adopted, and no npm package has been published; the core sentence of `11.md` is unmodified.

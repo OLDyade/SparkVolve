@@ -1,50 +1,50 @@
-# 第二领域真实验收：结构化事件与日志
+# Second-Domain Real Acceptance: Structured Events and Logs
 
-启动前在 [`b15be37`](https://github.com/OLDyade/spark-harness-evolution/commit/b15be37) 冻结[注册记录](experiments/2026-10-28-structured-data.json)。实验复用现有 Controller、DSH 优化器、构建、原生 QA、评分和导出；没有修改核心代码或安装 Excel 依赖。固定模型为 `deepseek/deepseek-v4.1-flash-1017`，DSH `0.2.1-rc.4`，三题各一次，预算含基线共两个候选。
+Before startup, the [registration record](experiments/2026-10-28-structured-data.json) was frozen at [`b15be37`](https://github.com/OLDyade/spark-harness-evolution/commit/b15be37). The experiment reused the existing Controller, DSH optimizer, build, native QA, scoring, and export; no core code was modified and no Excel dependency was installed. The fixed model was `deepseek/deepseek-v4.1-flash-1017`, DSH `0.2.1-rc.4`, one run per each of the three tasks, with a budget of two candidates including the baseline.
 
-## 实际结果
+## Actual Results
 
-| 版本 | 原生 QA | 已评分 / 完整分母 | 均值 | 裁决 |
+| Version | Native QA | Scored / Full denominator | Mean | Verdict |
 |---|---|---:|---:|---|
-| 基线 `564c1e7c` | 通过 | 3 / 3 | 100% | 保留 |
-| 变异 `52bd300f` | 通过 | 2 / 3；1 次执行失败 | 66.67% | 拒绝 |
+| Baseline `564c1e7c` | Pass | 3 / 3 | 100% | Retained |
+| Variant `52bd300f` | Pass | 2 / 3; 1 execution failure | 66.67% | Rejected |
 
-变异的版本事件和依赖关联任务均得 100%；日志任务在第二个适配器请求未返回时达到 **300 秒执行上限**。容器退出 137，`OOMKilled=false`。失败按合同计入完整分母，没有补题、重抽或修改评测；这不能证明候选使业务正确率下降 33.33 个百分点，也不能确定模型请求没有结束的上游原因。
+The variant's version-event and dependency-association tasks both scored 100%; the log task reached the **300-second execution limit** when the second adapter request did not return. The container exited 137, `OOMKilled=false`. The failure was counted in the full denominator per the contract, with no replacement tasks, re-sampling, or evaluation changes; this cannot prove that the candidate reduced business accuracy by 33.33 percentage points, nor can it determine the upstream reason the model request did not finish.
 
-| 调用账本 | started / result / unfinished | 已报告输入 / 输出 token |
+| Call ledger | started / result / unfinished | Reported input / output tokens |
 |---|---:|---:|
-| 基线执行器 | 11 / 11 / 0 | 13,160 / 1,884 |
-| 变异执行器 | 9 / 8 / 1 | 11,331 / 1,412 |
-| 优化器 | 49 / 49 / 0 | 124,000 / 13,576 |
-| 总计 | 69 / 68 / 1 | 148,491 / 16,872 |
+| Baseline executor | 11 / 11 / 0 | 13,160 / 1,884 |
+| Variant executor | 9 / 8 / 1 | 11,331 / 1,412 |
+| Optimizer | 49 / 49 / 0 | 124,000 / 13,576 |
+| Total | 69 / 68 / 1 | 148,491 / 16,872 |
 
-用量来自持久适配器流账本；未完成请求的最终用量未知，总数为已报告部分，实际账单费用未知。优化器一会话用时 537.097 秒，主动结束；基线和变异的任务执行时间合计分别为 24.524、316.819 秒。时间和成本只报告，不另设晋级门槛。完整逐题数据、原模型结论、容器状态及安装身份见[机器证据](evidence/2026-10-28-structured-data.json)。
+Usage comes from the persistent adapter stream ledger; the final usage of the unfinished request is unknown, the totals are the reported portion, and the actual billed cost is unknown. The optimizer used 537.097 seconds in one session and terminated voluntarily; the baseline and variant task execution times totaled 24.524 and 316.819 seconds respectively. Time and cost are reported only, with no separate promotion threshold. Complete per-task data, original model conclusions, container state, and installation identity are in the [machine evidence](evidence/2026-10-28-structured-data.json).
 
-## 变异与独立审查
+## Mutation and Independent Review
 
-优化器自主新增 `data_group_aggregate`、`data_dedup` 与内部 `aggregate.mjs`，修改构建及打包文件列表。两份 `cordis.patch.yml` 哈希完全相同，仍只加载 `index.mjs`：这是新增工具和实现变异，**未发生 Cordis 插件拓扑变异**。
+The optimizer autonomously added `data_group_aggregate`, `data_dedup`, and the internal `aggregate.mjs`, and modified the build and packaging file lists. The two `cordis.patch.yml` hashes are completely identical, and only `index.mjs` is still loaded: this is an added tool and implementation mutation, and **no Cordis plugin topology mutation occurred**.
 
-独立子代理与主线程分别直接调用冻结工具复现了三项问题；没有修改原候选，也没有将这些反例混入正式分数：
+An independent subagent and the main thread each directly invoked the frozen tools to reproduce three issues; the original candidate was not modified, and these counterexamples were not mixed into the official scores:
 
-| 工具声明 | 反例 | 实际行为 |
+| Tool claim | Counterexample | Actual behavior |
 |---|---|---|
-| 按 identity 选择最大 order_by | 同一 id，revision 依次 1、2 | 先按 identity 去重，错误保留 1 |
-| 两位 half-up 舍入 | `-10.125`、`10.075` | 输出 `-10.12`、`10.07`；应为 `-10.13`、`10.08` |
-| 可省略 digits | 不传 `options.digits` | 在默认值生效前抛错 |
+| Select max order_by by identity | Same id, revisions 1, 2 in sequence | Deduplicates by identity first, incorrectly retaining 1 |
+| Two-digit half-up rounding | `-10.125`, `10.075` | Outputs `-10.12`, `10.07`; should be `-10.13`, `10.08` |
+| digits can be omitted | Do not pass `options.digits` | Throws before the default value takes effect |
 
-原始样例最大 revision 恰好先出现，日志均值不需要小数舍入，无法揭露这些边界；已完成的变异任务还通过原生 bash/Python 计算，未调用新增去重工具。不能将正确交付归功于新算法，也不能把两个已通过任务当作通用算法正确性证明。
+In the original sample the maximum revision happened to appear first, and the log mean required no decimal rounding, so these boundaries could not be exposed; the completed variant tasks also computed via native bash/Python and did not call the newly added deduplication tool. Correct delivery cannot be credited to the new algorithm, nor can the two passed tasks be treated as proof of general algorithm correctness.
 
-优化器原结论推测“额外工具引发更多探索导致超时”，但失败轨迹只有一次已完成请求和一次未完成请求，缺少支持持续探索的证据。原结论完整保留，独立审查附加纠正。新候选继续保留为负结果，不作为可靠能力分发。
+The optimizer's original conclusion speculated that "the extra tool triggered more exploration, causing the timeout," but the failure trajectory contains only one completed request and one unfinished request, lacking evidence to support sustained exploration. The original conclusion is preserved in full, with corrections appended by the independent review. The new candidate remains retained as a negative result and is not distributed as a reliable capability.
 
-## 导出后的独立能力使用
+## Independent Capability Use After Export
 
-选择实际保留的**基线 Bundle**，分别在两个全新、非 root、只读根文件系统的容器中通过原生 `dsh plugin add` 安装：
+The actually retained **baseline Bundle** was selected and installed via native `dsh plugin add` in two fresh, non-root containers with read-only root filesystems:
 
-1. 普通新任务交付正确，但模型调用了原生 bash/Python。该记录证明安装与任务运行，不能证明插件工具被调用。
-2. 另设明确工具协议的集成测试，使用不同数据，要求 `data_read → data_write`。真实 DeepSeek 确实调用这两个已安装工具，输出 `queue=8、web=5、total_seconds=13`，原输入保持，容器退出 0、原生终态 `completed`。
+1. An ordinary new task was delivered correctly, but the model invoked native bash/Python. This record proves installation and task execution, not that the plugin tools were invoked.
+2. A separate integration test with an explicit tool protocol used different data and required `data_read → data_write`. The real DeepSeek did invoke these two installed tools, output `queue=8、web=5、total_seconds=13`, the original input was preserved, the container exited 0, and the native final state was `completed`.
 
-两个任务均未启动优化器或评分器，均不进入研究分数。四个已安装文件与原冻结构建产物哈希逐一相等；只挂载所需的 capability/venus 配置目录，无私有评测材料或 Docker socket。执行入口见[结构化数据指南](structured-data.md)和[通用能力安装流程](use-capability.md)。
+Neither task started the optimizer or scorer, and neither enters the research scores. The four installed files are hash-for-hash equal to the original frozen build artifacts; only the required capability/venus configuration directories were mounted, with no private evaluation materials or Docker socket. Execution entry points are in the [structured data guide](structured-data.md) and the [general capability installation procedure](use-capability.md).
 
-本项完成了第二领域的真实接入、自主变异、原生 QA、完整分母裁决及安装调用。公开合成样例的基线已满分，这项验收不承担稳定提分、未见领域迁移或联合拓扑搜索的证明；这些仍是单独的研究目标。
+This item completed the second domain's real integration, autonomous mutation, native QA, full-denominator adjudication, and installation invocation. The baseline on the public synthetic sample was already at full score, and this acceptance does not undertake to prove stable score improvement, unseen-domain transfer, or joint topology search; these remain separate research goals.
 
-最终只读子代理已复核原始轨迹、冻结实现、交付、机器记录和上述文档，未发现剩余必修项。`npm run check` 通过；原始评分和模型结论均未改写。
+A final read-only subagent reviewed the original trajectory, frozen implementation, delivery, machine records, and the above document, and found no remaining must-fix items. `npm run check` passed; the original scores and model conclusions were not rewritten.

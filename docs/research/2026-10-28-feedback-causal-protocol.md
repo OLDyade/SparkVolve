@@ -1,90 +1,90 @@
-# 反馈究竟带来了什么：预注册比较方案
+# What Feedback Actually Brings: A Pre-registered Comparison Protocol
 
-状态：**研究方案，尚未执行或登记为实验合同**。本页补充外部评审提出的方法有效性问题，与已完成的优化器自身进化机制实验分开。固定模型、真实插件变异和独立评分继续沿用项目全景；不预设任何方法获胜。
+Status: **research protocol, not yet executed or registered as an experimental contract**. This page supplements the methodological validity issues raised by external review, and is kept separate from the completed experiments on the optimizer's own evolution mechanism. The fixed model, real plugin mutations, and independent scoring continue to follow the project overview; no method is presumed to win.
 
-## 先区分三个问题
+## First Distinguish Three Questions
 
-| 问题                     | 需要的证据                                              | 当前边界                                                                                                         |
+| Question                     | Evidence required                                              | Current boundary                                                                                                         |
 | ------------------------ | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| 系统能否修改 G 并运行它  | 原生元优化器轨迹、G 代码/装配差异、实际子搜索与原包安装 | 真实 Study 已运行 G1；安装验收与机制缺陷单独记录，见[结果](../experiments/2026-10-28-optimizer-study-results.md) |
-| 反馈能否改善 H 变异      | 同一起点、相同生成资源、只改变反馈可见性的比较          | 后续同 G 两臂真实研究已完成，组间差值来自相同 H0 的执行波动，未证明收益；见[完整结果](../experiments/2026-10-28-paired-feedback-results.md)。本页完整 E/B/R 方案仍未执行 |
-| G 自进化是否提高搜索收益 | 开发选择 G*，在未用于选择的新搜索实例中比较 G0/G*       | 单次合成工程验收和任务内重复均不足以证明                                                                         |
+| Can the system modify G and run it  | Native meta-optimizer traces, G code/assembly diffs, actual sub-searches and original package installation | A real Study has run G1; installation acceptance and mechanism defects are recorded separately, see [results](../experiments/2026-10-28-optimizer-study-results.md) |
+| Can feedback improve H mutations      | Same starting point, same generation resources, comparison that only changes feedback visibility          | A subsequent real study with two arms on the same G has been completed; the between-group difference comes from execution fluctuation of the same H0, and no benefit was demonstrated; see [full results](../experiments/2026-10-28-paired-feedback-results.md). The full E/B/R protocol on this page has still not been executed |
+| Does G self-evolution improve search returns | Develop-select G*, compare G0/G* on new search instances not used for selection       | A single synthetic engineering acceptance and within-task repetition are both insufficient to prove                                                                         |
 
-## 已核实的研究依据
+## Verified Research Basis
 
-- [AutoSaddler 论文](https://arxiv.org/html/2608.23041)区分开发选择和最终测试，并分别记录优化器调用、任务 rollout 与修改结果。不同方法的评估频率不同，迭代次数相同不代表成本相同；[源码固定版本](https://github.com/microsoft/AutoSaddler/tree/e841543ce6cf6bdf690e65134b12a829ec9f66d1)。
-- [VERSE 论文](https://arxiv.org/html/2610.02616)采用 train/validation/test 与固定、自演化优化器对照，同时明确部分比较未匹配总执行次数和 Token。测试阶段重复三次也不等于独立执行三次搜索；[源码固定版本](https://github.com/wzekai/VERSE/tree/d8ff0adab0cf82e13d7878f84ff84f823cb2f6c9)。
-- [AHE 论文](https://arxiv.org/html/2604.25850)记录修改预测、实际修复与退步，并研究冻结 Harness 的迁移。其随机基线涉及修复预测，不能直接引用为随机程序变异基线；[源码固定版本](https://github.com/china-qijizhifeng/agentic-harness-engineering/tree/8b2a55d97590363fe50c3cc6b5e833b020a4bb4c)。
-- [Rethinking Evaluation](https://arxiv.org/html/2607.12227)强调共同起点和评估资源，支持区分同题采样与跨任务迁移。本文据此明确搜索实例为比较单位。
+- The [AutoSaddler paper](https://arxiv.org/html/2608.23041) distinguishes development selection from final testing, and separately records optimizer calls, task rollouts, and modification results. Different methods have different evaluation frequencies; the same number of iterations does not mean the same cost; [pinned source version](https://github.com/microsoft/AutoSaddler/tree/e841543ce6cf6bdf690e65134b12a829ec9f66d1).
+- The [VERSE paper](https://arxiv.org/html/2610.02616) adopts train/validation/test and a comparison between fixed and self-evolving optimizers, while explicitly noting that some comparisons did not match total execution counts and Tokens. Repeating three times in the test phase is not equivalent to independently executing three searches; [pinned source version](https://github.com/wzekai/VERSE/tree/d8ff0adab0cf82e13d7878f84ff84f823cb2f6c9).
+- The [AHE paper](https://arxiv.org/html/2604.25850) records modification predictions, actual fixes, and regressions, and studies transfer of a frozen Harness. Its random baseline involves fix predictions and cannot be directly cited as a random program mutation baseline; [pinned source version](https://github.com/china-qijizhifeng/agentic-harness-engineering/tree/8b2a55d97590363fe50c3cc6b5e833b020a4bb4c).
+- [Rethinking Evaluation](https://arxiv.org/html/2607.12227) emphasizes a common starting point and evaluation resources, and supports distinguishing same-task sampling from cross-task transfer. Accordingly, this document makes the search instance the unit of comparison.
 
-以上是研究设计依据，论文成绩不进入本项目成绩表。核验日期：2026-10-28。
+The above is the basis for the research design; paper results do not enter this project's results table. Verification date: 2026-10-28.
 
-## 一个问题、三个明确对照
+## One Question, Three Explicit Controls
 
-研究问题：**在相同起点和资源上限下，真实任务反馈是否帮助生成更有效、可迁移的插件变异？**
+Research question: **Under the same starting point and resource limits, does real task feedback help generate more effective, transferable plugin mutations?**
 
 ```text
-冻结模型、H0、任务家族分区、修改空间、预算、种子
+Frozen model, H0, task family partition, modification space, budget, seeds
                          │
        ┌─────────────────┼─────────────────┐
        ▼                 ▼                 ▼
-  E：完整反馈       B：盲变异        R：随机操作选择
-  轨迹/交付/评分    任务/源码        任务/源码
-  失败/成本        无运行反馈       无运行反馈
+  E: full feedback       B: blind mutation        R: random action selection
+  traces/deliverables/scores    task/source         task/source
+  failures/cost        no runtime feedback       no runtime feedback
        └─────────────────┼─────────────────┘
                          ▼
-          每臂 H0 + 4 个变异，均从 H0 分叉
+          each arm H0 + 4 mutations, all branching from H0
                          ▼
-       共同宿主选择规则 → 冻结 H* → 独立 test
+       common host selection rule → freeze H* → independent test
                          ▼
-           实例配对质量、退步、完整成本与谱系
+           instance-paired quality, regressions, full cost and lineage
 ```
 
-- E/B 使用同一 G 实现、模型和可修改范围，只改变可信宿主开放的运行反馈。B 仍能读取任务要求、源码和机械构建错误，避免把盲臂变成无法编程的弱对手。
-- R 由预注册随机种子选择合法变异动作，模型负责形成可执行代码。它比较的是“随机操作选择”，不声称均匀覆盖程序空间。动作合法性及无可选动作的处理必须在看到结果前固定。
-- 首个实验全部从 H0 分叉，E 可以使用此前候选的反馈。这样可以避免被选冠军源码泄露优劣信息给盲臂；结论限定为反馈对变异生成的作用，多代重组另行研究。
-- 同一宿主 selector 使用搜索成绩为每臂选择 H*，同分保留 H0。所有臂的候选冻结前，盲臂不能读取冠军、分数或被选择结果。
-- 主比较关闭行为探针；构建和机械 QA 对全部臂一致。探针价值单独做比较，避免同时改变两个因素。
-- 元优化器生成的 G 需要另行研究；这里先冻结三个方法，不让开发选择规则把对照臂淘汰后再进入最终比较。
+- E/B use the same G implementation, model, and modifiable scope, and only change the runtime feedback exposed by the trusted host. B can still read task requirements, source code, and mechanical build errors, avoiding turning the blind arm into a weak opponent that cannot program.
+- R uses a pre-registered random seed to select legal mutation actions, and the model is responsible for producing executable code. It compares "random action selection" and does not claim uniform coverage of the program space. Action legality and handling of no available actions must be fixed before seeing results.
+- The first experiment all branches from H0, and E may use feedback from earlier candidates. This avoids leaking superiority information from the selected champion's source code to the blind arm; conclusions are limited to the effect of feedback on mutation generation, and multi-generation recombination is studied separately.
+- The same host selector uses search scores to select H* for each arm, keeping H0 on ties. Before all arms' candidates are frozen, the blind arm cannot read the champion, scores, or selection results.
+- The main comparison disables behavioral probes; build and mechanical QA are consistent across all arms. Probe value is compared separately, avoiding changing two factors at once.
+- G generated by the meta-optimizer requires separate study; here the three methods are frozen first, so that development selection rules do not eliminate control arms before entering the final comparison.
 
-## 预算、分区和报告
+## Budget, Partitioning, and Reporting
 
-建议完整研究单位为两个领域、每域三个独立搜索重复；每臂每实例 8 道搜索任务、16 道封存测试任务，最多 H0 加 4 个变异。该建议对应 18 次搜索，最多 720 次搜索任务、288 次 H* 测试，另有 96 次 H0 独立测试。**这些数量尚未准入，不会由文档自动启动执行。** 实际合同须先冻结资源规模与任务清单；失败、不足候选和提前结束按原分母记录，不补抽。
+The recommended full research unit is two domains, with three independent search repetitions per domain; each arm per instance has 8 search tasks and 16 sealed test tasks, with at most H0 plus 4 mutations. This recommendation corresponds to 18 searches, at most 720 search tasks and 288 H* tests, plus 96 independent H0 tests. **These quantities have not been admitted and will not be automatically started by this document.** The actual contract must first freeze the resource scale and task list; failures, insufficient candidates, and early termination are recorded against the original denominator, with no supplementary sampling.
 
-任务来源、家族 ID、切分脚本、重复编号和哈希一起登记。仅改数字或给字段加随机前缀，仍属于同一公开任务家族，不能支持跨模板或未知留出集迁移。当前基线满分的合成任务只用于机制验收。
+Task sources, family IDs, split scripts, repetition numbers, and hashes are registered together. Merely changing numbers or adding random prefixes to fields still belongs to the same public task family and cannot support transfer across templates or unknown held-out sets. Synthetic tasks on which the current baseline achieves full marks are used only for mechanism acceptance.
 
-同预算准确表述为**相同分配上限**：候选数、任务执行数、优化器时间、并发、超时和 QA 配额一致。实际 Token、请求、运行时间与费用分别报告；单请求 `maxTokens` 不等于累计 Token 上限。累计限额未实现前，不主张等 Token 或等费用。
+Equal budget is accurately stated as **the same allocation cap**: candidate count, task execution count, optimizer time, concurrency, timeouts, and QA quota are identical. Actual Tokens, requests, runtime, and cost are reported separately; a single-request `maxTokens` is not equal to a cumulative Token cap. Before cumulative limits are implemented, no claim of equal Tokens or equal cost is made.
 
-主报告以 case × 完整搜索重复为单位，保留 E−B、E−R、相对 H0 的配对差值及原始任务结果。元优化、G 搜索、H 执行、构建/QA、独立评分分层记账。缺失用量和未知价格不记成零；没有正收益实例时，“每个有效改进的成本”明确不可得，不隐藏总开销或负收益。
+The main report uses case × full search repetition as the unit, retaining E−B, E−R, paired differences relative to H0, and raw task results. Meta-optimization, G search, H execution, build/QA, and independent scoring are accounted for in separate layers. Missing usage and unknown prices are not recorded as zero; when there are no positive-return instances, "cost per effective improvement" is explicitly unavailable, without hiding total overhead or negative returns.
 
-## 通用协议的实现与研究边界
+## Implementation of the General Protocol and Research Boundaries
 
-| 能力         | 必要性与验收范围                                                                                                                                                                   |
+| Capability         | Necessity and acceptance scope                                                                                                                                                                   |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 宿主反馈视图 | 已统一 status、events、提交重放、finish、证据读取和物化的模型投影；原始账本保留。同 G 双臂、真实 run ID 的 21 路原生探测、只读输入及挂载检查通过；历史会话只能在同一冻结合同内接续 |
-| 固定比较臂   | `FixedOptimizerComparison` 显式冻结 `methodIdentity + hostSearchProtocol`；同一 G 配不同策略具有不同臂身份。实际原生搜索与独立评估通过，三臂失败完整分母回归也通过                 |
-| 公共选择合同 | 平分、失败、不足候选与提前结束有同一预注册规则；任何臂都不能因失败获得额外抽样                                                                                                     |
-| 搜索实例报告 | 区分任务重复和独立搜索，按实例输出配对差与完整成本，不用题目数量放大证据强度                                                                                                       |
+| Host feedback view | Model projection of status, events, submission replay, finish, evidence reading, and materialization has been unified; the raw ledger is retained. Two arms on the same G, 21-way native probing with real run IDs, read-only inputs, and mount checks pass; historical sessions can only continue within the same frozen contract |
+| Fixed comparison arms   | `FixedOptimizerComparison` explicitly freezes `methodIdentity + hostSearchProtocol`; the same G with different policies has different arm identities. Actual native search and independent evaluation pass, and the three-arm failure full-denominator regression also passes                 |
+| Common selection contract | Ties, failures, insufficient candidates, and early termination have the same pre-registered rule; no arm can obtain extra sampling due to failure                                                                                                     |
+| Search instance reporting | Distinguishes task repetition from independent search, outputs paired differences and full cost per instance, and does not use the number of problems to inflate evidence strength                                                                                                       |
 
-这些能力服务于一个具体研究问题，不构成无限扩张的控制器清单。当前 Study 的 `developmentCases → G* → validationCases` 仍用于优化器自身进化；两个协议的结果各自解释，不合并成一次泛化成功。
+These capabilities serve one specific research question and do not constitute an ever-expanding controller checklist. The current Study's `developmentCases → G* → validationCases` is still used for the optimizer's own evolution; the results of the two protocols are interpreted separately and are not merged into a single generalization success.
 
-`FixedOptimizerComparison` 的对照单位是 case × 完整搜索重复。所有注册方法都有最终评估位置，失败、取消进入完整分母；未终态得分保持未知。固定方法比较不包含元优化器，成本标记为不适用。同一 G 的宿主反馈视图及臂身份已经落地；**本页 E/B/R 真实模型研究仍未注册或运行**，确定性验收不计入研究成绩。
+The comparison unit of `FixedOptimizerComparison` is case × full search repetition. All registered methods have a final evaluation slot; failures and cancellations enter the full denominator; non-terminal scores remain unknown. The fixed-method comparison does not include the meta-optimizer, and its cost is marked as not applicable. The host feedback view and arm identity for the same G have landed; **the E/B/R real-model study on this page has still not been registered or run**, and deterministic acceptance does not count toward research results.
 
-进一步核对 [VERSE 的验证/测试分工](https://arxiv.org/html/2610.02616#S2.SS2)及[探针预算消融](https://arxiv.org/html/2610.02616#A8)后，保留两条研究边界：方法内部的候选择优与方法之间的最终比较分别登记；同一搜索后的多次测试不代替独立搜索重复。原生容器中的确定性模型夹具只证明注册、搜索、评分与恢复协议工作，不计入方法质量成绩。
+After further checking [VERSE's validation/test division](https://arxiv.org/html/2610.02616#S2.SS2) and the [probe budget ablation](https://arxiv.org/html/2610.02616#A8), two research boundaries are retained: candidate selection within a method and the final comparison between methods are registered separately; multiple tests after the same search do not replace independent search repetitions. The deterministic model fixture in the native container only proves that the registration, search, scoring, and recovery protocols work, and does not count toward method quality results.
 
-## 宿主反馈视图：核查与落实
+## Host Feedback View: Verification and Implementation
 
-独立只读 subagent 核查了实际入口，以下接线已共同落实到代码和测试；实施前的风险在此保留，便于复核：
+An independent read-only subagent verified the actual entry points, and the following wiring has been implemented together in code and tests; pre-implementation risks are retained here for review:
 
-| 实际入口                                                  | 当前风险与实施要求                                                                                                              |
+| Actual entry point                                                  | Current risk and implementation requirement                                                                                                              |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `controller.ts` / `api.ts` 的 status、submit 重放、finish | 都可能返回完整 Candidate 或冠军；统一投影接纳回执，防止重复提交已评分候选读出质量                                               |
-| `Store.wait()` / events                                   | 事件携带评分、晋级和约束；需要模型视图自己的连续游标，宿主原始事件保留                                                          |
-| `evidence.ts` / materialize                               | 同一授权函数控制索引、读取、原字节发布；禁止 trace/delivery；新增按注册 task id 访问公开 input，避免隐藏 run 后把合法输入也封掉 |
-| branch / submit.parents                                   | 宿主强制共同的 seed-only 研究约定；不能通过其他候选源码获得冠军选择信息                                                         |
-| library / probe / 领域 QA                                 | 首个因果协议共同关闭库与探针；领域行为 QA 也会提供反馈，纯机械对照应共同关闭，只保留原生装配 QA                                 |
-| `optimizer.ts` 可信调度与挂载                             | 当前调度也读 status/events，须与模型投影视图分离；同政策的自身 previous 会话可保留，禁止跨政策复用实验目录或 materialized 证据  |
+| status, submit replay, finish of `controller.ts` / `api.ts` | All may return a complete Candidate or the champion; the unified projection accepts receipts, preventing repeated submission of already-scored candidates from reading out quality                                               |
+| `Store.wait()` / events                                   | Events carry scores, promotions, and constraints; the model view needs its own continuous cursor, while host raw events are retained                                                          |
+| `evidence.ts` / materialize                               | The same authorization function controls indexing, reading, and raw-byte publication; trace/delivery are forbidden; access to public input by registered task id is added, avoiding blocking legitimate inputs after hiding the run |
+| branch / submit.parents                                   | The host enforces a common seed-only research convention; champion selection information cannot be obtained through other candidates' source code                                                         |
+| library / probe / domain QA                                 | The first causal protocol jointly disables library and probe; domain behavioral QA also provides feedback, so the purely mechanical control should jointly disable it, retaining only native assembly QA                                 |
+| `optimizer.ts` trusted scheduling and mounting                             | Current scheduling also reads status/events and must be separated from the model projection view; the same policy's own previous sessions may be retained, but reusing experiment directories or materialized evidence across policies is forbidden  |
 
-当前注册身份已包含 `methodIdentity + hostSearchProtocol`。同 G 配不同宿主反馈策略是合法因果臂；同 G、同策略的重复仍使用 `repetitions`。策略冻结在宿主合同，候选插件不能修改，运行主账本和只读报告继续保存完整结果。接口与使用方法见[宿主反馈协议](../feedback-views.md)，实际运行摘要见[机器证据](../evidence/2026-10-28-feedback-views.json)。首次验收遗漏原生 Bash 必填 `description` 导致提交失败，原报告保留；修正测试驱动后在新目录完成验收，未修改生产协议或重写旧结果。
+The current registration identity already includes `methodIdentity + hostSearchProtocol`. The same G with different host feedback policies is a legal causal arm; repetition with the same G and same policy still uses `repetitions`. The policy is frozen in the host contract and cannot be modified by candidate plugins; the run main ledger and read-only reports continue to preserve complete results. For the interface and usage, see [host feedback protocol](../feedback-views.md); for the actual run summary, see [machine evidence](../evidence/2026-10-28-feedback-views.json). The first acceptance missed the native Bash required `description`, causing submission failure, and the original report is retained; after fixing the test driver, acceptance was completed in a new directory, without modifying the production protocol or rewriting old results.
 
-保留 Shell、源码与公开输入时，优化器仍可能自行写脚本测试自己的假设。因此该比较回答的是**可信宿主任务反馈的作用**，不能宣称隔绝所有自主验证。墙钟与资源竞争属于研究限制；本次不通过削弱工具、清除多轮记忆或增加预写优化策略来假装消除它们。验收应在原始评分、交付和轨迹放置可区分标记，遍历全部 HTTP/原生工具、重放、分页与恢复，再用真实容器核查挂载和两臂独立评分。
+When Shell, source code, and public inputs are retained, the optimizer may still write scripts to test its own hypotheses. Therefore this comparison answers **the role of trusted host task feedback** and cannot claim to isolate all autonomous verification. Wall-clock time and resource contention are research limitations; this time they are not pretended to be eliminated by weakening tools, clearing multi-turn memory, or adding pre-written optimization strategies. Acceptance should place distinguishable markers in raw scores, deliverables, and traces, traverse all HTTP/native tools, replay, pagination, and recovery, and then use real containers to check mounting and independent scoring of the two arms.

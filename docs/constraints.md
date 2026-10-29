@@ -1,20 +1,20 @@
-# 研究者声明约束，裁判提供观测
+# Researchers declare constraints; the judge provides observations
 
-主指标回答候选表现是否提高；显式约束定义本次实验接受什么结果。合同中的 `constraints` 必填，`[]` 表示辅助指标仅报告。框架没有内置 Excel 保留率门槛，历史实验也不追溯改判。
+The primary metric answers whether candidate performance improved; explicit constraints define what results this experiment accepts. The `constraints` in the contract is required, and `[]` indicates that auxiliary metrics are reported only. The framework has no built-in Excel retention-rate threshold, and historical experiments are not retroactively re-judged.
 
 ```text
-实验前：主指标 + 约束 + 失败预算 ──冻结──► 同一实验身份
+Before experiment: primary metric + constraints + failure budget ──freeze──► same experiment identity
                                                     │
-插件变异 → 独立执行 → 独立评分器 score / metrics ────┤
+plugin mutation → independent execution → independent scorer score / metrics ────┤
                                                     ▼
-                         完整分母 + 主分比较 + 逐项约束观测
+                         full denominator + primary score comparison + per-item constraint observations
                                                     │
-               主分严格提高 ∧ 失败预算满足 ∧ 全部约束通过
+               primary score strictly improves ∧ failure budget satisfied ∧ all constraints pass
                                                     ▼
-                                晋级 / 拒绝 + 完整裁决记录
+                                promote / reject + complete adjudication record
 ```
 
-例如，研究者要求每次任务的非目标内容完整保留：
+For example, the researcher requires that non-target content be fully preserved on every task:
 
 ```json
 {
@@ -24,23 +24,23 @@
 }
 ```
 
-| 字段 | 合同语义 |
+| Field | Contract semantics |
 |---|---|
-| `id` | 本合同内唯一的约束 ID |
-| `metric` | 独立评分器 `Grade.metrics` 中的数值字段；不读取模型自评 |
-| `aggregation` | `each` 要求每题每次重复分别满足；`mean` 要求完整题集及全部重复的等权平均满足 |
-| `operator` / `threshold` | `gte` 或 `lte`，有限数值阈值；边界相等满足 |
+| `id` | Unique constraint ID within this contract |
+| `metric` | Numeric field in the independent scorer `Grade.metrics`; model self-evaluation is not read |
+| `aggregation` | `each` requires each task and each repetition to satisfy it separately; `mean` requires the equally weighted average over the complete task set and all repetitions to satisfy it |
+| `operator` / `threshold` | `gte` or `lte`, a finite numeric threshold; equality at the boundary satisfies it |
 
-每项输出 `passed`、`violated` 或 `unavailable`，连同题目、重复索引、实际值、总分母及缺失原因进入 `candidate.decision`。失败任务或缺失指标不补零、不剔除、不借用旧 attempt。均值观测不完整时不计算均值；逐项约束已有违反证据时报告违反，同时保留缺失项。仅全部 `passed` 允许晋级。
+Each item outputs `passed`, `violated`, or `unavailable`, which together with the task, repetition index, actual value, total denominator, and missing reason enter `candidate.decision`. Failed tasks or missing metrics are not zero-filled, not excluded, and do not borrow an old attempt. When mean observations are incomplete, the mean is not computed; when a per-item constraint already has evidence of violation, the violation is reported while missing items are retained. Only when all `passed` is promotion allowed.
 
-均值按已解析有限数值的规范化十进制表示精确运算，使用整数分子/分母比较阈值，不加 epsilon。报告 `aggregate` 保存约分后的字符串 `numerator` / `denominator`，例如 0.1 与 0.2 的均值是 `3/20`。评分接口仍使用 JSON number，不恢复输入在 Number 解析前已经丢失的精度；该规则只消除框架聚合新增的舍入误差。
+Means are computed exactly on the normalized decimal representation of parsed finite values, comparing against the threshold using integer numerators/denominators, with no epsilon added. The report `aggregate` stores the reduced string `numerator` / `denominator`; for example, the mean of 0.1 and 0.2 is `3/20`. The scoring interface still uses JSON number and does not restore precision already lost before the input was parsed as a Number; this rule only eliminates rounding error newly introduced by framework aggregation.
 
-失败预算控制可接受的执行失败数量；显式结果约束还要求必要观测齐备。因此，声明覆盖所有任务的结果约束后，即便执行失败未超过预算，缺少该任务的约束观测仍无法晋级。此规则在实验开始前可见。
+The failure budget controls the acceptable number of execution failures; explicit result constraints additionally require the necessary observations to be complete. Therefore, after declaring a result constraint covering all tasks, even if execution failures do not exceed the budget, a missing constraint observation for that task still prevents promotion. This rule is visible before the experiment starts.
 
-初始种子同样接受约束审查；若未满足，记录其原始分数并保持无冠军状态。优化器仍可从被拒绝种子继续变异，首个符合合同的候选建立可行冠军。之后严格比较主指标。不会因为某项约束失败更改分数、自动修复交付或重跑任务。
+The initial seed is likewise subject to constraint review; if it is not satisfied, its original score is recorded and the no-champion state is maintained. The optimizer can still continue mutating from a rejected seed, and the first candidate that conforms to the contract establishes a feasible champion. After that, primary metrics are compared strictly. Scores are not changed, deliverables are not automatically repaired, and tasks are not rerun because a constraint failed.
 
-配对复验使用同一函数，分别报告每个臂的约束观测和原始分差。候选违反约束时 `strictImprovement` 为 false；基线自身是否可行仍在结果中列出，分差不会被隐藏。报告是描述性复验，不证明统计显著或因果收益。
+Paired re-validation uses the same function and separately reports each arm's constraint observations and raw score difference. When the candidate violates a constraint, `strictImprovement` is false; whether the baseline itself is feasible is still listed in the results, and the score difference is not hidden. The report is a descriptive re-validation and does not prove statistical significance or causal benefit.
 
-`examples/spreadsheet/prepare.mjs` 生成 `constraints: []`，延续该样例的“主正确率裁决、保留率报告”政策。研究者可在 `init` 前编辑生成的实验 JSON，同时让 objective 与约束一致。任何合同变更都需要新实验目录，旧合同不自动补字段或迁移。
+`examples/spreadsheet/prepare.mjs` generates `constraints: []`, continuing the sample's policy of "primary accuracy adjudication, retention-rate reporting". The researcher may edit the generated experiment JSON before `init` while keeping the objective and constraints consistent. Any contract change requires a new experiment directory; old contracts are not automatically backfilled with fields or migrated.
 
-机制参考和实测：[研究记录](research/2026-10-27-outcome-constraints.md)。
+Mechanism reference and measurements: [research notes](research/2026-10-27-outcome-constraints.md).

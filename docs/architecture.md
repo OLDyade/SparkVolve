@@ -1,57 +1,57 @@
-# 原生插件自进化架构
+# Native Plugin Self-Evolution Architecture
 
-**Evolve the Harness, Not the Model.** 核心思想与完整研究全景保留于 [`11.md`](../11.md)。此文定义代码的责任边界、运行协议和验证方法。
+**Evolve the Harness, Not the Model.** The core idea and the complete research overview are preserved in [`11.md`](../11.md). This document defines the responsibility boundaries of the code, the runtime protocol, and the validation method.
 
 ```text
-研究者：任务目标 / 固定模型与环境 / 完整题集 / 独立评分 / 预算
-                            │ ExperimentSpec + 内容哈希
+Researcher: task goals / fixed model and environment / full task set / independent scoring / budget
+                            │ ExperimentSpec + content hash
                             ▼
-┌────────────────────── 受保护的实验控制器 ───────────────────────┐
-│ SQLite WAL · 单写租约 · 候选谱系 · 完整分母 · 严格择优 · 事件记录 │
+┌────────────────────── Protected experiment controller ───────────────────────┐
+│ SQLite WAL · single-writer lease · candidate lineage · full denominator · strict selection · event log │
 │                                                               │
-│  本地 HTTP capability API                                     │
+│  Local HTTP capability API                                     │
 │       ▲ status / evidence      │ branch / submit               │
 │       │                        ▼                              │
-│  ┌────┴──── 原生 DSH 优化器 ───────────┐                        │
-│  │ 原生 Agent Loop、模型、编码工具     │                        │
-│  │ 归因 → 查证 → 选择机制 → 修改 Bundle│                        │
-│  │ 配置 × 插件实现 × 装配结构         │                        │
+│  ┌────┴──── Native DSH optimizer ───────────┐                        │
+│  │ Native Agent Loop, model, coding tools     │                        │
+│  │ Attribution → verification → mechanism selection → modify Bundle│                        │
+│  │ Configuration × plugin implementation × assembly structure         │                        │
 │  └──────────────┬─────────────────────┘                        │
 │                 ▼                                             │
-│  草稿 → 源码冻结 → 构建产物冻结 → QA → 完整任务 × repetitions  │
+│  Draft → source freeze → build artifact freeze → QA → full tasks × repetitions  │
 │                                  │                            │
 │                    ┌─────────────┼────────────┐               │
 │                    ▼             ▼            ▼               │
-│              DSH 容器 1     DSH 容器 2   … DSH 容器 N          │
-│              冻结候选 + 各自输入 / 工作区 / Session / 调用账本  │
+│              DSH container 1     DSH container 2   … DSH container N          │
+│              Frozen candidate + respective inputs / workspace / Session / call ledger  │
 │                    └─────────────┬────────────┘               │
 │                                  ▼                            │
-│                冻结实际交付 → 独立禁网评分容器                 │
+│                Freeze actual delivery → independent network-disabled scoring container                 │
 │                                  │                            │
-│               完整结果 → 严格提高晋级 / 未提高保留负结果        │
-│                                  └──────────→ 新证据送回优化器 │
+│               Complete results → strict improvement promotes / no improvement retains negative result        │
+│                                  └──────────→ new evidence sent back to optimizer │
 └───────────────────────────────────────────────────────────────┘
-                            │ 显式选择冻结候选
+                            │ Explicitly select frozen candidate
                             ▼
-独立 validation 实验（无优化器 API）→ 研究裁决 → Bundle + 研究档案
+Independent validation experiment (no optimizer API) → research verdict → Bundle + research archive
 ```
 
-## 接口与不可变身份
+## Interfaces and Immutable Identity
 
-| 内容 | 权威实现 | 约束 |
+| Content | Authoritative implementation | Constraints |
 |---|---|---|
-| 实验合同 | `contracts.ts` | 严格 schema；未知字段报错；目标、模型、镜像、任务、哈希、失败分值和预算显式定义 |
-| 候选 | `artifacts.ts` / `controller.ts` | 源文件内容、相对路径和可执行位组成 SHA-256；禁止 symlink；冻结后只读挂载 |
-| 构建 | `build.ts` / `runtime/build.ts` | lock、构建镜像、原容器和包身份可追溯；QA、执行、复验、导出复用同一产物 |
-| 运行 | `store.ts` | experiment + spec + candidate + task + repetition + attempt；一份任务不混多个 attempt |
-| 控制服务 | `api.ts` / `plugin.ts` | 原生工具提供状态、分支、提交、授权证据；评分私有内容不提供 API |
-| 运行基础 | `runtime/worker.ts` | 直接使用官方 SDK / Agent Loop；环境覆盖、候选覆盖、观测插件按序装配 |
-| 选优 | `store.ts` | 全部任务终态才能裁决；失败按规格计入；同分拒绝；冠军更新和事件同事务 |
-| 交付 | `export.ts` | 复制已受测 tarball、独立源码和产物快照、完整本地研究档案；无自动公网发布 |
+| Experiment contract | `contracts.ts` | Strict schema; unknown fields raise errors; goals, model, image, tasks, hashes, failure scores and budget explicitly defined |
+| Candidate | `artifacts.ts` / `controller.ts` | SHA-256 composed of source file contents, relative paths and executable bits; symlinks forbidden; read-only mount after freezing |
+| Build | `build.ts` / `runtime/build.ts` | lock, build image, original container and package identity traceable; QA, execution, re-verification and export reuse the same artifact |
+| Run | `store.ts` | experiment + spec + candidate + task + repetition + attempt; one task does not mix multiple attempts |
+| Control service | `api.ts` / `plugin.ts` | Native tools provide status, branching, submission and authorization evidence; scoring-private content is not exposed via API |
+| Runtime foundation | `runtime/worker.ts` | Directly uses the official SDK / Agent Loop; environment overrides, candidate overrides and observation plugins assembled in order |
+| Selection | `store.ts` | Verdict only when all tasks are terminal; failures counted per spec; ties rejected; champion update and event in the same transaction |
+| Delivery | `export.ts` | Copies the tested tarball, independent source and artifact snapshots, and the complete local research archive; no automatic public release |
 
-框架没有按题目 ID 编写变异、重算或答案逻辑。变异的六类动作是描述空间，具体实现由优化器结合反馈决定。候选提交须携带父版本、证据、假设与预期变化；这些声明不被当成正确证明。
+The framework does not write mutation, recomputation or answer logic per task ID. The six categories of mutation actions are a description space; the concrete implementation is decided by the optimizer in combination with feedback. Candidate submissions must carry the parent version, evidence, hypothesis and expected changes; these declarations are not treated as proof of correctness.
 
-## 状态与恢复
+## State and Recovery
 
 ```text
 candidate: frozen → Build → QA → running → champion / rejected
@@ -61,56 +61,56 @@ candidate: frozen → Build → QA → running → champion / rejected
 run: queued → executing → delivered → scoring → scored
        │          └→ execution_failed    └→ scoring_failed
        └→ cancelled                            │
-                                     显式 rescore，同一冻结交付
+                                     explicit rescore, same frozen delivery
 ```
 
-- 控制器写执行意图后创建唯一命名容器。恢复时核实 created/running/exited；容器丢失显式失败，不隐式重新执行。
-- 控制器退出不会被误当成任务退出；重启继续收集原容器。已完成任务不会重跑。
-- 超过失败预算后不启动尚未开始的任务，已启动任务收集至终态；取消题计入完整分母。本实现没有自动整轮重试。
-- 评分异常保留原交付与评分报告。`rescore` 只增加 gradeAttempt，不改变 execution attempt。
-- 冠军决定存入 SQLite 后再生成 JSON 报告；中断后的报告可由事件重建。
-- 每个优化器会话有持久启动意图与唯一容器身份。重启先收集原会话；正常完成且预算未耗尽时开启下一会话，接收前一会话的只读轨迹、持久草稿和最新实验结果。服务失败直接暴露，不隐式重试失败会话。
-- `evolve` 同时管理控制 API、候选调度与优化器；`evolution_finish` 在候选收集完成后记录搜索结论。总时间预算跨会话累计。中断宿主命令保留原容器供恢复收集。
-- 控制服务的首次绑定地址持久化，恢复使用原端口；配置改变或端口占用直接暴露。明确结束实验使用 `cancel`；父级方法研究使用 `study-cancel` 回收账本注册的全部后代。取消命令需要取得租约，不能与活动宿主并行接管。
-- 配对 `validate` 的 SIGINT/SIGTERM 只中断观察器，信号传至当前 arm，后续 arm 不再启动；原任务保留供恢复。决定结束时，等待观察器退出后执行 `cancel-validation --root <study-directory>`，按冻结注册逐 arm 回收；取消账本关闭后续准入，`validation-cancellation.json` 保留完整分母与未启动 arm。
-- 冻结中断留下的 reservation 和未入库快照需要调查后显式处理；不会猜测删除或跳过完整性检查。
+- The controller writes the execution intent and then creates a uniquely named container. On recovery it verifies created/running/exited; a lost container fails explicitly and is not implicitly re-executed.
+- Controller exit is not mistaken for task exit; restart continues collecting the original container. Completed tasks are not re-run.
+- After the failure budget is exceeded, tasks not yet started are not launched, and started tasks are collected to a terminal state; cancelled tasks count toward the full denominator. This implementation has no automatic whole-round retry.
+- Scoring exceptions preserve the original delivery and scoring report. `rescore` only adds a gradeAttempt and does not change the execution attempt.
+- The champion decision is stored in SQLite before the JSON report is generated; reports after an interruption can be rebuilt from events.
+- Each optimizer session has a persistent launch intent and a unique container identity. Restart first collects the original session; when it completes normally and the budget is not exhausted, the next session is opened, receiving the previous session's read-only trajectory, persistent drafts and latest experiment results. Service failures are surfaced directly; failed sessions are not implicitly retried.
+- `evolve` manages the control API, candidate scheduling and the optimizer together; `evolution_finish` records the search conclusion after candidate collection completes. The total time budget accumulates across sessions. An interrupted host command preserves the original container for recovery collection.
+- The control service's first bind address is persisted, and recovery uses the original port; configuration changes or port occupation are surfaced directly. To explicitly end an experiment use `cancel`; for parent-level method studies use `study-cancel` to reclaim all descendants registered in the ledger. The cancel command must acquire the lease and cannot take over in parallel with an active host.
+- SIGINT/SIGTERM on the paired `validate` only interrupts the observer; the signal is passed to the current arm, and subsequent arms are not started; the original task is preserved for recovery. When deciding to end, wait for the observer to exit, then execute `cancel-validation --root <study-directory>` to reclaim arm by arm per the frozen registration; the cancel ledger closes subsequent admission, and `validation-cancellation.json` preserves the full denominator and unstarted arms.
+- Reservations and unrecorded snapshots left by an interrupted freeze require investigation and explicit handling; they are not guessed-deleted or skipped past integrity checks.
 
-## 实验与研究结论
+## Experiments and Research Conclusions
 
-`search` 向优化器提供获准的开发反馈。每个 `validation` 实验只接受一个冻结候选，不启动优化器、不开放反馈 API。`validate` 在执行前注册全部比较组，使用相同合同、任务和重复次数创建独立实验；汇总完整配对结果。独立复验使用新目录与预注册任务；不得把 validation 结果复制回搜索后继续称它为未见数据。
+`search` provides approved development feedback to the optimizer. Each `validation` experiment accepts only one frozen candidate, does not start the optimizer, and does not expose the feedback API. `validate` registers all comparison groups before execution, creating independent experiments with the same contract, tasks and repetition count; it aggregates the complete paired results. Independent re-verification uses a new directory and pre-registered tasks; validation results must not be copied back into the search and then still called unseen data.
 
-重复次数在开始前固定。报告保留逐题成绩、失败、与初始基线的配对差异、调用与耗时。严格提高仅产生**搜索冠军**；统计稳定性、迁移、新颖性仍需预注册的独立研究验证。本仓库不会把一次合成任务的提升包装成商业 Excel 基准结论。
+The repetition count is fixed before starting. The report preserves per-task scores, failures, paired differences against the initial baseline, calls and elapsed time. Strict improvement only produces a **search champion**; statistical stability, transfer and novelty still require pre-registered independent research validation. This repository does not package an improvement on a single synthetic task as a commercial Excel benchmark conclusion.
 
-## 观测与成本
+## Observation and Cost
 
-观测插件记录原生 `llm/stream` 的完整请求、工具 schema、UUID、结束状态与用量；Session 通知和交付独立归档。优化器与执行器分账。缺失 usage、未完成调用和未知费用显式呈现。
+The observation plugin records the complete requests, tool schemas, UUIDs, end states and usage of the native `llm/stream`; Session notifications and deliveries are archived separately. The optimizer and executor are accounted separately. Missing usage, incomplete calls and unknown costs are presented explicitly.
 
-同一个原生上下文提供器随模型请求更新已用执行时间和合同预算，不规定优化策略或追加审查步骤。容器退出后，宿主从持久事件汇总调用账本；即使强制终止使 worker 的 `finally` 未执行，已记录的调用也不会被丢弃或写成零。
+The same native context provider updates the elapsed execution time and contract budget with model requests, without prescribing optimization strategy or adding review steps. After the container exits, the host aggregates the call ledger from persistent events; even if a forced termination prevents the worker's `finally` from executing, recorded calls are not dropped or written as zero.
 
-单位是 DSH adapter stream attempt；供应商 SDK 或网关内部 HTTP 重试可能不可见。这里没有虚构 HTTP 精确计数。外部工具服务如需独立费用，应由其领域插件提供可核实账本；通用框架不把未知费用写成零。
+The unit is the DSH adapter stream attempt; HTTP retries internal to the vendor SDK or gateway may be invisible. There is no fabricated exact HTTP count here. If an external tool service needs independent costs, its domain plugin should provide a verifiable ledger; the general framework does not write unknown costs as zero.
 
-## 领域接入与当前验证范围
+## Domain Integration and Current Validation Scope
 
-输入目录与评分镜像形成任务适配协议：`/input`、`/delivery` 只读，`/evaluation` 仅评分器可见，`/workspace/result.json` 输出统一 Grade。评分程序可沿用合法获准的官方 Evaluator，不能由优化器修改。
+The input directory and scoring image form the task adaptation protocol: `/input` and `/delivery` are read-only, `/evaluation` is visible only to the scorer, and `/workspace/result.json` outputs a unified Grade. The scoring program may reuse a legitimately approved official Evaluator and cannot be modified by the optimizer.
 
-`examples/spreadsheet` 提供真实 XLSX、原生读写工具、独立 LibreOffice 重算和公开合成业务验收。它用于安装与闭环测试；没有迁入历史私有题库、官方答案、Jev 代码或旧控制器。
+`examples/spreadsheet` provides real XLSX, native read/write tools, independent LibreOffice recomputation and public synthetic business acceptance. It is used for installation and closed-loop testing; it has not migrated in historical private task sets, official answers, Jev code or the old controller.
 
-## 优化器与成果也作为插件管理
+## The Optimizer and Artifacts Are Also Managed as Plugins
 
-`optimizerHarness` 显式区分 `source` 与 `artifact`：前者冻结源码后执行锁定构建，后者导入已验真的源码和实际构建产物；两者统一形成 `PreparedOptimizer`，运行只装载冻结产物内的 `composition` 原生插件清单。Evolution Preset 将进化工具与该清单装配到会话作用域；优化器使用原生 SDK 编码基础和 Agent Loop，恢复读取 Session 已记录的 Preset。完整安装与机制见 [Evolution Preset](presets.md)。
+`optimizerHarness` explicitly distinguishes `source` from `artifact`: the former freezes source and then performs a locked build, while the latter imports verified source and the actual build artifact; both uniformly form `PreparedOptimizer`, and the run only loads the `composition` native plugin manifest inside the frozen artifact. The Evolution Preset assembles the evolution tools and this manifest into the session scope; the optimizer uses the native SDK coding foundation and Agent Loop, and on recovery reads the Preset recorded in the Session. For complete installation and mechanism see [Evolution Preset](presets.md).
 
-[Optimizer Study](optimizer-studies.md) 已接入 G/H 独立版本、同起点同预算上限搜索、开发方法选择与封闭最终验证。元优化器通过原生 DSH 工具自主提交 G；宿主协调器复用既有构建、Controller 和固定产物验证协议。真实模型整链路正在验收，不能用一次 H 提升证明 G 自身进化有效。[研究依据](research/2026-10-28-optimizer-self-evolution.md)记录生态来源和实验边界。
+[Optimizer Study](optimizer-studies.md) has integrated independent G/H versions, same-start same-budget-cap search, development method selection and closed final validation. The meta-optimizer autonomously submits G through native DSH tools; the host coordinator reuses the existing build, Controller and fixed-artifact validation protocol. The full chain with real models is under acceptance, and a single H improvement cannot prove that G's own evolution is effective. [Research basis](research/2026-10-28-optimizer-self-evolution.md) records the ecosystem sources and experimental boundaries.
 
-`probes` 合同授权独立行为实验：优化器编写测试，冻结草稿与测试，原生装配后实际调用服务和工具。执行禁网、无模型凭证，不挂任务或评测材料；结果作为原始证据返回，不产生分数、自动修复或提交门。准备意图、快照和原容器可恢复；完整协议见 [行为实验台](behavioral-probes.md)。新实验必须显式声明该字段，旧冻结合同与历史数据不改写。
+The `probes` contract authorizes independent behavior experiments: the optimizer writes tests, freezes the draft and tests, and after native assembly actually calls the services and tools. Execution is network-disabled, has no model credentials, and mounts no tasks or evaluation materials; results are returned as raw evidence and produce no scores, automatic fixes or submission gates. Preparation intents, snapshots and the original container are recoverable; for the complete protocol see [Behavior Experiment Bench](behavioral-probes.md). New experiments must explicitly declare this field; old frozen contracts and historical data are not rewritten.
 
-状态快照携带持久事件游标；`evolution_wait` 在提交事件到达时返回，由原生工具循环唤醒模型。控制器和宿主接续器在空闲时等待同一日志，恢复时补读事件并收集原容器，不创建新 attempt。[事件与恢复协议](events.md)明确分页、取消、重连和部署地址。
+State snapshots carry a persistent event cursor; `evolution_wait` returns when a submission event arrives, and the native tool loop wakes the model. The controller and host connector wait on the same log when idle, and on recovery re-read events and collect the original container without creating a new attempt. [Event and Recovery Protocol](events.md) specifies pagination, cancellation, reconnection and deployment addresses.
 
-`evolution_materialize` 将授权文件按原字节发布到优化器的只读 `/evidence`，带来源引用、字节数和摘要，免去模型转抄 base64。共享描述符读取覆盖证据、目录清单和冻结复制；发布前的临时文件不进入挂载。[证据读取与权限](evidence-access.md)说明授权类型、目录映射和验收边界。
+`evolution_materialize` publishes authorized files byte-for-byte to the optimizer's read-only `/evidence`, with source references, byte counts and digests, sparing the model from transcribing base64. Shared descriptor reads cover evidence, directory listings and frozen copies; temporary files before publication do not enter the mount. [Evidence Reading and Permissions](evidence-access.md) explains authorization types, directory mapping and acceptance boundaries.
 
-导出档案包含可安装 npm 包、冻结源码、完整祖先谱系、研究合同、逐题结果、事件、优化器账本和证据文件哈希。档案反映导出时已归档的证据；进行中的优化器会话尚无结束回执或汇总用量时保留 null，最终研究分发应在搜索完成后导出。模型原始请求、数据与评分私有材料不自动进入分发包。公开分发前检查模型写入的假设和插件源码。
+The exported archive contains the installable npm package, frozen source, complete ancestor lineage, research contract, per-task results, events, optimizer ledger and evidence file hashes. The archive reflects the evidence archived at export time; when an in-progress optimizer session has no end receipt or aggregated usage yet, null is retained, and final research distribution should be exported after the search completes. Raw model requests, data and scoring-private materials do not automatically enter the distribution package. Check model-written hypotheses and plugin source before public distribution.
 
-`researchLibrary` 把可读资产目录与摘要冻结进合同。三个原生库工具分别检索、查看和导入，API 仅接受档案 ID 与受限源码路径。导入采用持久意图与私有 staging，中断可接续；来源作为新候选的 `origin` 保留，历史分数不会复制到当前候选或冠军。[研究资产协议](research-assets.md)
+`researchLibrary` freezes a readable asset catalog and digests into the contract. Three native library tools respectively search, view and import, and the API accepts only archive IDs and restricted source paths. Import uses a persistent intent and private staging, and can resume after interruption; the source is retained as the new candidate's `origin`, and historical scores are not copied to the current candidate or champion. [Research Asset Protocol](research-assets.md)
 
-`remember` 将终态候选保存到本地研究库，`library` 按明确文本条件检索，`import` 将选定版本导入当前实验草稿。档案身份由实验、合同和候选共同确定，同一代码在不同实验中的结果分别保存。导入保留来源，不导入成绩，也不绕过新实验的 QA 与评分。
+`remember` saves terminal candidates to the local research library, `library` searches by explicit text conditions, and `import` imports the selected version into the current experiment draft. Archive identity is determined jointly by experiment, contract and candidate; the results of the same code in different experiments are stored separately. Import preserves the source, does not import scores, and does not bypass the new experiment's QA and scoring.
 
-跨任务迁移和稳定收益须由独立实验支持。接入不受信任的恶意插件、多租户部署需独立工程工作；准确边界见 [SECURITY.md](../SECURITY.md)。
+Cross-task transfer and stable gains must be supported by independent experiments. Integrating untrusted malicious plugins and multi-tenant deployment require independent engineering work; for the exact boundaries see [SECURITY.md](../SECURITY.md).

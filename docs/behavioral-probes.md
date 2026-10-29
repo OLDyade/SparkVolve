@@ -1,48 +1,48 @@
-# 原生行为实验台
+# Native Behavioral Probe Bench
 
-让优化器把机制假设变成可执行实验：测试插件的工具、服务和组合关系，再根据观察选择改动。实验台沿用 DSH 原生装配和工具执行，新增的只有实验身份、隔离调度与证据入口。
+Let the optimizer turn mechanism hypotheses into executable experiments: test the plugin's tools, services, and composition relationships, then choose changes based on observations. The probe bench reuses DSH native assembly and tool execution; the only additions are experiment identity, isolated scheduling, and an evidence entry point.
 
 ```mermaid
 flowchart LR
-  A["优化器编写草稿 + 独立测试"] --> B["冻结源码与测试身份"]
-  B --> C["锁定构建"]
-  C --> D["无网络 / 无密钥<br/>原生 Profile + 环境 + 候选"]
-  D --> E["实际服务 / 工具 / 断言观察"]
-  E --> F["probe.completed + 原始证据"]
+  A["Optimizer writes draft + independent tests"] --> B["Freeze source and test identity"]
+  B --> C["Locked build"]
+  C --> D["No network / no keys<br/>Native Profile + environment + candidate"]
+  D --> E["Actual service / tool / assertion observations"]
+  E --> F["probe.completed + raw evidence"]
   F --> A
-  A -->|"自主决定提交"| G["完整任务评测与独立选择"]
+  A -->|"Autonomously decides to submit"| G["Full task evaluation and independent selection"]
 ```
 
-## 使用协议
+## Usage Protocol
 
-研究者在新实验合同中显式声明 `probes: { "limit": 6, "timeoutSeconds": 120 }`；`null` 表示不授权。`validation` 必须为 `null`。成功、业务断言失败、构建及运行失败都消耗一次登记额度，候选预算和评分保持独立。构建另受 `candidate.build.timeoutSeconds` 约束。
+The researcher explicitly declares `probes: { "limit": 6, "timeoutSeconds": 120 }` in the new experiment contract; `null` means not authorized. `validation` must be `null`. Success, business assertion failure, and build and run failures all consume one registration quota; the candidate budget and scoring remain independent. Builds are additionally constrained by `candidate.build.timeoutSeconds`.
 
-优化器用原生文件工具准备两份目录：插件草稿 `/workspace/my-draft` 和测试 `/workspace/my-suite`。调用：
+The optimizer uses native file tools to prepare two directories: the plugin draft `/workspace/my-draft` and the tests `/workspace/my-suite`. Call:
 
 ```json
 {
   "draft": "my-draft",
   "suite": "my-suite",
   "entry": "check.mjs",
-  "hypothesis": "状态更新后的服务输出应反映新值；旧消费者不能缓存旧结果"
+  "hypothesis": "After a state update, service output should reflect the new value; old consumers must not cache stale results"
 }
 ```
 
-这段参数交给 `evolution_probe`。返回实验 ID 后使用已有 `evolution_wait` 游标协议，收到 `probe.completed` 再读取 `evolution_probe_evidence`。后者支持 `source / suite / build / artifact / logs / observations`，省略 `file` 返回清单，文件以 base64 返回。
+These parameters are passed to `evolution_probe`. After the experiment ID is returned, use the existing `evolution_wait` cursor protocol; upon receiving `probe.completed`, read `evolution_probe_evidence`. The latter supports `source / suite / build / artifact / logs / observations`; omitting `file` returns the manifest, and files are returned as base64.
 
-`suite` 必须是目录；`entry` 是该目录下真实存在的模块文件，例如 `checks/probe.mjs`，不能附加 `#probe`。目录及入口类型在创建实验前检查，输入错误直接返回，不消耗登记额度。`call()` 返回原生对象，不能对整个结果执行 `JSON.parse`；只有工具明确约定 JSON 文本时才解析相应 `content` 文本块。
+`suite` must be a directory; `entry` is a module file that actually exists under that directory, for example `checks/probe.mjs`, and `#probe` cannot be appended. The directory and entry type are checked before the experiment is created; invalid input is returned directly and does not consume registration quota. `call()` returns a native object; `JSON.parse` must not be applied to the entire result; only when a tool explicitly specifies JSON text should the corresponding `content` text block be parsed.
 
-测试模块导出 `async probe({ agent, ctx, call, observe, workspace })`：
+The test module exports `async probe({ agent, ctx, call, observe, workspace })`:
 
-| 接口 | 实际行为 |
+| Interface | Actual behavior |
 |---|---|
-| `agent`、`ctx` | 本次原生创建的 Agent 及其 Context，可按 Cordis API 观察已装配服务 |
-| `call(name, args)` | DSH `0.2.1-rc.4` 原生 `tools.execute`，传递实际 Agent 作用域，返回完整原生结果；工具错误保留为 `isError`，由测试明确断言 |
-| `await observe(label, value)` | 保存明确命名的 JSON 值快照；用于服务返回值、依赖绑定、作用域和清理状态。非有限数、undefined、函数和类实例直接报错；缺失值需作者明确表达，例如 null |
-| `workspace` | 此次实验新建的可写目录；与优化器写草稿的目录不同 |
-| 测试夹具 | `new URL('./rows.json', import.meta.url)` 访问同目录冻结文件 |
+| `agent`, `ctx` | The Agent and its Context natively created for this run; assembled services can be observed via the Cordis API |
+| `call(name, args)` | DSH `0.2.1-rc.4` native `tools.execute`, passing the actual Agent scope and returning the complete native result; tool errors are preserved as `isError` and explicitly asserted by the test |
+| `await observe(label, value)` | Saves an explicitly named JSON value snapshot; used for service return values, dependency bindings, scopes, and cleanup state. Non-finite numbers, undefined, functions, and class instances raise an error directly; missing values must be explicitly expressed by the author, e.g. null |
+| `workspace` | A writable directory newly created for this experiment; different from the directory where the optimizer writes drafts |
+| Test fixtures | `new URL('./rows.json', import.meta.url)` accesses frozen files in the same directory |
 
-执行容器内，测试位于只读 `/suite`，构建后的插件位于只读 `/candidate`，`workspace` 为初始空目录 `/workspace`。作者目录下的子目录不会被复制到可写目录；需要输出子目录时由测试明确创建。模型提供商、任务输入、评测材料、控制令牌和 Docker socket 均不挂入。环境插件与 Profile 保留；若其初始化本身要求不可用的外部依赖，实验明确失败。
+Inside the execution container, tests are located in the read-only `/suite`, the built plugin is located in the read-only `/candidate`, and `workspace` is the initially empty directory `/workspace`. Subdirectories under the author directory are not copied to the writable directory; when output subdirectories are needed, the test must explicitly create them. Model providers, task inputs, evaluation materials, control tokens, and the Docker socket are not mounted. Environment plugins and Profiles are preserved; if their initialization itself requires unavailable external dependencies, the experiment explicitly fails.
 
 ```js
 import assert from 'node:assert/strict';
@@ -52,23 +52,23 @@ export async function probe({ call }) {
   const reverse = await call('number_distance', { a: 5, b: 2 });
   assert.equal(forward.isError, false);
   assert.equal(reverse.isError, false);
-  // 从距离定义推导对称性，避免把实现本身当作预期值来源。
+  // Derive symmetry from the distance definition, avoiding using the implementation itself as the source of expected values.
   assert.equal(Number(reverse.content[0].text), Number(forward.content[0].text));
 }
 ```
 
-## 证据、恢复与边界
+## Evidence, Recovery, and Boundaries
 
-- 身份由源码、测试内容和入口共同决定。只修改假设文字不产生新实验；相同输入不重复运行。修改代码后可复用同一套测试对比。
-- 准备意图先落盘；已完成的冻结快照在数据库登记前遇到中断，恢复时逐字节校验后继续登记。已登记实验中断后继续收集原命名构建/执行容器。
-- 保存构建身份、完整装配审计、原生工具调用结果、断言异常、退出状态、耗时和原始日志。正常返回记为 `passed`，异常或非零退出记为 `failed`；均可作为后续变异证据。
-- `behavior.json` 的 `observations` 使用递增序号与 `kind: tool/value` 区分工具回执和作者观察。`observe` 在调用时复制值，工具回执在执行返回时记录；并发写入依次落盘，后续修改原对象不改旧证据。稀疏数组拒绝记录，不填充或删去空洞。所有异步调用都应 await。先记录实际值、再执行断言，可在断言失败时保留反例。观察值仍由测试作者选择，不自动证明服务正确、覆盖完整或独立性。
-- **通过只说明作者提供的测试通过。** 作者可以写错断言、遗漏边界，甚至提交空测试；它不提供独立正确性证明，不产生任务分数，也不成为提交或保存门槛。
-- 执行禁网且不传密钥；构建按既有构建网络合同进行，可能访问依赖注册表。探针不启动模型轮次，作者编写测试所消耗的优化器模型调用照常计账。
-- 一次实验的结论绑定其实际构建身份。正式提交会登记独立候选及构建；同源非确定性构建不保证同产物，不能把探针通过直接继承成正式验收。
+- Identity is determined jointly by the source, test content, and entry. Changing only the hypothesis text does not produce a new experiment; identical inputs are not run repeatedly. After modifying code, the same test suite can be reused for comparison.
+- The preparation intent is persisted first; if a completed frozen snapshot is interrupted before database registration, recovery verifies it byte by byte and then continues registration. After a registered experiment is interrupted, collection of the originally named build/execution containers continues.
+- Saves the build identity, full assembly audit, native tool call results, assertion exceptions, exit status, elapsed time, and raw logs. A normal return is recorded as `passed`, and an exception or non-zero exit is recorded as `failed`; both can serve as evidence for subsequent mutations.
+- `observations` of `behavior.json` uses an incrementing sequence number and `kind: tool/value` to distinguish tool receipts from author observations. `observe` copies the value at call time, and tool receipts are recorded when execution returns; concurrent writes are persisted in order, and later modification of the original object does not change old evidence. Sparse arrays are rejected for recording, without filling or removing holes. All asynchronous calls should be awaited. Recording actual values first and then executing assertions preserves counterexamples when assertions fail. Observed values are still chosen by the test author and do not automatically prove that the service is correct, that coverage is complete, or that it is independent.
+- **Passing only means that the tests provided by the author pass.** The author may write incorrect assertions, miss boundaries, or even submit empty tests; it does not provide an independent proof of correctness, does not produce a task score, and is not a threshold for submission or saving.
+- Execution has network disabled and passes no keys; builds follow the existing build network contract and may access dependency registries. Probes do not start model rounds; optimizer model calls consumed by the author writing tests are still billed as usual.
+- The conclusion of an experiment is bound to its actual build identity. Formal submission registers an independent candidate and build; non-deterministic builds from the same source do not guarantee the same artifact, and probe passes cannot be directly inherited as formal acceptance.
 
-设计来源、当前版本差异和未采纳机制见[调研记录](research/2026-10-28-executable-probes.md)。调用、成功/失败、断言反例及真实模型使用见同页验收记录；未以这些工程测试宣称提分。
+Design sources, differences from the current version, and mechanisms not adopted are in the [research notes](research/2026-10-28-executable-probes.md). Calls, successes/failures, assertion counterexamples, and real model usage are in the acceptance records on the same page; no score improvement is claimed based on these engineering tests.
 
-后续 [64 次任务对照](experiments/2026-10-28-native-probe-spreadsheet-results.md) 保留负结果、空测试和接口误用；没有观察到开启组相对自身基线的收益。
+The subsequent [64-task comparison](experiments/2026-10-28-native-probe-spreadsheet-results.md) preserves negative results, empty tests, and interface misuse; no benefit was observed for the enabled group relative to its own baseline.
 
-[服务与作用域观察验收](research/2026-10-28-service-observations.md) 覆盖同名服务隔离、接口与配置替换、异步卸载；真实模型调用新观察接口，但选错了能暴露缺陷的性质，反例验收失败，原始证据完整保留。
+[Service and scope observation acceptance](research/2026-10-28-service-observations.md) covers same-name service isolation, interface and configuration replacement, and asynchronous unloading; a real model called the new observation interface but chose the wrong property to expose the defect, the counterexample acceptance failed, and the raw evidence was fully preserved.

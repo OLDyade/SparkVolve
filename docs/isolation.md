@@ -1,43 +1,43 @@
-# 冻结运行权限，核验真实容器
+# Freeze runtime permissions, verify the real container
 
-隔离合同进入实验身份。构建、QA、优化器、执行器、评分器都显式选择运行时、非 root UID/GID 和资源预算；各角色使用合同内的网络权限。运行时缺失、原容器配置漂移或身份不符会直接失败。
+The isolation contract becomes part of the experiment identity. Build, QA, optimizer, executor, and grader all explicitly select the runtime, non-root UID/GID, and resource budgets; each role uses the network permissions within the contract. A missing runtime, drift in the original container configuration, or an identity mismatch fails immediately.
 
-主线使用已验收的 runc／gVisor 路径。MicroVM 是可选后端扩展，不要求用户先安装它才能运行进化闭环；独立内核及持久磁盘硬限额尚未验收，不能当作当前已支持能力。启用任何后端都需显式登记，失败时不自动切换。
+The mainline uses the accepted runc/gVisor path. MicroVM is an optional backend extension; users are not required to install it first to run the evolution loop. The independent kernel and persistent disk hard limits have not yet been accepted and cannot be treated as currently supported capabilities. Enabling any backend requires explicit registration; on failure there is no automatic switching.
 
 ```text
-研究者声明 isolation ──冻结──► 实验合同
+Researcher declares isolation ──freeze──► experiment contract
                                   │
        ┌──────────┬──────────┬────┴─────┬──────────┐
        ▼          ▼          ▼          ▼          ▼
      Build        QA      Optimizer   Executor    Grader
        └──────────┴──────────┴──────────┴──────────┘
                                   │
-             daemon 注册运行时 → create → inspect 核验
+             daemon registers runtime → create → inspect verification
                                   │
-                       isolation.json（启动前）
+                       isolation.json (before startup)
                                   │
-                  原容器执行 / 中断后接回并重新核验
+                  original container execution / reconnect and re-verify after interruption
                                   │
-                    isolation-final.json（结束后）
+                    isolation-final.json (after completion)
 ```
 
-## 声明与操作
+## Declaration and operation
 
 ```bash
-# 使用当前非 root 用户身份，显式选择已注册运行时；不改变 daemon 配置。
+# Use the current non-root user identity, explicitly select a registered runtime; do not change daemon configuration.
 node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
   "${HE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > isolation.json
-# 在专用 Linux Docker 宿主安装固定版本，再显式选择。
+# Install a pinned version on a dedicated Linux Docker host, then select it explicitly.
 bash scripts/install-runsc.sh
 node examples/isolation.mjs he-runsc-20261019 "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
   "${HE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > isolation.json
 ```
 
-安装脚本固定 gVisor `20261019.0` 与各架构 SHA256，将完整 runsc/sidecar 发行包安装到独立目录，注册 `he-runsc-20261019`，使用 systrap；不替换已有运行时或默认值。宿主需具备 Docker、systemd、sudo、tar、bzip2、sha256sum，在线安装还需 curl。仅支持 Linux x86_64/aarch64。已存在的安装目录或同名注册直接拒绝覆盖。
+The install script pins gVisor `20261019.0` and the SHA256 for each architecture, installs the complete runsc/sidecar distribution package into a separate directory, registers `he-runsc-20261019`, and uses systrap; it does not replace existing runtimes or defaults. The host requires Docker, systemd, sudo, tar, bzip2, and sha256sum; online installation also requires curl. Only Linux x86_64/aarch64 is supported. An existing install directory or a registration with the same name is rejected outright rather than overwritten.
 
-隔离主机可先传入官方发行包，再执行 `bash scripts/install-runsc.sh /absolute/path/gvisor-aarch64.tar.bz2`。离线模式仍核对同一固定摘要，不联网下载或切换运行时。安装涉及宿主配置，应在研究者管理的专用 Docker 主机执行。
+An isolated host can first supply the official distribution package, then run `bash scripts/install-runsc.sh /absolute/path/gvisor-aarch64.tar.bz2`. Offline mode still verifies the same pinned digest and does not download over the network or switch runtimes. Installation involves host configuration and should be performed on a dedicated Docker host managed by the researcher.
 
-同一套验收覆盖两个运行时，必须声明 `HE_TEST_RUNTIME` 和部署方确认的 `HE_TEST_DNS`，缺失直接失败：
+The same acceptance suite covers both runtimes; `HE_TEST_RUNTIME` and the deployer-confirmed `HE_TEST_DNS` must be declared, and a missing value fails immediately:
 
 ```bash
 HE_TEST_RUNTIME=he-runsc-20261019 \
@@ -46,31 +46,31 @@ HE_TEST_RUNTIME=he-runsc-20261019 \
   npm run test:container
 ```
 
-GitHub Actions 分别运行 runc 和固定 gVisor，将测试日志与各角色隔离回执保留 14 天。仓库公开后，标准 runner 已实际执行，原额度拦截解除；具体版本的完整结果见[公开 CI 记录](experiments/2026-10-28-public-ci-and-delivery.md)。
+GitHub Actions runs runc and pinned gVisor separately, retaining test logs and per-role isolation receipts for 14 days. After the repository became public, the standard runner has actually executed, and the original quota block was lifted; complete results for specific versions are in the [public CI record](experiments/2026-10-28-public-ci-and-delivery.md).
 
-生成器提供可编辑的工作站配置。框架不补缺失字段、不自动选择默认运行时、不在运行失败后回退。`prepare.mjs` 第五参数必须为此 JSON；冻结后修改合同需要新实验。UID/GID 必须能访问挂载目录，框架不会修改宿主目录权限。远端 Docker 的挂载路径必须真实存在于 daemon 宿主；本地路径不会自动上传。
+The generator provides an editable workstation configuration. The framework does not fill in missing fields, does not automatically select a default runtime, and does not fall back after a run failure. The fifth argument of `prepare.mjs` must be this JSON; modifying the contract after freezing requires a new experiment. The UID/GID must be able to access the mounted directories; the framework does not modify host directory permissions. For remote Docker, the mount paths must actually exist on the daemon host; local paths are not uploaded automatically.
 
-| 字段 | 含义 |
+| Field | Meaning |
 |---|---|
-| `runtime` | Docker 注册的精确名称；名称不证明实现或隔离强度 |
-| `user.uid/gid` | 明确的非 root 用户，五类角色共用 |
-| `memoryMiB` / `cpus` / `pids` | 每容器内存、CPU、进程上限；swap 总限额等于内存上限 |
-| `tmpMiB` / `homeMiB` | 容器临时文件系统大小及用户所有权；`/tmp` 允许 DSH 动态库执行；HOME 独立挂载于 `/workspace/.harness-home`，通过原生工作区 bind 保留配额与跨调用状态 |
-| `network` | build 为 none 或 bridge；optimizer 为 controlled，executor 为 controlled 或 none；QA/grader 固定 none |
-| `network.egressPool` | 部署方预留的私有 IPv4 CIDR；每个受控执行占用两个 `/29`，包括优化器；合同检查并发所需容量 |
-| `network.egressDns` | 必填的 1–3 个 IPv4 resolver；拒绝重复、0.0.0.0、回环、组播、广播及与 egressPool 重叠的地址，无默认值 |
+| `runtime` | Exact name registered with Docker; the name does not prove the implementation or isolation strength |
+| `user.uid/gid` | Explicit non-root user, shared by all five roles |
+| `memoryMiB` / `cpus` / `pids` | Per-container memory, CPU, and process limits; the total swap limit equals the memory limit |
+| `tmpMiB` / `homeMiB` | Container temporary filesystem size and user ownership; `/tmp` allows DSH dynamic library execution; HOME is mounted separately at `/workspace/.harness-home`, preserving quota and cross-invocation state through the native workspace bind |
+| `network` | build is none or bridge; optimizer is controlled, executor is controlled or none; QA/grader are fixed to none |
+| `network.egressPool` | Private IPv4 CIDR reserved by the deployer; each controlled execution occupies two `/29`, including the optimizer; the contract checks the capacity required for concurrency |
+| `network.egressDns` | Required 1–3 IPv4 resolvers; rejects duplicates, 0.0.0.0, loopback, multicast, broadcast, and addresses overlapping egressPool; no default value |
 
-固定清空 capabilities、禁止提权、只读根文件系统、私有 IPC；镜像入口被显式命令替代。核验用户、资源、网络、挂载读写、运行时及命令，拒绝镜像隐式 volumes。恢复沿用原容器，权限变化不触发任务重跑。
+Capabilities are always cleared, privilege escalation is prohibited, the root filesystem is read-only, and IPC is private; the image entrypoint is replaced by an explicit command. The user, resources, network, mount read/write, runtime, and command are verified, and implicit image volumes are rejected. Recovery reuses the original container; permission changes do not trigger a task rerun.
 
-镜像安装 Bubblewrap，由 DSH 原生 sandbox-local 选择可用后端；不替换 Agent Loop 或关闭工具沙箱。该 DSH 版本的 Bubblewrap 会为 workspace-write 命令创建独立 `/tmp`，因此 HOME 不放在 `/tmp` 下。工作区中的 HOME 是单独的 0700 tmpfs，销毁容器后宿主只留空挂载点，不把缓存、配置或历史带入能力交付。`tmpMiB` 描述外层容器 `/tmp` 的挂载配额；内层 Bubblewrap 新建的 `/tmp` 受容器总内存约束，不能宣称继承了该独立配额。
+The image installs Bubblewrap, and DSH's native sandbox-local selects an available backend; the Agent Loop is not replaced and the tool sandbox is not disabled. Bubblewrap in this DSH version creates a separate `/tmp` for workspace-write commands, so HOME is not placed under `/tmp`. HOME in the workspace is a separate 0700 tmpfs; after the container is destroyed, the host retains only an empty mount point, and caches, configuration, or history are not carried into capability delivery. `tmpMiB` describes the mount quota of the outer container `/tmp`; the `/tmp` newly created by the inner Bubblewrap is constrained by the container's total memory and cannot be claimed to inherit that separate quota.
 
-## 出口 DNS
+## Egress DNS
 
-可信 broker 需要解析合同内上游；候选继续使用静态 hosts 与回环 DNS。Docker 自定义 bridge 的内置 DNS `127.0.0.11` 无法由 runsc 隔离 netstack 访问，单独设置 `--dns` 仍会经过这个地址。[gVisor 官方说明](https://gvisor.dev/docs/user_guide/faq/#docker-bridge)给出的适用方案是为容器只读挂载指向可达 resolver 的 `/etc/resolv.conf`。本框架将 broker 的 resolver 冻结在合同中，不切换 host network 或降低运行时隔离。
+The trusted broker needs to resolve in-contract upstreams; candidates continue to use static hosts and loopback DNS. The built-in DNS `127.0.0.11` of a Docker custom bridge cannot be accessed by the runsc isolated netstack, and setting `--dns` separately still goes through this address. The applicable solution given in the [official gVisor documentation](https://gvisor.dev/docs/user_guide/faq/#docker-bridge) is to mount a read-only `/etc/resolv.conf` pointing to a reachable resolver into the container. This framework freezes the broker's resolver in the contract and does not switch to host network or reduce runtime isolation.
 
-列表最多 3 项，与镜像中 glibc 的 `MAXNS` 一致；超出直接拒绝，不截断或让系统静默忽略。[Linux resolver 文档](https://man7.org/linux/man-pages/man5/resolv.conf.5.html)
+The list has at most 3 entries, consistent with glibc's `MAXNS` in the image; excess entries are rejected outright, not truncated or silently ignored by the system. [Linux resolver documentation](https://man7.org/linux/man-pages/man5/resolv.conf.5.html)
 
-若部署方尚未提供 resolver，可从已构建镜像与已注册运行时的 default bridge 读取候选列表；辅助脚本不调用模型、不传凭证，退出后清理本次容器：
+If the deployer has not yet provided a resolver, the candidate list can be read from the default bridge of the built image and the registered runtime; the helper script does not call models, does not pass credentials, and cleans up this container on exit:
 
 ```bash
 npm run build
@@ -78,27 +78,27 @@ mkdir -p .evolution/deployment
 node scripts/egress-dns.mjs \
   "$(docker image inspect harness-evolution:local --format '{{.Id}}')" \
   "${HE_TEST_RUNTIME:?Select a registered Docker runtime}" > .evolution/deployment/dns-discovery.json
-# 检查发现记录及部署网络后，显式采用已确认的列表；也可使用部署方直接提供的地址。
+# After checking the discovery record and the deployment network, explicitly adopt the confirmed list; addresses provided directly by the deployer may also be used.
 export HE_TEST_DNS=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).servers.join(","))' \
   .evolution/deployment/dns-discovery.json)
 ```
 
-脚本仅报告该镜像/运行时的原始 `resolv.conf` 与 IPv4 列表，不证明目标网络可达。最终验收必须在声明运行时、受控双网络和只读 resolver 文件下完成实际解析与请求，并验证原 broker 恢复。内网专用 resolver 可以显式声明；地址不能落入候选地址池，避免路由覆盖。CI 同样先发现并显式写入 `HE_TEST_DNS`，随后执行真实受控容器测试。
+The script only reports the raw `resolv.conf` and IPv4 list for that image/runtime and does not prove that the target network is reachable. Final acceptance must complete actual resolution and requests under the declared runtime, controlled dual networks, and read-only resolver file, and verify restoration of the original broker. An internal-only resolver may be explicitly declared; the address must not fall within the candidate address pool, to avoid route override. CI likewise first discovers and explicitly writes `HE_TEST_DNS`, then runs the real controlled container test.
 
-## 证据与边界
+## Evidence and boundaries
 
-回执记录容器 ID、镜像 ID、合同、实际设置和 daemon 版本、内核、架构及运行时注册资料。仅序列化白名单字段，不保存 `Config.Env` 或完整 inspect。
+The receipt records the container ID, image ID, contract, actual settings and daemon version, kernel, architecture, and runtime registration data. Only whitelisted fields are serialized; `Config.Env` or the full inspect is not saved.
 
-| 环境 | 隔离边界 | 当前验收 |
+| Environment | Isolation boundary | Current acceptance |
 |---|---|---|
-| Linux Docker / OrbStack 的 runc | namespaces/cgroups，共享 Linux 内核 | 已实测非 root、禁网、只读、漂移拒绝及完整 DSH 链路 |
-| gVisor/runsc 20261019.0 · systrap · Linux ARM64 | 用户态 Sentry 处理应用系统调用 | 专用 Debian 13 Docker daemon 实测构建、原生 DSH、评分、恢复、安装及真实模型事件接续；见 [验收证据](evidence/2026-10-27-gvisor-acceptance.json) |
-| Firecracker | KVM 驱动独立 guest kernel；还需生产宿主和网络配置 | 调研完成；尚无 MicroVM 执行后端 |
+| runc on Linux Docker / OrbStack | namespaces/cgroups, shared Linux kernel | Measured non-root, network disabled, read-only, drift rejection, and the complete DSH chain |
+| gVisor/runsc 20261019.0 · systrap · Linux ARM64 | User-space Sentry handles application system calls | Measured on a dedicated Debian 13 Docker daemon: build, native DSH, grading, recovery, installation, and real model event continuation; see [acceptance evidence](evidence/2026-10-27-gvisor-acceptance.json) |
+| Firecracker | KVM-driven independent guest kernel; also requires a production host and network configuration | Research complete; no MicroVM execution backend yet |
 
-回执依赖可信 daemon，无法对抗宿主管理员，不属于加密远程证明。本次 gVisor 实验机关闭 Mac 文件共享与宿主/其他机器网络访问，但 OrbStack 机器仍共享 Linux 内核，不能宣称每题独立微虚拟机。可信控制器持有专用 daemon socket，候选容器不挂载该 socket。受控执行的真实凭证留在独立出口代理，插件使用占位值；独立进程边界仍依赖所选容器运行时。工作目录和日志尚无磁盘配额；内存/PID 限制不解决磁盘耗尽。当前候选应在专用研究宿主运行。磁盘配额与 MicroVM 后端仍需继续实施。
+Receipts depend on a trusted daemon, cannot defend against a host administrator, and are not cryptographic remote attestation. This gVisor experiment machine disabled Mac file sharing and host/other-machine network access, but the OrbStack machine still shares the Linux kernel and cannot claim an independent microVM per task. The trusted controller holds a dedicated daemon socket, and candidate containers do not mount that socket. Real credentials for controlled execution remain in a separate egress proxy, and plugins use placeholder values; the independent process boundary still depends on the selected container runtime. Working directories and logs have no disk quota yet; memory/PID limits do not solve disk exhaustion. Current candidates should run on a dedicated research host. Disk quotas and the MicroVM backend still need further implementation.
 
-来源及验收见 [运行隔离研究](research/2026-10-27-runtime-isolation.md)。
+Sources and acceptance are in [runtime isolation research](research/2026-10-27-runtime-isolation.md).
 
-[受控出口架构实验](research/2026-10-28-controlled-egress.md)已在 runc/gVisor 验证 internal + isolated 网络、代理进程外凭证、显式 DNS/hosts 与代理停止失败。该实验使用独立 HTTP 夹具。
+The [controlled egress architecture experiment](research/2026-10-28-controlled-egress.md) has verified on runc/gVisor the internal + isolated networks, out-of-process proxy credentials, explicit DNS/hosts, and proxy-stop failure. This experiment uses an independent HTTP fixture.
 
-[受控出口组件](controlled-egress.md)已接入正式 Controller 与优化器；runc、gVisor 真实模型均完成中断恢复、独立评分、证据归档与资源释放。gVisor 最终镜像完成 4 次模型调用，实际只读 DNS 挂载及摘要核验通过，原容器与网络回收；见[本轮证据](evidence/2026-10-28-gvisor-controlled-dns.json)。显式有限地址池覆盖 62 个网络及跨进程竞争；失败回收也持久化，恢复只继续清理。部署方必须预留不与宿主/LAN/VPN 冲突的地址段，框架只核对 Docker IPAM 已占用网段，不能替代部署网络规划。
+The [controlled egress component](controlled-egress.md) has been integrated into the formal Controller and optimizer; real models on both runc and gVisor completed interruption recovery, independent grading, evidence archiving, and resource release. The final gVisor image completed 4 model calls, the actual read-only DNS mount and digest verification passed, and the original container and network were reclaimed; see [this round's evidence](evidence/2026-10-28-gvisor-controlled-dns.json). The explicit finite address pool covers 62 networks and cross-process contention; failure cleanup is also persisted, and recovery only continues cleanup. The deployer must reserve an address range that does not conflict with the host/LAN/VPN; the framework only checks network segments already occupied by Docker IPAM and cannot replace deployment network planning.

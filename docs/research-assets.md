@@ -1,61 +1,61 @@
-# 让一次进化成为下一次研究的起点
+# Make one evolution the starting point for the next research
 
 ```text
-已完成候选：成功 / 退步 / QA失败
+Completed candidates: success / regression / QA failure
        │ export / remember
        ▼
-研究档案：源码 + 构建身份 + 假设 + 负结果 + 谱系
-       │ 研究者授权，写入新实验合同并冻结
+Research archive: source + build identity + hypothesis + negative results + lineage
+       │ researcher authorization, written into a new experiment contract and frozen
        ▼
-evolution_library → evolution_asset → 优化器决定是否复用
+evolution_library → evolution_asset → optimizer decides whether to reuse
                                         │
                                 evolution_import
                                         ▼
-                         新草稿 + 持久来源记录
-                                        │ 自主修改代码 / 配置 / 组合
+                         new draft + persistent provenance record
+                                        │ autonomous modification of code / config / composition
                                         ▼
-                        当前实验构建 → QA → 全量评分
+                        current experiment build → QA → full scoring
 ```
 
-三个原生工具提供检索、查看和导入，选择与修改交给 DSH 优化器。按原文检索，不按历史分数自动挑选；失败档案同样可发现。导入不执行插件，不把插件装进优化器，也不继承旧成绩或冠军资格。
+Three native tools provide retrieval, viewing and import; selection and modification are left to the DSH optimizer. Retrieval is by original text, not automatic selection by historical score; failed archives are equally discoverable. Import does not execute plugins, does not install plugins into the optimizer, and does not inherit old scores or champion eligibility.
 
-## 授权和使用
+## Authorization and usage
 
-1. 用 `harness-evolve remember --root <旧实验> --candidate <digest> --library <目录>` 收集终态档案。每个子目录以 archive ID 命名。
-2. 选择允许优化器阅读的档案，复制到**新实验数据集**的 `research-assets/`。审查其中源码、任务描述和反馈的访问权限。
-3. 用 `harness-evolve digest <数据集>/research-assets` 得到目录摘要，在新实验合同中声明：
+1. Use `harness-evolve remember --root <old experiment> --candidate <digest> --library <directory>` to collect terminal-state archives. Each subdirectory is named by archive ID.
+2. Select the archives the optimizer is allowed to read and copy them to `research-assets/` of the **new experiment dataset**. Review the access permissions of the source code, task descriptions and feedback within.
+3. Use `harness-evolve digest <dataset>/research-assets` to obtain the directory digest, and declare it in the new experiment contract:
 
 ```json
 "researchLibrary": {
   "directory": "research-assets",
-  "digest": "<目录的 SHA-256 摘要>"
+  "digest": "<SHA-256 digest of the directory>"
 }
 ```
 
-不授权时明确填写 `"researchLibrary": null`。`init` 冻结数据集；控制器启动和每次库访问均核对快照。优化器不能指定宿主文件路径，也不能在实验途中扩大资产范围。研究库由宿主 API 按 ID 提供，不作为整个文件系统挂载到优化器。
+When not authorizing, explicitly fill in `"researchLibrary": null`. `init` freezes the dataset; the controller verifies the snapshot at startup and on every library access. The optimizer cannot specify host file paths, nor expand the asset scope mid-experiment. The research library is provided by the host API by ID and is not mounted to the optimizer as an entire filesystem.
 
-`evolution_library` 返回 ID、研究目标、机制假设和历史结果；`evolution_asset` 返回完整研究记录、来源文件清单，指定文件时返回原始 base64 字节；`evolution_import` 将选中源码复制到 `/workspace/<draft>`。后续 `evolution_submit` 给新候选附上 `origin`，重新走当前合同的独立评测。
+`evolution_library` returns the ID, research objective, mechanism hypothesis and historical results; `evolution_asset` returns the complete research record and the list of source files, and returns raw base64 bytes when a file is specified; `evolution_import` copies the selected source code to `/workspace/<draft>`. A subsequent `evolution_submit` attaches `origin` to the new candidate, which then goes through the current contract's independent evaluation again.
 
-## 身份与中断语义
+## Identity and interruption semantics
 
-| 身份 | 含义 |
+| Identity | Meaning |
 |---|---|
-| archiveId | 原实验 UUID、完整实验规格摘要、候选源码摘要的组合身份 |
-| recordDigest | 完整研究记录内容摘要，包含历史反馈的具体版本 |
-| sourceCandidate | 实际复制源码的目录摘要 |
-| researchLibrary.digest | 本次允许优化器阅读的完整资产快照 |
+| archiveId | Composite identity of the original experiment UUID, the full experiment spec digest, and the candidate source digest |
+| recordDigest | Digest of the complete research record content, including the specific version of historical feedback |
+| sourceCandidate | Digest of the directory of the actually copied source code |
+| researchLibrary.digest | The complete asset snapshot the optimizer is allowed to read this time |
 
-摘要证明内容对应关系，不证明作者身份、研究结论或成绩真实。当前本地授权模型不宣称 SLSA 签名认证。查看旧任务或反馈后，这些数据已经进入优化器的可见范围，不能继续称为未见评测。
+Digests prove content correspondence, not author identity, research conclusions, or the truth of scores. The current local authorization model does not claim SLSA signature certification. After viewing old tasks or feedback, that data has already entered the optimizer's visible scope and can no longer be called unseen evaluation.
 
-导入先写 `pending` 意图，在优化器无法访问的 staging 中复制和校验，再发布草稿、提交 `ready` 来源记录。`pending` 草稿禁止提交候选。中断后重复同一导入可接续；已完成的导入返回原草稿，不覆盖之后的修改。更换同名草稿的来源直接报错。中断的私有 staging 留作诊断，不作为候选。
+Import first writes a `pending` intent, copies and verifies in staging inaccessible to the optimizer, then publishes the draft and commits the `ready` provenance record. `pending` drafts prohibit candidate submission. Repeating the same import after an interruption resumes it; a completed import returns the original draft and does not overwrite subsequent modifications. Changing the source of a draft with the same name reports an error directly. An interrupted private staging is kept for diagnostics and is not used as a candidate.
 
-原合同、原分数和旧谱系用于解释来源；新的选择状态只接受本轮实际构建、执行与评分。独立复验实验不开优化器 API。
+The original contract, original scores and old lineage are used to explain provenance; the new selection state accepts only the actual build, execution and scoring of this round. Independent re-validation experiments do not open the optimizer API.
 
-## 验收
+## Acceptance
 
-单元验收覆盖未授权拒绝、私有目录重叠、路径越界、元数据/源码篡改、来源跟随提交，以及复制前、发布后和响应丢失三个中断点。原生工具注册、容器任务恢复和真实模型检索导入分别验证；真实模型测试使用显式合成历史档案，不能作为质量收益。
+Unit acceptance covers unauthorized rejection, private directory overlap, path traversal, metadata/source tampering, provenance following the commit, and the three interruption points: before copy, after publish, and response loss. Native tool registration, container task recovery, and real-model retrieval import are verified separately; real-model tests use explicitly synthesized historical archives and cannot count as quality gains.
 
 ```sh
-HE_TEST_IMAGE=sha256:<运行镜像摘要> node --env-file=/安全目录/venus.env \
+HE_TEST_IMAGE=sha256:<runtime image digest> node --env-file=/secure-directory/venus.env \
   --import tsx --test tests/live/library.test.ts
 ```

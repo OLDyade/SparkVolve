@@ -1,84 +1,84 @@
-# 插件变异空间对照 · 实际结果
+# Plugin Mutation Space Comparison · Actual Results
 
-[预注册协议](2026-10-29-mutation-space-registration.md) · [逐题记录与原始摘要](../evidence/mutation-space-20261029/results.json) · [反例](../evidence/mutation-space-20261029/helper-counterexamples.json)
+[Pre-registration protocol](2026-10-29-mutation-space-registration.md) · [Per-task records and raw summaries](../evidence/mutation-space-20261029/results.json) · [Counterexamples](../evidence/mutation-space-20261029/helper-counterexamples.json)
 
-**三组、六次独立搜索已经完成。当前结果没有证明开放插件变异优于受限变异。** 唯一入选的新候选在开发和独立验证中均为 100%，源码审查与确定性反例同时发现不符合通用交付要求的语义推断和降级路径；它保留为研究产物，不作为推荐能力发布。
+**Three groups and six independent searches have been completed. The current results do not demonstrate that open plugin mutation is superior to restricted mutation.** The only selected new candidate scored 100% in both development and independent validation, but source review and deterministic counterexamples simultaneously found semantic inference and fallback paths that do not meet general delivery requirements; it is retained as a research artifact and is not released as a recommended capability.
 
-## 实际运行
+## Actual Run
 
-2026-10-29 02:16:55–02:35:01 UTC，官方 `deepseek-flash`，G/H 使用同一模型配置、同一 DSH 运行镜像，每题 600 秒。执行实现锁定提交 [`6590b97`](https://github.com/OLDyade/spark-harness-evolution/commit/6590b97ac3b025c8650e7f3f68f9c0c86c12b20b)。G、H0、任务、评分与预算摘要均在首次模型调用前冻结；原始目录为 `.evolution/mutation-space-official-20261029`。
+2026-10-29 02:16:55–02:35:01 UTC, official `deepseek-flash`, G/H used the same model configuration and the same DSH runtime image, 600 seconds per task. Execution implementation locked to commit [`6590b97`](https://github.com/OLDyade/spark-harness-evolution/commit/6590b97ac3b025c8650e7f3f68f9c0c86c12b20b). G, H0, tasks, scoring and budget summaries were all frozen before the first model call; the raw directory is `.evolution/mutation-space-official-20261029`.
 
 ```text
-同一 G + 同一 H0 + 同一开发任务与预算
+Same G + same H0 + same development tasks and budget
                  │
        ┌─────────┼───────────┐
        ▼         ▼           ▼
-    提示词     单插件       开放插件
-    2 次搜索   2 次搜索     2 次搜索
+    Prompt      Single plugin       Open plugin
+    2 searches  2 searches     2 searches
        └─────────┼───────────┘
                  ▼
-     17 个候选实例（含六个 H0）
-     68 次开发执行 → 冻结各次 H*
+     17 candidate instances (including six H0)
+     68 development executions → freeze each H*
                  ▼
-     24 次独立验证 + 8 次共享 H0 验证
+     24 independent validations + 8 shared H0 validations
                  ▼
-     原始成绩 + 实际变异 + 工具调用 + 反例
+     Raw scores + actual mutations + tool calls + counterexamples
 ```
 
-共 100 次真实任务执行：95 次评分、5 次执行失败，分母保留。上限 104 次；单插件第二次搜索在提交一个新候选后自行结束，剩余四次任务预算没有补跑。六次搜索均完成，没有任务重试、拼接 attempt 或人工修改候选。
+A total of 100 real task executions: 95 scored, 5 execution failures, denominator retained. Upper limit 104; the second single-plugin search ended on its own after submitting one new candidate, and the remaining four-task budget was not run to fill the gap. All six searches completed, with no task retries, concatenated attempts, or manual candidate modifications.
 
-## 完整结果
+## Complete Results
 
-开发成绩决定每次搜索选中的 H*，随后才对其执行独立验证。共享 H0 的两次验证均值均为 81.25%，共八个任务实例。
+Development scores determine the H* selected for each search, and only then is independent validation performed on it. The two validation means for the shared H0 were both 81.25%, across eight task instances in total.
 
-| 变异范围 / 搜索 | 开发 H0 | 开发 H1 | 开发 H2 | 选中版本 | H* 独立验证 | 对应 H0 验证 | 差值 |
+| Mutation scope / search | Development H0 | Development H1 | Development H2 | Selected version | H* independent validation | Corresponding H0 validation | Difference |
 |---|---:|---:|---:|---|---:|---:|---:|
-| 提示词 / 1 | 81.25% | 75% | 75% | 原 H0 | 75% | 81.25% | −6.25 pp |
-| 提示词 / 2 | 100% | 81.25% | 81.25% | 原 H0 | 100% | 81.25% | +18.75 pp |
-| 单插件 / 1 | 81.25% | 0%（四题执行失败） | 81.25% | 原 H0 | 81.25% | 81.25% | 0 pp |
-| 单插件 / 2 | 81.25% | 100% | 未使用预算 | 新 H1 | 100% | 81.25% | +18.75 pp |
-| 开放插件 / 1 | 100% | 75% | 75% | 原 H0 | 100% | 81.25% | +18.75 pp |
-| 开放插件 / 2 | 100% | 75%（一题执行失败） | 75% | 原 H0 | 81.25% | 81.25% | 0 pp |
+| Prompt / 1 | 81.25% | 75% | 75% | Original H0 | 75% | 81.25% | −6.25 pp |
+| Prompt / 2 | 100% | 81.25% | 81.25% | Original H0 | 100% | 81.25% | +18.75 pp |
+| Single plugin / 1 | 81.25% | 0% (four tasks failed to execute) | 81.25% | Original H0 | 81.25% | 81.25% | 0 pp |
+| Single plugin / 2 | 81.25% | 100% | Budget unused | New H1 | 100% | 81.25% | +18.75 pp |
+| Open plugin / 1 | 100% | 75% | 75% | Original H0 | 100% | 81.25% | +18.75 pp |
+| Open plugin / 2 | 100% | 75% (one task failed to execute) | 75% | Original H0 | 81.25% | 81.25% | 0 pp |
 
-组均值：提示词 **87.5%**，单插件 **90.625%**，开放插件 **90.625%**。每组的实验单位是两次独立搜索，八个验证任务不能当作八次独立进化。五次搜索选中的源码、构建与原始包均为同一 H0；这些重复执行之间的分差不来自插件改造。组间相差 3.125 pp 也不足以支持方法优劣结论。
+Group means: Prompt **87.5%**, Single plugin **90.625%**, Open plugin **90.625%**. The experimental unit for each group is two independent searches; the eight validation tasks cannot be treated as eight independent evolutions. The source code, build and raw package selected by five searches were all the same H0; the score differences between these repeated executions do not come from plugin modifications. A 3.125 pp difference between groups is also insufficient to support conclusions about the superiority of either method.
 
-## 模型实际改变了什么
+## What the Model Actually Changed
 
-- 提示词组四个新候选仅修改 `guidance.md`，没有越过源码范围合同。
-- 单插件组三个新候选修改 `guidance.md`、`index.mjs` 与 `workbook.py`。唯一入选候选 `01a983e0…` 新增原生工具 `workbook_recalc`、`workbook_review`、`workbook_diff`，开发执行中三个工具各被实际调用四次。[原始源码差异](../evidence/mutation-space-20261029/patches/single-plugin-1-h1.patch)保留模型生成内容。
-- 开放组四个新候选同样只修改这三个文件；没有新增插件、修改依赖或装配结构。因此本轮测试了**开放权限下的自主选择**，没有形成联合拓扑变异的效果对照，不能据此否定或证明联合进化。
+- The four new candidates in the Prompt group only modified `guidance.md`, without exceeding the source scope contract.
+- The three new candidates in the Single plugin group modified `guidance.md`, `index.mjs` and `workbook.py`. The only selected candidate `01a983e0…` added native tools `workbook_recalc`, `workbook_review`, `workbook_diff`, and each of the three tools was actually called four times during development executions. [Raw source diff](../evidence/mutation-space-20261029/patches/single-plugin-1-h1.patch) retains the model-generated content.
+- The four new candidates in the Open group likewise only modified these three files; no plugins were added, and no dependencies or assembly structure were modified. Therefore this round tested **autonomous choice under open permissions**, and did not form a controlled comparison of the effects of joint topology mutation, so it cannot be used to refute or prove joint evolution.
 
-全部 11 个变异的文件清单、补丁、调用数量和成绩均收录在机器记录中。已逐个将公开补丁应用到原 H0 的独立副本，11 份结果的源码摘要全部匹配原冻结候选，见[补丁复核](../evidence/mutation-space-20261029/patch-verification.json)。固定公共任务家族的新数值验证依然可能保留题型适配，未覆盖陌生领域。
+The file lists, patches, call counts and scores of all 11 mutations are recorded in the machine records. The public patches were applied one by one to independent copies of the original H0, and the source digests of all 11 results match the original frozen candidates; see [patch review](../evidence/mutation-space-20261029/patch-verification.json). New numerical validation on a fixed public task family may still retain task-type adaptation and does not cover unfamiliar domains.
 
-## 原生接口失败与可复用性反例
+## Native Interface Failures and Reusability Counterexamples
 
-单插件第一次搜索的 H1 在提示词中使用 `{{C}}`、`{{R}}` 示例。原种子按 DSH 默认规则插值提示词，完整变量组格式非法，四题在请求模型前失败。后续 H2 由优化器自行调整，不覆盖 H1 的失败。开放组第二次搜索另有一题收到非法工具参数 JSON，按失败计零，没有重试。
+The H1 from the first single-plugin search used `{{C}}` and `{{R}}` examples in the prompt. The original seed interpolated the prompt according to DSH default rules, the complete variable group format was invalid, and four tasks failed before the model was requested. The subsequent H2 was adjusted by the optimizer itself and does not override the H1 failure. In the second search of the Open group, another task received invalid tool-argument JSON, was scored zero as a failure, and was not retried.
 
-对于入选的 `01a983e0…`，在冻结镜像中直接调用原 Python helper，复现了四项反例：
+For the selected `01a983e0…`, directly calling the original Python helper in the frozen image reproduced four counterexamples:
 
-| 明确输入 | 候选实际观察 | 问题 |
+| Explicit input | Actual candidate observation | Problem |
 |---|---|---|
-| 三列分别为并列退出场景，均有合法估值 | 建议前两列留空 | 把列统一解释为连续年份 |
-| 标签明确写百分点，数值为 25 | 建议改为比例 | 从幅度与格式猜测单位，忽略显式单位 |
-| 公式返回普通字符串 `#N/A`，缓存类型为字符串 | 报公式错误 | 用文本前缀替代单元格错误类型 |
-| 对齐缩进为 2 | 返回缩进 0 | 读取字体对象的不存在属性并吞掉异常 |
+| Three columns are side-by-side exit scenarios, all with valid valuations | Suggests leaving the first two columns blank | Interprets the columns uniformly as consecutive years |
+| Label explicitly states percentage points, value is 25 | Suggests changing to a ratio | Guesses the unit from magnitude and format, ignoring the explicit unit |
+| Formula returns the ordinary string `#N/A`, cached type is string | Reports a formula error | Uses a text prefix in place of the cell error type |
+| Alignment indent is 2 | Returns indent 0 | Reads a nonexistent attribute of the font object and swallows the exception |
 
-[反例源码](../evidence/mutation-space-20261029/helper-counterexamples.py)与原结果均公开。它们是确定性的 helper 行为检查，没有新模型调用，没有加入原评测器，也没有追溯改变成绩。候选另外包含重算失败后改读旧缓存的路径；这与项目的显式失败原则不一致。开发与验证满分未覆盖这些路径，故没有推荐或安装发布该变异包。
+[Counterexample source](../evidence/mutation-space-20261029/helper-counterexamples.py) and the original results are both public. They are deterministic helper behavior checks, with no new model calls, not added to the original evaluator, and they do not retroactively change scores. The candidate additionally contains a path that falls back to reading the old cache after a recalculation failure; this is inconsistent with the project's explicit-failure principle. The full development and validation scores did not cover these paths, so the mutation package was not recommended, installed, or released.
 
-实验收尾后已按 [DSH 官方接口](https://github.com/deepseek-ai/deepseek-harness/blob/f3803c96974ad4a94195fb97e5c637e9c2a3afe3/packages/core/system-prompt/README.md)将未来研究种子的自由文本槽设为 `interpolate: false`，并实际验证原生渲染能保留 `{{C}}` 等原文、卸载后注册被移除。本轮原 H0、镜像、失败与结果完整保留；修正后的种子没有复跑本轮或取得新的模型成绩。复核本轮时以冻结提交、源码摘要和协议为准。
+After the experiment concluded, per the [DSH official interface](https://github.com/deepseek-ai/deepseek-harness/blob/f3803c96974ad4a94195fb97e5c637e9c2a3afe3/packages/core/system-prompt/README.md), the free-text slot of the future research seed was set to `interpolate: false`, and it was actually verified that native rendering preserves original text such as `{{C}}` and that the registration is removed after uninstallation. The original H0, image, failures and results of this round are fully preserved; the corrected seed did not rerun this round or obtain new model scores. When reviewing this round, the frozen commit, source digests and protocol are authoritative.
 
-## 用量与工程验收
+## Usage and Engineering Acceptance
 
-| 范围（含 G、开发与 H* 验证） | 请求开始 | 返回 / 失败 / 未结束 | 已报告输入 Token | 已报告输出 Token | G 运行秒数之和 |
+| Scope (including G, development and H* validation) | Requests started | Returned / failed / unfinished | Reported input tokens | Reported output tokens | Sum of G runtime seconds |
 |---|---:|---|---:|---:|---:|
-| 提示词 | 304 | 304 / 0 / 0 | 305,826 | 72,777 | 311.984 |
-| 单插件 | 301 | 301 / 0 / 0 | 330,226 | 92,385 | 486.042 |
-| 开放插件 | 409 | 408 / 1 / 0 | 379,548 | 103,688 | 525.084 |
-| 共享 H0 验证 | 54 | 54 / 0 / 0 | 28,540 | 12,281 | 不适用 |
-| 合计 | **1,068** | **1,067 / 1 / 0** | **1,044,140** | **281,131** | **1,323.110** |
+| Prompt | 304 | 304 / 0 / 0 | 305,826 | 72,777 | 311.984 |
+| Single plugin | 301 | 301 / 0 / 0 | 330,226 | 92,385 | 486.042 |
+| Open plugin | 409 | 408 / 1 / 0 | 379,548 | 103,688 | 525.084 |
+| Shared H0 validation | 54 | 54 / 0 / 0 | 28,540 | 12,281 | Not applicable |
+| Total | **1,068** | **1,067 / 1 / 0** | **1,044,140** | **281,131** | **1,323.110** |
 
-请求口径为 DSH 适配器流调用记录。失败请求缺用量，Token 合计只包含服务报告的用量，不能视为完整账单；费用未报告，不能填零。逐任务耗时、失败与辅助指标见 JSON，速度不影响选择。Study 的 `passed: true` 表示协议执行及报告收尾完成，不能当作方法收益或候选语义验收通过。
+The request basis is the DSH adapter stream call records. Failed requests lack usage, and the token totals include only usage reported by the service and cannot be regarded as a complete bill; costs were not reported and cannot be filled in as zero. Per-task durations, failures and auxiliary metrics are in the JSON; speed does not affect selection. The Study's `passed: true` indicates that protocol execution and report finalization are complete, and cannot be taken as method benefit or as passing candidate semantic acceptance.
 
-实现提交的 [GitHub 四路 CI](https://github.com/OLDyade/spark-harness-evolution/actions/runs/40805867567)全部通过，runc/gVisor 各 24 项。收尾修正后的 `npm run check` 全部通过，包含格式、文档、类型、266 单元与 28 原生测试。
+The implementation commit's [GitHub four-way CI](https://github.com/OLDyade/spark-harness-evolution/actions/runs/40805867567) all passed, 24 items each for runc/gVisor. After the finalization fixes, `npm run check` all passed, including formatting, documentation, types, 266 unit tests and 28 native tests.
 
-后续研究应先解决原生契约误用与未经输入证明的语义推断，并扩充能区分这些行为的独立任务。继续保留插件实现、配置、组合结构的完整进化空间；插件数量、代码行数与单批最高分均不作为进化成功的标准。
+Follow-up research should first address native contract misuse and semantic inference not proven by inputs, and expand independent tasks that can distinguish these behaviors. Continue to preserve the full evolution space of plugin implementations, configurations and composition structures; plugin count, lines of code and the highest single-batch score are not criteria for evolutionary success.

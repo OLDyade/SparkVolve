@@ -1,21 +1,21 @@
-# 显式结果约束与原始质量并行记录
+# Explicit Outcome Constraints and Raw Quality Parallel Record
 
-2026-10-27。附加评审提出的“领域可声明约束”成立。直接将所有实验的 preserved 强制设为 1，会改变用户此前明确的评分政策，因此采用通用、必填的约束声明；无约束用空数组明确表达。
+2026-10-27. The "domain-declarable constraints" raised in the additional review holds. Directly forcing preserved to 1 for all experiments would change the user's previously explicit scoring policy, so a generic, mandatory constraint declaration is adopted; no constraints are explicitly expressed with an empty array.
 
-## 核实依据与实现选择
+## Verification Basis and Implementation Choices
 
-- [Ax outcome constraints](https://ax.dev/docs/recipes/outcome-constraints/)将优化目标、约束和 tracking metrics 分开。Context7 `/facebook/ax` 查询核实相同语义；参考源码固定 [4cb6e3e7](https://github.com/facebook/Ax/tree/4cb6e3e7e6a0aeaa60211145450ddfce3a079633)。借鉴测量后判断可行性，不引入 Ax 运行依赖，也不宣称具备其概率约束建模。
-- 当前系统独立 grader 已返回数值 `metrics`。新增 `constraints` 冻结 metric、逐次/平均聚合、比较方向及阈值，放在通用合同，不向 Controller 写入 Excel、任务坐标或题目专属判断。
-- 缺失观测明确不可判定，保留完整分母。执行失败没有约束观测，不能通过失败预算来推断约束满足。使用实际结果，不根据优化器置信度、历史均值或相邻题补值。
-- `Store.decide` 与配对验证报告共享约束解释器；原始主分和全部辅助指标保持不变。初始种子违反约束也不晋级；没有可行冠军时允许继续自主变异。
-- 该机制只处理研究者预声明的数值结果约束，不包含预期收益预测、自动修复、模型输出过滤或执行前强制审查。数据权限、独立评分与候选身份继续沿用原有机制。
-- 独立 subagent 发现最初逐项除以 N 再求和会将 30 个 1 算成略小于 1。已改为规范化十进制数的精确有理数均值及交叉相乘比较，报告分子/分母，不添加容差；参考 [Python Fraction 官方说明](https://docs.python.org/3/library/fractions.html)对十进制字符串与二进制 float 数值语义的区分。使用有限 JSON number 的规范化表示，不承诺任意精度输入。
+- [Ax outcome constraints](https://ax.dev/docs/recipes/outcome-constraints/) separates optimization objectives, constraints, and tracking metrics. A Context7 `/facebook/ax` query verified the same semantics; the reference source is pinned at [4cb6e3e7](https://github.com/facebook/Ax/tree/4cb6e3e7e6a0aeaa60211145450ddfce3a079633). We borrow the idea of judging feasibility after measurement, without introducing an Ax runtime dependency, and without claiming to have its probabilistic constraint modeling.
+- The current system's independent grader already returns numeric values `metrics`. The newly added `constraints` freezes the metric, per-item/average aggregation, comparison direction, and threshold, and is placed in the generic contract, without writing Excel, task coordinates, or task-specific judgments into the Controller.
+- Missing observations are explicitly undecidable, and the full denominator is retained. Execution failures have no constraint observation, and constraint satisfaction cannot be inferred through a failure budget. Actual results are used, not optimizer confidence, historical means, or values imputed from adjacent tasks.
+- `Store.decide` shares the constraint interpreter with the paired validation report; the raw primary score and all auxiliary metrics remain unchanged. An initial seed that violates constraints is also not promoted; when there is no feasible champion, continued autonomous mutation is allowed.
+- This mechanism only handles numeric outcome constraints pre-declared by researchers, and does not include expected-gain prediction, automatic repair, model output filtering, or mandatory pre-execution review. Data permissions, independent scoring, and candidate identity continue to use the original mechanisms.
+- An independent subagent found that the initial approach of dividing each item by N and then summing would compute 30 ones as slightly less than 1. It has been changed to an exact rational mean of normalized decimal numbers and cross-multiplication comparison, reporting numerator/denominator, without adding tolerance; see the [official Python Fraction documentation](https://docs.python.org/3/library/fractions.html) on the distinction between the numeric semantics of decimal strings and binary floats. The normalized representation of finite JSON numbers is used, with no promise of arbitrary-precision input.
 
-## 实测范围
+## Measured Scope
 
-- 单元验证逐项/均值、上下界、零值、缺失指标、执行失败、完整分母、约束冻结、不可行种子和更高主分但违反约束的拒绝。
-- 边界回归覆盖 3/6/7/10/30 个相同值、0.1、负数、最大量级和最小正数，以及相邻阈值的严格拒绝。
-- 配对报告测试保留 +0.5 主分差，候选保留率违反已注册约束，`strictImprovement=false`。
-- runc 与固定 gVisor 下各五项容器验收通过。新增原生 DSH 夹具真实生成文件，独立评分容器报告主分及格式约束：满分种子因缺少末尾换行被拒绝；显式修改后的新 Bundle 满分且约束通过。该夹具验证协议，不冒充模型自主变异或业务收益。
-- [机器证据](../evidence/2026-10-27-constraints-acceptance.json)保留两种运行时的实际裁决与镜像身份。真实模型联合变异、研究协议和稳定收益仍是后续完整目标。
-- 修复后只读方向复核通过，30 单元、8 原生测试通过，最终镜像在 runc/gVisor 下各五项容器验收再次通过；旧验收目录保留，不覆盖后声称它们验证了新算法。
+- Unit validation covers per-item/average, upper and lower bounds, zero values, missing metrics, execution failures, the full denominator, constraint freezing, infeasible seeds, and rejection of higher primary scores that violate constraints.
+- Boundary regression covers 3/6/7/10/30 identical values, 0.1, negative numbers, the maximum magnitude and the smallest positive number, as well as strict rejection at adjacent thresholds.
+- The paired report test retains a +0.5 primary score difference, the candidate retention rate violates a registered constraint, `strictImprovement=false`.
+- Five container acceptance checks each passed under runc and fixed gVisor. The newly added native DSH fixture genuinely generates files, and the independent scoring container reports the primary score and format constraints: the full-score seed was rejected for lacking a trailing newline; the explicitly modified new Bundle scored full marks and passed the constraints. This fixture validates the protocol and does not masquerade as autonomous model mutation or business benefit.
+- [Machine evidence](../evidence/2026-10-27-constraints-acceptance.json) retains the actual verdicts and image identities for both runtimes. Joint mutation by real models, the research protocol, and stable benefits remain the subsequent full objectives.
+- After the fix, the read-only direction re-review passed, 30 unit tests and 8 native tests passed, and the final image again passed five container acceptance checks each under runc/gVisor; the old acceptance directories are retained, and it is not claimed after overwriting that they validated the new algorithm.

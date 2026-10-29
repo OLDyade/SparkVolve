@@ -1,56 +1,56 @@
-# 官方 DeepSeek：自主改造、独立验证与原包复用
+# Official DeepSeek: Autonomous Modification, Independent Validation, and Original-Package Reuse
 
-2026-10-28，真实 DSH 优化器完成插件实现改造，独立验证并安装同一归档；随后在四个干净 Profile 中安装原包、执行四类业务任务。原生开发验收七项检查全部通过。本文区分自主生成的原候选、维护者修正版本，以及每次独立执行的实际分数。
+On 2026-10-28, the real DSH optimizer completed a plugin implementation modification, independently validated and installed the same archive; then, in four clean Profiles, it installed the original package and executed four categories of business tasks. All seven checks of the native development acceptance passed. This document distinguishes the autonomously generated original candidate, the maintainer-corrected version, and the actual scores of each independent execution.
 
-## 固定合同与服务调查
+## Fixed Contract and Service Investigation
 
-- DSH `0.2.1-rc.4`、Cordis `4.0.5`；官方 `deepseek-official/deepseek-flash`，推理 off、实际输出预算 32,768。官方目录当日显示 DeepSeek-V4.1-Flash；别名后端权重不可由本地锁定。
-- 任务、原生 QA、行为探测和模型请求 600 秒；优化器按全计划推导 7,140 秒。并发四题，独立评分，原尝试终态不补跑；没有提供方切换或自动重试。
-- 镜像 `sha256:8bc3300c7e6fb329d1e03417a82bb1306c865f76b7b490803f2ad811b67bb2af`。凭证仅在仓库外私有文件及可信出口代理，执行器拿本地占位值。
-- 四类任务：结果归一化、加权组合、债务滚动、情景估值。开发与验证为不同输入实例，同一任务族；全部属于合成工程验收，不能宣称未见领域迁移。
+- DSH `0.2.1-rc.4`, Cordis `4.0.5`; official `deepseek-official/deepseek-flash`, reasoning off, actual output budget 32,768. The official catalog showed DeepSeek-V4.1-Flash that day; the alias backend weights cannot be locked locally.
+- Tasks, native QA, behavior probes, and model requests: 600 seconds; the optimizer derives 7,140 seconds from the full plan. Four tasks run concurrently, scored independently, and original attempts are not re-run after reaching a terminal state; no provider switching or automatic retries.
+- Mirror `sha256:8bc3300c7e6fb329d1e03417a82bb1306c865f76b7b490803f2ad811b67bb2af`. Credentials exist only in a private file outside the repository and in the trusted egress proxy; the executor receives local placeholder values.
+- Four task categories: result normalization, weighted combination, debt roll-forward, scenario valuation. Development and validation use different input instances of the same task family; all are synthetic engineering acceptance and cannot be claimed as unseen-domain transfer.
 
-此前中转服务在 TCP/TLS 成功后约 301 秒返回无结束标记的流，另一次连接在 TLS 阶段 ECONNRESET，出口代理据此返回 502。现有证据不能确定远端哪个组件中断。600 秒任务预算尚未耗尽，不能归因为本地任务超时。
+Previously, the relay service returned a stream without an end marker about 301 seconds after TCP/TLS succeeded, and another connection hit ECONNRESET during TLS, upon which the egress proxy returned 502. The available evidence cannot determine which remote component was interrupted. The 600-second task budget was not exhausted, so this cannot be attributed to a local task timeout.
 
-官方服务实际 `/models`、Messages 工具调用和工具结果回放、Chat Completions 均返回正常终止标记。Messages 两次约 693/677 ms，Chat 约 1,456 ms，零重试。接入使用 DSH 自带 DeepSeek 适配器。协议头显式转发，官方说明部分头被忽略，未将其宣称为旧流中断根因。依据、源码版本与边界见[接入研究](../research/2026-10-28-official-deepseek.md)。
+The official service actually returned normal termination markers for `/models`, Messages tool calls and tool-result replay, and Chat Completions. Messages took about 693/677 ms twice, Chat about 1,456 ms, with zero retries. Integration uses the DeepSeek adapter bundled with DSH. Protocol headers are forwarded explicitly; the official documentation states that some headers are ignored, and this was not claimed as the root cause of the earlier stream interruption. For the basis, source versions, and boundaries, see [integration research](../research/2026-10-28-official-deepseek.md).
 
-## 完整实验结果
+## Full Experimental Results
 
-| 阶段 | 实际结果 | 裁决 |
+| Stage | Actual Result | Verdict |
 | --- | --- | --- |
-| 官方首次搜索 | H0 81.25%、H1 50%、H2 75%；20 槽中 18 评分、2 个工具参数 JSON 无效 | 原验收失败保留，H0 留任；不修补模型 JSON，不重抽 |
-| 新开发证据合同 | 冻结通用公式语义反例；优化器自主读取官方插件开发 Skill、调用 inspection，改造 Python/JS 插件 | 3 次自主探测为失败／失败／通过；源码、日志与探测失败保留 |
-| 自主搜索 | H0 56.25% → H1 81.25% → H2 100%；12/12 评分 | 严格择优选 H2 |
-| 独立验证 | H0 81.25%，H2 100%；8/8 评分 | 七项原生开发验收全过 |
-| 自主原包安装后执行 | 4 个干净 DSH Profile；四题均 100%；4/4 评分 | 原 tarball 安装、来源解析、前后文件完整性及真实业务执行通过 |
-| 维护者修正版独立验证 | 四题均 100%；4/4 评分 | 使用修正版自身摘要，未继承父候选成绩 |
-| 维护者修正版原包安装后执行 | 归一化 25%，其余三题 100%；均值 81.25%，4/4 评分 | 安装执行合同通过；业务退步明确保留，不能表述为业务全对 |
+| Official first search | H0 81.25%, H1 50%, H2 75%; 18 of 20 slots scored, 2 tool-parameter JSON invalid | Original acceptance failure retained, H0 retained; model JSON not patched, not resampled |
+| New development evidence contract | Frozen generic formula-semantics counterexamples; the optimizer autonomously read the official plugin development Skill, invoked inspection, and modified the Python/JS plugins | 3 autonomous probes: fail/fail/pass; source, logs, and probe failures retained |
+| Autonomous search | H0 56.25% → H1 81.25% → H2 100%; 12/12 scored | Strict selection chose H2 |
+| Independent validation | H0 81.25%, H2 100%; 8/8 scored | All seven native development acceptance checks passed |
+| Execution after autonomous original-package install | 4 clean DSH Profiles; all four tasks 100%; 4/4 scored | Original tarball install, provenance resolution, before/after file integrity, and real business execution passed |
+| Independent validation of maintainer-corrected version | All four tasks 100%; 4/4 scored | Uses the corrected version's own digest, does not inherit the parent candidate's scores |
+| Execution after maintainer-corrected original-package install | Normalization 25%, the other three tasks 100%; mean 81.25%, 4/4 scored | Install-execution contract passed; business regression explicitly retained, cannot be stated as all business tasks correct |
 
-自主 H1 `f031f90e…` 引入真实 LibreOffice 重算与工具接口；H2 `f4686d66…` 相对 H1 仅调工具描述，相对 H0 存在实现改造。没有自主复杂装配拓扑变化。H2 原归档摘要为 `ac305a51e28c9f0d68c7f80df6b7e3c6eb9fc3fa3cacd25458a2ff2fdb3b12c7`。
+Autonomous H1 `f031f90e…` introduced real LibreOffice recalculation and the tool interface; H2 `f4686d66…` only adjusted tool descriptions relative to H1, and has implementation modifications relative to H0. There were no autonomous complex assembly-topology changes. The H2 original archive digest is `ac305a51e28c9f0d68c7f80df6b7e3c6eb9fc3fa3cacd25458a2ff2fdb3b12c7`.
 
-## 语义缺陷、修复和未通过结果
+## Semantic Defects, Fixes, and Failed Results
 
-1. 首轮自主公式解释器在 ROUND 平局、IF 未选分支、跨表 SUM 和幂结合规则上与实际引擎不一致。新开发证据仅含通用反例，不含验证答案；优化器自行采用原生引擎。反例记录中的 H0 `resolve` 缺失表示该接口不适用，不能算成 H0 计算错误。
-2. 原生引擎候选仍有可选交付路径缺陷：保存 `data_only=True` 工作簿会抹掉公式；以 `#` 前缀判错会误报普通文本。实际文件反例已复现。维护者修正为复制引擎原 XLSX、按 OOXML error 类型判错，另补日期显式序列化、原子发布、stdin 错误传播和 600 秒引擎预算，删除无效兼容参数。修正版位于 [`native-engine`](../../examples/spreadsheet/native-engine/PROVENANCE.md)，明确标为维护者派生版本。
-3. 真实 DSH 回归覆盖 ROUND、IF、跨表引用、幂、`#literal`、真实错误、日期、7 个公式及缓存保留、源字节不变、失败操作不破坏已有交付。不使用模型或猜测式结果补救。
-4. 修正版安装后归一化错误来自模型写入反向税项公式。轨迹证明它通过 shell 读到了原批注，再显式提交公式；重算返回正常数值不代表业务语义正确。没有删除这一结果或原样再跑，没有添加题目坐标补丁。
-5. 第一轮安装辅助容器因只读工作目录缺少 HOME 挂载点失败，四题均未进入模型执行。已改为独立可写辅助工作目录，实际交付不挂到安装助手；后续安装验收成功。原零执行失败单独留档。
-6. 旧运行的 JS AST 分类被 Babel `range: undefined` 元数据中断，Python 实现差异仍有证据。分类器已排除位置字段并添加 import/shorthand 回归；原报告不重写，AST 摘要本身也不证明行为正确。
+1. The first-round autonomous formula interpreter disagreed with the actual engine on ROUND ties, unselected IF branches, cross-sheet SUM, and power associativity rules. The new development evidence contains only generic counterexamples, not validation answers; the optimizer adopted the native engine on its own. The missing H0 `resolve` in the counterexample record means the interface is not applicable and cannot be counted as an H0 calculation error.
+2. The native-engine candidate still had optional delivery-path defects: saving a `data_only=True` workbook erases formulas; judging errors by the `#` prefix falsely flags ordinary text. Actual file counterexamples were reproduced. The maintainer corrected this to copy the engine's original XLSX and judge errors by OOXML error type, and additionally added explicit date serialization, atomic publishing, stdin error propagation, and a 600-second engine budget, and removed ineffective compatibility parameters. The corrected version is at [`native-engine`](../../examples/spreadsheet/native-engine/PROVENANCE.md), explicitly marked as a maintainer-derived version.
+3. Real DSH regression covers ROUND, IF, cross-sheet references, power, `#literal`, real errors, dates, 7 formulas and cache retention, unchanged source bytes, and failed operations not destroying existing deliverables. No model or guess-based result remediation is used.
+4. The normalization error after installing the corrected version came from the model writing a reversed tax-item formula. The trajectory proves it read the original annotation via shell, then explicitly submitted the formula; a recalculation returning normal values does not mean the business semantics are correct. This result was not deleted or re-run as-is, and no task-coordinate patch was added.
+5. The first-round install helper container failed because the read-only working directory lacked a HOME mount point, and none of the four tasks reached model execution. It was changed to an independent writable helper working directory, and actual deliverables are not mounted to the install helper; subsequent install acceptance succeeded. The original zero-execution failure is archived separately.
+6. The JS AST classification of the old run was interrupted by Babel `range: undefined` metadata, and evidence of Python implementation differences remains. The classifier now excludes location fields and adds import/shorthand regression; the original report is not rewritten, and the AST summary itself does not prove behavior is correct.
 
-修正版源码摘要 `6b31d303711ca2bbb7816038e716b39d2d7c035dc623fa12c4870a49decd0114`；其原归档摘要 `4afd2f35f497848f82b1ea8047974a1821b0e49ddaa4cf27952a169d65089fb8`。公开目录对应这次独立验证的冻结内容。它只覆盖已测试的标量公式 XLSX 合同，不承诺宏、外部链接或全部 Excel 特性。
+Corrected-version source digest `6b31d303711ca2bbb7816038e716b39d2d7c035dc623fa12c4870a49decd0114`; its original archive digest `4afd2f35f497848f82b1ea8047974a1821b0e49ddaa4cf27952a169d65089fb8`. The public catalog corresponds to the frozen content of this independent validation. It covers only the tested scalar-formula XLSX contract and does not promise macros, external links, or all Excel features.
 
-## 请求与用量
+## Requests and Usage
 
-账本单位是 DSH adapter stream attempt；已配置零重试，隐藏服务端行为不推断。耗时为请求时长求和，不能当作整轮墙钟时间；费用没有价格凭据，留空。
+The accounting unit is the DSH adapter stream attempt; zero retries are configured, and hidden server-side behavior is not inferred. Duration is the sum of request durations and cannot be treated as whole-round wall-clock time; cost is left blank because there is no price evidence.
 
-| 阶段 | started/result/failed/unfinished | 输入／输出 token | 请求时长和 |
+| Stage | started/result/failed/unfinished | Input/output tokens | Sum of request durations |
 | --- | --- | --- | --- |
-| 首轮搜索与验证 | 313 / 311 / 2 / 0 | 251,233 / 91,968 | 752.385 s；2 次失败缺用量 |
-| 基线辅助目录修复后安装执行 | 23 / 23 / 0 / 0 | 11,582 / 5,866 | 47.708 s |
-| 自主语义改造搜索与验证 | 205 / 205 / 0 / 0 | 161,885 / 48,690 | 427.432 s |
-| 自主原包安装执行 | 29 / 29 / 0 / 0 | 13,322 / 5,975 | 51.649 s |
-| 维护者修正版独立验证 | 25 / 25 / 0 / 0 | 20,003 / 5,118 | 45.211 s |
-| 维护者修正版原包安装执行 | 26 / 26 / 0 / 0 | 11,956 / 5,233 | 45.679 s |
+| First-round search and validation | 313 / 311 / 2 / 0 | 251,233 / 91,968 | 752.385 s; 2 failures missing usage |
+| Baseline install execution after helper-directory fix | 23 / 23 / 0 / 0 | 11,582 / 5,866 | 47.708 s |
+| Autonomous semantic-modification search and validation | 205 / 205 / 0 / 0 | 161,885 / 48,690 | 427.432 s |
+| Autonomous original-package install execution | 29 / 29 / 0 / 0 | 13,322 / 5,975 | 51.649 s |
+| Independent validation of maintainer-corrected version | 25 / 25 / 0 / 0 | 20,003 / 5,118 | 45.211 s |
+| Maintainer-corrected original-package install execution | 26 / 26 / 0 / 0 | 11,956 / 5,233 | 45.679 s |
 
-完整分母、逐题分数、用量、包身份、反例和原始文件 SHA256 见[证据目录](../evidence/official-deepseek-20261028/sources.json)。公开摘要不包含密钥及完整私有模型对话；本地原报告、失败和完整轨迹保留。复现入口见[官方接入](../../examples/deepseek/README.md)，开发证据见[冻结语义简报](2026-10-28-native-semantics-brief.md)。
+The full denominator, per-task scores, usage, package identity, counterexamples, and raw-file SHA256 are in the [evidence catalog](../evidence/official-deepseek-20261028/sources.json). The public summary does not include keys or the full private model conversation; the local original report, failures, and full trajectories are retained. The reproduction entry point is in [official integration](../../examples/deepseek/README.md), and development evidence is in the [frozen semantics brief](2026-10-28-native-semantics-brief.md).
 
-**本次完成了真实自主改造 → 独立验证 → 原包安装复用的工程闭环。单次四题上涨尚未证明稳定增益、机制因果、跨领域迁移或星火模型适配效果。** 维护者修复与自主进化分别记账，项目全景仍按[落实状态](../completion.md)逐项核验。
+**This run completed the engineering loop of real autonomous modification → independent validation → original-package install reuse. A single four-task increase has not yet proven stable gain, mechanistic causality, cross-domain transfer, or Spark model adaptation effects.** Maintainer fixes and autonomous evolution are accounted separately, and the project overview is still verified item by item according to [implementation status](../completion.md).

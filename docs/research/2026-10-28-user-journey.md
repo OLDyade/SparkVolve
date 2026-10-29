@@ -1,45 +1,45 @@
-# 公开入口的冷启动与只读进度观察
+# Cold Start and Read-Only Progress Observation of the Public Entry Point
 
-## 发现与修改
+## Findings and Changes
 
-从 `0a27c41e1df4916390a6e70eac83cce70973a6de` 建立独立检出，以 `git clone --no-local` 复制本地 Git 对象；没有把原工作区的 `node_modules`、`dist` 或实验目录带过去。这验证干净检出的依赖与构建流程，不声称测试了 GitHub 网络克隆或他人的账户权限。
+An independent checkout was created from `0a27c41e1df4916390a6e70eac83cce70973a6de`, and local Git objects were copied via `git clone --no-local`; the original workspace's `node_modules`, `dist`, and experiment directories were not carried over. This validates the dependency and build flow of a clean checkout, and does not claim to have tested GitHub network cloning or another person's account permissions.
 
-首次 `npm ci` 成功，随后 `npm run check` 在原生测试类型检查处报 TS2307：测试引用的 `dist/*.js` 尚未构建。原工作区已有构建产物，掩盖了这一问题。公开 `typecheck` 现在先运行实际构建，再检查测试类型；独立检出复查通过。
+The first `npm ci` succeeded, after which `npm run check` reported TS2307 at the native test type check: the `dist/*.js` referenced by the tests had not yet been built. The original workspace already had build artifacts, which masked this problem. The public `typecheck` now runs the actual build first, then checks test types; the independent checkout recheck passed.
 
-依赖安装、修正后的检查和 Excel 扩展镜像构建日志已有文件摘要；基础镜像构建在本次终端执行成功，但未另存完整日志文件。镜像身份已登记，现有日志不冒充两次镜像构建的完整归档。
+File digests exist for the dependency installation, the corrected checks, and the Excel extension image build logs; the base image build succeeded in this terminal execution, but no complete log file was saved separately. The image identity has been registered, and the existing logs do not purport to be a complete archive of both image builds.
 
-只读评审另发现：首次用户的 `.evolution` 父目录可能不存在。驱动现在只递归创建父目录，对实验根目录仍使用必须全新的 `mkdir`。单独子进程回归覆盖缺失父目录、首个外部命令失败和再次运行拒绝，失败日志不会覆盖。这个修正未注入已运行的实验。
+The read-only review additionally found that the parent directory of the first user's `.evolution` may not exist. The driver now only recursively creates the parent directory, and still uses a `mkdir` that must be brand new for the experiment root directory. A separate subprocess regression covers a missing parent directory, failure of the first external command, and refusal on a second run, with failure logs not being overwritten. This fix was not injected into an already-running experiment.
 
-## 观察无需接管实验
+## Observation Does Not Require Taking Over the Experiment
 
-`events` 使用 SQLite 已提交事件和实验专属游标，输出 NDJSON；`--follow` 持续观察，`--cursor` 接续已收到的位置。它与 `status`、`report` 一样使用 `DatabaseSync` 的 `readOnly` 连接，不创建数据库、不修改 metadata、不获取执行租约。
+`events` uses SQLite committed events and an experiment-specific cursor, and outputs NDJSON; `--follow` observes continuously, and `--cursor` resumes from the position already received. Like `status` and `report`, it uses the `readOnly` connection of `DatabaseSync`, does not create a database, does not modify metadata, and does not acquire an execution lease.
 
-依据 Node 24 官方 [`node:sqlite`](https://nodejs.org/docs/latest-v24.x/api/sqlite.html) 的 `readOnly` 语义，缺失数据库会报错；项目测试也实际验证写入被 SQLite 拒绝。原生 CLI 测试覆盖 205 条跨页事件、精确游标重放、另一个进程提交事件、退出观察者后实验仍可使用，以及错误实验游标拒绝。
+Per the `readOnly` semantics of the official Node 24 [`node:sqlite`](https://nodejs.org/docs/latest-v24.x/api/sqlite.html), a missing database raises an error; the project tests also actually verify that writes are rejected by SQLite. The native CLI tests cover 205 cross-page events, exact cursor replay, another process committing events, the experiment remaining usable after the observer exits, and rejection of a wrong experiment cursor.
 
-进程内提交可直接唤醒等待者；独立 CLI 连接在最长约 30 秒的等待后重新读取。这里没有伪装成跨进程即时推送，也没有把无事件或超时当成健康证明。读取真实实验得到的事件摘要保留在机器证据中。
+In-process commits can directly wake waiters; an independent CLI connection re-reads after a wait of at most about 30 seconds. This is not disguised as cross-process instant push, nor is no-event or timeout treated as proof of health. The event summary obtained from reading the real experiment is retained in the machine evidence.
 
-## 一次真实公开用户旅程
+## One Real Public User Journey
 
-独立检出使用修正后的检查顺序和验收驱动，仍运行冻结的原控制器、原优化器方法与原模型合同。构建完成后，驱动只调用公开入口：镜像预检、生成公开样例、合同生成、初始化、自主搜索、报告、冻结产物复验和研究归档。它不生成变异代码，不干预模型解题，不重试失败命令。
+The independent checkout uses the corrected check order and acceptance driver, and still runs the frozen original controller, original optimizer method, and original model contract. After the build completes, the driver only calls the public entry points: image precheck, generating public samples, contract generation, initialization, autonomous search, reporting, frozen artifact re-verification, and research archiving. It does not generate mutation code, does not intervene in model problem solving, and does not retry failed commands.
 
-执行前登记的选择规则是：从完整评分的不同变异中取完整分母均值最高者，同分取最早序号；负结果仍可进入独立研究复验。没有合格终态变异则记录负分支结束。默认三题是工程体验，满分基线没有主指标提升空间；不能据此声称方法收益。
+The selection rule registered before execution is: among distinct mutations with complete scores, take the one with the highest full-denominator mean, and for ties take the earliest sequence number; negative results may still enter independent research re-verification. If there is no qualifying terminal mutation, the negative branch is recorded as ended. The default three tasks are an engineering experience, and the full-score baseline has no room for main-metric improvement; no method benefit can be claimed on this basis.
 
-四题复验来自此前已公开使用的合成验证族，每组每题一次。这验证独立协议和同一冻结构建的流转，不能当未见测试集或稳定增益。归档后还需要源码与能力语义审查，再进行可信 Bundle 安装；驱动不自动分发未审查代码。
+The four-task re-verification comes from a synthetic validation family that has been publicly used before, with each group running each task once. This validates the independent protocol and the flow of the same frozen build, and cannot be treated as an unseen test set or a stable gain. After archiving, source and capability semantic review is still required before trusted Bundle installation; the driver does not automatically distribute unreviewed code.
 
-真实旅程已完成 13 条公开命令，退出码全部为 0。两次自主变异均与三题满分基线持平，按严格择优规则拒绝晋级；优化器自行结束搜索。预注册规则选中最早同分变异进入四题独立复验，8/8 任务完成，双方均值均为 81.25%。归一化任务提高 75 个百分点，情景估值下降 75 个百分点，另两题持平；没有总体质量增益。
+The real journey completed 13 public commands, all with exit code 0. Both autonomous mutations tied the three-task full-score baseline and were rejected from promotion under the strict selection rule; the optimizer ended the search on its own. The pre-registered rule selected the earliest tied mutation to enter the four-task independent re-verification, 8/8 tasks completed, and both sides averaged 81.25%. The normalized task improved by 75 percentage points, the scenario valuation dropped by 75 percentage points, and the other two tasks tied; there was no overall quality gain.
 
-| 环节 | 模型调用 / 完整返回 | 输入 / 输出 tokens | 请求耗时之和 |
+| Stage | Model calls / complete returns | Input / output tokens | Sum of request durations |
 |---|---:|---:|---:|
-| 搜索，包括优化器和九次任务 | 201 / 201 | 380,122 / 75,792 | 689,701 ms |
-| 复验基线四题 | 32 / 32 | 30,066 / 6,286 | 60,563 ms |
-| 复验候选四题 | 33 / 33 | 36,904 / 7,877 | 70,608 ms |
+| Search, including the optimizer and nine tasks | 201 / 201 | 380,122 / 75,792 | 689,701 ms |
+| Re-verification baseline four tasks | 32 / 32 | 30,066 / 6,286 | 60,563 ms |
+| Re-verification candidate four tasks | 33 / 33 | 36,904 / 7,877 | 70,608 ms |
 
-单位为 DSH adapter stream attempt，网关内部 HTTP 重试未必可见；耗时之和包含并发重叠，不能当墙钟时间，费用未取得。优化器本身 128 次调用、580.972 秒容器预算用时。所有统计均保留原始报告和摘要。
+The unit is DSH adapter stream attempt; gateway-internal HTTP retries may not be visible; the sum of durations includes concurrent overlap and cannot be treated as wall-clock time, and cost was not obtained. The optimizer itself used 128 calls and 580.972 seconds of container budget time. All statistics retain the original reports and summaries.
 
-选中候选的独立原生审查还发现：已有公式的显式替换被拒绝、新增工作表漏出差异报告，以及同路径保存会修改源文件但描述承诺保留原输入。因此只保留研究档案，不批准可信能力安装；不为完成正向演示跳过审查，也不把同路径保存问题追加成旧合同中不存在的拒绝义务。新增公式覆盖夹具在原冻结基线上通过，在该候选上失败，既有实验不追改成绩。
+The independent native review of the selected candidate also found: explicit replacement of an existing formula was rejected, a newly added worksheet leaked out of the diff report, and saving to the same path modifies the source file although the description promises to preserve the original input. Therefore only the research archive is retained, and trusted capability installation is not approved; review is not skipped to complete a positive demonstration, nor is the same-path save issue appended as a rejection obligation that does not exist in the old contract. The new-formula coverage fixture passes on the original frozen baseline and fails on this candidate, and existing experiments do not retroactively change their results.
 
-[机器证据、源码身份和原始回执](../evidence/2026-10-28-user-journey.json)包括独立检出注册、原包复验、安装前审查和两次误挂 artifact 父目录的原始失败；修正验收命令后使用其真实 `bundle/` 子目录完成正反对照。操作入口见 [完整用户旅程](../user-journey.md)。
+[Machine evidence, source identity, and original receipts](../evidence/2026-10-28-user-journey.json) include the independent checkout registration, original package re-verification, pre-installation review, and the original failures from twice mistakenly mounting the artifact parent directory; after correcting the acceptance command, its real `bundle/` subdirectory was used to complete the positive and negative comparison. For operational entry points, see [Complete User Journey](../user-journey.md).
 
-## 与完整交付的关系
+## Relationship to Complete Delivery
 
-冷启动、观察和可追溯命令提高用户可操作性；自主复杂插件重构、同预算方法比较、稳定质量收益、磁盘硬边界和云端矩阵仍按独立完成条件验收。宣传定位及 `11.md` 原文保持不变。
+Cold start, observation, and traceable commands improve user operability; autonomous complex plugin refactoring, same-budget method comparison, stable quality gains, hard disk boundaries, and the cloud matrix are still accepted under independent completion conditions. The promotional positioning and the original text of `11.md` remain unchanged.

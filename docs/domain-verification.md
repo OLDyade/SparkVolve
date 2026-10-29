@@ -1,20 +1,20 @@
-# 独立领域操作约束
+# Independent Domain Operation Constraints
 
-优化器能创造和重组能力；研究者定义能力必须履行的操作承诺。领域 QA 的测试源码与候选源码分离，内容哈希、入口和数据权限都在实验开始前冻结。
+The optimizer can create and recombine capabilities; the researcher defines the operational commitments that a capability must fulfill. Domain QA's test source is separated from the candidate source, and the content hash, entry point, and data permissions are all frozen before the experiment begins.
 
 ```text
-研究者合成测试 ── 内容哈希 / 入口 ── 实验合同
+Researcher-synthesized tests ── content hash / entry ── experiment contract
                       │
-优化器只读查看         │             自主修改插件实现 / 配置 / 装配
+Optimizer read-only view         │             autonomous modification of plugin implementation / configuration / assembly
                       ▼                            │
-           独立禁网容器：原生装配 ← 冻结构建产物 ──┘
+           independent network-disabled container: native assembly ← frozen build artifact ──┘
                       │
-         实际 Agent → 工具 / 服务 → 独立断言
+         actual Agent → tools / services → independent assertions
                       │
-           通过：正式任务      失败：qa_failed + 原始观察
+           pass: formal task      fail: qa_failed + raw observations
 ```
 
-合同示例：
+Contract example:
 
 ```json
 "qa": {
@@ -24,26 +24,26 @@
 }
 ```
 
-`directory` 相对 dataset，`entry` 相对测试目录。控制器启动、运行候选 QA 前，以及优化器启动前校验内容；测试只读挂载到 `/verification`。目录不能与私有评分材料重叠。使用原生行为实验相同的 `probe` 接口，但来源与用途不同：这里是研究者事先声明的准入约束；[行为实验](behavioral-probes.md) 由优化器自主编写，提供诊断证据，不决定准入。此前的命令数组合同已被独立源码合同替换，新实验不接受旧数组格式；历史记录原样保存。
+`directory` is relative to the dataset, and `entry` is relative to the test directory. The controller verifies the content at startup, before running candidate QA, and before the optimizer starts; the tests are mounted read-only at `/verification`. The directory must not overlap with private scoring materials. It uses the same `probe` interface as native behavior experiments, but the source and purpose differ: here it is an admission constraint declared in advance by the researcher; [behavior experiments](behavioral-probes.md) are written autonomously by the optimizer, provide diagnostic evidence, and do not determine admission. The previous command-array contract has been replaced by the independent source contract; new experiments do not accept the old array format; historical records are preserved as-is.
 
-QA 不请求模型推理，不注入模型凭证，不访问任务输入和独立裁判。`call()` 返回原生 ToolResult 对象；工具返回错误时仍由测试断言是否符合预期。实际观察保存在 `qa/<candidate>/work/native/behavior.json`。任何未捕获异常或非零退出都使候选进入 `qa_failed`，不静默忽略检查。
+QA does not request model inference, does not inject model credentials, and does not access task inputs or the independent judge. `call()` returns a native ToolResult object; when a tool returns an error, the test still asserts whether it matches expectations. Actual observations are saved in `qa/<candidate>/work/native/behavior.json`. Any uncaught exception or non-zero exit places the candidate into `qa_failed`, and checks are not silently ignored.
 
-测试与候选在同一个原生 Agent 进程交互，独立性指测试的作者、内容身份和修改权限；它不能抵御任意恶意代码在进程内伪造行为。最终评分仍由分离进程、私有评测挂载和真实交付检查承担。本机制也不证明测试完备性或语义正确性。
+The tests and the candidate interact within the same native Agent process; independence refers to the test's authorship, content identity, and modification permissions; it cannot defend against arbitrary malicious code forging behavior within the process. Final scoring is still handled by a separate process, private evaluation mounts, and real delivery checks. This mechanism also does not prove test completeness or semantic correctness.
 
-## 表格实例
+## Table Instance
 
-`examples/spreadsheet/prepare.mjs` 会复制并冻结公开合成测试。使用现有 `workbook_write` 接口验证：
+`examples/spreadsheet/prepare.mjs` copies and freezes the public synthetic tests. Verify using the existing `workbook_write` interface:
 
-- 相邻但不同运算的显式公式逐字保留，包括绝对引用；同一 `value` 接口允许在已有公式上写入另一显式公式或零值，明确清空按调用者要求保存。
-- 原始文件字节不变，夹具中的非目标值、样式和批注保持。
-- 重复目标、未知工作表明确返回原生工具错误，已有交付文件不被部分覆盖。
-- 工作目录外的目标被拒绝，不产生文件。
+- Explicit formulas for adjacent but different operations are preserved verbatim, including absolute references; the same `value` interface allows writing another explicit formula or a zero value onto an existing formula, and explicit clearing is preserved as requested by the caller.
+- The original file bytes are unchanged; non-target values, styles, and comments in the fixture are preserved.
+- Duplicate targets and unknown worksheets explicitly return native tool errors, and existing delivery files are not partially overwritten.
+- Targets outside the working directory are rejected, and no files are produced.
 
-这些是本实例声明的 API 行为。框架没有 Excel、坐标或公式分支；允许跨文件和跨插件实现。若研究目标要求改变公开 API，应另立合同和验收，保留既有实验身份。
+These are the API behaviors declared by this instance. The framework has no Excel, coordinate, or formula branches; cross-file and cross-plugin implementations are allowed. If the research goal requires changing the public API, a separate contract and acceptance should be established, preserving the existing experiment identity.
 
-2026-10-28 的独立能力审查发现，一个任务得分与基线持平的候选只接受空白目标上的 `value` 公式，在已有公式上却要求另一个字段，违背同一写入接口。合成夹具因此补入已有公式作为输入：原冻结基线通过，该冻结候选明确失败。已有实验的测试快照和结果保持不变，后续合同冻结新的测试哈希；这项回归不读取题库答案，也不增加业务正确率门槛。
+The independent capability review on 2026-10-28 found that a candidate whose task score was on par with the baseline only accepted `value` formulas on blank targets, but required another field on existing formulas, violating the same write interface. The synthetic fixture therefore added existing formulas as input: the original frozen baseline passes, and that frozen candidate explicitly fails. The test snapshots and results of existing experiments remain unchanged, and subsequent contracts freeze new test hashes; this regression does not read benchmark answers and does not add a business accuracy threshold.
 
-可以在正式模型任务前单独验收一个原生 Bundle：
+A native Bundle can be independently accepted before a formal model task:
 
 ```bash
 node examples/spreadsheet/verify-contract.mjs \
@@ -51,4 +51,4 @@ node examples/spreadsheet/verify-contract.mjs \
   examples/venus /absolute/built-bundle /absolute/new-evidence-directory
 ```
 
-该命令固定使用本例 SDK Profile 和 patch 名称；通用控制器使用合同中的实际 Profile、patch 与入口。命令不读取凭证，不重写 Bundle；失败留下原日志、隔离回执、合成源文件和交付物。
+This command fixes the SDK Profile and patch name for this example; the general controller uses the actual Profile, patch, and entry point from the contract. The command does not read credentials and does not rewrite the Bundle; on failure it leaves the original logs, isolation receipt, synthetic source files, and deliverables.

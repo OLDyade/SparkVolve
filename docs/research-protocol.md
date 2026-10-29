@@ -1,15 +1,15 @@
-# 从搜索结果到可信结论
+# From Search Results to Trustworthy Conclusions
 
-搜索找到候选，独立复验检验它。发布成绩时区分运行链路通过、开发集改进、复验收益与跨领域迁移。
+Search finds candidates; independent validation tests them. When publishing results, distinguish run-chain pass, development-set improvement, validation gain, and cross-domain transfer.
 
-## 冻结比较协议
+## Frozen Comparison Protocol
 
-开始前固定任务、重复次数、模型、镜像、指标、失败规则和候选选择方式。基线和候选使用相同任务合同；每个比较组重新运行完整题集，不能混入搜索中的旧分数。模型温度和后端服务波动可能影响结果，保留每个重复。
+Before starting, fix the tasks, repetition count, model, image, metrics, failure rules, and candidate selection method. Baseline and candidates use the same task contract; each comparison group re-runs the full task set and must not mix in old scores from the search. Model temperature and backend service fluctuations may affect results; retain every repetition.
 
-已完成的搜索可使用新生成的公开任务准备复验。以下命令在仓库根运行；`<digest>` 为搜索结束前选定的已完成变异。
+A completed search may use newly generated public tasks to prepare validation. The following commands run at the repository root; `<digest>` is the completed mutation selected before the search ended.
 
 ```bash
-# 新任务目录；development 与 validation 生成不同数值
+# New task directory; development and validation generate different values
 docker run --rm \
   --mount type=bind,src="$PWD/examples/spreadsheet",dst=/example,readonly \
   --mount type=bind,src="$PWD/.evolution/business",dst=/workspace \
@@ -27,15 +27,15 @@ node --env-file=/absolute/private/venus.env dist/cli.js validate \
   --arms .evolution/business/validation-plan/arms.json
 ```
 
-`registration.json` 在任务执行前写入；`comparison.json` 包含每组完整分母、逐题逐次配对、平均差、样本标准差和失败数。执行顺序记录在报告中，不声称已消除时段混杂。样本标准差不等于置信区间；重复共享任务，不能把它们当独立任务数量。
+`registration.json` is written before task execution; `comparison.json` contains the full denominator for each group, per-task per-repetition pairing, mean difference, sample standard deviation, and failure count. Execution order is recorded in the report; no claim is made that time-period confounding has been eliminated. Sample standard deviation is not a confidence interval; repetitions share tasks and cannot be treated as a count of independent tasks.
 
-每个 arm 登记 `source`、源码 `digest`、`artifact` 路径及完整 `build` 身份。复验直接复制搜索时已经冻结的包，逐一核对原 lock、产物树和 tarball 哈希，运行相同产物。复验不执行构建脚本；即使构建脚本包含时间或随机输出，也不能改变被选版本。源码导入后修改属于新的搜索候选。
+Each arm registers `source`, source `digest`, the `artifact` path, and the full `build` identity. Validation directly copies the package already frozen at search time, verifies the original lock, artifact tree, and tarball hashes one by one, and runs the same artifacts. Validation does not execute build scripts; even if a build script contains time or random output, it cannot change the selected version. Modifications after source import constitute a new search candidate.
 
-`validation` 不开启优化器 API。对同一个 study 再运行命令只恢复原执行，不额外抽样。评分故障导致报告未完成，不隐式丢弃失败题。新一轮搜索若使用这些结果，必须将该数据标为已见并另建后续复验集。
+`validation` does not enable the optimizer API. Re-running the command on the same study only resumes the original execution and does not sample additionally. A scoring failure that leaves the report incomplete does not implicitly discard failed tasks. If a new round of search uses these results, the data must be marked as seen and a separate follow-up validation set must be created.
 
-## 研究资产与复用
+## Research Assets and Reuse
 
-搜索可以显式授权[原生行为探针](behavioral-probes.md)：优化器在隔离环境测试草稿的工具/服务，不访问独立评分材料。预注册时同时冻结探针次数和超时预算；对照不同优化器时计入各自全部实验开销。通过自写探针不代表独立验证通过，也不产生正式任务成绩。
+A search may explicitly authorize [native behavior probes](behavioral-probes.md): the optimizer tests draft tools/services in an isolated environment without accessing independent scoring materials. At pre-registration, freeze both the probe count and the timeout budget; when comparing different optimizers, count each one's full experimental overhead. Passing a self-written probe does not mean independent validation passed, nor does it produce an official task score.
 
 ```bash
 node dist/cli.js remember --root .evolution/business/search \
@@ -45,12 +45,12 @@ node dist/cli.js import --root <another-initialized-search> \
   --archive .evolution/library/<archive-id> --draft imported-mechanism
 ```
 
-档案含冻结 Bundle、谱系、合同、结果、事件和用量证据。不同实验的同一候选分别保存；负结果同样可查询。导入的草稿须重新提交和验证，不携带旧成绩作为当前收益。
+The archive contains the frozen Bundle, lineage, contract, results, events, and usage evidence. The same candidate from different experiments is stored separately; negative results are equally queryable. Imported drafts must be resubmitted and validated, and do not carry old scores as current gains.
 
-## 优化器自身的比较
+## Comparing Optimizers Themselves
 
-`optimizerHarness` 是独立原生 Bundle，可以改变研究方法实现与组合。比较优化器版本时，应在相同初始能力、开发任务、模型和总预算下分别搜索，然后把各自预先选定的候选放入同一独立复验。需报告整个搜索成本及所有失败候选，不能只对比最好一次。当前 CLI 提供这些运行与复验组件；自动选择下一代优化器的研究策略需要单独验证，尚无收益结论。
+`optimizerHarness` is an independent native Bundle that can change the research method implementation and composition. When comparing optimizer versions, search separately under the same initial capability, development tasks, model, and total budget, then place each one's pre-selected candidate into the same independent validation. The entire search cost and all failed candidates must be reported; comparing only the best run is not allowed. The current CLI provides these run and validation components; a research strategy that automatically selects the next-generation optimizer requires separate validation and has no gain conclusion yet.
 
-## 发表最小证据
+## Minimum Evidence for Publication
 
-提交版本、DSH/模型/镜像身份、数据来源与权限、预注册协议、全部配对结果、成本及失败、消融和复现命令。历史 SpreadsheetBench 结果与本仓库的新验收分开引用。合成用例的满分只说明该组任务通过；公开材料不声称达到通用商业表格质量上限。
+Submit the version, DSH/model/image identity, data sources and permissions, pre-registered protocol, all paired results, costs and failures, ablations, and reproduction commands. Historical SpreadsheetBench results are cited separately from this repository's new acceptance. A perfect score on synthetic cases only indicates that this task group passed; public materials do not claim to reach the upper bound of general commercial spreadsheet quality.

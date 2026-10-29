@@ -1,28 +1,28 @@
 # Compatibility
 
-所有实验固定实际运行版本，升级依赖必须重新通过原生和容器验收。
+All experiments pin the actual running versions; upgrading dependencies requires passing native and container acceptance again.
 
-| 层 | 当前实现 |
+| Layer | Current implementation |
 |---|---|
-| Node | 验收 24.16.0；包要求 ≥24.11.0，覆盖原生 SQLite 与开发工具依赖 |
-| npm / pnpm | 12.2.0 / 12.15.0；npm 管理本仓库，DSH 原生命令用 pnpm 管理 Profile |
-| DSH | 精确锁定 `0.2.1-rc.4`；使用 `sdk` / `sdk-minimal` Profile |
-| Cordis | `4.0.5`；插件注册、服务依赖、生命周期由原生实现处理 |
-| 模型 | Quick start 使用 Venus `deepseek/deepseek-v4.1-flash-1017`；Provider 配置与模型合同分别冻结 |
-| 容器 | runc（OrbStack daemon）及 gVisor 20261019.0/systrap（专用 Debian 13 daemon，ARM64）全链路实测；公开 Linux x86_64 CI 在 `48e835c` 对 runc/gVisor 各通过 23 项完整回归，逐版本结果见[公开验收记录](experiments/2026-10-28-public-ci-and-delivery.md) |
-| Excel | 示例镜像提供 openpyxl / LibreOffice；独立重算并检验公式与数值 |
+| Node | Acceptance tested on 24.16.0; package requires ≥24.11.0, covering native SQLite and development tool dependencies |
+| npm / pnpm | 12.2.0 / 12.15.0; npm manages this repository, DSH native commands use pnpm to manage Profiles |
+| DSH | Exactly pinned to `0.2.1-rc.4`; uses `sdk` / `sdk-minimal` Profiles |
+| Cordis | `4.0.5`; plugin registration, service dependencies, and lifecycle are handled by the native implementation |
+| Model | Quick start uses Venus `deepseek/deepseek-v4.1-flash-1017`; Provider configuration and model contract are frozen separately |
+| Container | Full-chain tested with runc (OrbStack daemon) and gVisor 20261019.0/systrap (dedicated Debian 13 daemon, ARM64); public Linux x86_64 CI at `48e835c` passed 23 full regression items each for runc/gVisor, per-version results in [public acceptance records](experiments/2026-10-28-public-ci-and-delivery.md) |
+| Excel | Example image provides openpyxl / LibreOffice; independently recomputes and verifies formulas and values |
 
-DSH 的 Profile 选择应用装配，Bundle 提供可分发 patch 与插件，Cordis 管理服务和生命周期。优化器和执行器分别运行原生 SDK；本项目不实现另一个 Agent Loop。
+DSH's Profile selects application assembly, Bundle provides distributable patches and plugins, and Cordis manages services and lifecycle. The optimizer and executor each run the native SDK; this project does not implement another Agent Loop.
 
-Evolution Preset 的 SDK 选择桥与安装配置见 [presets.md](presets.md)。当前实验合同的 `optimizerHarness.composition` 指向原生插件条目清单；旧的根 `patch` 方法合同不兼容，须通过当前 prepare 命令生成新实验。历史合同、日志和成绩保留原状，不改写后重跑。
+The SDK selection bridge and installation configuration for the Evolution Preset are in [presets.md](presets.md). The current experiment contract's `optimizerHarness.composition` points to the native plugin entry manifest; the old root `patch` method contract is incompatible, and new experiments must be generated via the current prepare command. Historical contracts, logs, and scores are kept as-is and are not rewritten and rerun.
 
-通用镜像不含 Excel 依赖；表格任务和表格评分器必须使用 `examples/spreadsheet/Dockerfile` 构建的扩展镜像。[启动指南](quick-start.md)中的 `verify-image.mjs` 在付费模型运行前实际检查 openpyxl、LibreOffice 重算、独立 grader 和原始值保留，输出原始日志及隔离回执。测试夹具输入和交付目录在准备阶段可写；该验收不代替正式评分的只读挂载或业务正确率评测。
+The general image does not include Excel dependencies; spreadsheet tasks and spreadsheet graders must use the extended image built with `examples/spreadsheet/Dockerfile`. The `verify-image.mjs` in the [startup guide](quick-start.md) actually checks openpyxl, LibreOffice recomputation, the independent grader, and raw value preservation before paid model runs, outputting raw logs and isolation receipts. Test fixture inputs and delivery directories are writable during the preparation phase; this acceptance does not replace the read-only mounts or business accuracy evaluation of formal scoring.
 
-接入其他模型时提供原生 Provider patch，更新 `Model` 合同及其环境变量列表，并完成真实工具调用验收。没有隐式模型切换。安装 Bundle 后的依赖由目标 Profile 管理；本仓库 npm overrides 不会成为消费者的全局策略。
+When integrating other models, provide a native Provider patch, update the `Model` contract and its environment variable list, and complete real tool-call acceptance. There is no implicit model switching. Dependencies after installing a Bundle are managed by the target Profile; this repository's npm overrides do not become a global policy for consumers.
 
-首次安装可能需要授权 pnpm 对精确版本的原生依赖执行构建脚本。只允许实际需要且核验过的包；错误直接保留并处理，不能把停用的插件当安装成功。
+The first installation may require authorizing pnpm to run build scripts for exactly pinned native dependencies. Only packages that are actually needed and verified are allowed; errors are kept and handled directly, and a disabled plugin must not be treated as a successful installation.
 
-当前分发测试的目标 Profile 在 `pnpm-workspace.yaml` 中明确允许以下构建；用在不同版本时须重新核实安装输出：
+The target Profile of the current distribution test explicitly allows the following builds in `pnpm-workspace.yaml`; when used with different versions, the installation output must be re-verified:
 
 ```yaml
 allowBuilds:
@@ -33,6 +33,6 @@ allowBuilds:
   'protobufjs@7.6.6': true
 ```
 
-`npm pack --json` 在 npm 12 返回按包名键控的对象；本仓库安装测试按锁定版本解析，没有引入旧格式兼容层。
+`npm pack --json` returns an object keyed by package name in npm 12; this repository's installation test parses by pinned version and does not introduce a legacy-format compatibility layer.
 
-核验入口：[当前原生实现调研](research/2026-10-27-native-implementation.md)、[DSH 固定源码](https://github.com/deepseek-ai/deepseek-harness/tree/22ddee3792402c3e70ec5f86a63c3e3e895a2f60)。
+Verification entry points: [current native implementation research](research/2026-10-27-native-implementation.md), [DSH pinned source](https://github.com/deepseek-ai/deepseek-harness/tree/22ddee3792402c3e70ec5f86a63c3e3e895a2f60).

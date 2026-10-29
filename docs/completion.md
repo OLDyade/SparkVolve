@@ -1,86 +1,86 @@
-# 全景方案落实状态
+# Panoramic Plan Implementation Status
 
-本页按 [`11.md`](../11.md) 的完整目标核对交付，核心思想原句保持不变。**项目尚未全部完工。** 工程验收、真实模型闭环和独立质量研究分别记录；单项通过不代表全部目标完成。
+This page verifies delivery against the complete goals of [`11.md`](../11.md), with the core idea kept verbatim. **The project is not yet fully complete.** Engineering acceptance, the real-model closed loop, and independent quality research are recorded separately; passing a single item does not mean all goals are complete.
 
-## 当前状态
+## Current Status
 
-2026-10-29 更新：`npm start` 官方 DeepSeek 入口已真实完成三个结构化数据任务的基线与自主候选评分、报告及原包导出，H0/H1 同为 100%，严格择优保留 H0。[启动结果](experiments/2026-10-29-official-startup-results.md)。三组变异空间对照已完成六次独立搜索和 100 次任务执行，独立均值为 87.5% / 90.625% / 90.625%；五次选择原 H0，唯一入选变异存在语义反例，未证明开放空间优势。[完整结果](experiments/2026-10-29-mutation-space-results.md)保留分母、成本和源码，历史研究结果不改写。
+Updated 2026-10-29: The `npm start` official DeepSeek entry has genuinely completed baseline and autonomous candidate scoring, reporting, and original-package export for three structured data tasks, with H0/H1 both at 100%, and strict selection retaining H0. [Launch results](experiments/2026-10-29-official-startup-results.md). Three mutation-space comparisons completed six independent searches and 100 task executions, with independent means of 87.5% / 90.625% / 90.625%; five selected the original H0, the sole selected mutation has a semantic counterexample, and no advantage of the open space was proven. [Full results](experiments/2026-10-29-mutation-space-results.md) retain the denominator, cost, and source code; historical research results are not rewritten.
 
-| 范围 | 已核实状态 |
+| Scope | Verified status |
 | --- | --- |
-| 当前交付 | 原生开发接入、600 秒预算、原生沙箱 HOME/XDG、匹配 Undici 传输及完整事件记账；各项证据绑定对应源码、镜像和产物身份 |
-| 最近工程检查 | 提交 `6590b97` 的[公开 CI 四路全绿](https://github.com/OLDyade/spark-harness-evolution/actions/runs/40805867567)：runc/gVisor 各 24 项。收尾修正后完整本地检查通过，266 单元、28 原生；11 份公开补丁复原的源码摘要全部匹配原候选。历史 305 秒真实 HTTP 等待检查保留 |
-| 最新方法研究 | 三组同 G/H0、各两次搜索，100 次执行含 5 次失败；1,068 次请求开始、1,067 返回、1 失败、0 未结束。一条失败请求缺用量。完整代码差异和确定性反例公开，未证明方法优势 |
-| 已完成的自主闭环 | 2026-10-28 官方 DeepSeek 自主改造、独立验证与原包安装七项检查通过；开发 H0/H1/H2 为 **56.25%／81.25%／100%**，独立 H0/入选候选为 **81.25%／100%**。单批合成任务结果不证明稳定收益 |
-| 原包交付 | 自主候选原 tarball 在四个干净 Profile 安装并实际执行四题，均为 **100%**；后续发现可选重算交付路径丢公式，已独立修复。维护者修正版验证 **100%**，另一次安装后执行 **81.25%**，归一化一题退步保留；源码、成绩与包身份严格区分 |
-| 当前主线 | 默认任务与模型 600 秒；优化器预算覆盖完整计划等待。实际 DSH → Pi → OpenAI SDK → HTTP 的 305 秒响应头回归消除了独立五分钟限制；不增加自动重试。真实服务连接故障、模型变异语义缺陷分别记录 |
-| 隔离路线 | runc／gVisor 主线已有实测；**MicroVM 为可选后端，不阻塞主线**，未验证的独立内核和磁盘硬限额不作已支持声明 |
-| 分发验收 | 干净提交 `0b67a10` 的 Linux x64/macOS ARM64 实际 tarball **390 文件／627 依赖 SBOM**，两平台 SHA256 同为 `055ac14a3232325d25d35af596e55393f1407dfd662f5a452a123aaccd927696`；两边原包安装均通过。文档回执不倒写归档，尚未发布 registry 包 |
-| 外部工程状态 | 2026-10-28 按用户指令公开仓库，标准 runner 实际运行，付款／额度拦截消失。macOS Go 安装与 gVisor Docker 初始化分别修复；旧失败、取消与新运行结果独立留档 |
+| Current delivery | Native development integration, 600-second budget, native sandbox HOME/XDG, matching Undici transport, and complete event accounting; each piece of evidence is bound to the corresponding source, image, and artifact identity |
+| Most recent engineering check | Commit `6590b97`'s [public CI all four lanes green](https://github.com/OLDyade/spark-harness-evolution/actions/runs/40805867567): runc/gVisor 24 items each. After final corrections, the complete local check passed, 266 unit, 28 native; source digests restored from 11 public patches all match the original candidates. The historical 305-second real HTTP wait check is retained |
+| Latest method research | Three groups with the same G/H0, two searches each, 100 executions including 5 failures; 1,068 requests started, 1,067 returned, 1 failed, 0 unfinished. One failed request lacks usage. Full code diffs and deterministic counterexamples are public; no method advantage was proven |
+| Completed autonomous closed loop | 2026-10-28 official DeepSeek autonomous modification, independent validation, and original-package installation passed seven checks; development H0/H1/H2 were **56.25%／81.25%／100%**, independent H0/selected candidate were **81.25%／100%**. A single batch of synthetic task results does not prove stable gains |
+| Original-package delivery | The autonomous candidate's original tarball was installed in four clean Profiles and actually executed four problems, all **100%**; a later discovery found that the optional recompute delivery path dropped formulas, which was independently fixed. The maintainer-corrected version validated at **100%**, and another post-installation execution was **81.25%**, with the one-problem regression after normalization retained; source, scores, and package identity are strictly distinguished |
+| Current mainline | Default task and model 600 seconds; optimizer budget covers the full planned wait. The actual DSH → Pi → OpenAI SDK → HTTP 305-second response-header regression eliminated the separate five-minute limit; no automatic retries are added. Real service connection failures and model mutation semantic defects are recorded separately |
+| Isolation route | The runc／gVisor mainline has been measured; **MicroVM is an optional backend and does not block the mainline**, and unverified independent kernels and hard disk quotas are not claimed as supported |
+| Distribution acceptance | The actual tarball of clean commit `0b67a10` for Linux x64/macOS ARM64 has **390 files／627 dependency SBOM**, with SHA256 identical on both platforms as `055ac14a3232325d25d35af596e55393f1407dfd662f5a452a123aaccd927696`; original-package installation passed on both. Documentation receipts do not back-write the archive, and no registry package has been published yet |
+| External engineering status | 2026-10-28 the repository was made public per user instruction, the standard runner actually ran, and payment／quota blocks disappeared. macOS Go installation and gVisor Docker initialization were fixed separately; old failures, cancellations, and new run results are archived independently |
 
-最新[官方 DeepSeek 完整闭环与语义修复](experiments/2026-10-28-official-deepseek-results.md)及[原始来源摘要](evidence/official-deepseek-20261028/sources.json)区分自主改造、维护者修复及原包安装结果。此前[公开 CI 与真实交付](experiments/2026-10-28-public-ci-and-delivery.md)、[600 秒运行记录](experiments/2026-10-28-runtime-delivery.md)、原 300 秒[结果](experiments/2026-10-28-native-authoring-results.md)、[同 G 反馈研究](experiments/2026-10-28-paired-feedback-results.md)及[全部安装尝试](evidence/paired-feedback-20261028/index.json)独立保留；新代码不改写旧合同或结果。
+The latest [official DeepSeek complete closed loop and semantic fixes](experiments/2026-10-28-official-deepseek-results.md) and [original source summary](evidence/official-deepseek-20261028/sources.json) distinguish autonomous modification, maintainer fixes, and original-package installation results. The earlier [public CI and real delivery](experiments/2026-10-28-public-ci-and-delivery.md), [600-second run record](experiments/2026-10-28-runtime-delivery.md), original 300-second [results](experiments/2026-10-28-native-authoring-results.md), [same-G feedback research](experiments/2026-10-28-paired-feedback-results.md), and [all installation attempts](evidence/paired-feedback-20261028/index.json) are retained independently; new code does not rewrite old contracts or results.
 
-## 能力与验收证据
+## Capabilities and Acceptance Evidence
 
-| 能力 | 已实现及实际验证 | 证据入口 |
+| Capability | Implemented and actually verified | Evidence entry |
 | --- | --- | --- |
-| 原生插件化进化闭环 | DSH 优化器自主修改插件实现并提交候选；控制器冻结、调度、独立评分和严格择优；真实连续搜索及双会话接续 | [连续搜索](acceptance-continuous.md)、[全项评审账本](review-ledger.md) |
-| 实验身份与独立评分 | 固定输入、模型、镜像和完整分母；评测材料独立挂载；执行失败与业务得分分开；逐题和优化器用量来自持久账本 | [实验约束](constraints.md)、[研究协议](optimizer-studies.md) |
-| 源码、构建与交付一致 | 独立构建、v3 lock、编译和依赖打包；QA、执行、复验及导出使用同一冻结产物；真实 TypeScript 构建、禁网安装调用、篡改拒绝与恢复通过 | [分发协议](releasing.md)、[原包交付回执](evidence/paired-feedback-20261028/artifact-installation.json) |
-| 原生装配与领域 QA | 按实际 SDK Profile、环境和候选 patch 创建 Agent，审计依赖、插件树及 Preset；独立领域操作合同冻结源码和入口，禁网、无凭证执行；支持跨插件组合 | [领域验证](domain-verification.md)、[服务与作用域观察](research/2026-10-28-service-observations.md) |
-| Evolution Preset 与工具语义 | 原生注册表、声明与 Include；会话隔离、子 Agent 继承、重启恢复及缺失定义拒绝；分叉返回真实草稿身份且重放不覆盖编辑，结束仅在宿主成功确认后生效 | [Preset](presets.md)、[普通结束工具验收](research/2026-10-28-evolution-finish-native-turn.md) |
-| 原生插件开发资料与检查 | 锁定 DSH inspection 与官方开发 Skill 实际调用；官方 DeepSeek 自主实现原生引擎重算，两份候选进入 QA、评分及独立验证，入选原包安装复用通过。早期失败独立保留 | [接入研究](research/2026-10-28-native-authoring-integration.md)、[最新真实验收](experiments/2026-10-28-official-deepseek-results.md) |
-| 中断、事件与取消 | SQLite 单写租约及持久提交意图；发布阶段 SIGKILL、并发与响应丢失恢复原 attempt；提交后唤醒、持久游标重放；后代按登记身份取消并分层记账 | [恢复协议](research/2026-10-28-publication-recovery.md)、[事件协议](events.md)、[命令生命周期](research/2026-10-28-command-process-groups.md) |
-| 自主复用研究资产 | 授权库随合同冻结；真实模型检索、读取并导入负结果档案，来源进入新候选，旧成绩不进入本轮裁决 | [研究资产](research-assets.md) |
-| 原字节证据访问 | `evolution_materialize` 发布只读原文件；描述符读取覆盖文件、清单和冻结复制；独立竞态、真实模型读取／复制／摘要／回收通过 | [证据接口](evidence-access.md) |
-| 自主行为实验 | 优化器编写独立测试，在禁网、无凭证的真实 DSH 环境调用工具并观察服务、作用域和生命周期；失败、源码和原始观察保留 | [行为实验](behavioral-probes.md)、[实际失败与限制](research/2026-10-28-service-observations.md) |
-| 优化器自身进化与固定比较 | G/H 独立版本与同预算协调；真实元优化器修改并运行 G1；独立协议登记全部固定方法、共同 H0 和完整失败分母；终态不重跑 | [研究接口](optimizer-studies.md#固定方法比较)、[元优化器终态记录](experiments/2026-10-28-optimizer-study-results.md) |
-| 同 G 宿主反馈对照 | 同一源码／构建／装配下登记 full/mechanical 两臂；统一模型可见状态、事件和证据；原生双臂探测及真实配对搜索完成 | [反馈协议](feedback-views.md)、[真实对照结果](experiments/2026-10-28-paired-feedback-results.md) |
-| 通用性与第二领域 | 结构化事件、日志、清单复用同一引擎和合同；真实自主变异、完整失败裁决及基线 Bundle 原生安装调用通过 | [非表格领域](acceptance-structured-data.md) |
-| 可复用能力交付 | 原 Bundle 随附 `CAPABILITY.md`、实验报告、谱系及权限与用量说明；实际 npm 包、锁文件、CycloneDX SBOM 和摘要回执；独立能力入口完成原生安装及 headless 真实模型任务 | [能力卡](capability-cards.md)、[分发](releasing.md)、[独立使用](use-capability.md) |
-| 开发者与首次体验 | 双语 README、组件／生命周期／时序图及实测图已渲染核验；公开冷启动流程完成搜索、同包复验和归档；只读事件观察不接管任务 | [用户旅程](research/2026-10-28-user-journey.md)、[组件索引](components.md) |
-| 无凭证离线导览 | 原始历史记录驱动交互页面；桌面、移动、键盘、JSON 下载、零网络访问和图形渲染通过；`docs:check` 检查过期内容且不改写原文件 | [导览](tour.html)、[验收记录](evidence/2026-10-28-offline-tour.json) |
-| 运行权限与受控出口 | runc/gVisor 真实模型中断后接回原 worker/broker，完成独立评分与回收；显式 DNS、有限地址池、跨进程竞争和回收中断恢复已验收 | [隔离合同](isolation.md)、[受控出口](controlled-egress.md)、[gVisor 回执](evidence/2026-10-28-gvisor-controlled-dns.json) |
+| Native plugin-based evolution closed loop | The DSH optimizer autonomously modifies plugin implementations and submits candidates; the controller freezes, schedules, independently scores, and strictly selects; real continuous search and dual-session continuation | [Continuous search](acceptance-continuous.md), [full review ledger](review-ledger.md) |
+| Experiment identity and independent scoring | Fixed inputs, model, image, and full denominator; evaluation materials mounted independently; execution failures separated from business scores; per-problem and optimizer usage come from the persistent ledger | [Experiment constraints](constraints.md), [research protocol](optimizer-studies.md) |
+| Source, build, and delivery consistency | Independent build, v3 lock, compilation, and dependency packaging; QA, execution, re-verification, and export use the same frozen artifact; real TypeScript build, network-disabled installation invocation, tamper rejection, and recovery passed | [Distribution protocol](releasing.md), [original-package delivery receipt](evidence/paired-feedback-20261028/artifact-installation.json) |
+| Native assembly and domain QA | Creates Agents from the actual SDK Profile, environment, and candidate patch, auditing dependencies, plugin tree, and Preset; independent domain operation contracts freeze source and entry points, executed with network disabled and no credentials; supports cross-plugin composition | [Domain validation](domain-verification.md), [service and scope observations](research/2026-10-28-service-observations.md) |
+| Evolution Preset and tool semantics | Native registry, declarations, and Include; session isolation, sub-Agent inheritance, restart recovery, and rejection of missing definitions; fork returns the real draft identity and replay does not overwrite edits, and ending takes effect only after the host successfully confirms | [Preset](presets.md), [ordinary end-tool acceptance](research/2026-10-28-evolution-finish-native-turn.md) |
+| Native plugin development materials and checks | Locked DSH inspection and actual invocation of the official development Skill; official DeepSeek autonomously implements native engine recomputation, two candidates enter QA, scoring, and independent validation, and the selected original-package installation reuse passed. Early failures are retained independently | [Integration research](research/2026-10-28-native-authoring-integration.md), [latest real acceptance](experiments/2026-10-28-official-deepseek-results.md) |
+| Interruption, events, and cancellation | SQLite single-writer lease and persistent commit intent; SIGKILL during the publish phase, concurrency, and response loss recover the original attempt; post-commit wakeup and persistent cursor replay; descendants cancelled by registered identity with layered accounting | [Recovery protocol](research/2026-10-28-publication-recovery.md), [event protocol](events.md), [command lifecycle](research/2026-10-28-command-process-groups.md) |
+| Autonomous reuse of research assets | The authorization library is frozen with the contract; the real model retrieves, reads, and imports negative-result archives, sources enter new candidates, and old scores do not enter this round's adjudication | [Research assets](research-assets.md) |
+| Original-byte evidence access | `evolution_materialize` publishes read-only original files; descriptor reads cover files, manifests, and frozen copies; independent races and real-model read／copy／digest／reclaim passed | [Evidence interface](evidence-access.md) |
+| Autonomous behavior experiments | The optimizer writes independent tests, invokes tools in a real DSH environment with network disabled and no credentials, and observes services, scopes, and lifecycle; failures, source, and raw observations are retained | [Behavior experiments](behavioral-probes.md), [actual failures and limitations](research/2026-10-28-service-observations.md) |
+| Optimizer self-evolution and fixed comparison | Independent G/H versions coordinated under the same budget; the real meta-optimizer modifies and runs G1; an independent protocol registers all fixed methods, the common H0, and the full failure denominator; terminal states are not re-run | [Research interface](optimizer-studies.md#fixed-method-comparison), [meta-optimizer terminal-state record](experiments/2026-10-28-optimizer-study-results.md) |
+| Same-G host feedback comparison | full/mechanical two arms registered under the same source／build／assembly; unified model-visible state, events, and evidence; native two-arm probing and real paired search completed | [Feedback protocol](feedback-views.md), [real comparison results](experiments/2026-10-28-paired-feedback-results.md) |
+| Generality and second domain | Structured events, logs, and manifests reuse the same engine and contract; real autonomous mutation, full failure adjudication, and baseline Bundle native installation invocation passed | [Non-tabular domain](acceptance-structured-data.md) |
+| Reusable capability delivery | The original Bundle ships with `CAPABILITY.md`, experiment reports, lineage, and permission and usage documentation; actual npm package, lockfile, CycloneDX SBOM, and digest receipt; an independent capability entry completes native installation and a headless real-model task | [Capability card](capability-cards.md), [distribution](releasing.md), [independent use](use-capability.md) |
+| Developer and first experience | Bilingual README, component／lifecycle／sequence diagrams, and measured diagrams rendered and verified; the public cold-start flow completes search, same-package re-verification, and archiving; read-only event observation does not take over tasks | [User journey](research/2026-10-28-user-journey.md), [component index](components.md) |
+| Credential-free offline tour | Raw historical records drive the interactive page; desktop, mobile, keyboard, JSON download, zero network access, and graphical rendering passed; `docs:check` checks for stale content and does not rewrite original files | [Tour](tour.html), [acceptance record](evidence/2026-10-28-offline-tour.json) |
+| Runtime permissions and controlled egress | After a real-model interruption under runc/gVisor, reconnects to the original worker/broker, completing independent scoring and reclamation; explicit DNS, limited address pool, cross-process contention, and reclamation interruption recovery have been accepted | [Isolation contract](isolation.md), [controlled egress](controlled-egress.md), [gVisor receipt](evidence/2026-10-28-gvisor-controlled-dns.json) |
 
-## 研究结果与明确限制
+## Research Results and Explicit Limitations
 
-当前证据**未证明稳定正确率收益或跨任务迁移**。以下研究均保留原候选、失败、负结果和完整成本，不能用开发集单次上涨代替独立结论。
+Current evidence **does not prove stable accuracy gains or cross-task transfer**. The following studies all retain original candidates, failures, negative results, and full costs; a single increase on the development set cannot substitute for an independent conclusion.
 
-| 研究 | 结果与边界 |
+| Study | Results and boundaries |
 | --- | --- |
-| [新开发集联合变异](acceptance-joint-development.md) | 均值 65.625% → 81.25%，最终候选含不接受的启发式自动恢复，保留分数和源码，不作为接受能力分发 |
-| [联合候选独立复验](experiments/2026-10-28-joint-independent-results.md) | 24/24 执行成功；基线 93.75%、候选 77.08%，下降 16.67 个百分点，拒绝晋级；公式平移和文本错误分类反例保留 |
-| [行为实验台对照](experiments/2026-10-28-native-probe-spreadsheet-results.md) | 已有自主新增插件、修改工具与 patch 的证据；未证明行为实验台提分，也不能据此宣称复杂拓扑的因果收益 |
-| [优化器自身进化](experiments/2026-10-28-optimizer-study-results.md) | G0/G1 开发同分保留 G0，325 次请求完整记账；原 G1/G0/H0 安装通过，新增工具未实际调用及机制缺陷保留 |
-| [同 G 反馈对照](experiments/2026-10-28-paired-feedback-results.md) | Full / Mechanical 独立均值 90.625% / 81.25%；差值全部来自两组选择相同 H0 的第一配对块，无法归因于反馈或变异。源码审查发现标签猜测、公式平移及保留检查缺陷；候选均作为研究产物保存 |
-| [原生插件开发能力验收](experiments/2026-10-28-native-authoring-results.md) | 两份新候选与 H0 开发得分均为 81.25%，严格择优保留 H0；20 次执行中 1 次连接阶段挂起触发原 300 秒时限，19 次评分。两验证臂使用同一 H0，其 50% / 100% 差异不能归因为接入收益；候选通用算法反例和未闭合请求完整保留，总体验收失败 |
+| [New development-set joint mutation](acceptance-joint-development.md) | Mean 65.625% → 81.25%, the final candidate contains an unaccepted heuristic auto-recovery; scores and source are retained and it is not distributed as an accepted capability |
+| [Joint candidate independent re-verification](experiments/2026-10-28-joint-independent-results.md) | 24/24 executions succeeded; baseline 93.75%, candidate 77.08%, a drop of 16.67 percentage points, promotion rejected; formula-shift and text-error-classification counterexamples retained |
+| [Behavior bench comparison](experiments/2026-10-28-native-probe-spreadsheet-results.md) | Evidence exists of autonomous new plugins, modified tools, and patches; no score gain from the behavior bench was proven, nor can causal gains for complex topologies be claimed from it |
+| [Optimizer self-evolution](experiments/2026-10-28-optimizer-study-results.md) | G0/G1 tied on development, G0 retained, 325 requests fully accounted; original G1/G0/H0 installation passed, the newly added tool was not actually invoked and mechanism defects are retained |
+| [Same-G feedback comparison](experiments/2026-10-28-paired-feedback-results.md) | Full / Mechanical independent means 90.625% / 81.25%; the difference comes entirely from the first paired block where both groups selected the same H0, and cannot be attributed to feedback or mutation. Source review found label guessing, formula shifting, and retention-check defects; all candidates are saved as research artifacts |
+| [Native plugin development capability acceptance](experiments/2026-10-28-native-authoring-results.md) | Both new candidates and H0 scored 81.25% on development, and strict selection retained H0; of 20 executions, 1 hung at the connection stage and triggered the original 300-second limit, with 19 scored. Both validation arms used the same H0, so their 50% / 100% difference cannot be attributed to integration gains; the candidate's general-algorithm counterexample and the unclosed request are fully retained, and overall acceptance failed |
 
-手写的服务接口迁移、隔离作用域和异步卸载测试证明原生机制可验证；真实模型也曾选择没有区分力的断言。两类证据分别保留，不能合并为自主复杂重构已经完成。
+Hand-written service-interface migration, isolated-scope, and async-unload tests prove that native mechanisms are verifiable; the real model has also chosen assertions with no discriminating power. The two kinds of evidence are retained separately and cannot be merged into a claim that autonomous complex refactoring is complete.
 
-## 完整交付仍需补齐
+## Remaining Work for Complete Delivery
 
-| 范围 | 剩余工作与完成依据 |
+| Scope | Remaining work and completion basis |
 | --- | --- |
-| DSH 原生插件开发端到端验收 | **本轮已闭合**：官方 DeepSeek 自主改造、独立验证、同归档安装及真实四类业务执行完成。原中转流中断与首轮无效工具 JSON 保留；不宣称根治第三方服务，也不把安装成功当业务满分 |
-| 配置／实现／装配联合进化 | 保持优化器自主选择变异；补复杂跨插件接口、配置、作用域及装配重构的真实调用和独立反例证据，串起原树、变异树、交付与同包复用 |
-| 稳定收益与迁移研究 | 真实反馈比较已完成，结论仍受波动和样本限制。后续应基于明确机制改进预注册独立搜索与新任务实例；[完整反馈／盲变异／随机操作选择研究](research/2026-10-28-feedback-causal-protocol.md)尚未登记执行，不用重复抽样或确定性夹具替代研究 |
-| 当前版本完整交付 | 官方服务完整闭环与原生语义回归已通过，维护者修复独立验证和安装执行已完成；业务仍有单题语义退步，保持完整分母。工程检查、实际 tarball 安装与提交回执分别留档；主线程自审，不使用 subagent |
-| GitHub 云端工程与治理 | 仓库已按用户指令公开，标准 runner 的 Linux/macOS 和 runc/gVisor 完整矩阵已通过；旧支付限制与私有 Rulesets 拒绝保留为历史。分支治理与 registry 发布独立管理，云端工程通过不代替真实模型和质量验收 |
+| DSH native plugin development end-to-end acceptance | **Closed this round**: official DeepSeek autonomous modification, independent validation, same-archive installation, and real execution of four business categories completed. The original relay stream interruption and the first-round invalid tool JSON are retained; no claim is made of curing third-party services, nor is installation success treated as a full business score |
+| Joint evolution of configuration／implementation／assembly | Keep the optimizer autonomously choosing mutations; add real invocation and independent counterexample evidence for complex cross-plugin interfaces, configuration, scopes, and assembly refactoring, linking the original tree, mutation tree, delivery, and same-package reuse |
+| Stable gains and transfer research | The real feedback comparison is complete, but conclusions remain limited by variance and sample size. Follow-up should pre-register independent searches and new task instances based on explicit mechanism improvements; the [complete feedback／blind mutation／random operation selection study](research/2026-10-28-feedback-causal-protocol.md) has not yet been registered for execution, and repeated sampling or deterministic fixtures must not substitute for research |
+| Complete delivery of the current version | The official-service complete closed loop and native semantic regression have passed, and maintainer-fix independent validation and installation execution are complete; business still has a single-problem semantic regression, and the full denominator is maintained. Engineering checks, actual tarball installation, and commit receipts are archived separately; self-review on the main thread, no subagent |
+| GitHub cloud engineering and governance | The repository has been made public per user instruction, and the standard runner's Linux/macOS and runc/gVisor full matrix has passed; old payment limits and private Rulesets rejections are retained as history. Branch governance and registry publishing are managed independently; cloud engineering passing does not substitute for real-model and quality acceptance |
 
-**可选扩展：MicroVM 与更强磁盘边界。** [持久存储探测](research/2026-10-28-persistent-storage-boundary.md)保留 OrbStack loop 关联 `EPERM`，未到写满验收；[Apple 原生路线](research/2026-10-28-native-microvm.md)已核官方包摘要、签名和公证，但尚未启动 VM。安装需管理员认证，工作卷、日志边界和原任务恢复仍待实测。按用户裁决，这条扩展不阻塞主线，也不自动切换既有运行时。
+**Optional extension: MicroVM and stronger disk boundaries.** [Persistent storage probing](research/2026-10-28-persistent-storage-boundary.md) retains the OrbStack loop association `EPERM`, and has not reached write-full acceptance; the [Apple native route](research/2026-10-28-native-microvm.md) has verified the official package digest, signature, and notarization, but the VM has not yet been started. Installation requires administrator authentication, and the working volume, log boundaries, and original-task recovery still await actual testing. Per user adjudication, this extension does not block the mainline and does not automatically switch the existing runtime.
 
-## 版本化验收索引
+## Versioned Acceptance Index
 
-历史测试数量仅在对应记录中解释，不累计为当前覆盖率。旧合同按原代码保留复核路径；新增 `hostSearchProtocol` 不自动改写旧注册。
+Historical test counts are explained only in their corresponding records and are not accumulated as current coverage. Old contracts retain review paths per the original code; newly added `hostSearchProtocol` does not automatically rewrite old registrations.
 
-| 记录 | 保留的版本证据 |
+| Record | Retained version evidence |
 | --- | --- |
-| [发布恢复](research/2026-10-28-publication-recovery.md) | 发布阶段故障注入、并发及原 attempt 恢复 |
-| [早期研究分发](evidence/2026-10-28-study-delivery.json) | Python 缓存误入包的原失败及修正后的同包安装；明确记录未提交工作树身份 |
-| [固定方法比较](evidence/2026-10-28-fixed-comparison.json) | 三臂完整分母、故意失败臂、终态重入无新请求；旧 Study 报告只读重建 |
-| [宿主反馈视图](evidence/2026-10-28-feedback-views.json) | 确定性双臂与三臂原生容器验收、镜像及分发身份；不作为模型质量收益 |
-| [反馈研究事前设计](experiments/2026-10-28-feedback-study-registration.md)与[执行登记](evidence/2026-10-28-paired-feedback-registration.json) | 同 G/H0、固定两臂与完整分母、AB／BA 配对块调度、运行提交 `cf32125` |
-| [反馈研究终态索引](evidence/paired-feedback-20261028/index.json) | 原始报告、机制反例、休眠／超时两次失败和最终 5 个上下文安装通过；原件逐字节摘要可复核 |
-| [原生开发能力终态索引](evidence/native-authoring-20261028/index.json) | 提交 `d8b11ec`、原 300 秒合同、实际 inspection／Skill 调用、两份同分候选、1 次超时、233 次请求及原 H0 安装；总体验收失败保留 |
+| [Publish recovery](research/2026-10-28-publication-recovery.md) | Publish-phase fault injection, concurrency, and original attempt recovery |
+| [Early research distribution](evidence/2026-10-28-study-delivery.json) | The original failure of Python cache mistakenly entering the package and the corrected same-package installation; explicitly records the uncommitted working-tree identity |
+| [Fixed method comparison](evidence/2026-10-28-fixed-comparison.json) | Three-arm full denominator, deliberate failure arm, terminal-state re-entry with no new requests; old Study reports rebuilt read-only |
+| [Host feedback view](evidence/2026-10-28-feedback-views.json) | Deterministic two-arm and three-arm native container acceptance, image and distribution identity; not treated as model quality gains |
+| [Feedback research pre-design](experiments/2026-10-28-feedback-study-registration.md) and [execution registration](evidence/2026-10-28-paired-feedback-registration.json) | Same G/H0, fixed two arms and full denominator, AB／BA paired-block scheduling, run commit `cf32125` |
+| [Feedback research terminal-state index](evidence/paired-feedback-20261028/index.json) | Original reports, mechanism counterexamples, two failures (sleep／timeout), and final 5-context installation passed; byte-by-byte digests of originals are reviewable |
+| [Native development capability terminal-state index](evidence/native-authoring-20261028/index.json) | Commit `d8b11ec`, original 300-second contract, actual inspection／Skill invocation, two tied candidates, 1 timeout, 233 requests, and original H0 installation; overall acceptance failure retained |
 
-按用户最新裁决，后续由主线程执行实现、必要测试和自审，不再启动 subagent 核查。历史独立评审作为原记录保留。完整评审逐条决定见 [review-ledger.md](review-ledger.md)；核心思想、`11.md` 与宣传定位不在这些状态整理的改动范围内。
+Per the user's latest adjudication, implementation, necessary tests, and self-review will henceforth be performed by the main thread, and no subagent will be launched for verification. Historical independent reviews are retained as original records. Item-by-item decisions of the full review are in [review-ledger.md](review-ledger.md); the core idea, `11.md`, and the promotional positioning are outside the scope of these status-organization changes.

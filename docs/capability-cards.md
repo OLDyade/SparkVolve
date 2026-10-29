@@ -1,35 +1,35 @@
-# 把能力连同证据一起交付
+# Deliver Capabilities Together with Evidence
 
-`export` 为终态候选生成 `CAPABILITY.md`，从实际账本整理用途声明、版本身份、评分、失败、用量与运行条件。卡片和机器记录放在原始 Bundle 旁；不会重打包、改源码或改变已验收的 tarball。
+`export` generates `CAPABILITY.md` for terminal candidates, organizing purpose statements, version identity, scores, failures, usage, and runtime conditions from the actual ledger. The card and machine records are placed alongside the original Bundle; there is no repackaging, source modification, or change to the accepted tarball.
 
 ```text
 export/
-├── CAPABILITY.md             安装者先读的能力与证据摘要
-├── research-record.json      原始假设、合同、谱系与证据索引
-├── experiment-report.json    导出时完整分母及逐次请求记账
-├── source/                   原冻结源码与依赖锁
-├── artifact/                 原构建产物（构建成功时）
-└── bundle.tgz                实际运行的原包（构建成功时）
+├── CAPABILITY.md             Capability and evidence summary that installers read first
+├── research-record.json      Original hypothesis, contract, lineage, and evidence index
+├── experiment-report.json    Full denominator at export time and per-request accounting
+├── source/                   Original frozen source and dependency lock
+├── artifact/                 Original build artifact (when the build succeeded)
+└── bundle.tgz                Original package actually run (when the build succeeded)
 ```
 
-正常导出命令自动生成这些文件：
+The normal export command automatically generates these files:
 
 ```bash
 node dist/cli.js export --root /absolute/experiment \
   --candidate <candidate-digest> --output /absolute/new-export
 ```
 
-| 安装者需要知道什么 | 卡片依据 |
+| What the installer needs to know | Basis for the card |
 |---|---|
-| 这个包是什么版本 | 源码、构建、锁文件和 tarball 身份，以及两份导出 JSON 的 SHA-256 |
-| 原本想解决什么 | 研究者 objective 与优化器 hypothesis 分别标注为声明 |
-| 实际验证了什么 | 原合同用途、当前候选完整任务分母、评分、失败与领域约束 |
-| 花了多少资源 | 当前候选执行用量、全实验共享优化器用量分别列出；缺失保持未知，费用为 null |
-| 在哪里运行过 | 原模型、DSH Profile、镜像及执行隔离合同；不推断新环境的权限 |
-| 如何继续使用 | 指向原始包、构建 manifest、依赖锁及原生安装指南 |
+| What version this package is | Source, build, lockfile, and tarball identity, plus the SHA-256 of the two exported JSON files |
+| What it was originally meant to solve | Researcher objective and optimizer hypothesis, each labeled as a claim |
+| What was actually validated | Original contract purpose, full task denominator of the current candidate, scores, failures, and domain constraints |
+| How many resources were spent | Execution usage of the current candidate and optimizer usage shared across the whole experiment are listed separately; missing values remain unknown, and cost is null |
+| Where it has run | Original model, DSH Profile, image, and execution isolation contract; permissions of a new environment are not inferred |
+| How to continue using it | Points to the original package, build manifest, dependency lock, and native installation guide |
 
-导出可以发生在一个候选终态、其他候选仍在运行时。因此卡片是带原事件位置的导出快照，不自动代表搜索最终报告。搜索结果不自动成为独立验证；验证合同也不自动证明未知任务迁移。模型文本采用字面数据块，不能把 HTML 或 Markdown 内容解释成卡片结构。
+An export can occur when one candidate is terminal while other candidates are still running. The card is therefore an export snapshot with original event positions and does not automatically represent the final search report. Search results do not automatically become independent validation; a validation contract also does not automatically prove transfer to unknown tasks. Model text uses literal data blocks, and HTML or Markdown content must not be interpreted as card structure.
 
-构建失败候选只有源码与研究档案，卡片明确没有可安装包。QA 失败或被拒绝的候选即便有 tarball，也继续标记为研究产物。卡片不改变冠军选择、安装授权或公开发布边界。
+A build-failed candidate has only source and research records, and the card explicitly states that there is no installable package. QA-failed or rejected candidates remain labeled as research artifacts even if a tarball exists. The card does not change champion selection, installation authorization, or public release boundaries.
 
-设计借鉴与固定源码见[新近生态核查](research/2026-10-28-ecosystem-delivery.md)。原始 Bundle 的实际安装和工具调用继续按[能力使用指南](use-capability.md)验收。
+For design references and pinned source, see [Recent Ecosystem Review](research/2026-10-28-ecosystem-delivery.md). Actual installation and tool invocation of the original Bundle continue to be accepted according to the [Capability Usage Guide](use-capability.md).

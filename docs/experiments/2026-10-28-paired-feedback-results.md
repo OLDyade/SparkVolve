@@ -1,73 +1,73 @@
-# 同一优化器的反馈对照：完整结果与机制反例
+# Feedback comparison for the same optimizer: full results and mechanism counterexamples
 
-**真实模型闭环已完成；本次结果不足以证明任务反馈提高了进化质量。** 两组均完成自主代码变异、冻结构建、原生装配 QA、独立评估和完整记账。候选审查发现了明确的算法缺陷与启发式定位，保留全部分数和原包，不把搜索冠军直接发布为通用能力。
+**The real-model closed loop is complete; these results are insufficient to show that task feedback improved evolution quality.** Both groups completed autonomous code mutation, frozen builds, native assembly QA, independent evaluation, and full accounting. Candidate review found clear algorithmic defects and heuristic positioning; all scores and original packages are retained, and the search champion is not directly released as a general capability.
 
-本页对应[事前登记](2026-10-28-feedback-study-registration.md)，运行提交 `cf32125f4dcffbaf652bd97b51db246970e6107a`。研究于 2026-10-27 21:33:49 至 21:47:09 UTC 完成（北京时间 10 月 28 日 05:33:49 至 05:47:09）。[原始回执索引](../evidence/paired-feedback-20261028/index.json)保存逐份原字节 SHA-256；任务输入、评分私有材料、模型 Prompt 和密钥不进入公开记录。
+This page corresponds to the [pre-registration](2026-10-28-feedback-study-registration.md), run commit `cf32125f4dcffbaf652bd97b51db246970e6107a`. The study ran from 2026-10-27 21:33:49 to 21:47:09 UTC (Beijing time October 28, 05:33:49 to 05:47:09). The [raw receipt index](../evidence/paired-feedback-20261028/index.json) stores the per-file original-byte SHA-256; task inputs, private scoring materials, model prompts, and keys do not enter the public record.
 
-## 设计与实际执行
+## Design and actual execution
 
-同一 G、H0、模型、工具与预算，仅改变宿主向 G 暴露的反馈：Full 可见授权执行证据和评分；Mechanical 可见公开输入、源码、构建与原生装配结果。每组两次独立搜索，每次 H0 加最多两个新候选，均从 H0 分叉。两块按 AB／BA 顺序入队，块内并发；优化器自主选择实际改动。
+Same G, H0, model, tools, and budget; only the feedback the host exposes to G changes: Full can see authorized execution evidence and scores; Mechanical can see public inputs, source code, build, and native assembly results. Each group has two independent searches, each starting from H0 with at most two new candidates, all forked from H0. The two blocks are queued in AB/BA order, with concurrency within a block; the optimizer autonomously chooses the actual changes.
 
-| 项目 | 实际结果 |
+| Item | Actual result |
 | --- | --- |
-| 模型 | G/H 均为 Venus `deepseek/deepseek-v4.1-flash-1017`，thinking off |
-| 任务 | 已公开的四种合成 Excel 家族；development 搜索、validation 独立评估 |
-| 搜索 | 4 次全部完成；8 个自主变异，3 个原生 QA 失败 |
-| 实际任务评分 | 搜索 36 次、所选 H 独立评估 16 次、共同 H0 评估 8 次，共 60 次，0 执行失败 |
-| 事前任务上限 | 72 次；QA 失败的 3 个候选未执行其 12 个任务，不补跑、不改写为已评分 |
-| 原始记录 | 失败候选、并列拒绝、原始交付及全部调用账本保留；没有重抽或混合版本 |
+| Model | G/H both Venus `deepseek/deepseek-v4.1-flash-1017`, thinking off |
+| Task | The four already-public synthetic Excel families; development search, validation independent evaluation |
+| Search | All 4 completed; 8 autonomous mutations, 3 native QA failures |
+| Actual task scoring | 36 search runs, 16 independent evaluations of selected H, 8 common H0 evaluations, 60 total, 0 execution failures |
+| Pre-registered task cap | 72 runs; the 3 candidates that failed QA did not execute their 12 tasks, with no reruns and no rewriting as scored |
+| Raw records | Failed candidates, tie rejections, original deliveries, and the full call ledger are retained; no resampling or mixed versions |
 
-统计单位是一次完整搜索，每组只有 **2 次**。每组的 8 个评估题次不能当作 8 次独立进化。四种任务家族此前已使用，独立评估改变数值，不代表未知模板或跨领域迁移。
+The statistical unit is one complete search, and each group has only **2**. The 8 evaluation items per group cannot be treated as 8 independent evolutions. The four task families were used previously; independent evaluation changes the numbers and does not represent unknown templates or cross-domain transfer.
 
-## 独立结果
+## Independent results
 
-| 反馈 / 搜索 | 搜索 H0 均值 | 搜索所选均值 | 所选版本 | 独立评估均值 |
+| Feedback / search | Search H0 mean | Search selected mean | Selected version | Independent evaluation mean |
 | --- | ---: | ---: | --- | ---: |
 | Full / 0 | 56.25% | 56.25% | H0 `686ad0b0…` | 100% |
-| Mechanical / 0 | 81.25% | 81.25% | 同一 H0 `686ad0b0…` | 81.25% |
+| Mechanical / 0 | 81.25% | 81.25% | Same H0 `686ad0b0…` | 81.25% |
 | Full / 1 | 56.25% | 81.25% | `c159a72a…` | 81.25% |
 | Mechanical / 1 | 75% | 100% | `9635872e…` | 81.25% |
 
-Full 的两次搜索平均为 **90.625%**，Mechanical 为 **81.25%**，描述性差值 **+9.375 个百分点**。但该差值全部来自第一配对块：两组选择的源码和构建产物都是同一个 H0，却在独立执行中得到不同成绩。第二块的两个新候选独立成绩相同。因此，不能把组间差值解释成插件变异或反馈机制带来的收益。
+Full's two searches average **90.625%**, Mechanical **81.25%**, a descriptive difference of **+9.375 percentage points**. But that difference comes entirely from the first paired block: both groups selected the same H0 source code and build artifact, yet obtained different scores in independent execution. The two new candidates in the second block have identical independent scores. Therefore, the between-group difference cannot be interpreted as a gain from plugin mutation or the feedback mechanism.
 
-研究结束后，共同 H0 的 8 次独立评估均值为 **56.25%**。它与前面同一 H0 的两次评估也存在明显差异。所有原分数保留，不挑选一个有利基线；[逐题配对记录](../evidence/paired-feedback-20261028/comparison.json)给出完整对应关系。当前样本无法分离模型执行波动、时段和共享资源影响，不进行显著性或稳定收益声明。
+After the study, the 8 independent evaluations of the common H0 average **56.25%**. This also differs markedly from the two earlier evaluations of the same H0. All original scores are retained, with no selection of a favorable baseline; the [per-item paired record](../evidence/paired-feedback-20261028/comparison.json) gives the full correspondence. The current sample cannot separate model execution variance, time-of-day, and shared-resource effects, so no significance or stable-gain claims are made.
 
-## 真正发生了哪些变异
+## What mutations actually occurred
 
-| 路径 | 自主实现 | 实际调用与反例 |
+| Path | Autonomous implementation | Actual calls and counterexamples |
 | --- | --- | --- |
-| Full / 0 | 新增基于 LibreOffice 的重算观察工具 | 两个候选均因 DSH 作者 Schema 不合法而未进入任务；第二次修错节点，[原生契约核验](../research/2026-10-28-native-tool-schema-findings.md)保留错误 |
-| Mechanical / 0 | 新增重算工具，扩展读取表达 | 第一候选将可选字段写成 `required:false`，QA 拒绝；第二候选修正后开发分数并列，保留 H0 |
-| Full / 1 | 行号呈现、标签／年份寻址、显式写入、重算；后继新增模型检查与税率探查 | 所选候选开发集 recalc 5 次、write 2 次、inspect 4 次；标签 targets 与 show 均 0 次。不得把提高归功于未调用的标签定位 |
-| Mechanical / 1 | 矩形公式平移和独立重算；后继扩展多块构建与 finish | 所选候选开发集 verify 3 次、build 0 次；后继开发满分并列被拒绝。不得把满分归功于未调用的 builder |
+| Full / 0 | Added a LibreOffice-based recalculation observation tool | Both candidates failed to enter tasks because the DSH author Schema was invalid; the second fixed the wrong node, and the [native contract verification](../research/2026-10-28-native-tool-schema-findings.md) retains the error |
+| Mechanical / 0 | Added a recalculation tool, extended read expressions | The first candidate wrote an optional field as `required:false`, rejected by QA; the second candidate, after fixing, tied on development score, and H0 was retained |
+| Full / 1 | Row-number presentation, label/year addressing, explicit writes, recalculation; successors added model checks and tax-rate probing | The selected candidate's development set had recalc 5 times, write 2 times, inspect 4 times; label targets and show both 0 times. The improvement must not be attributed to label addressing that was never called |
+| Mechanical / 1 | Rectangular formula translation and independent recalculation; successors extended multi-block build and finish | The selected candidate's development set had verify 3 times, build 0 times; a successor's perfect development score tie was rejected. The perfect score must not be attributed to a builder that was never called |
 
-本轮这些候选的 `cordis.patch.yml` 均与 H0 一致，仍只装配 `./index.mjs`、依赖 `tools` 服务。它们证明了自主新增工具和修改实现，**没有新增跨插件组合拓扑变化的证据**。历史联合变异证据单独保留，不能挪用到本轮。
+In this round these candidates' `cordis.patch.yml` all match H0, still assembling only `./index.mjs` and depending on the `tools` service. They demonstrate autonomous addition of tools and modification of implementations, **with no new evidence of cross-plugin composition topology changes**. Historical joint-mutation evidence is retained separately and cannot be transferred to this round.
 
-独立 subagent 审查后，将只读源码核对、开发轨迹统计和纯函数反例保存为[诊断记录](../evidence/paired-feedback-20261028/mechanism-diagnostic.json)：
+After independent subagent review, the read-only source verification, development-trajectory statistics, and pure-function counterexamples are saved as the [diagnostic record](../evidence/paired-feedback-20261028/mechanism-diagnostic.json):
 
-- `c159a72a…` 的标签定位在多个匹配时取首项，并在某些路径截断后才检查歧义；锚点下方无匹配时转取上方。该行为与“不猜测”的声明不一致。
-- `9635872e…` 的自写平移器向右一列会将 `=A1!B2` 改为 `=B1!C2`，将 `=SUM(A1_name)` 改为 `=SUM(B1_name)`；小写 `=a1` 不平移，`=XFD1` 越界生成 `=XFE1`。
-- 被拒绝的 `05787c51…` 对交付公式跳过源值比较。纯函数反例将源 `A1=17` 替换为 `=1`，仍返回原值保留成功；另一路调用未定义函数。税率工具还引入数值范围与比值吻合的业务猜测，实际未调用。
+- `c159a72a…`'s label addressing takes the first item when there are multiple matches, and in some paths checks for ambiguity only after truncation; when there is no match below the anchor it falls back to above. This behavior is inconsistent with the "no guessing" claim.
+- `9635872e…`'s self-written translator, when shifted one column right, changes `=A1!B2` to `=B1!C2` and `=SUM(A1_name)` to `=SUM(B1_name)`; lowercase `=a1` is not shifted, and `=XFD1` out of bounds produces `=XFE1`.
+- The rejected `05787c51…` skips source-value comparison for delivered formulas. A pure-function counterexample replaces the source `A1=17` with `=1` and still returns success for preserving the original value; another path calls an undefined function. The tax-rate tool also introduces a business guess matching numeric ranges and ratios, which was never actually called.
 
-反例通过宿主 AST 提取的有限纯函数执行，未导入候选完整模块，不能冒充原生工具或容器端到端验收。源码读取前后摘要一致，诊断未接触 validation 私有评分材料，也没有改写原候选。
+The counterexamples were executed via limited pure functions extracted from the host AST, without importing the candidates' complete modules, and cannot stand in for native tools or container end-to-end acceptance. Source-code digests match before and after reading; the diagnostics did not touch validation private scoring materials and did not rewrite the original candidates.
 
-公式相关能力应先明确适用语法，再采用经过验证的解析和计算实现。[openpyxl 当前官方文档](https://openpyxl.readthedocs.io/en/stable/formula.html)明确说明其 Translator 仅支持 A1 引用、不支持 defined names；Tokenizer 也只是有限解析。不能把换用某个现成函数直接当成完整 Excel 语义已经解决。本次只记录事实，不给旧候选打补丁后追认原成绩。
+Formula-related capabilities should first clarify the applicable syntax, then adopt verified parsing and computation implementations. The [current official openpyxl documentation](https://openpyxl.readthedocs.io/en/stable/formula.html) explicitly states that its Translator supports only A1 references and not defined names; the Tokenizer is also only limited parsing. Switching to some existing function cannot be treated directly as having solved full Excel semantics. This round only records facts and does not patch old candidates and then retroactively endorse their original scores.
 
-## 成本、工程问题与交付
+## Cost, engineering issues, and delivery
 
-| 阶段 | 请求 started / result | 报告输入 Token | 报告输出 Token | 请求耗时之和 |
+| Stage | Requests started / result | Reported input tokens | Reported output tokens | Sum of request durations |
 | --- | ---: | ---: | ---: | ---: |
-| 四次搜索，含 G 与任务 H | 501 / 501 | 651,970 | 141,713 | 1,253.431 秒 |
-| 四份所选 H 独立评估 | 126 / 126 | 123,092 | 26,611 | 254.773 秒 |
-| 共同 H0 独立评估 | 65 / 65 | 54,998 | 13,260 | 129.544 秒 |
-| 合计 | **692 / 692** | **830,060** | **181,584** | **1,637.748 秒** |
+| Four searches, including G and task H | 501 / 501 | 651,970 | 141,713 | 1,253.431 seconds |
+| Independent evaluation of four selected H | 126 / 126 | 123,092 | 26,611 | 254.773 seconds |
+| Independent evaluation of common H0 | 65 / 65 | 54,998 | 13,260 | 129.544 seconds |
+| Total | **692 / 692** | **830,060** | **181,584** | **1,637.748 seconds** |
 
-失败、未完成和缺失用量均为 0。四个 G 会话分别调用 40、101、39、47 次，合计 227 次，已经包含在搜索行。请求单位是 DSH adapter stream attempt，供应商内部 HTTP 重试可能不可见；请求耗时之和不是墙钟时间。原账本没有可靠价格信息，费用保持未知。
+Failures, incomplete requests, and missing usage are all 0. The four G sessions made 40, 101, 39, and 47 calls respectively, 227 total, already included in the search row. The request unit is the DSH adapter stream attempt; provider-internal HTTP retries may be invisible; the sum of request durations is not wall-clock time. The original ledger has no reliable price information, so cost remains unknown.
 
-真实轨迹还暴露了一个宿主接线缺口：普通 `evolution_finish` 已获宿主确认，随后仍进入一次模型生成；已有结束测试只覆盖 `optimizer_study_finish`。Full 第二搜索因此多出一笔 5.528 秒、617 输出 Token 的总结。该笔成本保留；后续修复普通结束工具的原生 `concludeTurn()` 接线，不反向修改本轮报告。
+The real trajectory also exposed a host wiring gap: a normal `evolution_finish` was confirmed by the host, yet still entered one model generation; the existing end tests cover only `optimizer_study_finish`. Full's second search therefore incurred an extra summary of 5.528 seconds and 617 output tokens. That cost is retained; the native `concludeTurn()` wiring of the normal end tool was fixed afterward, without retroactively modifying this round's report.
 
-冻结 G、H0 和两份所选 H 的安装验收使用原始 tarball、原 Profile、原环境 patch 和各自构建身份；没有重新构建候选，也没有请求模型生成。最初 G 安装期间，主机在 1% 电量进入休眠，唤醒后容器以 137 退出、`OOMKilled=false`；其他四个安装上下文通过。[中断记录](../evidence/paired-feedback-20261028/host-interruption.json)和[原失败回执](../evidence/paired-feedback-20261028/artifact-installation-interrupted.json)保留。第二次安装暴露了独立的命令生命周期问题：180 秒杀掉直接进程后，pnpm 子进程继续到 226.2 秒才结束，[原超时回执](../evidence/paired-feedback-20261028/artifact-installation-timeout.json)保留。
+Installation acceptance for frozen G, H0, and the two selected H used the original tarballs, original Profiles, original environment patches, and their respective build identities; no candidates were rebuilt and no model generation was requested. During the initial G installation, the host entered sleep at 1% battery; after waking, the container exited with 137, `OOMKilled=false`; the other four installation contexts passed. The [interruption record](../evidence/paired-feedback-20261028/host-interruption.json) and [original failure receipt](../evidence/paired-feedback-20261028/artifact-installation-interrupted.json) are retained. The second installation exposed a separate command-lifecycle issue: after killing the direct process at 180 seconds, the pnpm child process continued until 226.2 seconds before ending; the [original timeout receipt](../evidence/paired-feedback-20261028/artifact-installation-timeout.json) is retained.
 
-修复采用独立 POSIX 进程组，并让安装与原生装配共享一个 480 秒期限；验收程序和新进程管理模块单独哈希、只读挂载，原实验镜像和包未改。[最终回执](../evidence/paired-feedback-20261028/artifact-installation.json)的 **5 个安装上下文全部通过**，原控制记录与冻结身份均保持一致。安装通过只说明可装配，不覆盖上面的算法反例，也不授权公开发布。
+The fix uses an independent POSIX process group and lets installation and native assembly share a 480-second deadline; the acceptance program and the new process-management module are separately hashed and mounted read-only, and the original experiment image and packages are unchanged. The [final receipt](../evidence/paired-feedback-20261028/artifact-installation.json) shows **all 5 installation contexts passed**, with the original control records and frozen identities consistent. Installation passing only shows assemblability; it does not cover the algorithmic counterexamples above and does not authorize public release.
 
-本轮完成了真实研究闭环，并把“分数提高但机制说法缺证据”的情况具体定位到源码和调用。下一步应围绕自主机制实验、原生 API 使用和复杂插件联合变异继续研究；扩大同一失败方案的重复次数、用人工修好候选替代自主产物，都不能补上这些缺口。
+This round completed a real research closed loop and pinpointed the case of "scores improved but the mechanism claim lacks evidence" to specific source code and calls. Next steps should continue research on autonomous mechanism experiments, native API usage, and complex joint plugin mutation; increasing repetitions of the same failed approach or replacing autonomous artifacts with manually fixed candidates cannot close these gaps.

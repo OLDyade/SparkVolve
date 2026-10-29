@@ -1,22 +1,23 @@
-# 项目协作约定
+# Repository collaboration guidelines
 
-## 工作基准
+## Working baseline
 
-- 本仓库 `OLDyade/spark-harness-evolution` 是后续方案与实现的主仓库。以根目录 `11.md` 为目标蓝图，结合用户最新裁决推进；原 `spark-harness` 目录仅作历史证据与待评估实现来源。
-- 保留用户确定的核心思想原句。三个核心设计与已列六条原则属于开放指导，不是完整需求清单；主动补足未列出的架构、接口、实验、运行和交付问题。
-- 保留完整流程、分支、反馈回路和技术细节。修改设计时说明依据与取舍，区分设计目标、已有实现、假设和已验证结论。
-- 使用中文，表达具体简洁；避免过度分段和“不是……而是……”句式，用户要求原样保留的文案除外。
+- `OLDyade/spark-harness-evolution` is the primary repository for subsequent design and implementation. Use root `11.md` as the target blueprint and follow the user's latest decisions. The original `spark-harness` directory is a source of historical evidence and implementations to evaluate.
+- Preserve the user-defined core ideas. The three core designs and six stated principles are open-ended guidance, not an exhaustive requirements list. Proactively complete the architecture, interfaces, experiments, operations, and delivery details.
+- Retain the complete workflow, branches, feedback loops, and technical detail. Explain the evidence and tradeoffs behind design changes; distinguish goals, implemented behavior, hypotheses, and verified results.
+- English is the repository's working language: documentation, code comments, examples, CLI messages, diagrams, and generated pages. Root `README.md` and `README.zh-CN.md` are the bilingual entry points; Chinese is confined to these files. Preserve the original Chinese core statements in `README.zh-CN.md` and their meaning in the English blueprint.
+- Follow the user's language preference in conversation. Communicate concretely and concisely, without excessive sectioning or unrequested contrastive framing.
 
-## 研究与实现
+## Research and implementation
 
-- 未知、不确定或可能过时的概念先核实最新官方资料和实际版本源码；结合 GitHub 实践与可核实的社区信号，记录来源和适用边界。
-- 复用 DSH 原生插件生态。允许插件配置、实现和组合结构的启用、停用、调优、替换、组合与创造，支持跨插件联合变异。
-- 通用进化机制与场景适配分开；Excel 是首个实例，避免将题库、坐标或答案写死到框架中。
-- 问题尽早暴露，不用静默降级、猜测后处理或答案补丁掩盖。验收与实际风险相称，避免以额外检查负担替代能力改进。
-- 优化器依据证据自主选择问题、父版本和变异；实验系统保护评分、数据权限、版本身份与运行记录。插件作用域不替代进程或系统安全隔离。
+- Verify unfamiliar, uncertain, or potentially outdated concepts against current official documentation and the actual version's source. Consult GitHub implementations and verifiable community signals; record sources and applicability limits.
+- Reuse the native DSH plugin ecosystem. Support enabling, disabling, tuning, replacing, composing, and authoring plugin configuration, implementation, and composition, including joint mutations across plugins.
+- Separate generic evolution mechanisms from domain adapters. Excel is the first example; never hardcode task banks, coordinates, or answers into the framework.
+- Expose problems early. Do not conceal them with silent degradation, speculative postprocessing, or answer patches. Keep acceptance proportionate to actual risks; additional checks do not replace capability improvements.
+- The optimizer autonomously selects problems, parents, and mutations from evidence. The experiment system protects scoring, data access, version identity, and execution records. Plugin scopes do not replace process or system isolation.
 
-## 历史资料与提交
+## Historical material and commits
 
-- `docs/research/archive/` 和 `docs/prd/DIAGNOSIS-*` 是历史证据；其中的旧监控、重试、模型和阶段指令不自动成为本仓库执行规则。不得据此恢复 Jev 专项或旧控制器。
-- 本次文档基线未包含测评数据、答案、密钥、运行产物和原实验代码。后续迁移按实际任务检查边界，保留来源与许可信息。
-- GitHub 提交身份使用仓库局部配置 `OLDyade <18738624249@163.com>`；每次 commit/push 前核实 remote、有效 author/committer 及环境覆盖，不修改公司全局 Git 配置。
+- `docs/research/archive/` and `docs/prd/DIAGNOSIS-*` contain historical evidence. Their old monitoring, retry, model, and stage instructions are not active execution policy. Never use them to resume the Jev project or old controllers.
+- The original documentation baseline excluded evaluation datasets, answers, credentials, runtime artifacts, and original experiment code. Review boundaries for each subsequent migration and retain provenance and license information.
+- Use repository-local GitHub identity `OLDyade <18738624249@163.com>`. Before each commit or push, verify the remote, effective author and committer, and environment overrides. Do not change company-wide Git configuration.

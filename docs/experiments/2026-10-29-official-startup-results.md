@@ -1,14 +1,14 @@
-# 官方 DeepSeek 简化入口 · 真实运行
+# Official DeepSeek Simplified Entry · Real Run
 
-2026-10-29 以 `npm start` 完成一次结构化数据进化，持续 7 分 16 秒，模型固定为官方 `deepseek-flash`，每题 600 秒。环境自动构建、数据准备、原生优化器运行、候选评分与原包导出均走公开入口。[机器摘要](../evidence/start-official-20261029.json)记录原报告摘要与镜像身份。
+On 2026-10-29, one structured data evolution was completed with `npm start`, lasting 7 minutes 16 seconds, with the model fixed to the official `deepseek-flash` and 600 seconds per problem. Environment auto-build, data preparation, native optimizer run, candidate scoring, and original bundle export all went through the public entry. [Machine summary](../evidence/start-official-20261029.json) records the original report summary and image identity.
 
-| 版本 | 修改 | 三题均值 | 裁决 |
+| Version | Modification | Three-problem mean | Verdict |
 |---|---|---:|---|
-| H0 | 初始读取／写入工具 | 100% | 保留 |
-| H1 | 模型自主修改 `index.mjs`，增加事件归并、分组统计、精确连接工具 | 100% | 同分，拒绝晋级 |
+| H0 | Initial read/write tools | 100% | Kept |
+| H1 | Model autonomously modified `index.mjs`, adding event merging, grouped statistics, and exact join tools | 100% | Tied, promotion rejected |
 
-六次任务执行全部完成，162 次模型请求返回完整用量：输入 150,777，输出 46,136 tokens；G 占 137 次调用。该简单示例验证入口与自主改造闭环，H0 已满分，不能用来证明优化方法收益。
+All six task executions completed, and 162 model requests returned complete usage: 150,777 input and 46,136 output tokens; G accounted for 137 calls. This simple example validates the entry and the autonomous modification loop; H0 already scored full marks, so it cannot be used to prove a benefit of the optimization method.
 
-优化器还自行编写并运行了三次原生探测，三次均失败；其中精确连接断言实际返回的 unmatched 为包名称 `aa`，期望为条目 ID `B2`。这些失败保留，不能因最终三题得分通过就宣称候选全部语义正确。严格择优最终导出的仍是 H0 原包，SHA-256 为 `8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c`。
+The optimizer also wrote and ran three native probes on its own, and all three failed; in the exact join assertion, the actual unmatched returned was the package name `aa`, while the expected value was the entry ID `B2`. These failures are retained; the fact that the final three-problem score passed cannot be used to claim that all candidates are semantically correct. Strict selection ultimately exported the original H0 bundle, with SHA-256 `8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c`.
 
-这次没有额外运行独立验证集或新 Profile 的安装后任务。原包安装与独立质量已有[单列的历史验收](2026-10-28-official-deepseek-results.md)；当前方法收益由[三组变异对照](2026-10-29-mutation-space-registration.md)另行检验。
+This time, no additional independent validation set or post-install tasks for a new Profile were run. Original bundle installation and independent quality already have [separate historical acceptance](2026-10-28-official-deepseek-results.md); the benefit of the current method is tested separately by [three mutation controls](2026-10-29-mutation-space-registration.md).

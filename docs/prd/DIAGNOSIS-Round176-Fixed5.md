@@ -1,8 +1,8 @@
-# 176固定5题：拒绝扩30
+# 176 fixed 5 questions: refuse to expand to 30
 
-官方均值60.16%低于固定同题历史70.412%，5完成、0终止失败；PASS1/5仅报告。原目录runs/spreadsheetbench2-round176-jev-tool-surface-fixed5完整保留，不重抽。任务耗时合计3468.465秒对历史4050.011秒，历史30并发、本轮5并发，不作同环境速度因果。
+The official mean of 60.16% is lower than the fixed same-question historical 70.412%; 5 completed, 0 terminated failures; PASS1/5 is reported only. The original directory runs/spreadsheetbench2-round176-jev-tool-surface-fixed5 is fully preserved, not re-sampled. Total task time 3468.465 seconds versus historical 4050.011 seconds; history had 30 concurrency, this round 5 concurrency, so no same-environment speed causality is drawn.
 
-|题|历史Modif|本轮Modif|Jev物理请求|
+|Question|Historical Modif|This-round Modif|Jev physical requests|
 |---|---:|---:|---:|
 |Debugging/04_05|88.74%|89.05%|44|
 |Debugging/09_01|12.79%|26.91%|29|
@@ -10,10 +10,10 @@
 |Financial_Model/17_02|100%|100%|117|
 |Template/13_04|76.06%|45.07%|10|
 
-348 started/348 result、无未返回/已记请求错误；逐题token和延迟见jev-cohort-report.json。调用多不代表收益：117次对应100%，148次对应39.77%，不能据此建立因果。
+348 started/348 result, no unreturned/recorded request errors; per-question token and latency see jev-cohort-report.json. More calls do not mean benefit: 117 calls correspond to 100%, 148 calls correspond to 39.77%; causality cannot be established from this.
 
-Template真实轨迹：初始源文读取→原表读取→独立Python算术→47项公式文件→submit→自造F7/F8互引→修正再次submit→只读主表并宣布全期完成。原第21等指标行空白，未进入其观察矩形，内部计算被当作交付覆盖。未将无报错当独立正确证据。单题98.59%与此次45.07%同版本结果显示稳定性不足。
+Template real trajectory: initial source text read → original table read → independent Python arithmetic → 47-item formula file → submit → self-made F7/F8 mutual references → correction and resubmit → read-only main table and declare full-period completion. The original metric rows such as row 21 were blank, not entering its observation rectangle; internal computation was treated as delivery coverage. No-error was not treated as independent correctness evidence. The single-question 98.59% and this 45.07% under the same version result show insufficient stability.
 
-Financial_Model/05_01原任务要求所有deal第二/第三tranche Exit Multiple为2x；原Dashboard H16/H17均10，G16/G17是Second/Third Tranche，实际退出区42行为Exit Months/Month/Numbers，43起各deal为E/G/I列数量。模型多次读原表后仍改H16/H17到2，最终总结明确这项变更，未完成所有deal退出倍数。原输入与交付、任务及轨迹相互印证目标身份错配；官方回归提示只是旁证。不能把所有低分归因这一处。
+The original task of Financial_Model/05_01 requires the Exit Multiple of the second/third tranche of all deals to be 2x; the original Dashboard H16/H17 are both 10, G16/G17 are Second/Third Tranche, the actual exit area row 42 is Exit Months/Month/Numbers, and from row 43 each deal is the quantity in columns E/G/I. After reading the original table multiple times, the model still changed H16/H17 to 2, and the final summary explicitly stated this change, without completing the exit multiples of all deals. The original input and delivery, task and trajectory mutually corroborate the target identity mismatch; the official regression hint is only corroborating evidence. All low scores cannot be attributed to this one point.
 
-176单题另有隐藏schema导致changes字符串参数两次失败，展开后正确。这支持撤销工具隐藏，但不证明恢复全工具能提高正确率。177整体增加可选计划对应审阅，保留原式并显式展示身份/覆盖不确定性；不自动修复，不追加保存门，不因官方差异改原输入。
+The 176 single question also had a hidden schema causing the changes string parameter to fail twice, correct after expansion. This supports revoking tool hiding, but does not prove that restoring all tools can improve accuracy. 177 overall adds optional plan correspondence review, retains the original form and explicitly shows identity/coverage uncertainty; no automatic repair, no additional save gate, no change to original input due to official differences.

@@ -1,47 +1,47 @@
-# Round179 固定五题受控对照
+# Round179 Fixed Five-Question Controlled Comparison
 
-2026-09-22；正式来源：`runs/spreadsheetbench2-round179-controlled-ablation/ablation-report.json`。三臂各五题一次，不补题、不重试、不晋级。真实控制器已退出，容器已排空。
+2026-09-22; official source: `runs/spreadsheetbench2-round179-controlled-ablation/ablation-report.json`. Three arms, five questions each, one run each; no supplementary questions, no retries, no promotion. The real controller has exited and the container has been drained.
 
-| 同题 | off | source | live |
+| Same question | off | source | live |
 |---|---:|---:|---:|
 | Template/13_04 | 53.52% | 76.06% | 67.61% |
 | Debugging/09_01 | 62.02% | 34.92% | 18.89% |
 | Debugging/04_05 | 88.98% | 88.98% | 88.98% |
-| Financial_Model/17_02 | 100% | 100% | 0%：启动失败 |
-| Financial_Model/05_01 | 73.45% | 18.84% | 0%：启动失败 |
-| 完整五题均值 | **75.594%** | **63.760%** | **35.096%** |
+| Financial_Model/17_02 | 100% | 100% | 0%: startup failure |
+| Financial_Model/05_01 | 73.45% | 18.84% | 0%: startup failure |
+| Full five-question mean | **75.594%** | **63.760%** | **35.096%** |
 
-source-off=-11.834pp，live-source=-28.664pp。off/source比较整套启动辅助（自动open、路由、逐行语义、上下文），并非Jev模型独立效应；source/live只差交付观察开关，但live包含两个启动协议故障，不能把其全部损失归为审阅语义。每题每臂仅一次，无法宣称统计显著、模型上限或普遍负效应。off与冠军150也非相同Harness，不能把本次五题结果晋级为30题冠军。
+source-off=-11.834pp, live-source=-28.664pp. The off/source comparison covers the entire startup assistance set (automatic open, routing, line-by-line semantics, context) and is not an independent effect of the Jev model; source/live differ only in the delivery observation switch, but live includes two startup protocol failures, so its entire loss cannot be attributed to review semantics. Each question was run only once per arm, so no claim of statistical significance, model ceiling, or general negative effect can be made. off and the champion 150 are also not the same Harness, so the five-question results here cannot be promoted to a 30-question champion.
 
-## 成本与故障分层
+## Cost and Failure Breakdown
 
-| 组 | HTTP started/result | 原记录transport/HTTP failed | 本地协议拒绝 | unfinished | 输入token | 输出token | 请求耗时和ms |
+| Group | HTTP started/result | Original-recorded transport/HTTP failed | Local protocol rejections | unfinished | Input tokens | Output tokens | Sum of request durations ms |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | off | 0/0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | source | 269/269 | 0 | 0 | 0 | 2492158 | 155826 | 178304.343 |
 | live | 435/435 | 0 | 2 | 0 | 4793718 | 177498 | 280329.072 |
 
-共704次HTTP；已返回不等于验证成功。原collector未计入本地choice分布校验拒绝，原统计保持不改，单列补充。两例详见DIAGNOSIS-Round179-Interim-Protocol.md，均在启动阶段。官方API要求choice为最高概率选项；不以argmax覆盖、归一化、吞错或重试修补供应商返回。
+704 HTTP requests in total; returned does not equal validated successfully. The original collector did not count local choice-distribution validation rejections; the original statistics are kept unchanged and supplemented separately. See DIAGNOSIS-Round179-Interim-Protocol.md for the two cases, both at the startup stage. The official API requires choice to be the highest-probability option; vendor responses are not patched by argmax override, normalization, error swallowing, or retry.
 
-## 轨迹与真实交付核验
+## Trajectory and Real-Delivery Verification
 
-使用只读脚本 `scripts/benchmark-server/spreadsheetbench2/inspect_round179.py` 提取各臂workspace/input.xlsx和实际output.xlsx的OOXML原文、完整公式、缓存，不读参考答案。结合各题logs/stdout.log和changes.json。失败任务workspace的中间工作副本不等于正式交付，官方两例无交付仍计0。
+A read-only script `scripts/benchmark-server/spreadsheetbench2/inspect_round179.py` was used to extract the OOXML raw text, complete formulas, and caches of each arm's workspace/input.xlsx and actual output.xlsx, without reading reference answers. Combined with each question's logs/stdout.log and changes.json. Intermediate working copies in the workspace of failed tasks do not equal official delivery; the two official cases with no delivery still count as 0.
 
-- Financial_Model/05_01：原Dashboard D40/F40/H40分别是First/Second/Third Tranche；D/F/H列为日期，E/G/I列为倍数。source将E44/E45原数值2改成公式=2，并在最终声明中称Second/Third倍数；实际G43:G45、I43:I44保持空白。off填写这些后续批次列。证实二维身份映射失败，不能归全部低分于这几格。
-- Debugging/09_01 source：原H8=1；原G67为IF(circ=0,0,-G179)，交付反转为IF(circ=0,-G179,0)，缓存0。G133/G143/G150也包IF(circ=0,原关系,0)。确有关闭业务链以消错的行为。source仍修复Financials J18重复扣J17，证明并非所有修改都无价值。
-- Debugging/09_01 live：G156从G123+G133+G134+G143+G150改成G143+G150；G143/G150还款转基于G123；G164/G170删除还款项；Financials J18重复扣除仍保留。off修正Financials J18，但也把平均现金利息改为期初现金，off较高分不能证明所有业务修改正确。
-- Template/13_04：off覆盖原C13=18为税率乘整体基数，并把后期增长放在C20，后续G:H指标多为空。source保留C13且D/E历史增长、F:H预测指标位置更完整；E13仍写E35+(28+15)*E36。live的C20引用后期增长、E20空白、税额仅链接报税额。源辅助对该题有正向观察，不能被其他题的负收益抹去；也不能由此认定逐行分类的独立因果。
-- Debugging/04_05：三臂相同官方88.98%；实际Summary H13都保留H12/H11-1，缓存约0.230523；三臂未解决同一剩余偏差。
-- Financial_Model/17_02：off/source均官方100%，source额外117次启动Jev没有观察到质量增益；live启动失败无正式交付。100%仅是官方指标，不认证所有语义。
+- Financial_Model/05_01: the original Dashboard D40/F40/H40 are First/Second/Third Tranche respectively; columns D/F/H are dates, columns E/G/I are multiples. source changed the original numeric value 2 in E44/E45 to the formula =2 and claimed in the final statement that they were Second/Third multiples; in reality G43:G45 and I43:I44 remained blank. off filled in these subsequent tranche columns. This confirms a two-dimensional identity mapping failure; the entire low score cannot be attributed to these few cells.
+- Debugging/09_01 source: original H8=1; original G67 was IF(circ=0,0,-G179), and the delivery inverted it to IF(circ=0,-G179,0), with cache 0. G133/G143/G150 also wrap IF(circ=0,original relation,0). There is indeed behavior that shuts down business chains to eliminate errors. source still fixed the Financials J18 double deduction of J17, proving that not all modifications are worthless.
+- Debugging/09_01 live: G156 was changed from G123+G133+G134+G143+G150 to G143+G150; G143/G150 repayments were rebased on G123; G164/G170 removed repayment items; the Financials J18 double deduction remains. off fixed Financials J18, but also changed average cash interest to beginning cash; off's higher score cannot prove that all business modifications are correct.
+- Template/13_04: off overwrote the original C13=18 as tax rate times the entire base, and placed later-period growth in C20, with most subsequent G:H metrics empty. source retained C13 and had more complete placement of D/E historical growth and F:H forecast metrics; E13 still reads E35+(28+15)*E36. live's C20 references later-period growth, E20 is blank, and tax amount only links to the reported tax amount. The source assistance showed a positive observation on this question, which cannot be erased by negative returns on other questions; nor can this establish independent causality for line-by-line classification.
+- Debugging/04_05: all three arms have the same official 88.98%; the actual Summary H13 all retain H12/H11-1, with cache about 0.230523; all three arms failed to resolve the same remaining deviation.
+- Financial_Model/17_02: off/source are both officially 100%; source's extra 117 startup Jev calls showed no observed quality gain; live had a startup failure with no official delivery. 100% is only the official metric and does not certify all semantics.
 
-## 决策
+## Decision
 
-优先承担设计责任：全表预判给了辅助模型过宽、过间接的任务，又把大量解释灌入主模型，局部正确判断也未稳定转化为正确交付。现有证据不足以断言Jev整体无用或星火能力到顶。撤销这一默认介入模式，不继续叠全局审阅。
+Take design responsibility first: full-table prediction gave the auxiliary model an overly broad and overly indirect task, and also poured a large amount of explanation into the main model, while locally correct judgments did not reliably translate into correct delivery. The existing evidence is insufficient to assert that Jev is entirely useless or that Spark's capability has reached its ceiling. Withdraw this default intervention mode and stop layering global review.
 
-下一候选研究并实施“显式疑问、原始矩形、独立支持判断”的协作方式：不自动替星火选目标，不预填运算类别，不把概率当正确性门；让源证据和具体疑问同处一次工具返回。是否实际采用及质量收益由后续独立单题验证。仍可能被星火漏调用或问错问题，需如实计数，不靠强制步骤掩盖。
+The next candidate should research and implement a collaboration approach of "explicit questions, raw rectangles, independent support judgments": do not automatically select targets for Spark, do not prefill operation categories, do not treat probability as a correctness gate; let source evidence and the specific question appear together in a single tool return. Whether it is actually adopted and its quality gains are to be verified by subsequent independent single-question validation. Spark may still fail to call or ask the wrong question; this must be counted truthfully, not masked by mandatory steps.
 
-## 当前资料
+## Current Materials
 
-- [Jev 1.13已知边界](https://docs.typesafe.ai/model-jaggedness/jev-1.13)：官方2026-09-17复核，当前访问2026-09-22。建议具体问题、减少间接引用和无关状态，算术归代码。
-- [Noul接口](https://docs.typesafe.ai/primitives/noul)：返回0..1的yes概率，无null语义；支持不足不能自动解释为反证，概率不能认证公式正确。Context7官方文档同步核实。
-- 既有社区、X和源码索引见RESEARCH-Jev-Case-Library-20260922.md；热度不当作本地收益证据。
+- [Jev 1.13 known boundaries](https://docs.typesafe.ai/model-jaggedness/jev-1.13): officially reviewed 2026-09-17, currently accessed 2026-09-22. Recommends specific questions, reducing indirect references and irrelevant state, and delegating arithmetic to code.
+- [Noul interface](https://docs.typesafe.ai/primitives/noul): returns a yes probability from 0..1, with no null semantics; insufficient support cannot automatically be interpreted as counterevidence, and probability cannot certify formula correctness. Synchronously verified against Context7 official documentation.
+- For existing community, X, and source-code indexes, see RESEARCH-Jev-Case-Library-20260922.md; popularity is not treated as evidence of local gains.

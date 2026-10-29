@@ -1,113 +1,113 @@
-# 真实模型元优化实验：终态与机制复核
+# Real-Model Meta-Optimization Experiment: Final State and Mechanism Review
 
-本次真实模型实验完成了“元优化器修改优化器插件 → 两种优化方法分别搜索 Harness → 独立评估 → 选择方法 → 最终验证”的闭环。G0 与 G1 开发评估均为 **1.0**，同分保留 G0；G0 最终验证为 **1.0**。本轮没有证明优化方法带来质量提升。
+This real-model experiment completed the closed loop of "meta-optimizer modifies the optimizer plugin → two optimization methods each search the Harness → independent evaluation → method selection → final validation". The G0 and G1 development evaluations were both **1.0**, and G0 was retained on a tie; G0's final validation was **1.0**. This round did not demonstrate that the optimization method brings a quality improvement.
 
-实验状态为 `complete`；原验收驱动随后发生报告处理异常，原 `acceptance.json` 保留 `passed: false`。后续独立安装验收已完成：G1、G0、H0 的原 tarball 均成功安装并通过 DSH 原生装配检查，`inferenceRequested: false`。安装证明不改变 G1 的机制审查结论，也不代表该方法获得推荐或质量认证。
+The experiment status is `complete`; the original acceptance driver subsequently hit a report-handling exception, and the original `acceptance.json` retained `passed: false`. The subsequent independent installation acceptance has been completed: the original tarballs of G1, G0, and H0 all installed successfully and passed the DSH native assembly check, `inferenceRequested: false`. The installation proof does not change the mechanism review conclusion for G1, nor does it mean the method is recommended or quality-certified.
 
-机器证据：[2026-10-28-optimizer-study.json](../evidence/2026-10-28-optimizer-study.json)。本报告保留失败证据，不修改冻结候选、不运行新模型、不读取封存任务内容或私有评分答案。
+Machine evidence: [2026-10-28-optimizer-study.json](../evidence/2026-10-28-optimizer-study.json). This report preserves the failure evidence, does not modify the frozen candidates, does not run new models, and does not read sealed task content or private scoring answers.
 
-## 实际运行了什么
+## What Actually Ran
 
 ```text
-真实模型元优化器（DSH 原生 Agent）
-  │ 读取获准的开发证据，分叉 G0，编写并冻结 G1 插件代码
-  ├── G0：systemPrompt 插件
-  │     └── 独立开发搜索：H0 → H1 → 同分保留 H0 → 独立开发评估 1.0
-  └── G1：systemPrompt + tools/fs 依赖 + observer + data_self_check
-        └── 独立开发搜索：H0 → H1 → 同分保留 H0 → 独立开发评估 1.0
+Real-model meta-optimizer (DSH native Agent)
+  │ Reads approved development evidence, forks G0, writes and freezes G1 plugin code
+  ├── G0: systemPrompt plugin
+  │     └── Independent development search: H0 → H1 → tie, retain H0 → independent development evaluation 1.0
+  └── G1: systemPrompt + tools/fs dependency + observer + data_self_check
+        └── Independent development search: H0 → H1 → tie, retain H0 → independent development evaluation 1.0
                             │
-                     方法同分，选择 G0
+                     Methods tied, select G0
                             │
-                 注册的最终验证搜索与独立评估
+                 Registered final validation search and independent evaluation
                             │
                     1.0 / study complete
                             │
-                 原驱动报告读取异常，验收失败
+                 Original driver report read exception, acceptance failed
                             │
-                 单独安装验收通过，不重跑模型实验
+                 Standalone installation acceptance passed, model experiment not rerun
 ```
 
-执行模型为 Venus `deepseek/deepseek-v4.1-flash-1017`，`reasoningEffort: off`、`maxTokens: 32768`。运行镜像为 `sha256:919839c0bf86ad018af4305b6a04af60ccb692ee341d3e2e1fcb53d1e6b6badc`。本次指标是合成结构化数据任务的 `structured_output_accuracy`，不能外推为商业 Excel 官方 Modif、星火适配收益或跨领域收益。
+The executing model was Venus `deepseek/deepseek-v4.1-flash-1017`, `reasoningEffort: off`, `maxTokens: 32768`. The runtime image was `sha256:919839c0bf86ad018af4305b6a04af60ccb692ee341d3e2e1fcb53d1e6b6badc`. This metric is the `structured_output_accuracy` of a synthetic structured-data task and cannot be extrapolated to commercial Excel official Modif, Spark adaptation gains, or cross-domain gains.
 
-| 层级 | 方法 | 完整分母 | 均值 | 失败 | 结论 |
+| Level | Method | Full denominator | Mean | Failures | Conclusion |
 |---|---|---:|---:|---:|---|
-| 开发方法评估 | G0 | 1 个搜索实例 / 1 次重复 | 1.0 | 0 | 保留 |
-| 开发方法评估 | G1 | 1 个搜索实例 / 1 次重复 | 1.0 | 0 | 同分，未替换 G0 |
-| 最终独立验证 | G0 | 1 个搜索实例 / 1 次重复 | 1.0 | 0 | 验证完成 |
-| 最终独立验证 | G1 | 未执行 | — | — | 无最终验证结论 |
+| Development method evaluation | G0 | 1 search instance / 1 repetition | 1.0 | 0 | Retained |
+| Development method evaluation | G1 | 1 search instance / 1 repetition | 1.0 | 0 | Tie, G0 not replaced |
+| Final independent validation | G0 | 1 search instance / 1 repetition | 1.0 | 0 | Validation completed |
+| Final independent validation | G1 | Not executed | — | — | No final validation conclusion |
 
-两组开发搜索各冻结并评估了 H0 与一个新 H 候选；新候选均为 1.0，未超过 H0。G1 开发搜索还提交了两个作者探针，两者均失败。作者探针的状态与独立任务评分分别保留。
+Each of the two development searches froze and evaluated H0 and one new H candidate; the new candidates were both 1.0 and did not exceed H0. The G1 development search also submitted two author probes, both of which failed. The author probe statuses and independent task scores are preserved separately.
 
-## 自主变异证据及其边界
+## Evidence of Autonomous Mutation and Its Boundaries
 
-元优化器实际把 G0 的 25 行 `index.mjs` 改为 G1 的 359 行实现，新增 `defineTool`、`tools` / `fs` 注入、`tools/result` 观察器和 `data_self_check` 工具。冻结源码、构建身份、原生模型请求均可对应；这支持“模型自主修改了优化器插件实现并实际加载”的结论。
+The meta-optimizer actually changed G0's 25-line `index.mjs` into G1's 359-line implementation, adding `defineTool`, `tools` / `fs` injection, the `tools/result` observer, and the `data_self_check` tool. The frozen source, build identity, and native model requests all correspond; this supports the conclusion that "the model autonomously modified the optimizer plugin implementation and it was actually loaded".
 
-`plugins.yml` 仍是同一个 `evolution-research-method → ./index.mjs` 装配入口。新增依赖和工具面属于真实实现变化，本轮没有展示插件组合拓扑变化。方法身份、源码摘要与构建摘要详见机器证据。
+`plugins.yml` is still the same `evolution-research-method → ./index.mjs` assembly entry point. The added dependencies and tool surface are real implementation changes; this round did not demonstrate a change in plugin composition topology. Method identity, source digest, and build digest are detailed in the machine evidence.
 
-以下路径均相对实验根 `.evolution/optimizer-study-live-contract-corrected-20261028/`：
+The following paths are all relative to the experiment root `.evolution/optimizer-study-live-contract-corrected-20261028/`:
 
-- G0 源码：`study/inputs/bundles/g0/source/`。
-- G1 源码：`study/methods/sources/e7ce41101edafc1147623fad26a7eb84c269d8eace5acc5c0a31a5abc2743570/`，下文简称 **G1 source**。
-- 元优化器轨迹：`study/meta-optimizer/0/trace/notifications.jsonl`，下文简称 **meta trace**。
-- G1 开发优化器轨迹：`study/children/acdc3e93d1731e5a44dd685dc9e6a56029b6576bec5fe73dd4c337bb2baec191/optimizer/0/trace/`，下文简称 **G1 trace**。
+- G0 source: `study/inputs/bundles/g0/source/`.
+- G1 source: `study/methods/sources/e7ce41101edafc1147623fad26a7eb84c269d8eace5acc5c0a31a5abc2743570/`, hereinafter referred to as **G1 source**.
+- Meta-optimizer trace: `study/meta-optimizer/0/trace/notifications.jsonl`, hereinafter referred to as **meta trace**.
+- G1 development optimizer trace: `study/children/acdc3e93d1731e5a44dd685dc9e6a56029b6576bec5fe73dd4c337bb2baec191/optimizer/0/trace/`, hereinafter referred to as **G1 trace**.
 
-### 终态工具使用
+### Final-State Tool Usage
 
-G1 trace 的 `requests.jsonl:1` 中，首个真实模型请求包含 `data_self_check` schema，证明它已注册并对模型可见。完整 `notifications.jsonl` 中，按原生 `tool/call` 事件计数，**`data_self_check` 调用为 0**；工具名称出现在源码、提示和 Bash 内嵌文本中，均不算原生调用。G1 开发优化器共调用 77 次工具，并完成提交与结束流程。
+In the G1 trace's `requests.jsonl:1`, the first real model request contains the `data_self_check` schema, proving it was registered and visible to the model. In the complete `notifications.jsonl`, counting by native `tool/call` events, **`data_self_check` calls were 0**; the tool name appearing in source, prompts, and Bash-embedded text does not count as a native call. The G1 development optimizer called tools 77 times in total and completed the submission and termination flow.
 
-因此，本次没有“该工具在真实搜索中发现或阻止错误”的执行证据。也不能仅因没有提分而否认代码变异确实发生。
+Therefore, this round has no execution evidence that "the tool discovered or prevented an error in a real search". Nor can the fact that no score improvement occurred be used to deny that the code mutation actually happened.
 
-## 机制审查发现
+## Mechanism Review Findings
 
-| 发现 | 可复核证据 | 影响与界限 |
+| Finding | Verifiable evidence | Impact and boundaries |
 |---|---|---|
-| G1 把元研究角色指令装入子优化器 | G1 source `index.mjs:348–356`；G1 trace `requests.jsonl:1` | 提示要求 `optimizer_study_*`，实际子优化器只有 `evolution_*` 等工具。子优化器仍使用真实可用工具完成搜索，未观察到因该错位停机。 |
-| 观察器作用域与提案不符 | G1 source `index.mjs:112–131` | `ctx.on('tools/result')` 监听当前 G Agent 工具结果；H 在独立任务进程运行，代码没有读取 H 轨迹的桥接。不能声称捕获了“内层 Harness 实际读取的原始内容”。 |
-| 读写识别和缓存不能支撑“精确原文”承诺 | G1 source `index.mjs:39,106–131,303–318` | 读取匹配规则漏掉原生 `read`，却匹配 `data_write`；缓存取的是渲染后的 `result.content`。`pendingWrite` 没有驱动缓存失效或重读。这些是静态机制缺陷；本次没有真实 self-check 调用，不能伪称已经触发相应业务错误。 |
-| 提案对 G0 证据的描述有误 | G1 source `index.mjs:10–14`；meta trace `:547`；G0 开发任务 `e987faad…/trace/notifications.jsonl:19` | G0 实际通过 Bash/Python 写了 `/workspace/result.json`。没有特定 `data_write` 工具事件不能推导出没有文件写入。 |
-| 局部错误被吞掉，语义回退未经证明 | G1 source `index.mjs:79–98,129–131,220–228,337–341` | 注册异常只记录后继续；观察异常被吞掉；JSON 解析失败后转为逐行解析并丢弃坏行，后续重算未将 `badLines` 纳入失败检查。不符合项目明确暴露错误的准则。实际本轮工具注册成功。 |
+| G1 loads the meta-research role instructions into the sub-optimizer | G1 source `index.mjs:348–356`; G1 trace `requests.jsonl:1` | The prompt requires `optimizer_study_*`, but the actual sub-optimizer only has tools such as `evolution_*`. The sub-optimizer still completed the search using genuinely available tools; no shutdown due to this mismatch was observed. |
+| Observer scope does not match the proposal | G1 source `index.mjs:112–131` | `ctx.on('tools/result')` listens to the current G Agent tool results; H runs in a separate task process, and the code has no bridge to read the H trace. It cannot be claimed that it captured "the raw content actually read by the inner Harness". |
+| Read/write identification and caching cannot support the "exact original text" promise | G1 source `index.mjs:39,106–131,303–318` | The read matching rules miss native `read` but match `data_write`; the cache takes the rendered `result.content`. `pendingWrite` does not drive cache invalidation or re-reads. These are static mechanism defects; this round had no real self-check calls, so it cannot be falsely claimed that the corresponding business errors were triggered. |
+| The proposal misdescribes the G0 evidence | G1 source `index.mjs:10–14`; meta trace `:547`; G0 development task `e987faad…/trace/notifications.jsonl:19` | G0 actually wrote `/workspace/result.json` via Bash/Python. The absence of a specific `data_write` tool event cannot be used to infer that no file write occurred. |
+| Local errors are swallowed, and semantic fallback is unproven | G1 source `index.mjs:79–98,129–131,220–228,337–341` | Registration exceptions are only logged and then execution continues; observation exceptions are swallowed; after JSON parsing fails it falls back to line-by-line parsing and discards bad lines, and the subsequent recomputation does not include `badLines` in the failure check. This does not conform to the project's guideline of explicitly surfacing errors. In this round the tool registration actually succeeded. |
 
-作用域判断同时核对了本次安装的 DSH 工具实现：`node_modules/@deepseek-ai/dsh-tools/lib/index.js:3511–3516` 使用 `scopeTarget(this, exec.agent)` 派发结果；运行时审阅的项目源码 `src/preset.ts:15–27` 和 `src/optimizer.ts:113–119` 将方法安装在优化器作用域。这些行号对应上述 `919839c0…` 运行镜像使用的实现及当时源码，不代表后续工作树状态，也不作为未来版本 API 保证。
+The scope determination also cross-checked the DSH tool implementation installed this time: `node_modules/@deepseek-ai/dsh-tools/lib/index.js:3511–3516` uses `scopeTarget(this, exec.agent)` to dispatch results; the project source reviewed at runtime, `src/preset.ts:15–27` and `src/optimizer.ts:113–119`, installs the method in the optimizer scope. These line numbers correspond to the implementation used by the aforementioned `919839c0…` runtime image and the source at that time; they do not represent the subsequent working-tree state and are not an API guarantee for future versions.
 
-G1 的 `writeTo` 由调用者显式提供，代码没有发现自动生成任务答案或自动修复工作簿的路径。工具检查结果与显式写入没有构成强制保存门。提案声称“缺少 tools 则跳过注册”，但代码把 `tools` 声明为必需依赖；不能把提案文字当作 Cordis 实际生命周期。
+G1's `writeTo` is explicitly provided by the caller; the code contains no path that automatically generates task answers or automatically repairs workbooks. The tool check results and explicit writes do not constitute a mandatory save gate. The proposal claims "skip registration if tools are missing", but the code declares `tools` as a required dependency; the proposal text cannot be taken as the actual Cordis lifecycle.
 
-### 原生验收与局部 mock 的区别
+### Difference Between Native Acceptance and Local Mock
 
-meta trace `:331` 的局部 smoke 构造了假的 `ctx`、`fs`、注册器，并手动发出 `data_read` 事件。它支持局部函数接口可调用，无法证明真实 G/H 跨进程观察或原生文件系统行为。候选构建和装载通过，以及模型请求确实含工具 schema，同样没有验证该观察器宣称的跨层机制。
+The local smoke test in meta trace `:331` constructed fake `ctx`, `fs`, and a registrar, and manually emitted the `data_read` event. It supports that the local function interface is callable; it cannot prove real G/H cross-process observation or native filesystem behavior. The candidate build and load passing, and the model request indeed containing the tool schema, likewise did not verify the cross-layer mechanism claimed by the observer.
 
-### 分叉工具回执缺口
+### Fork Tool Receipt Gap
 
-冻结运行中，meta trace `:215–216` 的 `optimizer_study_branch` 成功返回空文本。该次运行构建所对应的旧源码 `src/optimizer-study.ts:375–447` 返回 `Promise<void>`，API 对 `undefined` 序列化产生空响应，工具原样呈现空文本。它没有返回精确草稿路径、父身份和目标运行角色。此项描述被冻结轨迹和旧构建约束；当前工作树正在另行修正回执，不能把旧行号当作当前接口。
+In the frozen run, `optimizer_study_branch` in meta trace `:215–216` successfully returned empty text. The old source corresponding to that run's build, `src/optimizer-study.ts:375–447`, returned `Promise<void>`; the API's serialization of `undefined` produced an empty response, and the tool presented the empty text as-is. It did not return the exact draft path, parent identity, or target run role. This description is constrained by the frozen trace and the old build; the current working tree is separately fixing the receipt, and the old line numbers must not be treated as the current interface.
 
-同一轨迹 `:229–230` 随后读取 `/workspace/g1-self-check/index.mjs`，内容是正确的 G0 子优化器源码；分叉实现也核验父源码摘要后复制。**未发现复制错父版本的证据。** 元优化器此前读过 `/method` 的元研究源码，随后写入角色错位指令；空回执与模型后续行为都应记录，不能声称空回执是唯一原因。后续应通过结构化分叉回执和真实作用域验收补齐接口，保持本轮冻结证据不变。
+The same trace `:229–230` subsequently read `/workspace/g1-self-check/index.mjs`, whose content is the correct G0 sub-optimizer source; the fork implementation also verifies the parent source digest before copying. **No evidence of copying the wrong parent version was found.** The meta-optimizer had previously read the meta-research source of `/method` and then wrote the role-mismatched instructions; both the empty receipt and the model's subsequent behavior should be recorded, and it cannot be claimed that the empty receipt is the sole cause. Going forward, the interface should be completed via structured fork receipts and real-scope acceptance, while keeping this round's frozen evidence unchanged.
 
-## 模型调用与成本
+## Model Calls and Cost
 
-| 层级 | started / result | 输入 Token | 输出 Token | 请求时长之和 ms |
+| Level | started / result | Input Tokens | Output Tokens | Sum of request durations ms |
 |---|---:|---:|---:|---:|
-| 元优化器 | 112 / 112 | 151,182 | 29,294 | 322,597 |
-| 三个子搜索合计（含最终验证搜索） | 203 / 203 | 343,802 | 61,974 | 584,039 |
-| 三次独立评估合计 | 10 / 10 | 10,252 | 1,995 | 19,252 |
-| **合计** | **325 / 325** | **505,236** | **93,263** | **925,888** |
+| Meta-optimizer | 112 / 112 | 151,182 | 29,294 | 322,597 |
+| Three sub-searches combined (including the final validation search) | 203 / 203 | 343,802 | 61,974 | 584,039 |
+| Three independent evaluations combined | 10 / 10 | 10,252 | 1,995 | 19,252 |
+| **Total** | **325 / 325** | **505,236** | **93,263** | **925,888** |
 
-计数单位为 **DSH adapter stream attempts**；提供商内部 HTTP 重试不可见。13 份账本汇总完整，`failed / unfinished / missingUsage` 均为 0；这描述记账闭合，不认证方法正确。请求时长是流时长求和，不能充当墙钟耗时；费用未知，构建、QA、评分器资源不计作模型 Token。
+The counting unit is **DSH adapter stream attempts**; provider-internal HTTP retries are not visible. The 13 ledgers are complete in aggregate, and `failed / unfinished / missingUsage` are all 0; this describes accounting closure, not certification that the method is correct. Request duration is the sum of stream durations and cannot serve as wall-clock elapsed time; cost is unknown, and build, QA, and scorer resources are not counted as model Tokens.
 
-审查独立重算了元优化器及两组开发搜索的 7 份公开账本：275 started / 275 result、430,199 输入 / 78,867 输出 Token、793,563 ms，起止 ID 对齐。其余 50 次通过权威报告中的最终验证搜索和独立评估汇总交叉核对，未打开封存阶段的原始任务或请求材料。
+The review independently recomputed the 7 public ledgers of the meta-optimizer and the two development searches: 275 started / 275 result, 430,199 input / 78,867 output Tokens, 793,563 ms, with start and end IDs aligned. The remaining 50 were cross-checked against the final validation search and independent evaluation summaries in the authoritative report, without opening the original task or request materials from the sealed stage.
 
-## 验收状态与下一项工作
+## Acceptance Status and Next Work
 
-权威实验报告终态时间为 `2026-10-27T20:44:38.352Z`。原驱动于 `2026-10-27T20:44:39.108Z` 记录失败：`Cannot read properties of undefined (reading 'phase')`，位置为原驱动 `scripts/verify-optimizer-study.mjs:558:31`，其回执记录的驱动 SHA-256 为 `f1ca54d30799cf626f8e7cc2f43ab3dc87f84130e3d252fa13ee8cddccd6bc7c`。控制器命令记录覆盖了驱动中的报告值；这是实验完成之后的验收编排故障，行号对应该旧驱动。
+The authoritative experiment report's final-state time is `2026-10-27T20:44:38.352Z`. The original driver recorded a failure at `2026-10-27T20:44:39.108Z`: `Cannot read properties of undefined (reading 'phase')`, at original driver `scripts/verify-optimizer-study.mjs:558:31`, and the driver SHA-256 recorded in its receipt is `f1ca54d30799cf626f8e7cc2f43ab3dc87f84130e3d252fa13ee8cddccd6bc7c`. The controller command record overrode the report value in the driver; this is an acceptance orchestration fault after the experiment completed, and the line numbers correspond to that old driver.
 
-后续单独验收 `.evolution/optimizer-study-completed-verification-20261028/acceptance.json` 也记录 `passed: false`；安装阶段 `installation/g1/execution/stderr.log:5` 明确报 `no adapter registered for provider "venus"`。该驱动选用了 `sdk-minimal`，未复用注册运行环境，不能据此认定冻结插件包自身错误。两个失败回执均保留。
+The subsequent standalone acceptance `.evolution/optimizer-study-completed-verification-20261028/acceptance.json` also recorded `passed: false`; the installation stage `installation/g1/execution/stderr.log:5` explicitly reported `no adapter registered for provider "venus"`. That driver selected `sdk-minimal` and did not reuse the registered runtime environment, so it cannot be concluded from this that the frozen plugin package itself is faulty. Both failure receipts are preserved.
 
-纠正 profile 的后处理 `.evolution/optimizer-study-completed-verification-profile-corrected-20261028/acceptance.json` 已在 `2026-10-27T20:50:32.731Z` 完成，`passed: true`，SHA-256 为 `57348efdf48f6255b184bc7fe498a2e700580aaa03bd2e10b7663c2f7b5cd8b8`。G1、G0、H0 三项均为 `installed: true`、`nativeComposition: true`、`inferenceRequested: false`；各自 tarball 摘要与原冻结产物一致。该验收没有重做模型推理、验证工具业务效果或推翻 G1 未被选择的结果。
+The post-processing `.evolution/optimizer-study-completed-verification-profile-corrected-20261028/acceptance.json` that corrects the profile was completed at `2026-10-27T20:50:32.731Z`, `passed: true`, with SHA-256 `57348efdf48f6255b184bc7fe498a2e700580aaa03bd2e10b7663c2f7b5cd8b8`. All three items G1, G0, and H0 are `installed: true`, `nativeComposition: true`, `inferenceRequested: false`; each tarball digest matches the original frozen artifact. This acceptance did not redo model inference, verify the tool's business effect, or overturn the result that G1 was not selected.
 
-三项安装均使用原注册的 `sdk` profile。执行记录显示 `/environment` 只读挂载注册环境：G1/G0 来自开发搜索环境，H0 来自最终评估运行环境。复核只检查运行配置和挂载身份，没有读取最终评估任务内容。五个保留文件的 SHA-256 与原实验一致，包括原失败回执、权威报告、注册和研究数据库。
+All three installations used the originally registered `sdk` profile. The execution record shows `/environment` read-only mounts of the registered environments: G1/G0 from the development search environment, and H0 from the final evaluation runtime environment. The review only checked the runtime configuration and mount identities and did not read the final evaluation task content. The SHA-256 of the five preserved files match the original experiment, including the original failure receipt, the authoritative report, the registration, and the research database.
 
-安装所需的框架支持包单独记账：它来自首次后处理的 `optimizer-study-completed-verification-20261028/framework/package.tgz`，实际 SHA-256 为 `f6663fab04188d4a6f270d75288c4b19857b8619d90d367ab197a1b7570ace89`。它用于此次独立安装验收，与原实验镜像内框架包身份不能混同。G1/G0/H0 使用的仍是各自原冻结 tarball；原实验结果和调用账本没有被安装后处理改写。
+The framework support package required for installation is accounted for separately: it comes from the first post-processing `optimizer-study-completed-verification-20261028/framework/package.tgz`, and its actual SHA-256 is `f6663fab04188d4a6f270d75288c4b19857b8619d90d367ab197a1b7570ace89`. It is used for this independent installation acceptance and must not be conflated with the identity of the framework package inside the original experiment image. G1/G0/H0 still use their respective original frozen tarballs; the original experiment results and call ledgers were not rewritten by the installation post-processing.
 
-当前可成立的结论是：真实自主代码变异和方法比较闭环已发生，独立选择没有接受同分变异；本次 G1 机制存在具体缺陷，未取得质量收益证据。后续研究需要具备区分度的注册任务与重复实验，同时验证新增能力真实调用、作用域和原字节来源。
+The conclusion that currently holds is: the closed loop of real autonomous code mutation and method comparison did occur, and the independent selection did not accept the tied mutation; this round's G1 mechanism has specific defects and no evidence of quality gain was obtained. Future research requires registered tasks with discriminative power and repeated experiments, while verifying that the added capabilities are actually invoked, their scope, and their original-byte provenance.
 
-## 证据身份
+## Evidence Identity
 
-所有完整身份和 SHA-256 见配套 JSON。权威报告 SHA-256 为 `d4c3c094266f2c09260a28002666236efb63a1c76f18c4e249562e579a4f653b`；原失败回执为 `7f97d6e2f8bfe68f51b1ffe8b3cccfbe13cd20a00df0bc0416815abbe3431d77`。报告仅提取公开源码、开发轨迹和获准的聚合结果，不公开密钥、完整模型提示、封存输入或评分答案。
+All complete identities and SHA-256 values are in the accompanying JSON. The authoritative report SHA-256 is `d4c3c094266f2c09260a28002666236efb63a1c76f18c4e249562e579a4f653b`; the original failure receipt is `7f97d6e2f8bfe68f51b1ffe8b3cccfbe13cd20a00df0bc0416815abbe3431d77`. The report extracts only public source, development traces, and approved aggregate results, and does not disclose keys, full model prompts, sealed inputs, or scoring answers.

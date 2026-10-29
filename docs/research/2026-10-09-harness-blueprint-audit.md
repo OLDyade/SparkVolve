@@ -1,146 +1,146 @@
-# 全景图生态审校与设计依据
+# Panorama Ecosystem Audit and Design Rationale
 
-> 历史记录保留。2026-10-27 的生态更新、搜索机制与实验协议细化见[后续深度审校](2026-10-27-harness-evolution-design-review.md)；当前主图已引用新版依据。
+> Historical record retained. For the 2026-10-27 ecosystem update, search mechanism, and experimental protocol refinements, see [follow-up in-depth audit](2026-10-27-harness-evolution-design-review.md); the current main diagram already cites the new rationale.
 
-核验日期：2026-10-09  
-主文档：[11.md](../../11.md)
+Verification date: 2026-10-09<br>
+Main document: [11.md](../../11.md)
 
-## 本次工作的定位
+## Positioning of This Work
 
-`11.md` 是面向开源的目标架构，后续代码按图重构。现有实现、旧运行脚本与历史监控不限定设计空间；既有实验仅用于提炼可复用经验。主图描述方法、结构和接口关系，完成度、版本兼容与实验成绩由独立材料披露。
+`11.md` is the open-source-oriented target architecture; subsequent code will be refactored according to the diagram. Existing implementations, old run scripts, and historical monitoring do not constrain the design space; existing experiments serve only to distill reusable experience. The main diagram describes the method, structure, and interface relationships; completeness, version compatibility, and experimental results are disclosed by independent materials.
 
-本次仅修改文档，不更新实验规则、模型配置、监控或运行代码，不启动任务。首轮保留核心主张及①②，重写其余单元；随后按逐行自审授权精修①②的概念与表述，核心主张不变。主图移除历史轮次、旧并发参数及故障复盘式表达。
+This round modifies documentation only; it does not update experimental rules, model configuration, monitoring, or run code, and does not start tasks. The first round retained the core claims and ①② and rewrote the remaining units; a subsequent line-by-line self-review authorized refinement of the concepts and wording of ①②, with the core claims unchanged. The main diagram removes historical rounds, old concurrency parameters, and failure-postmortem-style phrasing.
 
-呈现遵循用户最新裁决：主图保留分支、汇合与反馈回路，呈现健康在途／待评分／待研究、验收成功／失败、运行有效性及晋级／淘汰等路径；概念细节移入本记录，避免顺序文字框取代流程图。优化器、实验控制与执行器按目标架构设计，不受旧代码的实现方式限制。
+Presentation follows the user's latest ruling: the main diagram retains branches, merges, and feedback loops, showing paths such as healthy in-flight / pending scoring / pending research, acceptance success / failure, run validity, and promotion / elimination; conceptual details move into this record, avoiding sequential text boxes replacing the flowchart. The optimizer, experiment control, and executor are designed according to the target architecture, unconstrained by how the old code was implemented.
 
-## 研究定位
+## Research Positioning
 
-推荐表达：**以插件为可操作的变异载体，以任务反馈驱动选择，将场景改进交付为可安装、可组合、可继续演化的 Harness 能力。**
+Recommended phrasing: **Treat plugins as operable mutation carriers, drive selection with task feedback, and deliver scenario improvements as installable, composable, and further-evolvable Harness capabilities.**
 
-研究辨识度应落在三项可检验贡献：
+Research distinctiveness should rest on three testable contributions:
 
-- **结构化变异空间**：统一描述插件配置、实现与组合结构；六类动作支持跨插件改写、删除和重组，保留服务依赖、作用域及生命周期语义。
-- **原生生态中的进化闭环**：优化器、实验基础设施与执行器通过 DSH 的服务、工具和事件连接；持久实验状态与 Agent 会话各司其职。
-- **从实验版本到能力分发**：选优产物保持候选身份，转为可安装 Bundle，并随附兼容条件、复现规格、逐题结果与成本。
+- **Structured mutation space**: uniformly describe plugin configuration, implementation, and composition structure; six action classes support cross-plugin rewriting, deletion, and recombination while preserving service dependencies, scope, and lifecycle semantics.
+- **Evolution loop within the native ecosystem**: the optimizer, experiment infrastructure, and executor connect through DSH services, tools, and events; persistent experiment state and Agent sessions each play their own role.
+- **From experimental versions to capability distribution**: selected artifacts retain candidate identity, are converted into installable Bundles, and are accompanied by compatibility conditions, reproduction specs, per-task results, and cost.
 
-这些属于项目的研究设计与工程落点。现有研究已经覆盖代码级 Harness 优化、候选归档和优化器自更新，不宜将这些单项宣称为首创。方法是否优于相关工作，需要后续等条件实验。
+These are the project's research design and engineering landing points. Existing research already covers code-level Harness optimization, candidate archiving, and optimizer self-update; these individual items should not be claimed as firsts. Whether the method outperforms related work requires subsequent controlled experiments.
 
-## 逐单元审校
+## Unit-by-Unit Audit
 
-| 单元 | 原稿需要调整的地方 | 全景图中的处理 |
+| Unit | What needed adjustment in the draft | Treatment in the panorama |
 |---|---|---|
-| ③ 优化器 | 侧重过去由谁执行，缺少系统角色关系 | 明确优化、实验、执行三层；DSH Standard 是优化器的装配起点，新增能力形成进化 Preset |
-| ④ 状态 | 监控描述较多，下一阶段责任不够清楚 | 用持久阶段记录组织完整闭环；完成事件衔接、周期核对、按身份恢复 |
-| ⑤ 归因 | 容易把轨迹解释直接当成原因 | 联合原输入、模型实际可见证据和交付，必要时复现，区分事实与假设 |
-| ⑥ 调研 | 调研容易成为旁支 | 每次围绕机制缺口，查版本、依赖和执行边界，以可检验设计结束研究 |
-| ⑦ 变异 | “知识”等泛称不精确，代码级改写另列历史补充 | 使用工具、Schema、Prompt、Skills、上下文投影、事件与编排等明确对象；将实现重写纳入六动作 |
-| ⑧ 候选 | 配置图可能被当成完整身份 | 联合代码、依赖、装配顺序、实际文件、Prompt、Schema、模型及外部服务身份 |
-| ⑨ 验收 | 工具调用与自填检查容易被当质量证明 | 验证实际接线与交付，以独立任务定义校验；验收与正式质量评测分开 |
-| ⑩ 执行 | 固定历史模型和30题写成全框架定义 | 通用任务适配与隔离执行；商业 Excel 保留为首个领域实例 |
-| ⑪ 评分 | 历史失败阈值固化在主图 | 阈值与重试交给实验规格；区分任务失败、基础设施失败和评分服务失败 |
-| ⑫ 选择 | 历史跨题集晋级易被包装成配对提升 | 质量导向选优，保留负结果与分支；公开增益要求可比较条件 |
-| A 插件基础设施 | 框架自身如何进入 DSH 生态较隐含 | 任务适配、候选谱系、实验控制、证据查询提供插件服务；用 Bundle 分发 |
-| B 持续运行 | Goal、Schedule、Workflow 可能被误作可靠实验工作流 | 明示各自能力边界，由实验控制承担阶段持久化、幂等推进和预算 |
-| C 证据与权限 | Session、遥测和完整模型请求混为一谈 | 关联但分离三类证据，关键请求独立存证；优化、执行、评分分权 |
-| D 优化器进化 | 仅靠执行器一次提分不足以验证 | G/H 分开版本化，等预算、同起点比较；在轮次边界验证自更新 |
-| E 研究协议 | 泛化证据夹在运行约束内 | 独立表达开发、选优、隔离测试；消融、波动、退步和迁移均需报告 |
-| F 开源交付 | 只有发布清单，缺少体验路径 | 能力体验、最小进化闭环、完整研究复现三个入口，明确安装与许可边界 |
+| ③ Optimizer | Focused on who executed in the past, lacking systematic role relationships | Clarify the three layers of optimization, experiment, and execution; DSH Standard is the optimizer's assembly starting point, and added capabilities form an evolution Preset |
+| ④ State | Too much monitoring description; responsibility for the next stage was unclear | Organize the complete loop with persistent stage records; completion-event handoff, periodic reconciliation, recovery by identity |
+| ⑤ Attribution | Easy to mistake trajectory interpretation for the cause directly | Combine original input, evidence actually visible to the model, and delivery; reproduce when necessary; distinguish facts from hypotheses |
+| ⑥ Investigation | Investigation easily becomes a side branch | Each time center on a mechanism gap, check versions, dependencies, and execution boundaries, and end the research with a testable design |
+| ⑦ Mutation | Vague terms such as "knowledge" are imprecise; code-level rewriting was listed separately as a historical supplement | Use explicit objects such as tools, Schema, Prompt, Skills, context projection, events, and orchestration; include implementation rewriting in the six actions |
+| ⑧ Candidate | The configuration diagram may be mistaken for the complete identity | Combine code, dependencies, assembly order, actual files, Prompt, Schema, model, and external service identity |
+| ⑨ Acceptance | Tool calls and self-filled checks are easily taken as quality proof | Verify actual wiring and delivery, validated against independent task definitions; separate acceptance from formal quality evaluation |
+| ⑩ Execution | Fixed historical model and 30 tasks written as a whole-framework definition | General task adaptation and isolated execution; commercial Excel retained as the first domain instance |
+| ⑪ Scoring | Historical failure thresholds solidified in the main diagram | Thresholds and retries delegated to the experiment spec; distinguish task failure, infrastructure failure, and scoring service failure |
+| ⑫ Selection | Historical cross-task-set promotion easily packaged as paired improvement | Quality-oriented selection, retaining negative results and branches; public gains require comparable conditions |
+| A Plugin infrastructure | How the framework itself enters the DSH ecosystem was rather implicit | Task adaptation, candidate lineage, experiment control, and evidence query provide plugin services; distributed via Bundle |
+| B Continuous operation | Goal, Schedule, Workflow may be mistaken for a reliable experiment workflow | State each one's capability boundaries explicitly; experiment control handles stage persistence, idempotent advancement, and budget |
+| C Evidence and permissions | Session, telemetry, and full model requests conflated | Associate but separate the three evidence types; key requests independently attested; separate authority for optimization, execution, and scoring |
+| D Optimizer evolution | A single score gain from the executor alone is insufficient to verify | Version G/H separately, compare at equal budget and same starting point; verify self-update at round boundaries |
+| E Research protocol | Generalization evidence sandwiched within run constraints | Express development, selection, and isolated testing independently; ablation, variance, regression, and transfer must all be reported |
+| F Open-source delivery | Only a release checklist, lacking an experience path | Three entry points: capability experience, minimal evolution loop, and full research reproduction, with clear installation and licensing boundaries |
 
-历史执行政策仍有其效力；移出主图的固定参数不等于本次修改了政策。未来研究协议需要单独落实，不能追溯性地重新命名或挑选历史结果。
+Historical execution policy remains in effect; removing fixed parameters from the main diagram does not mean this round modified the policy. Future research protocols must be implemented separately and cannot retroactively rename or cherry-pick historical results.
 
-## DSH 当前事实与设计含义
+## Current DSH Facts and Design Implications
 
-本次通过 GitHub API 核实上游 HEAD，并与本地研究副本一致：
+This round verified the upstream HEAD via the GitHub API, consistent with the local research copy:
 
 `deepseek-ai/deepseek-harness@5badb15009ae1756c3afe0ae0cef1faafc290ccc`
 
-| 核实项 | 当前上游事实 | 对蓝图的约束 |
+| Verified item | Current upstream fact | Constraint on the blueprint |
 |---|---|---|
-| Standard | 声明为 Agent Preset 的插件组合；包含工具、Skill、Goal、压缩及委派等条目 | 进化 Preset 应明确自己的增量，不能把扩展后配置叫原封不动的 Standard |
-| 插件管理 | 可改变整个 Profile，部分修改需重启；Standard 的管理工具默认关闭 | 优化器在隔离候选中编辑代码与配置；不直接热改运行实验所用 Profile |
-| Goal | 同会话空闲时续行；恢复、fork 或重新挂载不会自动重新激活；轮数上限与资源预算独立 | 用作研究工作的续行手段；实验预算、恢复策略和独立评分由实验层承担 |
-| Schedule | 依赖 Host 会话控制与持久化；回执确认持久入队；崩溃窗口可能重复投递 | 唤醒与实验完成分离；不能假定独立 Headless 仅装一个 Schedule 就可运行 |
-| Workflow | 脚本协调子 Agent，当前前台汇总；无进程重启后的脚本恢复，也无跨子任务 Token 预算词汇 | 可用于研究子任务，不能直接充当持久实验引擎 |
-| Session telemetry | 非阻塞、尽力投递；队列在崩溃时可能丢失；无默认脱敏规则 | 可靠实验档案另行持久化，公开记录明确脱敏策略 |
-| Skills | Registry、Provider、Loader 与内容分开；正文按需加载 | 用具体指令、资源和执行工具描述 Skill，不将它当自动执行服务 |
-| MCP | 通过客户端插件将外部工具与资源接入 | 明确连接、权限与外部依赖，不能把 MCP 本身当插件生命周期管理器 |
-| Compaction | 摘要压缩、工具结果裁剪、图像处理与 Token 测量属于不同能力 | 避免将“上下文优化”与服务端缓存混为一谈；是否允许变异由研究规格约定 |
-| 隔离 | Cordis 作用域和注册资源生命周期不提供容器安全边界 | 受限答案、凭证、文件和网络访问须有实际权限分离 |
+| Standard | Declared as a plugin composition of an Agent Preset; includes entries such as tools, Skill, Goal, compaction, and delegation | The evolution Preset should state its own increments; the extended configuration cannot be called an unchanged Standard |
+| Plugin management | Can change the entire Profile; some modifications require restart; Standard's management tools are disabled by default | The optimizer edits code and configuration in isolated candidates; it does not directly hot-modify the Profile used by running experiments |
+| Goal | Continues when the same session is idle; recovery, fork, or remount does not automatically reactivate; round limit and resource budget are independent | Used as a continuation mechanism for research work; experiment budget, recovery strategy, and independent scoring are handled by the experiment layer |
+| Schedule | Depends on Host session control and persistence; receipt confirms persistent enqueue; crash windows may cause duplicate delivery | Wake-up is separated from experiment completion; cannot assume a standalone Headless runs with only a Schedule installed |
+| Workflow | Scripts coordinate sub-Agents, currently aggregated in the foreground; no script recovery after process restart, and no cross-subtask Token budget vocabulary | Usable for research subtasks, but cannot directly serve as a persistent experiment engine |
+| Session telemetry | Non-blocking, best-effort delivery; queue may be lost on crash; no default redaction rules | Reliable experiment archives are persisted separately; public records state an explicit redaction policy |
+| Skills | Registry, Provider, Loader, and content are separate; body loaded on demand | Describe a Skill with concrete instructions, resources, and execution tools; do not treat it as an automatic execution service |
+| MCP | Connects external tools and resources via client plugins | Clarify connections, permissions, and external dependencies; MCP itself cannot be treated as a plugin lifecycle manager |
+| Compaction | Summary compression, tool-result trimming, image processing, and Token measurement are distinct capabilities | Avoid conflating "context optimization" with server-side caching; whether mutation is allowed is stipulated by the research spec |
+| Isolation | Cordis scopes and registered resource lifecycles do not provide a container security boundary | Restricted answers, credentials, files, and network access require actual permission separation |
 
-固定源码入口：
+Fixed source entry points:
 
 - [Standard Preset](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/bundle/web-app/presets/standard.patch.yml)
-- [Cordis 通信与扩展机制](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/docs/cordis-primer.md)
-- [插件管理及 Profile 影响范围](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/boot/plugin-manager/README.md)
+- [Cordis communication and extension mechanisms](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/docs/cordis-primer.md)
+- [Plugin management and Profile impact scope](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/boot/plugin-manager/README.md)
 - [Goal continuation driver](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/goal/goal-round-driver/README.md)
-- [Schedule 服务及持久化限制](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/schedule/schedule/README.md)
-- [Workflow 能力与限制](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/workflow/workflow/README.md)
+- [Schedule service and persistence limitations](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/schedule/schedule/README.md)
+- [Workflow capabilities and limitations](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/workflow/workflow/README.md)
 - [Session telemetry](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/session/session-telemetry/README.md)
-- [Skill 服务](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/skill/skill/README.md)
-- [MCP 包组](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/mcp/README.md)
-- [Compaction 包组](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/compaction/README.md)
+- [Skill service](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/skill/skill/README.md)
+- [MCP package group](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/mcp/README.md)
+- [Compaction package group](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/compaction/README.md)
 
-官方模型页在本次核验中将 `deepseek-flash` 映射为 DeepSeek-V4.1-Flash，因此保留它作为参考优化器。它是服务别名；长期实验仍应记录响应模型信息、日期、参数与供应商变化，不能由别名推断远端权重绝对冻结。[DeepSeek 官方模型说明](https://api-docs.deepseek.com/quick_start/pricing/)
+In this verification, the official model page maps `deepseek-flash` to DeepSeek-V4.1-Flash, so it is retained as the reference optimizer. It is a service alias; long-term experiments should still record the responding model information, date, parameters, and vendor changes, and absolute freezing of remote weights cannot be inferred from the alias. [DeepSeek official model description](https://api-docs.deepseek.com/quick_start/pricing/)
 
-## 相近研究：借鉴什么，避免怎样表述
+## Related Research: What to Borrow, What Phrasing to Avoid
 
 ### GEPA
 
-当前 README 的 `optimize_anything` 已覆盖代码、架构与配置，强调轨迹反馈、反思、变异及候选选择。不能将 GEPA 简化为“只会改 Prompt”，也不宜用“我们能改代码”作为唯一差异。借鉴其将丰富执行反馈传给优化器的做法；本项目进一步明确 DSH 插件的装配、作用域和分发语义。
+The current README's `optimize_anything` already covers code, architecture, and configuration, emphasizing trajectory feedback, reflection, mutation, and candidate selection. GEPA cannot be reduced to "only changes Prompts," nor should "we can change code" be used as the sole differentiator. Borrow its practice of passing rich execution feedback to the optimizer; this project further clarifies the assembly, scope, and distribution semantics of DSH plugins.
 
-核实 HEAD：`462e437a09be67d2acb59564cc0ea59132f5777c`。  
-来源：[GEPA README](https://github.com/GEPA-ai/GEPA/blob/462e437a09be67d2acb59564cc0ea59132f5777c/README.md)。
+Verified HEAD: `462e437a09be67d2acb59564cc0ea59132f5777c`.<br>
+Source: [GEPA README](https://github.com/GEPA-ai/GEPA/blob/462e437a09be67d2acb59564cc0ea59132f5777c/README.md).
 
 ### VeRO
 
-当前项目将候选生产、独立评测与版本历史分离，支持对代码及其他可评分对象进行优化；当前系统和论文时期实现有明确区分。借鉴其可替换候选生产者和评测边界，主图采用优化、实验、执行三层职责，并保留实验身份与候选身份。
+The current project separates candidate production, independent evaluation, and version history, and supports optimization of code and other scorable objects; the current system and the paper-era implementation are clearly distinguished. Borrowing its replaceable candidate producer and evaluation boundary, the main diagram adopts the three-layer responsibilities of optimization, experiment, and execution, and retains experiment identity and candidate identity.
 
-核实 HEAD：`d1400011917ff66b7c122e7a787d547372f43e97`。  
-来源：[VeRO README](https://github.com/scaleapi/vero/blob/d1400011917ff66b7c122e7a787d547372f43e97/README.md)。本次未运行其基准，不引用维护者给出的收益数字为本项目背书。
+Verified HEAD: `d1400011917ff66b7c122e7a787d547372f43e97`.<br>
+Source: [VeRO README](https://github.com/scaleapi/vero/blob/d1400011917ff66b7c122e7a787d547372f43e97/README.md). Its benchmark was not run this round, and the gain figures given by the maintainers are not cited to endorse this project.
 
 ### VERSE
 
-2026-10-02 论文研究执行验证与优化器自更新的结合；实际配置启用 `self_edit` 并设探针预算。可借鉴其把归因、验证和优化器更新连起来的思路。主图据此保留 G/H 双层版本与独立研究模式，不将“写经验笔记”或“某个候选提分”直接称为优化器进化有效。
+The 2026-10-02 paper studies the combination of execution verification and optimizer self-update; the actual configuration enables `self_edit` and sets a probe budget. Its idea of linking attribution, verification, and optimizer update can be borrowed. Accordingly, the main diagram retains the G/H two-layer versioning and the independent research mode, and does not directly call "writing experience notes" or "a single candidate's score gain" effective optimizer evolution.
 
-核实 HEAD：`d8ff0adab0cf82e13d7878f84ff84f823cb2f6c9`。  
-来源：[论文](https://arxiv.org/html/2610.02616)、[README](https://github.com/wzekai/VERSE/blob/d8ff0adab0cf82e13d7878f84ff84f823cb2f6c9/README.md)、[真实配置](https://github.com/wzekai/VERSE/blob/d8ff0adab0cf82e13d7878f84ff84f823cb2f6c9/verse/configs/self_teacher/verse_mh.yaml)。
+Verified HEAD: `d8ff0adab0cf82e13d7878f84ff84f823cb2f6c9`.<br>
+Sources: [paper](https://arxiv.org/html/2610.02616), [README](https://github.com/wzekai/VERSE/blob/d8ff0adab0cf82e13d7878f84ff84f823cb2f6c9/README.md), [actual configuration](https://github.com/wzekai/VERSE/blob/d8ff0adab0cf82e13d7878f84ff84f823cb2f6c9/verse/configs/self_teacher/verse_mh.yaml).
 
-这些外部方法的训练、验证与测试设计仅作研究参照；本项目不照搬其任务访问权限、探针次数或重试规则。
+The training, validation, and test designs of these external methods serve only as research references; this project does not copy their task access permissions, probe counts, or retry rules.
 
-## 社区核验范围与不足
+## Community Verification Scope and Gaps
 
-- 通过 Context7 查询 DSH 文档，并回到当前 commit 的配置与包文档核对关键能力。索引命中不能独立证明当前装配行为。
-- GitHub 仓库与 HEAD 已现场核实；源码配置、官方文档和论文结论分层使用。
-- 对 X 的 DSH／VERSE／GEPA 定向检索未得到可核实的原帖。本次不声称已验证社区热度，也不编造热度数据。
-- DSH issues API 本次返回空结果；不据此推断没有已知缺陷。采用包文档已明确列出的行为限制作为设计依据。
-- 未运行上游研究实验，未实施蓝图中的新实验控制插件。本文完成的是概念审校、架构设计与表达修订。
+- Queried DSH documentation via Context7 and cross-checked key capabilities against the configuration and package documentation of the current commit. Index hits cannot independently prove current assembly behavior.
+- The GitHub repository and HEAD were verified on-site; source configuration, official documentation, and paper conclusions are used at separate levels.
+- Targeted searches on X for DSH/VERSE/GEPA yielded no verifiable original posts. This round does not claim to have verified community popularity, nor does it fabricate popularity data.
+- The DSH issues API returned empty results this round; this is not taken to imply there are no known defects. Behavior limitations explicitly listed in the package documentation are adopted as design rationale.
+- Upstream research experiments were not run, and the new experiment control plugin in the blueprint was not implemented. This document completes conceptual audit, architecture design, and wording revision.
 
-## 逐行自审补充：表达、连接与研究语义
+## Line-by-Line Self-Review Supplement: Wording, Connections, and Research Semantics
 
-本轮重新逐行检查主图；在已核验的同一 DSH 版本基础上修订，没有将目标架构重新限制为现有代码。
+This round re-checked the main diagram line by line; revisions were made on the basis of the same verified DSH version, without re-constraining the target architecture to existing code.
 
-| 检查位置 | 自审发现 | 修订结果 |
+| Check location | Self-review finding | Revision result |
 |---|---|---|
-| 标题与导语 | 项目介绍、蓝图用途和正文核心主张重复 | 压缩导语，突出任务反馈、Harness 变异与能力交付 |
-| 核心主张 | 已经明确表达用户认可的研究方向 | 保留主张和六类动作，不额外创造口号 |
-| ① 实验规格 | 起点缺任务清单，结束条件较隐含 | 补任务清单和停止条件；模型用“合同”表达可核验的固定条件 |
-| ② Plugin／Cordis | 容易让人以为每个插件都必须提供服务 | 改为按需提供服务、声明依赖或响应事件；强调可见服务依赖 |
-| ③ 角色 | 优化器标题下重复描述两方，实验层位置不突出 | 明确优化器、实验系统、执行器三层职责与独立记账 |
-| ④ 恢复分支 | 只有“待评分”和“继续研究”，遗漏已评分及未完成候选 | 已评分直达裁决；已有候选续接原阶段；需要新变异才进入归因 |
-| ⑤ 初次进入 | 直接要求分析高低分轨迹，首轮可能没有轨迹 | 明确先形成初始基线；证据不足时补隔离复现 |
-| ⑤ 归因表述 | “上下文”未说明是否为模型实际可见内容 | 强调实际可见证据，事实、相关性和假设分别记录 |
-| ⑥ 研究 | 标题堆放来源名称，机制目标不突出 | 标题表达研究目的，正文交代来源、版本和适用边界 |
-| ⑦ 变异 | 工具实现与 Schema、替换与接口迁移关系略含混 | 明确实现／接口／调用方的联动，保留跨插件整体改动与删减空间 |
-| ⑧→⑨ | 入口箭头落在两个框之间，易误读为并行 | 入口接构建，再由水平箭头进入验收 |
-| ⑨ 验收 | 容易将“通过”理解为已有提分结论 | 明示可运行与质量收益的区别；预期来源保持独立 |
-| ⑩ Agent Loop | 继续求解回线和完成出口未连到同一观察节点 | 在观察结果处分出继续／完成路径，完成后归档 |
-| ⑪ 评测 | 运行状态与业务质量的区分不够直观 | 区分运行失败、答错和评分服务异常；明确完整分母与成本 |
-| ⑫ 反馈 | 只有文字“返回”，缺少可直接辨认的回路 | 增加左侧反馈线，贯通裁决、谱系积累与下一轮归因 |
-| 停止出口 | 停止条件与发布条件合并 | 停止后封存进展；待发布候选另进入⑬ |
-| 支撑层 | 用下行箭头连接，易读成必须依次执行的后置阶段 | 去掉顺序箭头，明确贯穿全程的支撑和扩展 |
-| 优化器进化 | G／H 含义依赖读者猜测 | 写明优化器 G、执行器 H，保持等预算比较和分别版本化 |
-| 研究验证 | 测试与优化循环的隔离不够明确 | 明示隔离测试不回灌同一轮选优，单独披露退步与成本 |
-| ⑬ 发布 | 只有产物清单，缺少证据不足出口 | 加入冻结候选、独立验证、发布条件，以及局限和负结果的保留 |
-| 排版 | 局部替换导致双栏边框错位 | 重新核对单栏、双栏宽度、连接线和完整代码块 |
+| Title and lead | Project introduction, blueprint purpose, and body core claims were repetitive | Condensed the lead, highlighting task feedback, Harness mutation, and capability delivery |
+| Core claims | Already clearly expressed the user-approved research direction | Retained the claims and six action classes, without inventing extra slogans |
+| ① Experiment spec | Starting point lacked a task list; end conditions were rather implicit | Added task list and stop conditions; the model uses "contract" to express verifiable fixed conditions |
+| ② Plugin/Cordis | Easy to think every plugin must provide a service | Changed to providing services on demand, declaring dependencies, or responding to events; emphasized visible service dependencies |
+| ③ Roles | The optimizer heading repeatedly described two parties; the experiment layer's position was not prominent | Clarified the three-layer responsibilities of optimizer, experiment system, and executor, with independent accounting |
+| ④ Recovery branches | Only "pending scoring" and "continue research," missing scored and incomplete candidates | Scored goes directly to adjudication; existing candidates resume their original stage; new mutation is required to enter attribution |
+| ⑤ First entry | Directly required analyzing high/low-score trajectories; the first round may have no trajectories | Clarified forming an initial baseline first; supplement with isolated reproduction when evidence is insufficient |
+| ⑤ Attribution wording | "Context" did not state whether it is content actually visible to the model | Emphasized actually visible evidence; facts, correlations, and hypotheses recorded separately |
+| ⑥ Research | Heading piled up source names; mechanism goal not prominent | Heading expresses the research purpose; body explains sources, versions, and applicable boundaries |
+| ⑦ Mutation | Relationship between tool implementation and Schema, and between replacement and interface migration, was somewhat vague | Clarified the linkage of implementation/interface/caller, retaining space for whole cross-plugin changes and deletions |
+| ⑧→⑨ | Entry arrow fell between two boxes, easily misread as parallel | Entry connects to construction, then a horizontal arrow enters acceptance |
+| ⑨ Acceptance | Easy to interpret "pass" as an existing score-gain conclusion | Explicitly stated the difference between runnable and quality gain; expected sources kept independent |
+| ⑩ Agent Loop | The continue-solving return line and the completion exit were not connected to the same observation node | Split continue/complete paths at the observation result; archive after completion |
+| ⑪ Evaluation | Distinction between run status and business quality was not intuitive enough | Distinguish run failure, wrong answer, and scoring service anomaly; clarify full denominator and cost |
+| ⑫ Feedback | Only the text "return," lacking a directly recognizable loop | Added a left-side feedback line connecting adjudication, lineage accumulation, and the next round of attribution |
+| Stop exit | Stop conditions and release conditions merged | Seal progress after stopping; candidates pending release enter ⑬ separately |
+| Support layer | Connected with downward arrows, easily read as post-stages that must execute in sequence | Removed sequential arrows; clarified support and extension throughout the whole process |
+| Optimizer evolution | Meaning of G/H depended on reader guesswork | Stated optimizer G and executor H explicitly, maintaining equal-budget comparison and separate versioning |
+| Research validation | Isolation between testing and the optimization loop was not clear enough | Explicitly stated isolated tests do not feed back into the same round's selection; regressions and costs disclosed separately |
+| ⑬ Release | Only an artifact list, lacking an exit for insufficient evidence | Added frozen candidates, independent validation, release conditions, and retention of limitations and negative results |
+| Layout | Local replacements caused two-column border misalignment | Re-checked single-column and two-column widths, connector lines, and complete code blocks |
 
-最终图保留完整流程，并用三种视觉关系区分：箭头表示执行流，左侧回线表示进化反馈，独立支撑区表示跨阶段能力。框架、方法与实现状态分别表述，研究证据不足时不以包装文字补足结论。
+The final diagram retains the complete flow and distinguishes three visual relationships: arrows indicate execution flow, left-side return lines indicate evolution feedback, and the independent support area indicates cross-stage capabilities. Framework, method, and implementation status are stated separately; when research evidence is insufficient, conclusions are not padded with packaging language.

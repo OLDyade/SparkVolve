@@ -1,35 +1,35 @@
-# 第二领域：结构化事件与日志
+# Second Domain: Structured Events and Logs
 
-本适配器复用同一 DSH 优化器、实验合同、冻结构建、原生装配 QA、独立评分与 Bundle 分发。控制器没有增加领域分支。输入为 JSON / JSONL，交付为 JSON，无需 Excel 或 LibreOffice。
+This adapter reuses the same DSH optimizer, experiment contract, frozen build, native assembly QA, independent scoring, and Bundle distribution. The controller adds no domain branches. Input is JSON / JSONL, delivery is JSON, and no Excel or LibreOffice is required.
 
 ```text
-事件 / 日志 / 清单 → 原生数据工具 Bundle → DSH 执行器 → result.json
+Events / logs / manifests → native data tool Bundle → DSH executor → result.json
                             ▲                              │
                             │                              ▼
-                      优化器自主变异 ← 原有实验控制器 ← 禁网独立裁判
+                      optimizer autonomous mutation ← existing experiment controller ← network-isolated independent judge
                             │
-                            └── 同一冻结产物 → 原生安装与复用
+                            └── same frozen artifact → native installation and reuse
 ```
 
-## 任务与评分
+## Tasks and Scoring
 
-| 公开合成任务 | 验证的业务机制 |
+| Public synthetic task | Business mechanism verified |
 |---|---|
-| revision-events | 事件去重、按版本归并、删除与恢复、保留 null 和空字符串 |
-| request-logs | 复合分组、服务端错误定义、零延迟、均值和 nearest-rank 分位数 |
-| dependency-join | 多字段精确关联、精确例外匹配、未匹配记录 |
+| revision-events | Event deduplication, merging by version, deletion and restoration, preserving null and empty strings |
+| request-logs | Composite grouping, server-side error definition, zero latency, mean and nearest-rank quantiles |
+| dependency-join | Multi-field exact join, exact exception matching, unmatched records |
 
-种子仅提供 `data_read` 原文读取与 `data_write` 显式 JSON 写入。优化器可自行增加通用操作、修改实现或装配，不预设变异答案。每轮预算含基线共两个候选，每候选三题、每题一次，最多六次任务执行；失败保留，不重抽。
+The seed provides only `data_read` raw-text reading and `data_write` explicit JSON writing. The optimizer may add general operations, modify the implementation, or modify the assembly on its own; no mutation answer is presupposed. Each round's budget includes the baseline, for two candidates total; each candidate gets three tasks, one attempt per task, for at most six task executions; failures are retained and not redrawn.
 
-评分器只解析交付数据，不执行候选提供的程序。每个任务的三个顶层结果字段各算一项，顶层字段集合另算一项，四项等权；嵌套数组顺序和内容按任务规则比较。数字按精确数值比较，布尔值独立；重复 JSON 键和非标准 NaN / Infinity 拒绝。缺失或错误交付是业务零分，评分材料损坏会直接失败。反馈只给各项是否匹配，不返回预期值。
+The scorer only parses delivered data and does not execute programs supplied by candidates. For each task, the three top-level result fields each count as one item, and the top-level field set counts as another item, for four equally weighted items; nested array order and content are compared according to task rules. Numbers are compared by exact value, and booleans are independent; duplicate JSON keys and non-standard NaN / Infinity are rejected. Missing or incorrect delivery is a business zero score, and corrupted scoring materials cause direct failure. Feedback only states whether each item matches and does not return expected values.
 
-生成器与答案算法为公开开发样例，故这些任务**不属于未见测试集**。本实验验证跨领域接入、真实自主变异和交付链路；同分与退步照实保留，不据此宣称稳定跨领域收益。
+The generator and answer algorithm are public development samples, so these tasks **are not part of an unseen test set**. This experiment verifies cross-domain integration, real autonomous mutation, and the delivery chain; ties and regressions are retained as-is, and no claim of stable cross-domain gains is made on this basis.
 
-## 运行
+## Running
 
-在仓库根目录执行；依赖版本和凭证配置沿用主 README。镜像直接使用通用基础镜像，不安装表格依赖。
+Run from the repository root; dependency versions and credential configuration follow the main README. The image directly uses the generic base image and does not install spreadsheet dependencies.
 
-`HE_TEST_DNS` 使用部署方确认的 IPv4 resolver 列表；发现方法与实际解析验收边界见[出口 DNS](isolation.md#出口-dns)。
+`HE_TEST_DNS` uses the IPv4 resolver list confirmed by the deployer; for the discovery method and the actual resolution acceptance boundary, see [Egress DNS](isolation.md#egress-dns).
 
 ```bash
 npm ci
@@ -51,12 +51,12 @@ node --env-file=/absolute/private/venus.env dist/cli.js evolve \
 node dist/cli.js report --root .evolution/data/search --output .evolution/data/report.json
 ```
 
-`HE_CONTROLLER_IP` 必须是代理容器可达的明确 IP；可通过 README 的 `scripts/controller-address.mjs` 读取 Docker 已配置的宿主映射，或指定已配置的可达接口。数据目录、合同和报告均要求新路径；停止后恢复原实验使用相同 `evolve` 命令，不能重建目录伪装重试。通过 `export` 输出冻结候选后，可沿用[原生能力入口](use-capability.md)安装，把工作簿输入换成对应 JSON 数据与任务即可。
+`HE_CONTROLLER_IP` must be an explicit IP reachable by the proxy container; you can read Docker's configured host mapping via the README's `scripts/controller-address.mjs`, or specify a configured reachable interface. The data directory, contract, and report all require new paths; after stopping, resume the original experiment with the same `evolve` command, and do not rebuild the directory to disguise a retry. After outputting a frozen candidate via `export`, you can install it using the [native capability entry](use-capability.md), replacing the workbook input with the corresponding JSON data and tasks.
 
-## 实现依据
+## Implementation Basis
 
-- Python 官方 [`json` 文档](https://docs.python.org/3/library/json.html)：默认解码会合并重复成员、接受非标准常量；本裁判用 `object_pairs_hook` / `parse_constant` 明确拒绝，`parse_float=Decimal` 避免数值舍入成为隐藏评分条件。实际只使用当前运行版本支持的接口。
-- DSH `0.2.1-rc.4` 原生 `defineTool`、SDK Profile、Cordis `inject=['tools']` 和 Bundle patch；新领域没有实现另一套 Agent Loop。
-- 种子锁文件采用与主仓库一致的 Zod `4.6.7`，规避已核实的 [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)，依赖审计零告警。
+- Python official [`json` documentation](https://docs.python.org/3/library/json.html): default decoding merges duplicate members and accepts non-standard constants; this judge explicitly rejects them with `object_pairs_hook` / `parse_constant`, and `parse_float=Decimal` prevents numeric rounding from becoming a hidden scoring condition. Only interfaces supported by the currently running version are actually used.
+- DSH `0.2.1-rc.4` native `defineTool`, SDK Profile, Cordis `inject=['tools']`, and Bundle patch; the new domain does not implement another Agent Loop.
+- The seed lockfile uses the same Zod `4.6.7` as the main repository, avoiding the verified [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5), with zero dependency audit warnings.
 
-真实实验已完成：[结果与独立审查](acceptance-structured-data.md)。基线三题全通过，变异两题通过、一题执行超时，按完整分母拒绝；已验证导出基线包的原生安装和真实工具调用。负结果与算法反例完整保留。
+The real experiment is complete: [results and independent review](acceptance-structured-data.md). The baseline passed all three tasks; the mutant passed two tasks and timed out on one execution, and was rejected under the full denominator; native installation and real tool invocation of the exported baseline package were verified. Negative results and algorithm counterexamples are fully retained.

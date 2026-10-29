@@ -1,34 +1,34 @@
-# 行为实验台对照：真实装配变异与失败机制
+# Behavioral Harness Comparison: Real Assembly Mutations and Failure Mechanisms
 
-本轮完成 64/64 次独立评分，执行失败为零。关闭行为实验的搜索得到一次本地增益；开启组的三个变异全部低于自身基线。**本轮未证明行为实验台提升正确率，也未证明稳定进化收益。** 同时获得真实的跨插件装配变异证据，并通过独立原生反例确认一个不可接受的自动公式改写。
+This round completed 64/64 independent scorings with zero execution failures. The search with the behavioral harness disabled yielded one local gain; all three mutations in the enabled group fell below their own baseline. **This round did not demonstrate that the behavioral harness improves accuracy, nor did it demonstrate a stable evolutionary benefit.** At the same time, real evidence of cross-plugin assembly mutation was obtained, and an unacceptable automatic formula rewrite was confirmed via an independent native counterexample.
 
-[预注册合同](2026-10-28-native-probe-spreadsheet-control.json) · [逐样本成绩、调用成本与反例](../evidence/2026-10-28-native-probe-spreadsheet-control.json)
+[Pre-registered contract](2026-10-28-native-probe-spreadsheet-control.json) · [Per-sample scores, invocation costs, and counterexamples](../evidence/2026-10-28-native-probe-spreadsheet-control.json)
 
-## 完整结果
+## Full Results
 
-四个公开合成 Excel 开发任务，每个候选每题两次；每组包含基线及三个变异。使用相同源基线、模型、镜像、工具 Schema 和优化方法，仅行为实验授权不同。任务已被此前开发观察，不属于独立测试集或官方 SpreadsheetBench。
+Four public synthetic Excel development tasks, each candidate run twice per task; each group contains a baseline and three mutations. The same source baseline, model, image, tool Schema, and optimization method were used; only the behavioral harness authorization differed. The tasks had been observed in prior development and are not an independent test set or the official SpreadsheetBench.
 
-| 组别 | 基线 | 变异 1 | 变异 2 | 变异 3 | 本轮选择 |
+| Group | Baseline | Mutation 1 | Mutation 2 | Mutation 3 | This round's selection |
 |---|---:|---:|---:|---:|---|
-| 关闭行为实验 | 78.125% | 68.75% | 51.875% | 81.25% | 变异 3，本地增加 3.125 pp |
-| 开启行为实验 | 90.625% | 78.125% | 68.75% | 68.75% | 保留基线 |
+| Behavioral harness disabled | 78.125% | 68.75% | 51.875% | 81.25% | Mutation 3, local increase of 3.125 pp |
+| Behavioral harness enabled | 90.625% | 78.125% | 68.75% | 68.75% | Retain baseline |
 
-每个单元格均为 8/8 样本均值，没有补题、任务重试或混合版本。相同源基线的两次独立运行相差 12.5 pp；不能把两组最高分之差归因于行为实验。开启组额外获得六次实验额度，总计算量没有配平；共用主机与模型服务也可能产生影响。独立重复与同预算研究仍需补齐。
+Each cell is the mean of 8/8 samples, with no supplementary tasks, task retries, or mixed versions. Two independent runs of the same source baseline differed by 12.5 pp; the difference between the two groups' highest scores cannot be attributed to the behavioral harness. The enabled group additionally received six experiment credits, and total compute was not balanced; shared hosts and model services may also have had an effect. Independent replication and equal-budget studies remain to be completed.
 
-| 账目 | 关闭组 | 开启组 |
+| Account | Disabled group | Enabled group |
 |---|---:|---:|
-| 优化器 started / result | 154 / 154 | 236 / 236 |
-| 优化器输入 / 输出 Token | 347,639 / 76,683 | 470,073 / 78,229 |
-| 优化器计账秒数 | 903.468 | 1,013.536 |
-| 优化器＋执行器 started / result | 451 / 451 | 515 / 515 |
-| 总输入 / 输出 Token | 656,970 / 140,552 | 813,804 / 148,085 |
-| 请求耗时之和（秒） | 1,348.112 | 1,504.001 |
+| Optimizer started / result | 154 / 154 | 236 / 236 |
+| Optimizer input / output Token | 347,639 / 76,683 | 470,073 / 78,229 |
+| Optimizer billed seconds | 903.468 | 1,013.536 |
+| Optimizer + executor started / result | 451 / 451 | 515 / 515 |
+| Total input / output Token | 656,970 / 140,552 | 813,804 / 148,085 |
+| Sum of request durations (seconds) | 1,348.112 | 1,504.001 |
 
-两组账本均无 failed/unfinished；上述次数指 DSH adapter stream，服务商内部重试未必可见。并发请求耗时之和不等于墙钟时间；未取得可靠单价，费用不估算。
+Neither group's ledger has failed/unfinished entries; the counts above refer to the DSH adapter stream, and provider-internal retries may not be visible. The sum of concurrent request durations is not wall-clock time; no reliable unit price was obtained, so costs are not estimated.
 
-## 跨插件变异确实发生
+## Cross-Plugin Mutation Did Occur
 
-关闭组变异 3（`4a60fb2b…`）由优化器自主新增 `recalc.mjs/recalc.py`，同时修改原工具实现和 `cordis.patch.yml`：
+Disabled-group mutation 3 (`4a60fb2b…`) autonomously added `recalc.mjs/recalc.py` by the optimizer, while modifying the original tool implementation and `cordis.patch.yml`:
 
 ```diff
  - insert:
@@ -36,31 +36,31 @@
 +    - name: ./recalc.mjs
 ```
 
-原生 QA 的 `composition.json` 记录两插件都处于活动状态；任务 `9365249f…` 的原生 `tool/call` 事件（seq 52）实际调用了 `workbook_recalculate`。这是代码与装配共同变化的证据；没有据此宣称服务接口迁移、复杂作用域重构或拓扑改动的因果收益。该候选仅为开发搜索的本地选择，尚未作为通过完整验收的能力分发。
+The native QA's `composition.json` records that both plugins were active; the native `tool/call` event (seq 52) of task `9365249f…` actually invoked `workbook_recalculate`. This is evidence that code and assembly changed together; no causal benefit is claimed on this basis for service interface migration, complex scope refactoring, or topology changes. This candidate is only a local selection from the development search and has not been distributed as a capability that passed full acceptance.
 
-## 行为实验为什么没有提供有效检查
+## Why the Behavioral Harness Did Not Provide Effective Checks
 
-| 登记实验 | 实际结果 | 可支持的结论 |
+| Registered experiment | Actual result | Supportable conclusion |
 |---|---|---|
-| 前两次 | 把 `probe.mjs#probe` 当作文件路径，模块加载失败 | 入口使用错误，未运行业务断言 |
-| 第三次 | `probe()` 直接 `return 1`；观察为空，退出成功 | 只验证模块能加载，未验证插件行为 |
-| 后三次 | 对完整原生 ToolResult 对象执行 `JSON.parse`，报 `[object Object]` 解析错误 | 读取结果方式错误，预期断言未完成 |
+| First two | Treated `probe.mjs#probe` as a file path; module loading failed | Entry point used incorrectly; no business assertions were run |
+| Third | `probe()` directly `return 1`; observation was empty, exit succeeded | Only verified that the module loads; did not verify plugin behavior |
+| Last three | Executed `JSON.parse` on the full native ToolResult object, reporting a `[object Object]` parse error | Result read incorrectly; expected assertions were not completed |
 
-六次登记均保留原始源码、构建、日志和状态。另外存在一次把文件当作 suite 目录的准备失败，未登记为执行实验；不将其混入六次运行统计。`passed` 只表示作者提供的程序正常返回，空测试不能当成有效取证。
+All six registrations retain the original source, build, logs, and state. There was additionally one preparation failure that treated a file as a suite directory, which was not registered as an executed experiment; it is not mixed into the six-run statistics. `passed` only indicates that the author-provided program returned normally; an empty test cannot be treated as valid evidence.
 
-当前修正直接针对接口问题：在登记前检查草稿/测试目录和实际入口文件；工具参数明确目录、模块文件及固定 `probe` 导出；说明 `call()` 返回对象，需检查 `isError` 与 `content`。不猜测入口、不补扩展名、不自动解析任意返回值，也不强制优化器调用行为实验。37 单测、8 原生集成及真实容器行为实验通过。第一次容器验收命令遗漏必填 `HE_TEST_RUNTIME`，在启动前明确失败，补齐显式 `runc` 后通过；原失败保留，不涉及模型任务重试。
+The current fix directly targets the interface problems: check the draft/test directory and the actual entry file before registration; the tool parameters explicitly specify the directory, module file, and fixed `probe` export; clarify that `call()` returns an object, requiring checks of `isError` and `content`. Do not guess the entry point, do not append extensions, do not automatically parse arbitrary return values, and do not force the optimizer to invoke the behavioral harness. 37 unit tests, 8 native integration tests, and the real-container behavioral harness passed. The first container acceptance command omitted the required `HE_TEST_RUNTIME` and failed explicitly before startup; it passed after adding the explicit `runc`; the original failure is retained and does not involve model task retries.
 
-## 独立反例：显式公式被覆盖
+## Independent Counterexample: Explicit Formula Overwritten
 
-开启组变异 3（`81a5790b…`）把连续相邻公式当作同一模板，自动平移首个公式，忽略后续明确提交的值。其实现还包含自动 shared-formula 修复，不符合本轮禁止自动修复的合同。
+Enabled-group mutation 3 (`81a5790b…`) treats consecutive adjacent formulas as the same template, automatically shifting the first formula and ignoring the values explicitly submitted afterward. Its implementation also includes automatic shared-formula repair, which does not comply with this round's contract prohibiting automatic repair.
 
-使用同一冻结镜像、实际构建产物、DSH 原生 `workbook_write` 和无模型/无网络容器，独立构造两个不同运算的相邻公式：
+Using the same frozen image, actual build artifacts, native DSH `workbook_write`, and a container with no model/network, two adjacent formulas with different operations were independently constructed:
 
-| 调用者提交 | 基线实际保存 | 变异 3 实际保存 |
+| Caller submission | Baseline actually saved | Mutation 3 actually saved |
 |---|---|---|
 | `B1 = A1+10` | `=A1+10` | `=A1+10` |
 | `B2 = A2*20` | `=A2*20` | **`=A2+10`** |
 
-基线断言通过，变异断言失败。反例源码、身份和实际观察见机器证据；原目录为 `.evolution/explicit-write-counterexample-20261028`。冻结候选和任务成绩未修改，质量筛选本已拒绝该候选，此处另外明确其不可交付原因。该反例只证明工具合同被破坏，不解释全部评分下降。
+The baseline assertion passed and the mutation assertion failed. The counterexample source, identity, and actual observations are in the machine evidence; the original directory is `.evolution/explicit-write-counterexample-20261028`. The frozen candidate and task scores were not modified; the quality screening had already rejected this candidate, and its undeliverable reason is additionally made explicit here. This counterexample only proves that the tool contract was violated; it does not explain the entire score decline.
 
-后续应把领域明确承诺的操作语义写成研究者独立维护、在实验前冻结的领域 QA，并让通用引擎继续按合同调用；它不生成公式答案，也不侵入通用框架的领域逻辑。改变方法或验收合同后需另建实验，不能覆盖本轮结果。
+Going forward, the operation semantics explicitly promised by the domain should be written as domain QA independently maintained by researchers and frozen before the experiment, with the general engine continuing to invoke it per the contract; it does not generate formula answers and does not intrude on the domain logic of the general framework. After changing the method or acceptance contract, a new experiment must be created and cannot overwrite this round's results.

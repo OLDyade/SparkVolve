@@ -1,39 +1,39 @@
-# 让服务与作用域变异留下可检查的行为证据
+# Make service and scope mutations leave inspectable behavioral evidence
 
-## 依据与范围
+## Basis and scope
 
-现有行为实验保存工具回执，但直接读取服务、检查隔离作用域和等待卸载的结果只能留在测试断言中。断言通过后，研究者无法从结构化产物还原这些中间状态。这会削弱对跨插件接口与装配变异的归因。
+Existing behavioral experiments save tool receipts, but the results of directly reading services, inspecting isolated scopes, and waiting for unload can only remain in test assertions. After assertions pass, researchers cannot reconstruct these intermediate states from structured artifacts. This weakens attribution for cross-plugin interfaces and assembly mutations.
 
-2026-10-28 通过 Context7 核查 DSH 官方文档，并逐项核对已安装 `@deepseek-ai/cordis@4.0.5` 的 `context.ts`、`registry.ts` 和 `fiber.ts`。GitHub 当前主分支为 [22ddee3](https://github.com/deepseek-ai/deepseek-harness/commit/22ddee3792402c3e70ec5f86a63c3e3e895a2f60)；本仓库仍使用锁定的 DSH `0.2.1-rc.4`，不混用主分支接口。
+On 2026-10-28, DSH official documentation was checked via Context7, and `context.ts`, `registry.ts`, and `fiber.ts` of the installed `@deepseek-ai/cordis@4.0.5` were verified item by item. The current GitHub main branch is [22ddee3](https://github.com/deepseek-ai/deepseek-harness/commit/22ddee3792402c3e70ec5f86a63c3e3e895a2f60); this repository still uses the locked DSH `0.2.1-rc.4` and does not mix in main-branch interfaces.
 
-| 官方机制 | 实际验证 |
+| Official mechanism | Actual verification |
 |---|---|
-| [`ctx.isolate`](https://deepseek-harness.github.io/deepseek-harness/en/reference/cordis-api/context) 为指定服务创建独立作用域 | 父级、左侧、右侧同名服务分别输出 4、6、10；左侧改动不影响另外两处 |
-| `ctx.provide` 的服务属于提供它的插件生命周期 | 卸载左侧 Provider 后，该作用域 Consumer 转为 pending，派生服务消失 |
-| [`fiber.dispose`](https://deepseek-harness.github.io/deepseek-harness/en/reference/cordis-api/fiber) 递归卸载并等待异步清理 | 用显式 Promise 控制清理完成，观察到父插件卸载尚未完成，释放后两个子插件均被回收；没有用 sleep 猜时序 |
+| [`ctx.isolate`](https://deepseek-harness.github.io/deepseek-harness/en/reference/cordis-api/context) creates an independent scope for a specified service | Same-named services at parent, left, and right output 4, 6, and 10 respectively; changes on the left do not affect the other two |
+| The service of `ctx.provide` belongs to the lifecycle of the plugin that provides it | After unloading the left Provider, the Consumer in that scope becomes pending, and the derived service disappears |
+| [`fiber.dispose`](https://deepseek-harness.github.io/deepseek-harness/en/reference/cordis-api/fiber) recursively unloads and waits for asynchronous cleanup | An explicit Promise controls cleanup completion; it was observed that the parent plugin unload had not yet completed, and after release both child plugins were reclaimed; sleep was not used to guess timing |
 
-作用域只控制服务可见性；上述验证不代表容器、磁盘或网络隔离。行业行为实验设计及社区线索沿用[已核查的一手实现](2026-10-28-executable-probes.md)，本次不凭热度增加新 Runtime。
+Scopes only control service visibility; the above verification does not represent container, disk, or network isolation. Industry behavioral experiment design and community leads follow the [verified first-hand implementation](2026-10-28-executable-probes.md); this time no new Runtime is added based on popularity.
 
-## 实现
+## Implementation
 
-行为实验新增 `await observe(label, jsonValue)`。测试作者显式选取实际服务值和生命周期状态；运行器记录不可变快照、递增序号、通过或失败终态。工具回执与显式观察使用 `kind: tool/value` 区分，串行写入防止并发回执覆盖较新的终态。
+The behavioral experiment adds `await observe(label, jsonValue)`. Test authors explicitly select actual service values and lifecycle states; the runner records immutable snapshots, incrementing sequence numbers, and pass or fail terminal states. Tool receipts and explicit observations are distinguished using `kind: tool/value`, and serial writes prevent concurrent receipts from overwriting newer terminal states.
 
-原生测试同时替换左侧 Provider 的接口、Consumer 实现和参数：`apply(number)` 变为 `evaluate({operand})`，输出由 6 变为 25。没有兼容适配器，也没有往生产优化器里写入这套预设架构。它证明这些变异能被原生实验检查，尚未证明优化器能自主发现相同重构或提高任务分数。
+The native test simultaneously replaces the left Provider's interface, Consumer implementation, and parameters: `apply(number)` becomes `evaluate({operand})`, and the output changes from 6 to 25. There is no compatibility adapter, and this preset architecture is not written into the production optimizer. It proves that these mutations can be checked by native experiments; it has not yet proven that the optimizer can autonomously discover the same refactoring or improve task scores.
 
-独立审查发现 `canonical(new Array(1))` 曾把稀疏数组变成空数组。现已明确拒绝稀疏数组，保留真实失败；顶层与嵌套反例均进入回归测试。非有限数、undefined、函数和类实例也不能静默进入 JSON 观察。
+Independent review found that `canonical(new Array(1))` once turned a sparse array into an empty array. Sparse arrays are now explicitly rejected, preserving the real failure; both top-level and nested counterexamples are included in regression tests. Non-finite numbers, undefined, functions, and class instances also cannot silently enter JSON observations.
 
-## 实测结果与失败
+## Measured results and failures
 
-机器证据：[service-observations.json](../evidence/2026-10-28-service-observations.json)。最终镜像 `sha256:09e0019870b05c7b49def84d54c0e30a14d2e2449ec0d964aa04ba98f26f998b` 的 12 项 runc 容器测试通过；55 单测、10 原生测试、格式和类型检查通过。原生生命周期有五份真实状态记录，容器测试保留正确服务的 8 和错误实现的 12，后者在独立断言失败后仍可读取。
+Machine evidence: [service-observations.json](../evidence/2026-10-28-service-observations.json). The final image `sha256:09e0019870b05c7b49def84d54c0e30a14d2e2449ec0d964aa04ba98f26f998b` passed 12 runc container tests; 55 unit tests, 10 native tests, formatting, and type checks passed. The native lifecycle has five real state records, and the container test preserves 8 for the correct service and 12 for the incorrect implementation; the latter remains readable after an independent assertion failure.
 
-真实模型验收另有一个明确失败：模型用新接口记录了两次 `d(5,5)=0`，却选择了错误减法实现也能满足的对角线性质。Probe 正常返回，要求捕获反例的独立验收因此失败。没有第二次抽样，没有改断言放行，没有将模型的自述当作检测成功。实际源码与观察保留在机器证据中。
+Real-model acceptance had another clear failure: the model recorded two `d(5,5)=0` using the new interface, but chose a diagonal property that the incorrect subtraction implementation also satisfies. The Probe returned normally, so the independent acceptance that required capturing a counterexample failed. There was no second sampling, no assertion was changed to let it pass, and the model's self-report was not treated as successful detection. The actual source code and observations are preserved in the machine evidence.
 
-这次运行验证了新观察接口可由真实模型编写并使用，也表明**可执行实验能力不保证实验有区分力**。原生独立反例证明失败留痕路径；本次模型运行没有覆盖该路径，不能合并宣称模型反例验收通过。
+This run verified that the new observation interface can be written and used by a real model, and also showed that **executable experiment capability does not guarantee that an experiment is discriminating**. The native independent counterexample proves the failure-recording path; this model run did not cover that path, so it cannot be jointly claimed that model counterexample acceptance passed.
 
-另外发现三个旧 live 测试入口未同步受控出口合同：主机别名被明确拒绝，且缺少模型出口声明。现统一复用随项目交付的 Venus 路由配方，配置后冻结环境哈希；控制器地址由必填 `HE_TEST_CONTROLLER_IP` 明确指定，无直连兜底。首次错误镜像 ID 和地址合同失败均保留，发生在模型任务之前。
+In addition, three old live test entry points were found not to have synchronized the controlled egress contract: host aliases were explicitly rejected, and the model egress declaration was missing. They now uniformly reuse the Venus routing recipe delivered with the project, and the environment hash is frozen after configuration; the controller address is explicitly specified by the required `HE_TEST_CONTROLLER_IP`, with no direct-connection fallback. The first incorrect image ID and the address contract failure are both preserved, and both occurred before the model task.
 
-最终镜像另通过两项真实模型回归：等待主机提交事件后正常接续，以及自主检索、读取并导入授权的历史负结果资产。两项均未运行任务评分；接受记录与逐次用量独立保存在机器证据中，不改变上述反例验收失败结论。
+The final image also passed two real-model regressions: normal continuation after waiting for a host commit event, and autonomous retrieval, reading, and import of authorized historical negative-result assets. Neither ran task scoring; acceptance records and per-run usage are independently saved in the machine evidence and do not change the above conclusion that counterexample acceptance failed.
 
-## 后续研究
+## Follow-up research
 
-下一步需要在预注册、同预算的独立实验中检验优化器如何选择能区分机制的实验，再观察跨插件联合变异与任务质量。不能把此处手写的作用域迁移当作自主进化成果，也不能把单次无效反例推断为模型能力上限。完整研究与系统交付缺口仍见 [completion.md](../completion.md)。
+The next step is to test, in preregistered independent experiments with the same budget, how the optimizer selects experiments that can distinguish mechanisms, and then observe cross-plugin joint mutations and task quality. The hand-written scope migration here cannot be treated as an autonomous evolution result, nor can a single ineffective counterexample be inferred as the model's capability ceiling. The full research and system delivery gaps are still in [completion.md](../completion.md).

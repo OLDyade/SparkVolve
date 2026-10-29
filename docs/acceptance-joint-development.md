@@ -1,42 +1,42 @@
-# 原生自主变异：开发集实验与独立审查
+# Native Autonomous Mutation: Development-Set Experiment and Independent Review
 
-预注册 [`a486ce5`](https://github.com/OLDyade/spark-harness-evolution/commit/a486ce5606144ecf8f928d66f143fe20e24328cf) 在启动前冻结 [合同](experiments/2026-10-27-joint-plugin-development.json)。实际实现 `fcf76f2`，DSH `0.2.1-rc.4`；优化器和执行器均为 `deepseek/deepseek-v4.1-flash-1017`，thinking off。本轮使用四个公开合成开发任务、每题两次，预算含基线共四个候选，完整记录见 [机器证据](evidence/2026-10-28-joint-development.json)。
+The preregistration [`a486ce5`](https://github.com/OLDyade/spark-harness-evolution/commit/a486ce5606144ecf8f928d66f143fe20e24328cf) froze the [contract](experiments/2026-10-27-joint-plugin-development.json) before launch. Actual implementation `fcf76f2`, DSH `0.2.1-rc.4`; both optimizer and executor are `deepseek/deepseek-v4.1-flash-1017`, thinking off. This round used four public synthetic development tasks, two runs per task, a budget of four candidates including the baseline; the complete record is in [machine evidence](evidence/2026-10-28-joint-development.json).
 
-## 结果与完整预算
+## Results and Full Budget
 
-| 候选 | 均值 | 已评分 / 计划运行 | 执行器调用 | 输入 / 输出 token | 执行时间合计 |
+| Candidate | Mean | Scored / Planned runs | Executor calls | Input / Output tokens | Total execution time |
 |---|---:|---:|---:|---:|---:|
-| 基线 `686ad0b0` | 65.625% | 8 / 8 | 73 | 78,663 / 17,320 | 166.437 秒 |
-| 变异 1 `1e0c73b6` | 68.750% | 8 / 8 | 66 | 68,907 / 14,081 | 159.377 秒 |
-| 变异 2 `744edd17` | 无任务分数 | 0 / 8；原生 QA 失败 | 未运行 | 不适用 | 未运行 |
-| 变异 3 `7b2857bf` | 81.250% | 8 / 8 | 80 | 86,537 / 16,421 | 185.357 秒 |
+| Baseline `686ad0b0` | 65.625% | 8 / 8 | 73 | 78,663 / 17,320 | 166.437 seconds |
+| Mutation 1 `1e0c73b6` | 68.750% | 8 / 8 | 66 | 68,907 / 14,081 | 159.377 seconds |
+| Mutation 2 `744edd17` | No task score | 0 / 8; native QA failure | Not run | Not applicable | Not run |
+| Mutation 3 `7b2857bf` | 81.250% | 8 / 8 | 80 | 86,537 / 16,421 | 185.357 seconds |
 
-优化器另用 **107 次调用、308,204 输入 / 45,722 输出 token**，运行预算记账 **480.696 秒**。全实验共 **326 次适配器调用，542,311 输入 / 93,544 输出 token**，全部返回，未报告缺失用量。执行时间按任务相加，包含并发重叠，不等于实验墙钟时间；供应商内部重试和实际账单金额未知。
+The optimizer additionally used **107 calls, 308,204 input / 45,722 output tokens**, with run budget accounting of **480.696 seconds**. The full experiment totaled **326 adapter calls, 542,311 input / 93,544 output tokens**, all returned, with no missing usage reported. Execution time is summed per task, includes concurrent overlap, and does not equal experiment wall-clock time; vendor-internal retries and actual billed amounts are unknown.
 
-QA 失败消耗候选预算，原始报告完整保留：`parameters.values.additionalProperties must be explicitly true or false`。未修改原生审计、补题或重抽；预算耗尽后提交被明确拒绝。
+The QA failure consumed candidate budget; the original report is preserved in full: `parameters.values.additionalProperties must be explicitly true or false`. The native audit was not modified, no tasks were added, and no resampling was done; submissions were explicitly rejected after the budget was exhausted.
 
-| 任务 | 基线两次 | 变异 1 两次 | 变异 3 两次 |
+| Task | Baseline two runs | Mutation 1 two runs | Mutation 3 two runs |
 |---|---|---|---|
 | normalization | 0%、25% | 25%、25% | 25%、25% |
 | weighted-portfolio | 100%、100% | 100%、100% | 100%、100% |
 | debt-rollforward | 100%、100% | 100%、100% | 100%、100% |
 | scenario-valuation | 0%、100% | 100%、0% | 100%、100% |
 
-## 归因审查
+## Attribution Review
 
-1. **有单插件实现变异，尚未观察到联合拓扑变异。** 四份冻结装配 patch 完全相同，始终只加载 `index.mjs`。优化器新增计算、重算、检查工具并修改实现；配置和组合拓扑没有共同变化。实验名称表达研究问题，不代表问题已经得到肯定答案。
-2. **优化器的缓存归因不成立。** 评分器独立 LibreOffice 重算，基线 normalization 的实际值 `B10=171、B11=35.6` 均非空且错误；scenario 的 `B9/B10` 从未写入。读取交付时看见空缓存，不能据此解释独立重算后的分数。
-3. **剩余错误需要依照实际公式解释。** 最终候选 normalization 的 `B10=B3+B4-B5` 修正了方向；`B11=B6-B4*B7+B5*B8` 使用的是各调整项税率，但冲回方向错误。优化器结论中“使用整体税率”的叙述与交付不符。
-4. **自动评分冠军不直接进入能力发布。** 最终候选使用 `YEAR_HEADERS` 与“前四行”规则自动恢复原值，可能覆盖调用者明确编辑。未发现具体题目 ID 或答案分支，但这项启发式自动修复违反项目准则。保留评分、源码和原结论，附独立纠正，暂不作为接受的能力 Bundle 分发。
+1. **There is single-plugin implementation mutation; joint topology mutation has not been observed.** The four frozen assembly patches are identical, always loading only `index.mjs`. The optimizer added computation, recomputation, and inspection tools and modified the implementation; configuration and composition topology did not change together. The experiment name expresses the research question and does not mean the question has been answered affirmatively.
+2. **The optimizer's cache attribution does not hold.** The scorer independently recomputes with LibreOffice; the baseline normalization actual values `B10=171、B11=35.6` are all non-empty and wrong; scenario's `B9/B10` was never written. Seeing an empty cache when reading the deliverable cannot explain the scores after independent recomputation.
+3. **The remaining errors need to be explained according to the actual formulas.** The final candidate's normalization `B10=B3+B4-B5` corrected the direction; `B11=B6-B4*B7+B5*B8` uses the tax rate of each adjustment item, but the reversal direction is wrong. The optimizer's conclusion narrative of "using the overall tax rate" does not match the deliverable.
+4. **The automatic-scoring champion does not go directly into capability release.** The final candidate uses `YEAR_HEADERS` and a "first four rows" rule to automatically restore original values, which may overwrite explicit caller edits. No specific task ID or answer branch was found, but this heuristic auto-repair violates project guidelines. The scores, source code, and original conclusions are retained, with an independent correction attached; it is not distributed as an accepted capability Bundle for now.
 
-只读子代理检查了实际输入、冻结实现、交付和重算产物；合同与预注册一致，评分脚本未变更，运行产物与冻结源码一致。未读取私有 `expected.json`。模型原结论保留于原始 `completion.json`，没有改写失败证据。
+A read-only subagent checked the actual inputs, frozen implementation, deliverables, and recomputation artifacts; the contract matches the preregistration, the scoring script was unchanged, and the run artifacts match the frozen source. The private `expected.json` was not read. The model's original conclusions are retained in the original `completion.json`, and the failure evidence was not rewritten.
 
-这次已观察到固定开发集 **+15.625 个百分点**。这些任务族和相关数值变体曾用于开发，且没有独立重复实验，因此不能据此声明稳定收益、模块因果或跨场景迁移。下一项研究应解决证据误归因与能力语义越界，并保持独立评分和真实失败记录。
+This time **+15.625 percentage points** was observed on the fixed development set. These task families and related numeric variants were used during development, and there was no independent replication, so this cannot be used to claim stable gains, module causality, or cross-scenario transfer. The next study should address evidence misattribution and capability semantic overreach, while maintaining independent scoring and true failure records.
 
-## 可复用的报告入口
+## Reusable Report Entry Point
 
 ```bash
 node dist/cli.js report --root /path/to/experiment --output /path/to/new-report.json
 ```
 
-该命令只投影已有状态，直接重算持久请求账本，不启动模型、重跑任务或修改原评测。报告包含每个候选的完整分母、每题辅助指标、失败、逐次用量和优化器费用信息；缺少账本显式为未知，价格未知保留 `null`，不会把未评分候选记为零分。输出文件已存在则明确失败，避免覆盖旧报告。
+This command only projects existing state and directly recomputes the persistent request ledger; it does not start models, rerun tasks, or modify the original evaluation. The report includes the full denominator for each candidate, per-task auxiliary metrics, failures, per-run usage, and optimizer cost information; a missing ledger is explicitly marked unknown, unknown prices retain `null`, and unscored candidates are not recorded as zero. If the output file already exists, it fails explicitly to avoid overwriting an old report.

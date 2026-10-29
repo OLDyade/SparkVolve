@@ -1,18 +1,18 @@
-# 授权研究资产复用：设计依据与验收
+# Authorized Research Asset Reuse: Design Rationale and Acceptance
 
-## 一手资料与适用范围
+## Primary Sources and Scope
 
-- [OCI Descriptor](https://github.com/opencontainers/image-spec/blob/main/descriptor.md)：digest 标识确切内容，接收方重新计算校验。这里借鉴内容绑定原则，不把本地档案冒充 OCI registry。
-- [SLSA 1.2 artifact verification](https://slsa.dev/spec/v1.2/verifying-artifacts)：签名信任根和 subject 摘要匹配是不同检查。当前库由研究者本地授权并冻结；校验摘要不等于完成签名认证，也不认证历史得分。
-- [Node 24 fs](https://nodejs.org/docs/latest-v24.x/api/fs.html)：递归 cp 的 errorOnExist/force 控制文件覆盖，不提供数据库来源记录与目录发布的联合事务。采用持久导入意图、私有 staging、提交准入状态和同意图恢复。
-- 原生工具复用实际 DSH `0.2.1-rc.4` 的 `defineTool` 和 Cordis 生命周期。没有新建 Agent Loop，也没有给优化器挂载研究库、数据库或评分私有目录。
+- [OCI Descriptor](https://github.com/opencontainers/image-spec/blob/main/descriptor.md): the digest identifies the exact content, and the receiver recomputes and verifies it. This borrows the content-binding principle, without passing off a local archive as an OCI registry.
+- [SLSA 1.2 artifact verification](https://slsa.dev/spec/v1.2/verifying-artifacts): signature trust root and subject digest matching are distinct checks. The current library is locally authorized and frozen by the researcher; verifying a digest is not equivalent to completing signature authentication, nor does it authenticate historical scores.
+- [Node 24 fs](https://nodejs.org/docs/latest-v24.x/api/fs.html): the errorOnExist/force of recursive cp control file overwriting, and do not provide a joint transaction for database provenance records and directory publication. We adopt persistent import intent, private staging, commit admission state, and same-intent recovery.
+- Native tools reuse the actual DSH `0.2.1-rc.4`'s `defineTool` and the Cordis lifecycle. No new Agent Loop was created, and no research library, database, or scoring private directory was mounted for the optimizer.
 
-## 具体改变
+## Specific Changes
 
-新合同字段 `researchLibrary` 明确授权目录及摘要，未授权用 null。检索包含失败记录；查看提供精确源码与记录摘要；导入复制源码并登记 origin。新候选始终重新评分，导入不会带入旧 mean、TaskRun 或 champion。授权库变动、错误 ID、越界路径及源码/产物失配直接失败。
+The new contract field `researchLibrary` explicitly authorizes directories and digests, with null for unauthorized. Search includes failed records; view provides exact source code and record digests; import copies source code and registers the origin. New candidates are always re-scored, and import does not carry over old mean, TaskRun, or champion. Authorized library changes, wrong IDs, out-of-bounds paths, and source/artifact mismatches fail directly.
 
-只读子代理指出并已修复“先发布草稿再记录来源”的中断窗口。现在先写 pending 导入意图，复制校验后提交 ready；提交候选拒绝 pending，同意图恢复不会清除已完成草稿的后续修改。故障注入覆盖复制前、发布后记录提交前、记录提交后响应丢失，并重开 SQLite 验证。
+A read-only subagent identified and we fixed the interruption window of "publishing the draft before recording the source". Now a pending import intent is written first, and ready is committed after copy verification; candidate submission rejects pending, and same-intent recovery does not clear subsequent modifications to an already completed draft. Fault injection covers before copy, after publication but before record commit, and response loss after record commit, with SQLite reopened for verification.
 
-24 项单元、8 项原生以及 3 项真实容器测试通过。[真实模型验收](../evidence/2026-10-27-library-acceptance.json)在两个合成负结果档案中选择相关资产，检查记录与实现后导入：3 次检索、3 次资产查看（包含原始 index.mjs）、1 次导入，10 次模型请求全部返回，容器 22.618 秒。草稿命名由模型选择，源摘要一致，未导入无关项；0 候选、0 测评运行、无冠军。此项证明自主工具使用与来源传递，仍未证明复用能提高任务得分。
+24 unit, 8 native, and 3 real container tests pass. [Real model acceptance](../evidence/2026-10-27-library-acceptance.json) selected relevant assets from two synthetic negative-result archives, checked records and implementation, then imported: 3 searches, 3 asset views (including the original index.mjs), 1 import, all 10 model requests returned, container 22.618 seconds. Draft naming was chosen by the model, source digests matched, and no irrelevant items were imported; 0 candidates, 0 evaluation runs, no champion. This demonstrates autonomous tool use and provenance passing, but still does not demonstrate that reuse improves task scores.
 
-原生调用轨迹还显示模型尝试从 `/workspace/library` 查找资产，实际库未挂载；随后通过授权工具完成读取。两个合成档案共享同一最小源码，模型在结束原因中主动指出该边界，依据研究记录区分相关性；这不是复杂代码检索基准。
+The native call trace also shows the model attempting to find assets from `/workspace/library`, where the actual library was not mounted; it then completed the read through the authorized tools. The two synthetic archives share the same minimal source code, and the model proactively noted this boundary in its stop reason, distinguishing relevance based on research records; this is not a complex code retrieval benchmark.

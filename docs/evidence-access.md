@@ -1,27 +1,27 @@
-# 将授权证据直接交给原生工具
+# Hand authorized evidence directly to native tools
 
-真实用户旅程中，优化器把工具返回的工作簿 base64 转抄进文件：6,643 字节变成 6,288 字节，随后耗费多步排查 ZIP 错误。原始交付完整，损坏发生在转抄环节。框架现在把原字节发布到只读挂载，模型可用 DSH 文件、Shell 和领域工具直接检查。
+In a real user journey, the optimizer transcribed the workbook returned by the tool as base64 into a file: 6,643 bytes became 6,288 bytes, and it then spent multiple steps troubleshooting a ZIP error. The original delivery was intact; the corruption occurred during transcription. The framework now publishes the original bytes to a read-only mount, and the model can inspect them directly with DSH files, Shell, and domain tools.
 
 ```text
-授权引用：kind + id + area + file
+Authorization reference: kind + id + area + file
                  │
-       实验内身份与区域权限检查
+       In-experiment identity and area permission check
                  │
-   可信根目录句柄 → 逐层打开 → 原字节
+   Trusted root directory handle → open layer by layer → original bytes
                  │
-   私有 staging：文件 + 来源 + SHA256
-                 │ 完整目录一次发布
+   Private staging: file + source + SHA256
+                 │ Publish the complete directory at once
                  ▼
-   /evidence/<identity>/files/<basename>  只读
+   /evidence/<identity>/files/<basename>  read-only
                  │
-       DSH 原生文件 / Shell / 领域工具
+       DSH native files / Shell / domain tools
                  │
-       需要改动时自行复制到 /workspace
+       Copy to /workspace yourself when changes are needed
 ```
 
-## 原生调用
+## Native invocation
 
-先从状态及相应证据库存取得实际 ID 与文件名，再调用：
+First obtain the actual ID and file name from the state and the corresponding evidence store, then invoke:
 
 ```json
 {
@@ -32,35 +32,35 @@
 }
 ```
 
-`evolution_materialize` 返回可读路径、字节数、SHA256、原始引用和 provenance 文件路径。它不返回文件全文，不解释或修复文件；也不把工具自行报告的业务预期当正确证明。
+`evolution_materialize` returns the readable path, byte count, SHA256, original reference, and provenance file path. It does not return the full file contents, does not interpret or repair the file, and does not treat the business expectations self-reported by the tool as proof of correctness.
 
-| kind | 可选 area |
+| kind | Optional area |
 |---|---|
-| `task` | `input`：以注册 task id 获取公开输入，无需 run id |
+| `task` | `input`: obtain public input by registered task id, no run id required |
 | `run` | `input`、`delivery`、`trace` |
 | `candidate` | `source`、`build`、`artifact`、`qa` |
 | `probe` | `source`、`suite`、`build`、`artifact`、`logs`、`observations` |
-| `asset` | `source`：合同授权的研究资产源码文件 |
+| `asset` | `source`: contract-authorized research asset source files |
 
-文件必须明确指定，目录清单仍通过原有证据工具读取。引用只在当前实验内解析，不接受宿主绝对路径、任意下载 URL 或调用者指定的写入目标；私有评分区域没有读取入口。相同来源和内容返回同一快照，内容变化产生新的身份，不覆盖已有证据。
+The file must be explicitly specified; directory listings are still read through the existing evidence tools. References are resolved only within the current experiment; host absolute paths, arbitrary download URLs, or caller-specified write targets are not accepted; the private scoring area has no read entry point. The same source and content return the same snapshot; content changes produce a new identity and do not overwrite existing evidence.
 
-上述区域还受冻结的[宿主反馈协议](feedback-views.md)限制。`mechanical` 拒绝全部 `run` 引用，公开输入统一走 `task`；关闭的 probe/library 不可读取。证据清单、文件读取和物化使用同一授权函数，不能通过改用 base64、原字节挂载或另一工具绕过。原始宿主账本仍保留完整运行结果。
+The above areas are also restricted by the frozen [host feedback protocol](feedback-views.md). `mechanical` rejects all `run` references; public input uniformly goes through `task`; closed probe/library cannot be read. Evidence listing, file reading, and materialization use the same authorization function and cannot be bypassed by switching to base64, original-byte mounts, or another tool. The original host ledger still retains the complete run results.
 
-## 读取与发布边界
+## Read and publish boundaries
 
-独立评审实证发现，原有 `realpath → 前缀检查 → readFile` 存在竞态：候选可以在检查后替换文件或父目录。现在通过 Python 标准文件描述符接口，在可信授权根内逐层 `os.open(..., dir_fd=...)`，每层拒绝符号链接；目录清单与哈希也沿同一描述符树读取。终端仅接受普通文件，FIFO 等特殊文件不作为证据读取。候选冻结复制和研究资产读取复用这套实现。
+Independent review empirically found that the original `realpath → prefix check → readFile` had a race: a candidate could replace the file or parent directory after the check. Now, through Python's standard file descriptor interface, `os.open(..., dir_fd=...)` layer by layer within the trusted authorization root, rejecting symbolic links at each layer; directory listings and hashes are also read along the same descriptor tree. The terminal accepts only regular files; special files such as FIFOs are not read as evidence. Candidate frozen copies and research asset reads reuse this implementation.
 
-实现依据 Python 官方 [`os.open(dir_fd=...)`](https://docs.python.org/3/library/os.html#os.open)、[`os.listdir(fd)`](https://docs.python.org/3/library/os.html#os.listdir) 及实际安装版本的能力检查。`Controller.start()` 在启动任务前调用 `fileReaderCapabilities()`；宿主 Python 3 必须提供相应 POSIX 能力，没有路径读取降级。Python 以 `-I -S` 启动，使用产品内固定程序，不加载候选目录、`PYTHONPATH` 或用户初始化代码。可信根目录及其宿主管理路径属于控制面的权限边界，不能由候选替换；容器内可写的后代目录不被当成可信路径。
+The implementation is based on the Python official [`os.open(dir_fd=...)`](https://docs.python.org/3/library/os.html#os.open), [`os.listdir(fd)`](https://docs.python.org/3/library/os.html#os.listdir), and capability checks of the actually installed version. `Controller.start()` calls `fileReaderCapabilities()` before starting a task; the host Python 3 must provide the corresponding POSIX capabilities, with no path-read fallback. Python is started with `-I -S`, using a fixed program within the product, and does not load the candidate directory, `PYTHONPATH`, or user initialization code. The trusted root directory and its host-managed paths belong to the control plane's permission boundary and cannot be replaced by candidates; writable descendant directories inside the container are not treated as trusted paths.
 
-发布前的临时目录不挂给优化器。文件和来源写齐、计算内容身份后，将完整目录移入只读 `/evidence`；并发发布者只有在已有文件与来源完全相等时才复用。进程在发布前崩溃不会暴露半份文件，私有残留保留供调查，不清扫别人的执行目录。这里验证进程中断语义，不宣称断电持久性。
+The temporary directory before publication is not mounted to the optimizer. After the file and source are fully written and the content identity is computed, the complete directory is moved into the read-only `/evidence`; concurrent publishers reuse it only when the existing file and source are exactly equal. A process crash before publication does not expose a partial file; private remnants are retained for investigation, and other executions' directories are not cleaned up. This verifies process interruption semantics and does not claim power-loss durability.
 
-活跃轨迹的快照记录本次实际读到的字节，不认证写入者已完成一个业务事务。证据内容仍可能不可信，原始调用日志和独立评分继续分别保存。
+The snapshot of an active trajectory records the bytes actually read this time and does not certify that the writer has completed a business transaction. Evidence content may still be untrustworthy; the original invocation logs and independent scoring continue to be stored separately.
 
-## 运行方式
+## How to run
 
-`evolve` 自动建立实验 `materialized/` 到优化器 `/evidence` 的只读挂载。独立安装 Preset 时，部署方须建立相同目录映射；仅连接控制 HTTP 服务不会自动传输挂载。详见 [Preset 运行合同](presets.md)。
+`evolve` automatically establishes a read-only mount from the experiment `materialized/` to the optimizer `/evidence`. When installing the Preset independently, the deployer must establish the same directory mapping; merely connecting to the control HTTP service does not automatically transfer the mount. See [Preset run contract](presets.md).
 
-真实模型接口验收入口：
+Real model interface acceptance entry point:
 
 ```bash
 node --env-file=/absolute/private/venus.env scripts/verify-materialized-evidence.mjs \
@@ -71,18 +71,18 @@ node --env-file=/absolute/private/venus.env scripts/verify-materialized-evidence
   --controller-ip <container-reachable-IPv4>
 ```
 
-驱动让真实模型物化随机二进制、通过原生 Shell 复制和计算摘要、观察操作系统只读错误；主机独立核对原字节、原生调用、挂载与出口回执。它不执行评分任务、不提交候选、不重试，也不证明搜索收益。
+The driver has the real model materialize random binary, copy and compute a digest through the native Shell, and observe the operating system read-only error; the host independently verifies the original bytes, native invocation, mount, and egress receipt. It does not execute scoring tasks, submit candidates, retry, or prove search gains.
 
-## 实际验收 · 2026-10-28
+## Actual acceptance · 2026-10-28
 
-| 验收层 | 结果 |
+| Acceptance layer | Result |
 |---|---|
-| 确定性与原生回归 | 75 项单元、11 项原生、16 项容器测试通过 |
-| 独立竞态复核 | 真实生产接口的 8 组末端文件/父目录置换；未读取或发布授权范围外字节 |
-| 真实模型 | 原生调用 `evolution_materialize` → Shell 读取并复制随机文件；8,192 字节与主机独立 SHA-256 完全相等 |
-| 只读与回收 | 实际写入返回 `EROFS`，Docker 挂载 `RW=false`；worker、出口代理及两张网络均完成回收 |
-| 分发包 | 同一 tarball 经原生 DSH 安装，Preset 加载、工具注册与实际调用通过 |
+| Determinism and native regression | 75 unit, 11 native, and 16 container tests passed |
+| Independent race recheck | 8 sets of terminal file/parent directory swaps against the real production interface; no bytes outside the authorized scope were read or published |
+| Real model | Native invocation `evolution_materialize` → Shell read and copied the random file; 8,192 bytes exactly equal to the host's independent SHA-256 |
+| Read-only and cleanup | Actual write returned `EROFS`, Docker mount `RW=false`; worker, egress proxy, and both networks were fully cleaned up |
+| Distribution package | The same tarball installed via native DSH; Preset loading, tool registration, and actual invocation passed |
 
-首次真实模型验收保留失败：Shell 实际报告只读文件系统，模型却将退出状态 `1` 写入要求符号 errno 的字段。修订驱动后明确要求从实际异常读取 errno，在新目录重新验证；产品代码与镜像未改变，原失败报告未覆盖。首次及修订后的会话各有 3 次 DSH stream 调用，分别报告输入/输出 8,852/823 与 2,053/677 tokens；调用统计不等同供应商内部 HTTP 重试次数。
+The first real model acceptance retained a failure: the Shell actually reported a read-only file system, but the model wrote the exit status `1` into a field requiring a symbolic errno. After revising the driver to explicitly require reading errno from the actual exception, it was re-verified in a new directory; the product code and image were unchanged, and the original failure report was not overwritten. The first and revised sessions each had 3 DSH stream calls, reporting input/output of 8,852/823 and 2,053/677 tokens respectively; call statistics are not equivalent to the vendor's internal HTTP retry count.
 
-原生轨迹、失败与通过回执、独立复核结果、代码及产物摘要见 [机器可读证据](evidence/2026-10-28-materialized-evidence.json)。这项结果证明文件交付及接口边界，不证明模型推理、候选业务正确性或进化收益。
+Native trajectories, failure and pass receipts, independent recheck results, code, and artifact digests are in [machine-readable evidence](evidence/2026-10-28-materialized-evidence.json). This result proves file delivery and interface boundaries, not model reasoning, candidate business correctness, or evolution gains.

@@ -1,29 +1,29 @@
-# 原生领域操作合同：从已确认反例到独立验收
+# Native Domain Operation Contracts: From Confirmed Counterexamples to Independent Acceptance
 
-## 实际问题
+## The Actual Problem
 
-[行为实验台对照](../experiments/2026-10-28-native-probe-spreadsheet-results.md) 发现，优化器生成的 `workbook_write` 把调用者显式公式替换为邻格模板的平移公式。原生反例确认 `=A2*20` 被保存为 `=A2+10`。新增工具能装配，不代表它履行公开操作承诺；作者自己的空测试也没有验证这一点。
+The [behavioral testbench comparison](../experiments/2026-10-28-native-probe-spreadsheet-results.md) found that the optimizer-generated `workbook_write` replaced the caller's explicit formula with the shifted formula of a neighboring-cell template. The native counterexample confirmed that `=A2*20` was saved as `=A2+10`. A newly added tool being assemblable does not mean it fulfills the public operation contract; the author's own empty test did not verify this either.
 
-此前领域 QA 为任意命令数组，缺少测试源码独立身份。现在使用 `{directory,digest,entry}` 绑定研究者维护的原生测试：内容进入合同、只读供优化器理解，实际候选装配后运行，无凭证、无网络、无题目或评分材料。通用引擎不写入表格规则。
+Previously, domain QA was an arbitrary command array, lacking an independent identity for the test source code. Now `{directory,digest,entry}` is used to bind researcher-maintained native tests: the content enters the contract, is read-only for the optimizer to understand, and is run after the actual candidate is assembled, with no credentials, no network, and no problem or scoring materials. The general engine does not write table rules.
 
-## 核实来源与版本边界
+## Verified Sources and Version Boundaries
 
-2026-10-28 经 Context7 查询最新官方文档，再核对 GitHub 当前提交与安装包：
+On 2026-10-28, the latest official documentation was queried via Context7, then checked against the current GitHub commit and the installed package:
 
-- [DSH 工具系统](https://github.com/deepseek-ai/deepseek-harness/blob/22ddee3792402c3e70ec5f86a63c3e3e895a2f60/packages/core/tools/README.md) 已采用批量执行；程序化调用可持有 Agent 作用域，无模型步日志时不生成模型根调用事件。
-- 本项目安装 `@deepseek-ai/dsh-tools@0.2.1-rc.4`，`lib/types/index.d.ts` 的 `ToolExecutionInput` 和 `execute(exec)` 为单次调用，包含 `callId/name/arguments/agent/signal`。沿用已实测的原生观察插件，并直接保存 ToolResult；没有照搬最新批次接口或模拟 Agent Loop。
-- 行为实验的上游实践与社区线索沿用[已核研究](2026-10-28-executable-probes.md)。本项由确定的操作反例推动，不以热度或第三方实现作为正确性证据。
+- The [DSH tool system](https://github.com/deepseek-ai/deepseek-harness/blob/22ddee3792402c3e70ec5f86a63c3e3e895a2f60/packages/core/tools/README.md) has adopted batch execution; programmatic calls can hold an Agent scope, and no model root call event is generated when there is no model step log.
+- This project installs `@deepseek-ai/dsh-tools@0.2.1-rc.4`; `ToolExecutionInput` and `execute(exec)` of `lib/types/index.d.ts` are single calls, including `callId/name/arguments/agent/signal`. It reuses the already-tested native observation plugin and saves ToolResult directly; it does not copy the latest batch interface or simulate the Agent Loop.
+- The upstream practices and community leads for the behavioral experiment follow the [verified research](2026-10-28-executable-probes.md). This work is driven by a definite operation counterexample and does not use popularity or third-party implementations as evidence of correctness.
 
-## 实现取舍
+## Implementation Trade-offs
 
-测试可检查工具、服务及组合，接口与优化器自行编写的 `probe` 一致。两类测试的作者、身份和准入权分开：研究者测试事前固定；优化器测试用于自主诊断。领域合同可以明确一个公开 API 的语义，插件仍可跨文件、跨服务重构；改变 API 合同需启动新的实验。
+Tests can check tools, services, and combinations, and the interface is consistent with the `probe` written by the optimizer itself. The authorship, identity, and admission rights of the two types of tests are kept separate: researcher tests are fixed in advance; optimizer tests are used for autonomous diagnosis. A domain contract can specify the semantics of one public API, while the plugin can still be refactored across files and services; changing the API contract requires starting a new experiment.
 
-研究者测试与候选在同进程交互，不能作为恶意候选的安全隔离或完整正确性证明。真实交付仍通过独立裁判评分。测试通过不会生成或修复业务公式。
+Researcher tests and the candidate interact in the same process, so they cannot serve as security isolation for a malicious candidate or as a complete proof of correctness. Real delivery is still scored by an independent judge. Passing tests does not generate or fix business formulas.
 
-## 验收
+## Acceptance
 
-同一冻结镜像和三个历史构建产物，在新禁网容器验证：原始基线通过；自主新增 `recalc.mjs` 的组合候选通过；自动平移显式公式的候选在独立断言处失败。原候选、原成绩不变；失败日志保留。机器记录见[验收证据](../evidence/2026-10-28-domain-verification.json)。
+The same frozen image and three historical build artifacts were verified in a new network-disabled container: the original baseline passes; the composite candidate that autonomously added `recalc.mjs` passes; the candidate that automatically shifts the explicit formula fails at the independent assertion. The original candidate and original scores are unchanged; the failure log is retained. See the machine record in [acceptance evidence](../evidence/2026-10-28-domain-verification.json).
 
-控制器容器验收确认：研究者目录只读、模型凭证和私有评分挂载缺席，原生工具错误被完整观察，领域断言失败进入 `qa_failed`，重复 pump 不启动任务。修改已冻结测试后控制器拒绝启动。
+Controller container acceptance confirmed: the researcher directory is read-only, model credentials and private scoring mounts are absent, native tool errors are fully observed, domain assertion failures enter `qa_failed`, and repeated pump does not start a task. After the frozen tests are modified, the controller refuses to start.
 
-子代理复核发现独立复验准备脚本未移交新增测试目录。修正为复制原始冻结 QA 并校验源与副本身份；新增测试实际执行 `prepare → validation → Controller.start`，且确认原 QA 篡改时拒绝交接，不重生成测试。该项验证不调用模型，不产生质量分数。
+A subagent review found that the independent re-verification preparation script did not hand over the newly added test directory. It was fixed to copy the original frozen QA and verify the identity of the source and the copy; the newly added tests actually execute `prepare → validation → Controller.start`, and handover is refused when tampering with the original QA is confirmed, without regenerating tests. This verification does not call a model and does not produce a quality score.

@@ -1,43 +1,43 @@
-# 从干净检出到可检查的能力交付
+# From a clean checkout to an inspectable capability delivery
 
-本页串起公开命令、实际状态和交付边界。模型自行选择插件改动；验收驱动只按预先登记的规则调用公开 CLI，不生成候选代码，不替模型修答案。
+This page connects the public commands, actual state, and delivery boundaries. The model chooses plugin changes itself; the acceptance driver only invokes the public CLI according to pre-registered rules, does not generate candidate code, and does not fix answers on the model's behalf.
 
 ```text
-克隆 → npm ci → npm run check → 构建基础 / Excel 镜像
+Clone → npm ci → npm run check → build base / Excel images
                                       │
-                         显式运行时、地址池、DNS
-                                      │
-                                      ▼
-         镜像真路径预检 → 公开输入 → 冻结合同和选择规则
+                         explicit runtime, address pool, DNS
                                       │
                                       ▼
-               init → evolve → 原生优化器自主变异
+         image real-path precheck → public input → frozen contract and selection rules
+                                      │
+                                      ▼
+               init → evolve → native optimizer autonomous mutation
                               │               │
-                              │               └─ events --follow：只读观察
+                              │               └─ events --follow: read-only observation
                               ▼
-                  构建 / 原生 QA / 任务 / 独立评分
+                  build / native QA / tasks / independent scoring
                               │
                  ┌────────────┴────────────┐
                  ▼                         ▼
-          无合格终态变异                完整均值最高变异
-          保留负结果结束               同分选择最早登记
+          no qualifying terminal mutation                highest full-mean mutation
+          end retaining negative result                ties select earliest registered
                                            │
                                            ▼
-                           固定新任务 → 基线 / 候选完整复验
+                           fixed new tasks → full re-validation of baseline / candidates
                                            │
                                            ▼
-                                原包研究归档＋全部结果
+                                original package research archive + all results
                                            │
-                                  源码与能力语义审查
+                                  source and capability semantic review
                                            │
-                                独立安装 → 新用户任务
+                                independent install → new user tasks
 ```
 
-## 运行完整公开流程
+## Run the full public flow
 
-先按[启动指南](quick-start.md)安装依赖、通过检查并构建镜像。`npm run check` 自行生成类型检查所需的构建产物，首次检出不需要已有 `dist/`。模型凭证放在仓库外的私有环境文件中。
+First follow the [startup guide](quick-start.md) to install dependencies, pass checks, and build images. `npm run check` generates the build artifacts needed for type checking itself; a first checkout does not require an existing `dist/`. Model credentials go in a private environment file outside the repository.
 
-运行以下验收会实际消耗模型额度。默认示例包含三题、最多四个候选和 1,800 秒优化器预算；若有可复验变异，再执行四题 × 两组。它是工程体验，单次重复和公开任务不能证明稳定提分。
+Running the following acceptance actually consumes model quota. The default example includes three tasks, at most four candidates, and a 1,800-second optimizer budget; if there is a re-verifiable mutation, it then runs four tasks × two groups. It is an engineering experience; a single repetition and public tasks cannot prove stable score improvement.
 
 ```bash
 HE_IMAGE=$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')
@@ -50,41 +50,41 @@ node --env-file=/absolute/private/venus.env scripts/accept-walkthrough.mjs \
   --endpoint "http://${HE_CONTROLLER_IP}:18958"
 ```
 
-`--root` 必须是尚不存在的目录。失败立即停止并保留原命令日志、退出状态和实验；此驱动不会重试，也不支持在原目录再跑一遍。需要恢复实验时，检查原失败后使用 [CLI 的恢复语义](events.md)，不能新建 attempt 掩盖失败。
+`--root` must be a directory that does not yet exist. On failure it stops immediately and preserves the original command logs, exit status, and experiment; this driver does not retry, and does not support running again in the original directory. To resume an experiment, after inspecting the original failure use the [CLI's resume semantics](events.md); do not create a new attempt to mask the failure.
 
-| 产物 | 作用 |
+| Artifact | Purpose |
 |---|---|
-| `commands/*.json`、stdout、stderr | 每条公开命令、时间、退出状态与输出哈希 |
-| `registration.json` | 执行前固定源码版本、镜像、合同摘要、选择规则和数据用途 |
-| `search/`、`search-report.json` | 原实验、全部候选、逐题成绩和模型用量 |
-| `selection.json` | 依据完整均值选择终态变异，保留退步，不择优删题 |
-| `validation-study/registration.json`、`comparison.json` | 两组同合同、同冻结构建产物、完整配对结果 |
-| `research-export/` | 能力包与研究档案；归档不等于批准分发 |
-| `outcome.json` 或 `failure.json` | 完成分支或首个失败，不补造成功终态 |
+| `commands/*.json`, stdout, stderr | Each public command, time, exit status, and output hash |
+| `registration.json` | Pins source version, image, contract digest, selection rules, and data usage before execution |
+| `search/`, `search-report.json` | Original experiment, all candidates, per-task scores, and model usage |
+| `selection.json` | Selects the terminal mutation by full mean, retains regressions, does not cherry-pick by deleting tasks |
+| `validation-study/registration.json`, `comparison.json` | Two groups with the same contract, same frozen build artifacts, and complete paired results |
+| `research-export/` | Capability package and research archive; archiving does not equal approval to distribute |
+| `outcome.json` or `failure.json` | Completion branch or first failure, without fabricating a successful terminal state |
 
-驱动从已构建镜像开始。完整冷启动验收还必须保留先前 `npm ci`、`npm run check` 和两次镜像构建的日志；不能仅凭 `outcome.json` 宣称依赖安装已验证。
+The driver starts from an already-built image. A complete cold-start acceptance must also preserve the earlier `npm ci`, `npm run check`, and the logs of both image builds; you cannot claim dependency installation is verified based on `outcome.json` alone.
 
-## 观察真实进度和断点续读
+## Observe real progress and resume reading
 
-另开终端观察已提交事件，无需模型凭证：
+Open another terminal to observe committed events, no model credentials needed:
 
 ```bash
 node dist/cli.js events --root .evolution/user-journey/search --follow | tee events.jsonl
 ```
 
-每行 JSON 包含 `event` 和对应 `cursor`。未提交或回滚的事件不会显示；独立 CLI 连接在有界等待后重读，新提交最多延迟约 30 秒显示，不声称跨进程即时推送。等待到期不生成“健康”事件。Ctrl-C 仅停止观察者，原优化器和任务继续运行。一次性快照省略 `--follow`。
+Each JSON line contains `event` and the corresponding `cursor`. Uncommitted or rolled-back events are not shown; the independent CLI connection re-reads after a bounded wait, and new commits appear with at most about 30 seconds of delay; it does not claim cross-process instant push. Wait expiry does not generate a "healthy" event. Ctrl-C only stops the observer; the original optimizer and tasks keep running. A one-shot snapshot omits `--follow`.
 
 ```bash
-# 从非空日志中保存最后一条已经收到的游标，再接续；游标不能跨实验使用。
+# Save the last received cursor from a non-empty log, then continue; cursors cannot be used across experiments.
 jq -s 'last.cursor' events.jsonl > cursor.json
 node dist/cli.js events --root .evolution/user-journey/search \
   --cursor cursor.json --follow
 ```
 
-观察者使用 Node [SQLite readOnly 连接](https://nodejs.org/docs/latest-v24.x/api/sqlite.html)，不创建丢失的数据库、不修改实验 metadata、不取得执行租约。`status` 和 `report` 也使用相同只读方式。持久事件不等于进程存活证明；没有新事件时，还应检查实际进程/容器与任务产物。
+The observer uses a Node [SQLite readOnly connection](https://nodejs.org/docs/latest-v24.x/api/sqlite.html); it does not create a missing database, does not modify experiment metadata, and does not acquire an execution lease. `status` and `report` also use the same read-only approach. Persistent events are not proof that a process is alive; when there are no new events, you should also check the actual process/container and task artifacts.
 
-## 安装使用
+## Install and use
 
-先检查候选实现、独立原生操作语义和复验结果。若有未接受的自动修复、错误算法或失败边界，保留研究档案，不强行安装。对已审核可信的 Bundle，按 [独立能力入口](use-capability.md) 安装并完成新任务，核对原生终态、工具调用、交付公式/缓存和非目标保留。
+First inspect the candidate implementation, independent native operation semantics, and re-validation results. If there are unaccepted automatic fixes, wrong algorithms, or failure boundaries, keep the research archive and do not force installation. For a reviewed and trusted Bundle, install it per the [independent capability entry](use-capability.md) and complete new tasks, verifying native terminal state, tool calls, delivered formulas/cache, and non-target preservation.
 
-这个独立能力入口直接向可信容器传模型凭证；实验中的未审核候选继续使用受控出口。安装、工程验收、质量结论和公开发布分别记录。
+This independent capability entry passes model credentials directly to a trusted container; unreviewed candidates in experiments continue to use the controlled egress. Installation, engineering acceptance, quality conclusions, and public release are recorded separately.

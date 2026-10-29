@@ -1,70 +1,70 @@
-# DSH 原生插件开发：真实闭环结果
+# DSH Native Plugin Development: Real Closed-Loop Results
 
-**总体验收未通过。** 原生作者工具、官方 Skill、自主实现变异、独立任务评分及原包安装均有真实执行证据；20 次任务中有 1 次模型请求在连接阶段挂起，触发 300 秒任务上限。原失败保留，没有补题、重跑或修改评分。
+**Overall acceptance failed.** The native authoring tools, official Skill, autonomous implementation mutation, independent task scoring, and original package installation all have real execution evidence; 1 of the 20 tasks had a model request hang during the connection phase, triggering the 300-second task limit. The original failure is preserved; no tasks were added, rerun, or scores modified.
 
-本轮同时没有证明提分：两个变异与 H0 开发均值均为 **81.25%**，严格择优保留 H0。新增求值器的具体反例已由独立 subagent 复现，候选作为研究产物保存，不作为可靠通用计算能力发布。
+This round also did not demonstrate a score improvement: both mutations and H0 had a development mean of **81.25%**, and strict selection retained H0. The specific counterexamples for the new evaluator have been reproduced by an independent subagent; the candidates are kept as research artifacts and are not released as reliable general-purpose computation capability.
 
-## 固定身份与运行结果
+## Fixed Identity and Run Results
 
-| 项目 | 记录 |
+| Item | Record |
 |---|---|
-| 实现提交 | `d8b11ec` |
-| 运行镜像 | `sha256:3e941da1abf0493a67aa2de615b91e2a8045d0a9e1b1a7537f22f80f1482de37` |
-| 模型 | Venus `deepseek/deepseek-v4.1-flash-1017`；G/H 使用同一登记合同 |
-| 运行时间 | 2026-10-28 01:48:15—02:01:42 UTC |
-| 任务 | 12 次开发执行 + 8 次独立复验；19 次完成评分、1 次执行超时 |
-| 请求账本 | 233 次 started、232 次 result、0 次已记录 failed、1 次 unfinished；21 份账本均存在 |
-| 已报告用量 | 输入 314,023 tokens、输出 77,185 tokens；未完成请求的最终用量未知 |
-| 原包安装 | 最终冠军 H0 原始 tarball 安装及原生装配通过，安装环节未调用模型 |
-| 原始证据 | [索引](../evidence/native-authoring-20261028/index.json)、[验收回执](../evidence/native-authoring-20261028/acceptance.json)、[事前登记](../evidence/native-authoring-20261028/registration.json) |
+| Implementation commit | `d8b11ec` |
+| Run image | `sha256:3e941da1abf0493a67aa2de615b91e2a8045d0a9e1b1a7537f22f80f1482de37` |
+| Model | Venus `deepseek/deepseek-v4.1-flash-1017`; G/H use the same registered contract |
+| Run time | 2026-10-28 01:48:15—02:01:42 UTC |
+| Tasks | 12 development executions + 8 independent re-validations; 19 completed scoring, 1 execution timeout |
+| Request ledger | 233 started, 232 result, 0 recorded failed, 1 unfinished; all 21 ledgers exist |
+| Reported usage | 314,023 input tokens, 77,185 output tokens; final usage of the unfinished request is unknown |
+| Original package installation | Installation of the final champion H0's original tarball and native assembly passed; no model was invoked during installation |
+| Raw evidence | [Index](../evidence/native-authoring-20261028/index.json), [acceptance receipt](../evidence/native-authoring-20261028/acceptance.json), [pre-registration](../evidence/native-authoring-20261028/registration.json) |
 
-运行前核对宿主与镜像全部运行模块，并冻结作者资料来源、输入、方法及评测合同。设计见[事前方案](2026-10-28-native-authoring-registration.md)，接线与真实安装中发现的问题见[实施记录](../research/2026-10-28-native-authoring-integration.md)。
+Before the run, all runtime modules of the host and image were checked, and the authoring data sources, inputs, methods, and evaluation contract were frozen. For the design see the [pre-run plan](2026-10-28-native-authoring-registration.md); for issues found during wiring and real installation see the [implementation record](../research/2026-10-28-native-authoring-integration.md).
 
-## 实际完成了什么
+## What Was Actually Completed
 
 ```text
-真实 DSH 优化器
-  ├─ inspect_list ×1、inspect_query ×2：成功取得原生契约
-  ├─ 官方插件开发 Skill ×1：正文与登记安装包逐字匹配
-  └─ 自主新增工具与 Python 实现，提交两个冻结候选
+Real DSH optimizer
+  ├─ inspect_list ×1, inspect_query ×2: successfully obtained the native contract
+  ├─ official plugin development Skill ×1: body matches the registered installation package verbatim
+  └─ autonomously added tools and Python implementation, submitted two frozen candidates
             │
             ▼
-原生 QA → 每候选完整 4 题评分 → 同分拒绝，保留 H0
+Native QA → full 4-question scoring per candidate → tie rejected, H0 retained
             │
             ▼
-原 H0／所选 H0 独立复验 → 7 题评分 + 1 题超时
+Independent re-validation of original H0/selected H0 → 7 questions scored + 1 timeout
             │
             ▼
-最终原包导出与原生安装通过 → 总体验收保留 failed
+Final original package export and native installation passed → overall acceptance remains failed
 ```
 
-7 项预注册检查中，实际查询、实际 Skill 加载、实现变异进入原生验证与任务评测、搜索终态、原包安装共 5 项通过。独立复验全部评分与模型请求完整结束两项未通过。模型提交了 4 次请求，仅 2 个新候选进入登记；预算外提交没有新增任务。未调用可选 `evolution_probe`，不能把本地脚本运行写成原生行为实验。
+Of the 7 pre-registered checks, 5 passed: actual queries, actual Skill loading, implementation mutation entering native validation and task evaluation, search final state, and original package installation. Two failed: all independent re-validation scoring and complete termination of model requests. The model submitted 4 requests, and only 2 new candidates entered registration; out-of-budget submissions added no new tasks. The optional `evolution_probe` was not invoked, so local script runs cannot be written up as native behavior experiments.
 
-## 候选、算法反例与使用边界
+## Candidates, Algorithm Counterexamples, and Usage Boundaries
 
-| 版本 | 变更及实际使用 | 开发均值与裁决 |
+| Version | Changes and actual usage | Development mean and decision |
 |---|---|---|
-| H0 `686ad0b…218b` | 原始表格能力 Bundle | 81.25%，保留 |
-| H1 `423b383…853b` | 新增 calculate、verify、cells；前两项在 normalization／weighted 任务实际调用 | 81.25%，拒绝 |
-| H2 `d4e566a…0c6d` | 增加 profile、原 cache 对比和单格处理；profile／verify／calculate 在 debt／scenario 实际调用 | 81.25%，拒绝 |
+| H0 `686ad0b…218b` | Original table-capability Bundle | 81.25%, retained |
+| H1 `423b383…853b` | Added calculate, verify, cells; the first two were actually invoked in normalization/weighted tasks | 81.25%, rejected |
+| H2 `d4e566a…0c6d` | Added profile, original cache comparison, and single-cell handling; profile/verify/calculate were actually invoked in debt/scenario | 81.25%, rejected |
 
-两候选的装配 patch 都未变化，`cells` 没有被任务调用。本轮证明插件实现与工具能力能够自主变异，没有证明组合拓扑变异或所有新增工具有效。
+The assembly patches of both candidates were unchanged, and `cells` was not invoked by any task. This round demonstrated that plugin implementations and tool capabilities can mutate autonomously; it did not demonstrate compositional topology mutation or that all newly added tools are effective.
 
-独立审查对冻结代码执行纯内存反例，无模型调用、无候选修改：
+The independent review executed pure in-memory counterexamples against the frozen code, with no model calls and no candidate modifications:
 
-| 公式或输入 | 实际结果 | 正确语义 |
+| Formula or input | Actual result | Correct semantics |
 |---|---|---|
 | `SUMPRODUCT([2,3],[5,7])` | 17 | 2×5 + 3×7 = 31 |
-| `IF(1=1,5,1/0)` | DIV/0 | 条件成立，应返回 5 |
-| `Data!A1`，原值 9 | None，读取了 `Dat!A1` | 应读取 9 |
-| H2 全空值行中 `B2` 有批注 | 仅返回 `blank_row` | 批注仍是原始内容，不能声称全部保留 |
+| `IF(1=1,5,1/0)` | DIV/0 | Condition holds, should return 5 |
+| `Data!A1`, original value 9 | None, read `Dat!A1` | Should read 9 |
+| In H2, `B2` has a comment in an all-empty-value row | Returns only `blank_row` | The comment is still original content; cannot claim all were preserved |
 
-H2 保留了 H1 的同一求值器。H1 的 verify 返回零差异时，normalization 独立评分仍只有 25%；计算器一致不能证明业务公式正确。未发现题目答案硬编码或自动业务修复，这不抵消已证实的算法错误。完整来源、文件摘要和调用表见[独立机制审查](../evidence/native-authoring-20261028/independent-mechanism-review.json)。
+H2 retained the same evaluator as H1. When H1's verify returned zero differences, the independent normalization score was still only 25%; calculator agreement cannot prove business formulas are correct. No hardcoded task answers or automatic business fixes were found, which does not offset the confirmed algorithm errors. For complete sources, file digests, and the call table see the [independent mechanism review](../evidence/native-authoring-20261028/independent-mechanism-review.json).
 
-## 超时与独立复验
+## Timeout and Independent Re-validation
 
-首个复验臂的 normalization 在最后一个本地工具成功后，发起第 8 次模型请求。受控出口记录停在 `connect`，没有上游 HTTP 状态；约 283.9 秒后由任务总时限终止。该阶段涵盖 TCP、TLS 和等待响应头，现有证据不能进一步区分链路与提供商原因。容器未发生 OOM；未完成请求没有被伪造为已有用量的失败响应。原 worker、broker 和网络均已清理，详见[传输诊断](../evidence/native-authoring-20261028/transport-diagnosis.json)。
+In the first re-validation arm, normalization issued the 8th model request after the last local tool succeeded. The controlled egress record stopped at `connect`, with no upstream HTTP status; it was terminated by the task's overall time limit after about 283.9 seconds. This phase covers TCP, TLS, and waiting for response headers; the available evidence cannot further distinguish link from provider causes. No OOM occurred in the container; the unfinished request was not falsified as a failure response with existing usage. The original worker, broker, and network have all been cleaned up; see the [transport diagnosis](../evidence/native-authoring-20261028/transport-diagnosis.json) for details.
 
-两个复验臂使用**完全相同的 H0 源码、构建和 tarball**：首臂含超时及另一道业务零分，完整分母均值为 50%；第二臂为 100%。这是同一产物在两次执行中的差异，不能归因于变异、原生作者能力或质量改善；比较报告也没有将其标为严格改进。
+Both re-validation arms used **exactly the same H0 source, build, and tarball**: the first arm included the timeout and another business zero, giving a full-denominator mean of 50%; the second arm was 100%. This is a difference between two executions of the same artifact and cannot be attributed to mutation, native authoring capability, or quality improvement; the comparison report also did not label it as a strict improvement.
 
-本轮保留总体验收失败，不以成功的子检查、第二臂高分或安装通过替换失败结论。当前可交付的是已实现并验证过的原生开发接入及实验框架；稳定收益、复杂组合自主变异和无故障真实验收仍需独立证据。
+This round retains the overall acceptance failure and does not replace the failure conclusion with successful sub-checks, the second arm's high score, or installation passing. What is currently deliverable is the implemented and validated native development integration and experimental framework; stable gains, autonomous mutation of complex compositions, and failure-free real acceptance still require independent evidence.

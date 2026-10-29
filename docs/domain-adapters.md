@@ -1,37 +1,37 @@
-# 接入一个任务领域
+# Integrating a Task Domain
 
-领域负责任务、能力和裁判；框架负责候选身份、实验调度、反馈、选择与资产交付。接入新领域无需在控制器添加题目分支。
+The domain owns tasks, capabilities, and judging; the framework owns candidate identity, experiment scheduling, feedback, selection, and artifact delivery. Integrating a new domain requires no task-specific branches in the controller.
 
 ```text
 dataset/
-├── inputs/<task>/       优化器获准读取的任务输入
-├── evaluation/<task>/   独立裁判和必要私有材料
-├── runtime/             原生 Provider / 环境 Bundle
-├── verification/        研究者维护的公开操作约束与合成测试（可选）
-└── optimizer-bundle/    优化方法 Bundle
+├── inputs/<task>/       Task inputs the optimizer is permitted to read
+├── evaluation/<task>/   Independent judge and required private materials
+├── runtime/             Native Provider / environment Bundle
+├── verification/        Researcher-maintained public operational constraints and synthetic tests (optional)
+└── optimizer-bundle/    Optimization method Bundle
 seed/
-├── package.json         dsh.bundle.patch + 许可 + 运行依赖
-├── cordis.patch.yml     原生插件装配
-└── ...                  能力实现
+├── package.json         dsh.bundle.patch + license + runtime dependencies
+├── cordis.patch.yml     Native plugin assembly
+└── ...                  Capability implementation
 ```
 
-1. **定义任务清单。** 每题有稳定 ID、任务说明、输入路径和评分材料路径。`inputDigest` / `evaluationDigest` 为内容哈希；公开输入和评分目录必须分离。实验运行中不改清单。
-2. **提供运行镜像。** 安装该领域必需的运行工具；以镜像 digest 固定。执行器看到 `/input` 只读、`/workspace` 可写、`/candidate` 只读，使用 DSH 原生模型与工具。
-3. **提供种子 Bundle。** 通过 Cordis 注册工具、服务或事件能力。优化器可变更配置、实现和组合；包不能依赖仓库绝对路径或未分发的源码。
-4. **定义必要 QA。** 每个候选始终接受完整原生装配检查。`candidate.qa` 填写独立测试的 `{directory, digest, entry}`，或设为 `null` 明确不增加领域检查。目录属于 dataset，内容身份进入实验合同；入口导出 `async probe({agent,ctx,call,workspace})`，通过实际 Agent 的工具流水线执行。优化器只读查看 `/verification`，可改变实现与组合，不能修改本轮已声明的操作语义。QA 无网络、无模型凭证、无任务或评测材料；失败记为 `qa_failed`，不启动该候选的任务。表格实例检查显式写入、源文件及非目标数据保留、无效编辑无部分提交。完整业务正确性继续交给独立裁判。见[独立领域 QA](domain-verification.md)。
-5. **提供独立评分器。** 禁网容器只读挂载 `/input`、`/delivery`、`/evaluation`；在 `/workspace/result.json` 写入 `Grade`。裁判程序和私有材料不提供给优化器。
-6. **冻结合同。** 用 `Experiment` schema 校验，明确主指标、约束、失败分值、完整分母、重复次数、并发、预算和模型。`constraints: []` 明确表示无附加结果约束。使用 `init → evolve` 运行。
+1. **Define the task manifest.** Each task has a stable ID, task description, input path, and scoring material path. `inputDigest` / `evaluationDigest` are content hashes; public inputs and scoring directories must be separated. The manifest is not changed during experiment runs.
+2. **Provide the runtime image.** Install the runtime tools required by the domain; pin them by image digest. The executor sees `/input` read-only, `/workspace` writable, and `/candidate` read-only, and uses DSH native models and tools.
+3. **Provide the seed Bundle.** Register tools, services, or event capabilities through Cordis. The optimizer may change configuration, implementation, and composition; the package must not depend on repository absolute paths or undistributed source code.
+4. **Define required QA.** Every candidate always undergoes the full native assembly check. `candidate.qa` fills in the independent test's `{directory, digest, entry}`, or is set to `null` to explicitly add no domain checks. The directory belongs to the dataset, and its content identity enters the experiment contract; the entry point exports `async probe({agent,ctx,call,workspace})` and is executed through the actual Agent's tool pipeline. The optimizer views `/verification` read-only and may change implementation and composition, but cannot modify the operational semantics declared for this round. QA has no network, no model credentials, and no task or evaluation materials; a failure is recorded as `qa_failed`, and the candidate's tasks are not started. Table instance checks cover explicit writes, preservation of source files and non-target data, and no partial commits for invalid edits. Full business correctness remains with the independent judge. See [Independent Domain QA](domain-verification.md).
+5. **Provide an independent scorer.** The network-disabled container mounts `/input`, `/delivery`, and `/evaluation` read-only; writes `Grade` to `/workspace/result.json`. The judge program and private materials are not provided to the optimizer.
+6. **Freeze the contract.** Validate with the `Experiment` schema, specifying the primary metric, constraints, failure score, full denominator, repetition count, concurrency, budget, and model. `constraints: []` explicitly indicates no additional result constraints. Run with `init → evolve`.
 
-评分输出：
+Scoring output:
 
 ```json
-{"score":0.8,"metrics":{"preserved":1},"feedback":"获准给优化器的具体诊断"}
+{"score":0.8,"metrics":{"preserved":1},"feedback":"specific diagnostics permitted for the optimizer"}
 ```
 
-`feedback` 会反馈给优化器，适配器应明确可公开范围，不能返回未授权答案。`metrics` 分别报告辅助指标；只有实验前在 [constraints](constraints.md) 明确声明的指标参与约束裁决，满足约束的候选仍按主分严格择优。缺失约束观测不补值。异常退出属于评分故障，保留交付后可显式重新评分；禁止把服务失败偷偷改成有效业务分。
+`feedback` is fed back to the optimizer; the adapter should specify the scope that may be made public and must not return unauthorized answers. `metrics` reports auxiliary metrics separately; only metrics explicitly declared in [constraints](constraints.md) before the experiment participate in constraint adjudication, and candidates that satisfy the constraints are still strictly ranked by the primary score. Missing constraint observations are not imputed. Abnormal exits are scoring faults and may be explicitly re-scored after delivery is preserved; silently converting service failures into valid business scores is prohibited.
 
-两个现成示例均显式使用 `constraints: []`，遵循主正确率择优、辅助指标报告的默认政策。领域 QA 检查工具操作语义，评分器计算业务结果，附加结果约束由研究者在实验前选择；三者分别承担责任。去重等任务本身要求的语义应由评分器覆盖，不能为增加门槛再重复计罚。确有不可违反的领域要求时，在新合同中声明对应观测与约束；不改旧实验、不在框架中硬编码保留率、耗时或费用门槛。
+Both ready-made examples explicitly use `constraints: []`, following the default policy of ranking by primary correctness and reporting auxiliary metrics. Domain QA checks tool operational semantics, the scorer computes business results, and additional result constraints are chosen by the researcher before the experiment; the three bear responsibility separately. Semantics required by the task itself, such as deduplication, should be covered by the scorer and must not be penalized again to add a threshold. When there are genuinely inviolable domain requirements, declare the corresponding observations and constraints in a new contract; do not modify old experiments, and do not hard-code retention, latency, or cost thresholds in the framework.
 
-现成例子：[`examples/spreadsheet`](../examples/spreadsheet)。`generate.py` 提供三题产品链路验收；`research.py` 提供四类公开业务任务及不同数值的 development / validation 输入。两者均为本项目合成数据，不能替代官方基准结果。
+Ready-made examples: [`examples/spreadsheet`](../examples/spreadsheet). `generate.py` provides a three-task product pipeline acceptance; `research.py` provides four categories of public business tasks and development / validation inputs with different values. Both are synthetic data from this project and cannot replace official benchmark results.
 
-第二领域 [`examples/structured-data`](../examples/structured-data) 已复用同一控制器、优化器、合同和构建完成真实模型验收，覆盖事件归并、日志汇总和清单关联；不依赖 Excel。原生安装后的 `data_read → data_write` 调用也已验证。[接入命令](structured-data.md) · [实验结果与负结果](acceptance-structured-data.md)。
+The second domain [`examples/structured-data`](../examples/structured-data) has completed real-model acceptance reusing the same controller, optimizer, contract, and build, covering event merging, log aggregation, and manifest correlation; it does not depend on Excel. The `data_read → data_write` call after native installation has also been verified. [Integration command](structured-data.md) · [Experiment results and negative results](acceptance-structured-data.md).

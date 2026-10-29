@@ -1,35 +1,35 @@
-# gVisor 受控出口：DNS 与真实模型验收
+# gVisor Controlled Egress: DNS and Real-Model Acceptance
 
-## 原始故障与来源
+## Original Failure and Sources
 
-原正式 Controller 验收在首个模型请求返回 `upstream_error`，账本无解析地址。随后在同一 gVisor runtime、两个自定义 bridge 上做无凭证探测：容器 `/etc/resolv.conf` 为 `127.0.0.11`，`dns.lookup` 返回 `EAI_AGAIN`。默认 bridge 上显式观察到的环境 resolver 为 `0.250.250.200`，解析成功。
+The original formal Controller acceptance returned `upstream_error` on the first model request, and the ledger had no resolved address. A credential-free probe was then run on the same gVisor runtime and two custom bridges: container `/etc/resolv.conf` was `127.0.0.11`, and `dns.lookup` returned `EAI_AGAIN`. On the default bridge, the explicitly observed environment resolver was `0.250.250.200`, and resolution succeeded.
 
-[gVisor 官方 FAQ](https://gvisor.dev/docs/user_guide/faq/#docker-bridge)明确指出自定义 bridge 的 Docker 内置 DNS 需要宿主网络栈，runsc netstack 无法访问；仅传 `--dns` 仍会留下内置 DNS 地址。采用其只读挂载 resolver 文件的方案，维持 Sentry 与双网络隔离。
+The [gVisor official FAQ](https://gvisor.dev/docs/user_guide/faq/#docker-bridge) explicitly states that Docker's built-in DNS on a custom bridge requires the host network stack, which runsc netstack cannot access; passing only `--dns` still leaves the built-in DNS address. We adopted its approach of read-only mounting a resolver file, preserving Sentry and dual-network isolation.
 
-## 实现
+## Implementation
 
-- 合同显式冻结 1–3 个 IPv4 resolver；不默认公网地址，不随运行时切换策略。拒绝重复、回环、组播、广播、`0.0.0.0` 和与地址池重叠；允许部署环境明确提供的内部地址。
-- 文件逐字生成，broker 只读挂载；合同与容器身份包含 DNS，恢复核验字节及挂载，释放前保存摘要。已有文件漂移直接失败，恢复不重写掩盖。
-- broker 账本记录失败阶段与已知原生错误码，不保存异常文本、认证或请求内容。DNS 答案仍一次解析、全量核验，连接固定到核验地址。
-- 部署脚本只发现指定镜像/运行时默认 bridge 的候选 resolver；最终受控网络可达性由实际请求验证。CI 保存发现产物并显式传入测试。
-- [Linux resolver 文档](https://man7.org/linux/man-pages/man5/resolv.conf.5.html)规定 `MAXNS=3`，实际镜像头文件也为 3；合同超限直接拒绝。
+- The contract explicitly freezes 1–3 IPv4 resolvers; it does not default to public addresses and does not switch policy with the runtime. It rejects duplicates, loopback, multicast, broadcast, `0.0.0.0`, and overlap with the address pool; internal addresses explicitly provided by the deployment environment are allowed.
+- The file is generated verbatim and mounted read-only by the broker; the contract and container identity include DNS, recovery verifies bytes and mount, and a digest is saved before release. Drift in an existing file fails directly, and recovery does not rewrite to mask it.
+- The broker ledger records the failure stage and known native error codes, and does not save exception text, credentials, or request content. DNS answers are still resolved once and fully verified, and connections are pinned to the verified address.
+- The deployment script only discovers candidate resolvers for the default bridge of the specified image/runtime; final controlled-network reachability is verified by actual requests. CI saves the discovery artifact and passes it explicitly to the tests.
+- The [Linux resolver documentation](https://man7.org/linux/man-pages/man5/resolv.conf.5.html) specifies `MAXNS=3`, and the actual image header also has 3; the contract rejects anything over the limit.
 
-## 实际验收
+## Actual Acceptance
 
-最终镜像 `sha256:6708cd91fdfb6a802432f20f4a97bff3ca2dfb47116cbbf3c520e00eaa9f3cf3`。编译后的合同、session 与 broker 文件摘要已与实际镜像比对。
+Final image `sha256:6708cd91fdfb6a802432f20f4a97bff3ca2dfb47116cbbf3c520e00eaa9f3cf3`. The compiled contract, session, and broker file digests were compared against the actual image.
 
-| 验收 | 结果 |
+| Acceptance | Result |
 |---|---|
-| 单元 / 原生 DSH | 53 / 9 通过；新增 DNS 合同与故障诊断断言 |
-| runc / gVisor 容器矩阵 | 同一最终镜像各 12 项通过 |
-| 真实模型、原容器接续、独立评分 | gVisor 上 4 started / 4 result / 0 failed / 0 unfinished；评分 1 |
-| DNS、生命周期、回收 | 实际只读挂载、文件摘要、原 worker/broker 身份核验；容器与两网络已回收；重复 pump 无新增调用 |
-| 分发安装 | 实际打包后原生安装与能力调用通过 |
+| Unit / native DSH | 53 / 9 passed; new DNS contract and failure-diagnosis assertions added |
+| runc / gVisor container matrix | 12 items each passed on the same final image |
+| Real model, original container continuation, independent scoring | On gVisor, 4 started / 4 result / 0 failed / 0 unfinished; score 1 |
+| DNS, lifecycle, reclamation | Actual read-only mount, file digest, original worker/broker identity verification; containers and both networks reclaimed; repeated pump produced no new calls |
+| Distribution install | Native install and capability invocation passed after actual packaging |
 
-模型输入 1571 / 输出 283 tokens，请求耗时和 5461ms。HTTP 原始账本 3 completed / 1 cancelled，均已连接解析地址并收到 HTTP 200。HTTP 消费者关闭响应与模型完成是不同观察维度；不把 cancelled 改写成 completed，也不据此推断每次关闭的具体原因。实际 [OpenAI SDK 流实现](https://github.com/openai/openai-node/blob/main/src/core/streaming.ts)会在完成标记退出并释放 reader；本地依赖版本 7.19.0 已核对。Context7 两次检索未返回准确 SDK 条目，转查官方源码及实际安装实现。
+Model input 1571 / output 283 tokens, request duration sum 5461ms. The raw HTTP ledger shows 3 completed / 1 cancelled, all connected to the resolved address and receiving HTTP 200. HTTP consumer response closure and model completion are different observation dimensions; cancelled is not rewritten as completed, and no specific cause is inferred for each closure. The actual [OpenAI SDK stream implementation](https://github.com/openai/openai-node/blob/main/src/core/streaming.ts) exits on the completion marker and releases the reader; the local dependency version 7.19.0 has been checked. Two Context7 searches did not return an accurate SDK entry, so we consulted the official source and the actual installed implementation.
 
-## 保留的失败
+## Preserved Failures
 
-原 DNS 失败未重写；初次镜像的地址校验把 OrbStack resolver 误当整个 `0/8` 的 unspecified 已纠正；测试 loader 原固定 node_modules 相对路径改为原生模块解析，原失败日志保留。最终镜像的一次工程任务已交付并评分，但新增验收断言误要求所有 HTTP 都 completed；原失败报告保留，修正验收条件后在新目录验证同一生产镜像。按 UUID 逐一配对、非空模型用量的附加断言在原最终产物上只读复核，没有再运行模型。
+The original DNS failure was not rewritten; the initial image's address validation mistakenly treated the OrbStack resolver as unspecified for the entire `0/8`, which has been corrected; the test loader's original fixed node_modules relative path was changed to native module resolution, and the original failure log is preserved. One engineering task on the final image was delivered and scored, but the newly added acceptance assertion mistakenly required all HTTP to be completed; the original failure report is preserved, and after correcting the acceptance condition, the same production image was verified in a new directory. The additional assertions pairing one by one by UUID and requiring non-empty model usage were re-checked read-only on the original final artifact, without running the model again.
 
-独立 subagent 复审指出 MAXNS 问题并完成复核；对应失败、最终回执、原始日志摘要与文件身份见[证据 JSON](../evidence/2026-10-28-gvisor-controlled-dns.json)。这证明工程链路，不构成正确率增益实验。磁盘配额、MicroVM、稳定质量及云端 CI 仍按完整交付清单推进。
+An independent subagent review identified the MAXNS issue and completed the re-check; the corresponding failure, final receipt, original log digest, and file identity are in the [evidence JSON](../evidence/2026-10-28-gvisor-controlled-dns.json). This proves the engineering chain and does not constitute an accuracy-gain experiment. Disk quota, MicroVM, stable quality, and cloud CI are still being advanced according to the full delivery checklist.

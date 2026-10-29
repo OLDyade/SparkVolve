@@ -1,32 +1,32 @@
-# 比较反馈的作用，保持同一个优化器
+# Compare the effect of feedback while keeping the same optimizer
 
-研究反馈是否帮助插件进化，需要冻结同一个 G、共同 H0 和搜索预算，并由宿主控制模型能看到的证据。只在 Prompt 中要求忽略分数，无法隔离评分、轨迹与冠军选择信息。
+To study whether feedback helps plugin evolution, the same G, a shared H0, and the search budget must be frozen, and the host must control the evidence the model can see. Merely asking the Prompt to ignore scores cannot isolate scoring, trajectories, and champion-selection information.
 
-宿主协议已通过真实 Docker／原生 DSH 的同 G 双臂验收，以及原固定三臂回归。[机器证据](evidence/2026-10-28-feedback-views.json)记录冻结镜像、请求账本、原失败及终态重入检查；模型使用确定性夹具，方法收益仍待真实研究。
+The host protocol has passed same-G two-arm acceptance with real Docker/native DSH, as well as the original fixed three-arm regression. [Machine evidence](evidence/2026-10-28-feedback-views.json) records the frozen image, request ledger, original failures, and terminal-state re-entry checks; the model uses deterministic fixtures, and the method's benefit still awaits real research.
 
 ```text
-                 冻结 G / H0 / 任务 / 预算
+                 frozen G / H0 / task / budget
                               │
                  ┌────────────┴────────────┐
                  ▼                         ▼
          full + seed-only          mechanical + seed-only
-         原始任务反馈可见             公开输入、源码可见
-         构建与装配结果可见           构建与装配结果可见
+         raw task feedback visible     public inputs, source visible
+         build and assembly results visible   build and assembly results visible
                  │                         │
-         每个变异从 H0 分叉         每个变异从 H0 分叉
+         each mutation forks from H0         each mutation forks from H0
                  │                         │
                  └────────────┬────────────┘
                               ▼
-                 宿主完整记账、共同规则选择 H*
+                 host full accounting, common-rule selection of H*
                               │
-                 同一冻结产物 → 独立任务评估
+                 same frozen artifact → independent task evaluation
                               │
-                 按完整搜索实例配对、报告成本
+                 paired by full search instance, report cost
 ```
 
-## 冻结的研究条件
+## Frozen research conditions
 
-每份新 `Experiment` 必须显式填写 `hostSearchProtocol`，没有隐含默认值：
+Each new `Experiment` must explicitly fill in `hostSearchProtocol`; there are no implicit defaults:
 
 ```json
 {
@@ -37,31 +37,31 @@
 }
 ```
 
-| 字段       | 取值与含义                                                                             |
+| Field      | Values and meaning                                                                     |
 | ---------- | -------------------------------------------------------------------------------------- |
-| `ancestry` | `unrestricted` 允许在实验授权候选中选择父版本；`seed-only` 只允许从注册 H0 分叉和提交  |
-| `feedback` | `full` 开放实验授权的任务反馈；`mechanical` 仅开放任务输入、候选编程与机械验收所需信息 |
+| `ancestry` | `unrestricted` allows selecting a parent version among experiment-authorized candidates; `seed-only` only allows forking from the registered H0 and submitting  |
+| `feedback` | `full` opens the task feedback authorized by the experiment; `mechanical` opens only the information needed for task inputs, candidate programming, and mechanical acceptance |
 
-`mechanical` 必须与 `seed-only` 配对。`seed-only` 实验共同关闭研究资产库、行为探针与领域 QA：`researchLibrary`、`probes`、`candidate.qa` 均为 `null`。原生装配 QA 保留，用于确认代码可以装载、依赖可以解析、工具可以注册。
+`mechanical` must be paired with `seed-only`. `seed-only` experiments jointly disable the research asset library, behavior probes, and domain QA: `researchLibrary`, `probes`, and `candidate.qa` are all `null`. Native assembly QA is retained to confirm that code can load, dependencies can resolve, and tools can register.
 
-上述限制用于这项受控研究。普通自主进化显式使用 `unrestricted + full`，继续支持多代分叉、资产复用和获准的行为实验。
+The above restrictions apply to this controlled study. Ordinary autonomous evolution explicitly uses `unrestricted + full`, continuing to support multi-generation forking, asset reuse, and authorized behavior experiments.
 
-## 模型视图与原始账本
+## Model view and raw ledger
 
-宿主保留完整评分、轨迹、交付和择优记录。反馈协议控制原生进化工具及其 HTTP 接口的模型视图；宿主调度和研究报告读取可信账本，不通过受限模型接口推断任务是否结束。
+The host retains complete scoring, trajectory, delivery, and selection records. The feedback protocol controls the model view of the native evolution tools and their HTTP interfaces; host scheduling and research reports read the trusted ledger and do not infer whether a task has ended through the restricted model interface.
 
-| 入口                           | `mechanical` 的要求                                                           |
+| Entry                          | `mechanical` requirements                                                           |
 | ------------------------------ | ----------------------------------------------------------------------------- |
-| 状态、提交回执及重复提交       | 不返回分数、冠军、晋级/淘汰状态或约束裁决；已提交候选统一呈现必要生命周期状态 |
-| 事件与等待                     | 使用模型视图自己的连续游标，不暴露原始评分事件及其序号空隙                    |
-| 输入                           | 按注册 task id 读取公开输入，无需先取得隐藏的 run id                          |
-| 证据清单、文件读取、原字节物化 | 共享授权规则；任务交付和轨迹不能经另一种读取形式绕过限制                      |
-| 分叉与父版本声明               | 两处都核对 H0；不能通过请求当前冠军作为父版本取得选择结果                     |
-| 结束与恢复                     | 结束回执保持同一视图；恢复核对冻结合同，不重新选择反馈策略                    |
+| Status, submission receipts, and duplicate submissions       | Does not return scores, champions, promotion/elimination status, or constraint rulings; submitted candidates uniformly present the necessary lifecycle status |
+| Events and waiting                     | Uses the model view's own continuous cursor, without exposing raw scoring events or their sequence gaps                    |
+| Inputs                           | Reads public inputs by registered task id, without first obtaining a hidden run id                          |
+| Evidence manifests, file reads, raw-byte materialization | Shares authorization rules; task delivery and trajectories cannot bypass restrictions through another read form                      |
+| Forking and parent version declaration               | Checks H0 in both places; selection results cannot be obtained by requesting the current champion as the parent version                     |
+| Ending and resumption                     | The ending receipt keeps the same view; resumption checks the frozen contract and does not reselect the feedback policy                    |
 
-模型事件游标为 `{ experimentId, viewDigest, sequence }`。`viewDigest` 绑定实验和反馈视图；跨实验、跨视图或超前游标均拒绝。宿主只读 CLI 保留原始事件序号，两种游标不可互换。
+The model event cursor is `{ experimentId, viewDigest, sequence }`. `viewDigest` binds the experiment and feedback view; cross-experiment, cross-view, or ahead-of-sequence cursors are all rejected. The host read-only CLI retains raw event sequence numbers; the two kinds of cursors are not interchangeable.
 
-公开输入通过 `evolution_input` 读取，也可用 `evolution_materialize` 的引用直接交给文件工具：
+Public inputs are read through `evolution_input`, or a reference from `evolution_materialize` can be passed directly to the file tool:
 
 ```json
 {
@@ -72,18 +72,18 @@
 }
 ```
 
-物化文件仍位于实验自己的只读 `/evidence` 挂载。此前同合同的优化器会话可用于接续；更换策略必须创建新实验，不能沿用另一组的会话、物化文件或注册目录。
+Materialized files remain in the experiment's own read-only `/evidence` mount. A previous optimizer session under the same contract can be used for continuation; changing the policy requires creating a new experiment and cannot reuse another group's session, materialized files, or registration directory.
 
-## 同一个 G 可以成为两个研究臂
+## The same G can become two research arms
 
-固定比较的每个 arm 显式登记 `method` 与 `hostSearchProtocol`。G 的源码、构建和装配身份保持独立；实验臂身份由这份方法身份及宿主协议共同确定。相同 G、不同协议可以比较，相同 G、相同协议的重复使用 `repetitions`。
+Each arm of the fixed comparison explicitly registers `method` and `hostSearchProtocol`. G's source, build, and assembly identity remain independent; the experiment arm identity is jointly determined by this method identity and the host protocol. The same G with different protocols can be compared; repeated use of the same G with the same protocol uses `repetitions`.
 
-子搜索采用对应臂的冻结协议，所有臂共享独立 assessment 合同。报告保留 arm id、G 身份、协议、完整搜索重复、失败、独立评分和实际成本。对照基线指向注册臂，不根据结果换成表现更好的方法。
+Sub-searches use the frozen protocol of the corresponding arm, and all arms share an independent assessment contract. Reports retain the arm id, G identity, protocol, full search repetitions, failures, independent scores, and actual cost. The control baseline points to the registered arm and is not swapped for a better-performing method based on results.
 
-合同变更不自动改写历史注册或历史成绩。缺少必填字段的旧合同不能用新执行器直接恢复；原终态记录与对应代码提交继续保留。不要向旧 JSON 补字段后把它冒充原实验身份。
+Contract changes do not automatically rewrite historical registrations or historical results. Old contracts missing required fields cannot be directly resumed with the new executor; the original terminal-state records and corresponding code commits remain preserved. Do not add fields to old JSON and then pass it off as the original experiment identity.
 
-## 能回答什么
+## What can be answered
 
-这项比较衡量**可信宿主任务反馈的作用**。G 仍拥有相同的 Shell、源码和公开输入，可以自己编写测试；因此机械组并未失去所有自主验证能力。生命周期耗时和资源竞争也可能提供侧面信息，不能把接口隔离表述为消除了全部信息通路。
+This comparison measures **the effect of trusted host task feedback**. G still has the same Shell, source, and public inputs and can write its own tests; therefore the mechanical group has not lost all autonomous verification capability. Lifecycle timing and resource contention may also provide side information, so interface isolation must not be described as eliminating all information pathways.
 
-确定性模型夹具只验收接线、权限、分母和恢复。方法收益仍须真实模型搜索、独立评估及完整搜索重复证明；分配上限相同不代表实际 Token 或费用相同。研究依据与尚未登记的规模见[反馈因果协议](research/2026-10-28-feedback-causal-protocol.md)。
+Deterministic model fixtures only validate wiring, permissions, denominators, and resumption. The method's benefit still requires real model search, independent evaluation, and full search repetitions to prove; identical allocation caps do not mean identical actual Tokens or costs. For the research basis and the not-yet-registered scale, see [feedback causal protocol](research/2026-10-28-feedback-causal-protocol.md).

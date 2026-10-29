@@ -1,14 +1,14 @@
-# 历史实验导览 · 局部设计约定
+# Historical Experiment Tour · Local Design Conventions
 
-范围仅为 `tour.html` 和生成器；不改变项目核心思想或 `11.md`。
+Scope is limited to `tour.html` and the generator; does not change the project's core idea or `11.md`.
 
-- **读者与任务**：首次访问项目的研究者，在无需密钥、无需启动模型的情况下，理解一次真实搜索如何产生变异、接受裁决、独立复验和归档。
-- **模式**：Read。用户按候选谱系查看机制摘要、逐题分数和原始记录，再进入真实运行文档。
-- **事实来源**：`evidence/2026-10-27-continuous-acceptance.json` 和 `acceptance-continuous.md`。标题和定位保留原句；分数、用量、候选身份、父版本全部从原记录生成。该历史实验使用公开合成任务；没有稳定提分或拓扑搜索收益结论。
-- **视觉继承**：沿用现有 `assets/experiment-results.svg` 的白底、深蓝正文、蓝色基线、灰色实验版本、锈红退步表达。系统字体适合离线阅读；等宽字体只用于身份、命令与数据。
-- **结构**：一条可选择的候选谱系与一个证据阅读区；下接完整分母复验表及分发入口。避免卡片墙、虚构实时动画、暗示晋级的装饰。
-- **交互**：普通按钮选择版本，方向键沿版本序列移动；真实逐题记录可展开；原机器记录可离线下载。链接指向仓库内文档，无远端资源或请求。
-- **移动与无障碍**：窄屏顺序阅读；可横向滚动的数据表标注且可键盘聚焦；清晰焦点、原生 details、文本状态不依赖颜色。
-- **生成与验收**：标准库生成器输出单文件 HTML，记录源文件摘要，可重复生成；桌面和移动端批量检查交互、溢出与无网络请求。
+- **Readers and task**: Researchers visiting the project for the first time, who, without a key and without starting a model, understand how a real search produces mutations, accepts verdicts, independently re-verifies, and archives.
+- **Mode**: Read. Users view mechanism summaries, per-question scores, and raw records along the candidate lineage, then proceed to the real run documentation.
+- **Sources of truth**: `evidence/2026-10-27-continuous-acceptance.json` and `acceptance-continuous.md`. Titles and positioning retain the original sentences; scores, usage, candidate identities, and parent versions are all generated from the original records. This historical experiment uses public synthetic tasks; there is no conclusion of stable score improvement or topology search gains.
+- **Visual inheritance**: Follows the existing `assets/experiment-results.svg` white background, dark blue body text, blue baseline, gray experimental versions, and rust-red regression expression. System fonts suit offline reading; monospace fonts are used only for identities, commands, and data.
+- **Structure**: One selectable candidate lineage and one evidence reading area; below that, the full-denominator re-verification table and distribution entry point. Avoid card walls, fictional real-time animations, and decorations implying promotion.
+- **Interaction**: Ordinary buttons select versions, arrow keys move along the version sequence; real per-question records can be expanded; original machine records can be downloaded offline. Links point to in-repository documents, with no remote resources or requests.
+- **Mobile and accessibility**: Sequential reading on narrow screens; horizontally scrollable data tables are labeled and keyboard-focusable; clear focus, native details, and text states that do not rely on color.
+- **Generation and acceptance**: A standard-library generator outputs a single-file HTML, records source file digests, and is repeatably generatable; batch checks on desktop and mobile for interaction, overflow, and no network requests.
 
-以上产品事实与结构来自明确任务；视觉继承自仓库既有图表。本次不创建新的全局产品定义或更改品牌。
+The above product facts and structure come from an explicit task; the visual inheritance comes from existing repository charts. This time no new global product definition is created and no branding is changed.

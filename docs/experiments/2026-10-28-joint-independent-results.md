@@ -1,42 +1,42 @@
-# 联合变异候选的独立配对复验
+# Independent Paired Re-validation of the Joint Mutation Candidate
 
-24/24 次任务完成独立评分，执行失败为零。固定基线均值 **93.75%**，预先选定的联合变异候选 **77.0833%**，差值 **−16.6667 pp**；本轮不接受该候选，不重抽样。
+All 24/24 tasks received independent scoring, with zero execution failures. The fixed baseline mean is **93.75%**, the pre-selected joint mutation candidate is **77.0833%**, a difference of **−16.6667 pp**; this round does not accept the candidate and does not resample.
 
-[运行前登记](2026-10-28-joint-independent-validation.json) · [逐样本成绩、调用账本及原生反例](../evidence/2026-10-28-joint-independent-validation.json)
+[Pre-run registration](2026-10-28-joint-independent-validation.json) · [Per-sample scores, call ledger, and native counterexamples](../evidence/2026-10-28-joint-independent-validation.json)
 
-## 固定比较
+## Fixed Comparison
 
-此前搜索已经选定 `4a60fb2b…`：优化器自主新增重算插件、修改原工具并改变原生 patch。本轮原样复制其冻结源码和已构建产物，与原始基线 `686ad0b0…` 对比；两组使用同一当前运行镜像、模型配置和受控出口。没有重新构建候选，没有运行优化器，也没有混入旧成绩。
+The prior search had already selected `4a60fb2b…`: the optimizer autonomously added a recalculation plugin, modified the original tool, and changed the native patch. This round copies its frozen source code and built artifacts verbatim and compares them against the original baseline `686ad0b0…`; both groups use the same current runtime image, model configuration, and controlled egress. The candidate was not rebuilt, the optimizer was not run, and no old scores were mixed in.
 
-每组固定四个公开合成任务，每题三次。该公开 validation 划分及任务家族此前已被开发使用，本轮属于独立执行复验，**不属于未知留出集或官方 SpreadsheetBench**。先运行基线再运行候选，时段和上游模型变化仍可能形成混杂。
+Each group has a fixed set of four public synthetic tasks, three runs per task. This public validation split and task family have been used in development before; this round is an independent execution re-validation and **is not an unseen holdout set or the official SpreadsheetBench**. The baseline was run first, then the candidate; time-of-day and upstream model changes may still introduce confounding.
 
-| 任务 | 基线三次评分 | 候选三次评分 | 均值差 |
+| Task | Baseline three scores | Candidate three scores | Mean difference |
 |---|---|---|---:|
 | normalization | 25%、100%、100% | 0%、0%、25% | −66.6667 pp |
 | weighted-portfolio | 100%、100%、100% | 100%、100%、100% | 0 pp |
 | debt-rollforward | 100%、100%、100% | 100%、100%、100% | 0 pp |
 | scenario-valuation | 100%、100%、100% | 100%、100%、100% | 0 pp |
 
-| 调用账目 | 基线 | 候选 |
+| Call accounting | Baseline | Candidate |
 |---|---:|---:|
 | started / result | 96 / 96 | 86 / 86 |
 | failed / unfinished | 0 / 0 | 0 / 0 |
-| 输入 / 输出 Token | 95,055 / 20,485 | 91,622 / 19,068 |
-| 请求耗时之和 | 191.978 秒 | 176.503 秒 |
+| Input / output tokens | 95,055 / 20,485 | 91,622 / 19,068 |
+| Sum of request durations | 191.978 s | 176.503 s |
 
-账本覆盖全部 24 个样本，没有缺失用量。次数为 DSH adapter stream，服务商内部重试不可据此推断；请求耗时之和不等于墙钟时间。没有可靠单价，费用不估算。重复样本共享任务，配对标准差为描述统计，不充当置信区间。
+The ledger covers all 24 samples, with no missing usage. Counts are DSH adapter stream counts; provider-internal retries cannot be inferred from them; the sum of request durations is not wall-clock time. There is no reliable unit price, so cost is not estimated. Repeated samples share tasks; the paired standard deviation is a descriptive statistic and does not serve as a confidence interval.
 
-## 分数之外的实际缺陷
+## Actual Defects Beyond the Scores
 
-对同一冻结产物另做禁网、无凭证、原生 DSH 验收。使用全新合成工作簿，实际调用 `workbook_inspect`、`workbook_recalculate`，后者实际通过 LibreOffice 重算：
+A separate network-disabled, credential-free, native DSH acceptance test was performed on the same frozen artifact. Using brand-new synthetic workbooks, it actually invoked `workbook_inspect` and `workbook_recalculate`, the latter actually recalculating through LibreOffice:
 
-| 独立反例 | 实际观察 | 判定 |
+| Independent counterexample | Actual observation | Verdict |
 |---|---|---|
-| `=SUM(A1:B1)` 与右移的 `=SUM(B1:C1)` | uniform=false | 实现删除范围操作数，误判相对引用模式 |
-| 相邻两格同为 `=SUM($A$1:$B$1)` | uniform=false | 绝对范围同样被删除，误判相同模式 |
-| `="#tag"` | 实际缓存 `#tag`，工具报 error | 将普通文本按首字符误归为公式错误 |
-| `=1/0` | 实际缓存 `#DIV/0!`，工具报 error | 此项正确 |
+| `=SUM(A1:B1)` and right-shifted `=SUM(B1:C1)` | uniform=false | The implementation drops the range operand and misjudges the relative-reference pattern |
+| Two adjacent cells both `=SUM($A$1:$B$1)` | uniform=false | The absolute range is likewise dropped, misjudging the identical pattern |
+| `="#tag"` | Actually caches `#tag`, tool reports error | Plain text is misclassified as a formula error based on its first character |
+| `=1/0` | Actually caches `#DIV/0!`, tool reports error | This item is correct |
 
-源文件逐字保持；最终断言失败，原日志、源码、实际观察和哈希全部保留。没有修改原候选、覆盖报告或调整预期。这些反例证明工具语义缺陷，**没有证明它们导致本轮全部分数下降**。本轮预先冻结的领域 QA 覆盖显式写入合同，未覆盖上述新增只读工具语义；高分本身也不能认证新增能力。
+The source files are kept verbatim; the final assertion failed, and the original logs, source code, actual observations, and hashes are all preserved. The original candidate was not modified, the report was not overwritten, and expectations were not adjusted. These counterexamples demonstrate tool semantic defects; **they do not prove that they caused all of this round's score decline**. The domain QA frozen in advance for this round covers the explicit write contract and does not cover the above newly added read-only tool semantics; a high score alone also cannot certify newly added capabilities.
 
-研究结论：跨插件自主变异已经发生，本轮独立执行未保留开发收益。后续搜索应使用这些真实负反馈提出新候选，并对新引入能力做可观察的机制实验；不能把这次候选原样反复运行到出现高分。
+Research conclusion: cross-plugin autonomous mutation has occurred, and this round's independent execution did not preserve the development gains. Subsequent searches should use this real negative feedback to propose new candidates and conduct observable mechanism experiments on newly introduced capabilities; this candidate must not be run repeatedly as-is until a high score appears.

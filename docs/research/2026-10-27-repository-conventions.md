@@ -1,34 +1,34 @@
-# 开源仓库建设依据
+# Basis for Open-Source Repository Construction
 
-用户指定参考 [XHToken/dsh-intelligent-router](https://github.com/XHToken/dsh-intelligent-router)，本次核验固定到 [`d762b8e8ebd9f07dcea34fe2da56202f9f727fe4`](https://github.com/XHToken/dsh-intelligent-router/tree/d762b8e8ebd9f07dcea34fe2da56202f9f727fe4)。
+The user specified [XHToken/dsh-intelligent-router](https://github.com/XHToken/dsh-intelligent-router) as a reference; this verification is pinned to [`d762b8e8ebd9f07dcea34fe2da56202f9f727fe4`](https://github.com/XHToken/dsh-intelligent-router/tree/d762b8e8ebd9f07dcea34fe2da56202f9f727fe4).
 
-| 借鉴方向 | 本仓库落实 |
+| Borrowed Direction | Implementation in This Repository |
 |---|---|
-| 一句话理解价值与机制 | 保留用户核心原句，README 给完整反馈流程和入口 |
-| 原生插件安装与调用说明 | `npm pack → dsh plugin add`；独立分发测试实际调用已安装工具 |
-| 版本和运行边界透明 | 固定 DSH、Node、npm、镜像；兼容性文档与失败记录 |
-| 可参与、可引用、可验证 | Contribution、Issue / PR 模板、行为准则、CITATION、CI |
-| 明确许可与归属 | 对方 LICENSE 与 package.json 为 Apache-2.0；本仓库同样采用标准 Apache-2.0，并保留本项目独立版权 |
+| One-sentence understanding of value and mechanism | Retain the user's core sentence; README provides the complete feedback flow and entry points |
+| Native plugin installation and invocation instructions | `npm pack → dsh plugin add`; the independent distribution test actually invokes the installed tool |
+| Transparent versions and runtime boundaries | Pin DSH, Node, npm, and mirror; compatibility documentation and failure records |
+| Participable, citable, verifiable | Contribution, Issue / PR templates, Code of Conduct, CITATION, CI |
+| Clear license and attribution | The other party's LICENSE and package.json are Apache-2.0; this repository likewise adopts standard Apache-2.0 and retains this project's independent copyright |
 
-未引入对方路由器实现、产品名或模型降级策略。README 的传播表达不替代真实实验；分发测试、真实模型验收和独立研究结论分别列出。
+No router implementation, product name, or model degradation strategy from the other party was introduced. The README's promotional expression does not replace real experiments; distribution tests, real-model acceptance, and independent research conclusions are listed separately.
 
-其他核验：
+Other verifications:
 
-- npm 12 修改了 `pack --json` 结构，改为包名键控对象。本地 npm 12.2.0 实测与 [npm 12 变更记录](https://github.com/npm/cli/blob/latest/CHANGELOG.md)及[实现](https://github.com/npm/cli/blob/latest/lib/commands/pack.js)一致。安装测试据锁定版本处理，没有双格式兼容兜底。
-- DSH 原生命令负责把 Bundle 纳入目标 Profile；目标 Profile 的 pnpm 构建授权仍需显式配置。依据安装版本 `@deepseek-ai/dsh@0.2.1-rc.4` 的 `runPlugin` / `runPluginCommand` 和实际安装输出。
-- DSH 适配器可通过 finish 事件的 `reason.kind=error` 返回传输失败。遥测必须将其计为 failed，即使生成器没有 throw；真实 SDK 子进程测试覆盖这个路径。
+- npm 12 changed the `pack --json` structure to a package-name-keyed object. Local testing with npm 12.2.0 matches the [npm 12 changelog](https://github.com/npm/cli/blob/latest/CHANGELOG.md) and the [implementation](https://github.com/npm/cli/blob/latest/lib/commands/pack.js). The installation test handles the locked version, with no dual-format compatibility fallback.
+- The DSH native command is responsible for incorporating the Bundle into the target Profile; the target Profile's pnpm build authorization still requires explicit configuration. Based on the installed version's `@deepseek-ai/dsh@0.2.1-rc.4` `runPlugin` / `runPluginCommand` and the actual installation output.
+- The DSH adapter can return a transport failure via the finish event's `reason.kind=error`. Telemetry must count it as failed even if the generator does not throw; a real SDK subprocess test covers this path.
 
-此前 GitHub Actions 曾受账号支付/消费额度限制，任务未启动。随后提交 `fcf76f2`、`a486ce5` 发生了另一项实际错误：在 job 级 `env` 使用 `runner.temp`，导致工作流未通过解析。两种失败分别记录，不能将配置错误归于账户限制。云端结果单独列为未完成项，本地测试结果不会写成云端矩阵通过。
+Previously, GitHub Actions was subject to account payment/spending quota limits, and jobs did not start. Subsequently, commits `fcf76f2` and `a486ce5` introduced another actual error: using `runner.temp` at the job-level `env`, causing the workflow to fail parsing. The two failures are recorded separately; the configuration error must not be attributed to account limits. Cloud results are listed separately as incomplete items, and local test results will not be written as a passing cloud matrix.
 
-依据 [GitHub 上下文作用域表](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts)，将临时目录初始化移入步骤，通过 `GITHUB_ENV` 传给后续步骤；制品上传的 step `with` 继续使用合法的 `runner.temp`。加入固定版本 [actionlint 1.7.12](https://github.com/rhysd/actionlint/tree/v1.7.12)，本地复现原错误并验证修改通过。与 CI 相同的 `go run` 首次因 Go 校验服务 EOF 失败，保留校验设置后再次执行成功；未禁用依赖校验。只读子代理复核通过。
+Based on the [GitHub context scoping table](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts), the temporary directory initialization was moved into a step and passed to subsequent steps via `GITHUB_ENV`; the artifact upload step `with` continues to use the valid `runner.temp`. A pinned version of [actionlint 1.7.12](https://github.com/rhysd/actionlint/tree/v1.7.12) was added, the original error was reproduced locally, and the fix was verified to pass. The same `go run` as in CI first failed due to an EOF from the Go checksum service; after retaining the checksum settings, it succeeded on re-execution; dependency verification was not disabled. A read-only subagent review passed.
 
-推送后的 [a2905ca 运行](https://github.com/OLDyade/spark-harness-evolution/actions/runs/40536959221) 已解析出四个任务；任务注释明确报告支付失败或消费额度限制，所有步骤均未开始。作用域修复已被远端解析验证，云端执行验收仍未完成。
+The post-push [a2905ca run](https://github.com/OLDyade/spark-harness-evolution/actions/runs/40536959221) resolved four jobs; the job annotations explicitly report payment failure or spending quota limits, and no steps started. The scoping fix has been verified by remote parsing, but cloud execution acceptance remains incomplete.
 
-## 双语入口、技术图与实测图
+## Bilingual Entry Points, Technical Diagrams, and Measured-Result Diagrams
 
-再次核对同事仓库的固定提交后，借鉴其价值定位、架构、使用演示、生命周期及开发者入口的组织方式。保留本项目核心原句，补英文 README、组件与接续图，以及直接从机器记录生成的实验图。
+After re-checking the colleague's repository at the pinned commit, its organization of value positioning, architecture, usage demonstration, lifecycle, and developer entry points was borrowed. The project's core sentence is retained, with an English README, component and continuation diagrams, and experiment diagrams generated directly from machine records added.
 
-- GitHub 官方支持 Markdown 中的 [Mermaid 图](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams)，此处使用基础 flowchart、stateDiagram 和 sequenceDiagram，实际通过 Mermaid CLI 渲染核验。
-- [官方工作流徽章](https://docs.github.com/en/actions/how-tos/monitor-workflows/add-a-status-badge)连接实际 workflow，不手写通过状态。私有仓库徽章不保证在外部站点可见。
-- 结果图使用 Matplotlib `3.10.8`，读取既有 JSON 的候选身份、分数和终态；固定完整分母，显示负结果及服务失败。图片和 SVG 均可重建，未手工编造优化曲线。
-- 子代理评审指出并置图应明确复验候选身份，已由机器记录匹配 Mutation 1；核心思想和 `11.md` 均未变更。
+- GitHub officially supports [Mermaid diagrams](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams) in Markdown; basic flowchart, stateDiagram, and sequenceDiagram are used here, and actual rendering was verified via Mermaid CLI.
+- The [official workflow badge](https://docs.github.com/en/actions/how-tos/monitor-workflows/add-a-status-badge) links to the actual workflow; pass status is not hand-written. Private repository badges are not guaranteed to be visible on external sites.
+- Result diagrams use Matplotlib `3.10.8`, reading candidate identity, scores, and final states from existing JSON; the full denominator is fixed, and negative results and service failures are shown. Both images and SVG can be rebuilt; no optimization curves were fabricated by hand.
+- The subagent review pointed out that the side-by-side diagram should explicitly re-verify candidate identity; this has been matched to Mutation 1 by machine records; the core idea and `11.md` are unchanged.

@@ -1,31 +1,31 @@
-# 公开 CI 与传输阶段诊断
+# Public CI and Transport-Stage Diagnosis
 
-用户于 2026-10-28 明确授权公开 `OLDyade/spark-harness-evolution` 并重新运行 CI。实际 API 返回 `isPrivate=false`；主分支 `a42416c` 的运行 `40624792713` 第二次 attempt 四个作业全部启动，第一 attempt 的账单拒绝仍保留。
+On 2026-10-28 the user explicitly authorized making `OLDyade/spark-harness-evolution` public and re-running CI. The actual API returned `isPrivate=false`; for run `40624792713` of main branch `a42416c`, all four jobs started on the second attempt, and the billing rejection from the first attempt remains recorded.
 
-macOS runner `macos-26-arm64` 的 actionlint 步骤报告 `go: command not found`。此前工作流假定 Go 预装；现在显式使用官方 `actions/setup-go` v7.0.0（固定提交 `b7ad1dad31e06c5925ef5d2fc7ad053ef454303e`）安装 Go 1.27.3。版本来自官方 `actions/go-versions` release；actionlint v1.7.12 的 go.mod 要求至少 Go 1.25。两个宿主平台各自完成，不让一个失败取消另一个。
+The actionlint step on macOS runner `macos-26-arm64` reported `go: command not found`. The workflow previously assumed Go was preinstalled; it now explicitly uses the official `actions/setup-go` v7.0.0 (pinned commit `b7ad1dad31e06c5925ef5d2fc7ad053ef454303e`) to install Go 1.27.3. The version comes from the official `actions/go-versions` release; actionlint v1.7.12's go.mod requires at least Go 1.25. The two host platforms each complete independently, so one failure does not cancel the other.
 
-## 传输证据的修正
+## Correction of Transport Evidence
 
-旧 `stage=connect` 从创建 HTTP 请求一直持续到收到响应头，因此旧记录只能证明 **响应头之前 ECONNRESET**，无法区分 TCP、TLS 或服务处理阶段。此前文字中“建连失败”的说法过于具体；原账本未补写不存在的观测。
+The old `stage=connect` spanned from creating the HTTP request until receiving response headers, so the old record can only prove **ECONNRESET before response headers** and cannot distinguish the TCP, TLS, or service-processing stage. The earlier wording "connection establishment failure" was overly specific; the original ledger was not amended with observations that did not exist.
 
-当前原生 broker 记录单调时钟偏移：请求读取、DNS 策略解析、socket 分配、TCP connect、TLS secureConnect、请求 finish、响应头、响应体完成和总耗时。TLS 授权状态单独记录；没有响应头时不制造 HTTP 状态。字段缺失表示没有观察到，不能当零耗时。
+The current native broker records monotonic clock offsets for: request read, DNS policy resolution, socket allocation, TCP connect, TLS secureConnect, request finish, response headers, response body completion, and total elapsed time. TLS authorization state is recorded separately; no HTTP status is fabricated when there are no response headers. A missing field means it was not observed and must not be treated as zero elapsed time.
 
-按 [Node HTTP 文档](https://nodejs.org/docs/latest-v24.x/api/http.html#event-finish)，request finish 只表示交给操作系统，不证明服务端接收。按 [Node TLS 文档](https://nodejs.org/docs/latest-v24.x/api/tls.html#event-secureconnect)，握手事件与证书授权是不同事实。当前 HTTPS 验证行为保持，凭证和请求正文不写入传输账本。
+Per the [Node HTTP documentation](https://nodejs.org/docs/latest-v24.x/api/http.html#event-finish), request finish only means the request was handed to the operating system and does not prove server-side receipt. Per the [Node TLS documentation](https://nodejs.org/docs/latest-v24.x/api/tls.html#event-secureconnect), handshake events and certificate authorization are distinct facts. Current HTTPS verification behavior is preserved; credentials and request bodies are not written to the transport ledger.
 
-11 项实际 HTTP/TLS 回归通过：DNS 拒绝、握手拒绝、握手成功、延迟响应头、已连通后重置、超时、取消和无重试。仅增强观测，不改路由、凭证、模型、超时、地址选择或错误裁决。
+11 actual HTTP/TLS regressions pass: DNS rejection, handshake rejection, handshake success, delayed response headers, reset after connection established, timeout, cancellation, and no retry. This only enhances observation; it does not change routing, credentials, models, timeouts, address selection, or error adjudication.
 
-## gVisor 安装后的 Docker 网络初始化
+## Docker Network Initialization After gVisor Installation
 
-公开 CI `40626981748` 的 gVisor 作业在启动编译容器时直接失败：`could not parse extra host IP invalid IP: ParseAddr("invalid IP")`。同一矩阵 runc 作业不执行运行时安装脚本。脚本原来注册 runsc 后只调用 `systemctl reload docker`。
+The gVisor job in public CI `40626981748` failed directly when starting the build container: `could not parse extra host IP invalid IP: ParseAddr("invalid IP")`. The runc job in the same matrix does not run the runtime installation script. The script originally registered runsc and then only called `systemctl reload docker`.
 
-[Docker 官方说明](https://docs.docker.com/reference/cli/dockerd/#configure-host-gateway-ip)明确 `host-gateway` 默认取默认 bridge 的地址；[GitHub gh-aw 的运行时集成记录](https://github.com/github/gh-aw/issues/44795)记录了 reload 后同一错误及完整 restart 的要求。安装脚本改为在专用宿主机完整重启 Docker，不写固定网关 IP，不更换运行时，不降低隔离。脚本头部明确告知 Docker 重启副作用。
+The [official Docker documentation](https://docs.docker.com/reference/cli/dockerd/#configure-host-gateway-ip) states that `host-gateway` defaults to the address of the default bridge; the [GitHub gh-aw runtime integration record](https://github.com/github/gh-aw/issues/44795) documents the same error after reload and the requirement for a full restart. The installation script was changed to fully restart Docker on the dedicated host, without writing a fixed gateway IP, changing the runtime, or reducing isolation. The script header explicitly states the Docker restart side effect.
 
-同时修正测试自身资源生命周期：本地 HTTP fixture 创建后立即注册清理，保证在 host-gateway 探测失败、尚未进入后续测试体时也关闭服务。CI 使用 TAP 即时输出失败堆栈，保留容器 stdout/stderr；失败不会因为测试服务残留而长期隐藏。
+The test's own resource lifecycle was also fixed: cleanup is registered immediately after the local HTTP fixture is created, ensuring the service is closed even when the host-gateway probe fails before the subsequent test body is entered. CI uses TAP to output failure stacks immediately and preserves container stdout/stderr; failures will not remain hidden long-term due to leftover test services.
 
-## 原生工具沙箱与临时 HOME
+## Native Tool Sandbox and Temporary HOME
 
-修正网关后，公开 CI `40627364489` 的 gVisor 矩阵完成 23 项测试，21 项通过；原生 bash/LibreOffice HOME 和依赖 bash 的反馈协议测试失败。专用 gVisor 20261019.0/systrap 宿主实测：DSH Landlock probe 返回 `unusable`，镜像中没有 `bwrap`。安装 Debian Bubblewrap 后，DSH 原生只读探测命令成功；保留 `--cap-drop=ALL`、非 root、只读根、`no-new-privileges`，未放宽容器权限。
+After fixing the gateway, the gVisor matrix in public CI `40627364489` completed 23 tests, with 21 passing; the native bash/LibreOffice HOME test and the bash-dependent feedback protocol test failed. On the dedicated gVisor 20261019.0/systrap host, actual testing showed: the DSH Landlock probe returned `unusable`, and the image did not contain `bwrap`. After installing Debian Bubblewrap, the DSH native read-only probe command succeeded; `--cap-drop=ALL`, non-root, read-only root, and `no-new-privileges` were preserved, and container permissions were not relaxed.
 
-[DSH 官方说明](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/sandbox/sandbox-local/README.md)及锁定的 `@deepseek-ai/dsh-sandbox-local@0.2.1-rc.4` 实现都说明 Linux 原生选择 Bubblewrap/Landlock；无可用实现时明确失败。镜像现在安装 [Bubblewrap](https://github.com/containers/bubblewrap)，继续使用原生选择机制，不新增自定义执行器或绕过内层隔离。
+The [official DSH documentation](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/sandbox/sandbox-local/README.md) and the pinned `@deepseek-ai/dsh-sandbox-local@0.2.1-rc.4` implementation both state that Linux native selects Bubblewrap/Landlock; when no implementation is available it fails explicitly. The image now installs [Bubblewrap](https://github.com/containers/bubblewrap), continues to use the native selection mechanism, and does not add a custom executor or bypass inner isolation.
 
-该版本 `bwrapProfileArgs` 对 workspace-write 创建独立 `/tmp`，再 bind 工作区。实测这会遮住先前的 `/tmp/evolution-home`。因此 HOME/XDG 统一迁到 `/workspace/.harness-home` 的独立 128MiB、0700 tmpfs：原生工作区 bind 保留该挂载及配额，工具调用间持久，容器销毁即释放。实际探测确认其容量为 134217728 字节、可写且外部路径仍拒绝写入。宿主仅保留空挂载点，HOME 内容不进入交付快照。回归通过连续两次真实原生 bash 检查配置可用性、配额、跨调用内容和容器删除后的空挂载点；完整矩阵以新提交实际结果为准。
+In this version, `bwrapProfileArgs` creates a separate `/tmp` for workspace-write, then binds the workspace. Actual testing shows this masks the previous `/tmp/evolution-home`. Therefore HOME/XDG was uniformly moved to a separate 128MiB, 0700 tmpfs at `/workspace/.harness-home`: the native workspace bind preserves this mount and quota, it persists across tool calls, and it is released when the container is destroyed. Actual probing confirmed its capacity is 134217728 bytes, it is writable, and external paths are still denied writes. The host retains only an empty mount point; HOME contents do not enter the delivery snapshot. The regression uses two consecutive real native bash runs to check configuration availability, quota, content across calls, and the empty mount point after container deletion; the full matrix is subject to the actual results of the new commit.

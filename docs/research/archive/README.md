@@ -1,14 +1,16 @@
-# 历史资料与同步记录
+# Historical Materials and Sync Record
 
-2026-10-27 从原 spark-harness 工作区同步。以仓库根目录 11.md 为后续设计基调；这里的历史政策是只读研究证据，不是本仓库的执行规则。原文中的继续运行、重试和监控要求不在本仓库自动生效。
+Synced on 2026-10-27 from the original spark-harness workspace. The repository root 11.md serves as the basis for subsequent design; the historical policies here are read-only research evidence, not execution rules for this repository. The continue-running, retry, and monitoring requirements in the original text do not take effect automatically in this repository.
 
-历史诊断中的 runs/、脚本及未链接的报告名称指向原实验环境；这些原始测评数据、运行产物和代码未随本次文档同步迁移。本次不声称已完整交付实验复现环境。
+The runs/, scripts, and unlinked report names in the historical diagnostics point to the original experimental environment; these raw evaluation data, run artifacts, and code were not migrated with this documentation sync. This sync does not claim that a complete experimental reproduction environment has been delivered.
 
-11.md 和两份历史诊断按原文件复制。10-09 调研报告按原文件复制；10-27 调研报告仅增加同步说明、将政策引用改为归档快照。规则快照原文未改。
+At the original sync, `11.md` and the two historical diagnostics were copied unchanged. The 10-09 research report was copied unchanged; the 10-27 report added a sync note and redirected policy references to archived snapshots.
 
-## 来源文件 SHA-256
+On 2026-10-29, repository documentation was translated into English. The hashes below identify the original source bytes, not these English translations. The pre-translation files remain accessible at [commit c65fe9f](https://github.com/OLDyade/spark-harness-evolution/tree/c65fe9f177f0845d170c30913463e286386a0c28). Raw machine evidence and candidate patches were not translated or rewritten. The original Chinese core statements are preserved in the [Chinese README](../../../README.zh-CN.md).
 
-| 同步路径 | 来源 SHA-256 |
+## Source File SHA-256
+
+| Sync Path | Source SHA-256 |
 |---|---|
 | `11.md` | `46ecb1cf793756ceae7e9c881f51fa56cc3a960ddd2906a12c16808db84b1a44` |
 | `docs/research/2026-10-09-harness-blueprint-audit.md` | `9ac517cc24b4c3730d73d2da3519aa9f3af515940aab1e22600dd69348a36a1f` |
@@ -17,4 +19,4 @@
 | `docs/prd/DIAGNOSIS-Round179-Controlled-Ablation.md` | `b502e1718d26e075401fbf7cb2951cac1b4567528f00510fed99239f254677f2` |
 | `docs/research/archive/evolution-policy-2026-10-27.md` | `810712c12f750bf66565adbf3a85941c3fd5b35664ef1d886917f35c468e4f91` |
 
-政策快照的原路径：`benchmarks/spreadsheetbench2-harness-100/evolution-policy.md`。后续修改 11.md 时保留本记录，哈希仅表示本次同步时的来源。
+Original path of the policy snapshot: `benchmarks/spreadsheetbench2-harness-100/evolution-policy.md`. Keep this record when modifying 11.md later; the hashes only represent the source at the time of this sync.

@@ -1,29 +1,29 @@
 # Security boundaries
 
-## 报告漏洞
+## Reporting vulnerabilities
 
-本仓库为公开项目。请使用 GitHub 的[私密漏洞报告入口](https://github.com/OLDyade/spark-harness-evolution/security/advisories/new)（Security → Report a vulnerability）提交安全问题；该功能已于 2026-10-29 开启并通过 API 回读确认。普通功能问题继续使用公开 Issue。
+This repository is a public project. Please use GitHub's [private vulnerability reporting entry point](https://github.com/OLDyade/spark-harness-evolution/security/advisories/new) (Security → Report a vulnerability) to submit security issues; this feature was enabled on 2026-10-29 and confirmed via API read-back. Ordinary feature issues continue to use public Issues.
 
-请提供受影响的提交或版本、运行环境、最小复现、预期与实际权限边界，以及影响范围。仅附脱敏材料；不要提交真实密钥、客户输入、私有评分答案或其他人的完整模型轨迹，也不要在公开 Issue 披露可利用细节。
+Please provide the affected commit or version, runtime environment, minimal reproduction, expected and actual permission boundaries, and scope of impact. Attach only redacted materials; do not submit real keys, customer inputs, private scoring answers, or other people's full model trajectories, and do not disclose exploitable details in public Issues.
 
-维护者通过同一私密报告确认影响、讨论修复并协调公开披露。修复记录应标明受影响版本、修复提交和已知限制；致谢遵循报告者意愿。当前没有稳定发行版或长期支持分支，开发主线的安全修复以明确提交记录，不承诺尚未建立的服务响应 SLA。
+Maintainers confirm impact, discuss fixes, and coordinate public disclosure through the same private report. Fix records should state the affected versions, fix commits, and known limitations; acknowledgments follow the reporter's wishes. There is currently no stable release or long-term support branch; security fixes on the development mainline are recorded as explicit commits, and no service response SLA that has not yet been established is promised.
 
-## 执行边界
+## Execution boundaries
 
-运行时、非 root 用户、资源和各角色网络权限由必填的冻结隔离合同声明。创建、恢复、结束均核对实际容器设置，留存不含环境变量值的回执。配置与实测边界见 [运行隔离](docs/isolation.md)。
+The runtime, non-root user, resources, and per-role network permissions are declared by a mandatory frozen isolation contract. Creation, restoration, and termination all verify the actual container settings and retain receipts that contain no environment variable values. For configuration and measured boundaries, see [Runtime isolation](docs/isolation.md).
 
-| 主体 | 可访问 | 不挂载 |
+| Principal | Accessible | Not mounted |
 |---|---|---|
-| 优化器 DSH | 草稿、授权证据 API、只读证据快照、受控模型入口 | 数据库、评分私有目录、Docker socket、真实上游凭证 |
-| 执行器 DSH | 冻结候选、该题输入、工作目录、运行轨迹 | 评分私有目录、控制数据库、Docker socket |
-| 评分器 | 该题输入、冻结交付、该题评分材料 | 模型凭证、网络、优化器草稿 |
+| Optimizer DSH | Drafts, authorized evidence API, read-only evidence snapshots, controlled model entry point | Database, scoring private directory, Docker socket, real upstream credentials |
+| Executor DSH | Frozen candidate, that task's inputs, working directory, run trajectory | Scoring private directory, control database, Docker socket |
+| Scorer | That task's inputs, frozen deliverables, that task's scoring materials | Model credentials, network, optimizer drafts |
 
-控制器、实验规格和出口 broker 属于可信计算基；仅在可信工作站运行。候选是可执行代码。容器使用只读根目录、能力清除、资源限制；这不构成对任意恶意插件、宿主机管理员或内核漏洞的完整防护。模型供应商仍可看到发送的任务内容。
+The controller, experiment specifications, and egress broker are part of the trusted computing base; run them only on trusted workstations. Candidates are executable code. Containers use read-only root filesystems, capability dropping, and resource limits; this does not constitute complete protection against arbitrary malicious plugins, host administrators, or kernel vulnerabilities. Model providers can still see the task content sent to them.
 
-受控执行使用独立 worker/broker 网络和冻结的出口路由，broker 检查目标、地址与请求合同后注入真实上游凭证；模型进程仅拿到客户端占位值。控制 API 路由使用独立能力凭证，评分器禁网。配置、真实请求和回收证据见 [受控出口](docs/controlled-egress.md)。普通 runc 容器仍共享内核；声明 gVisor 时缺失运行时直接失败，MicroVM 和持久磁盘硬配额的未完成项见 [落实状态](docs/completion.md)。
+Controlled execution uses a separate worker/broker network and frozen egress routes; the broker checks the target, address, and request contract before injecting real upstream credentials; the model process only receives client-side placeholder values. Control API routes use separate capability credentials, and the scorer has no network. For configuration, real requests, and recycling evidence, see [Controlled egress](docs/controlled-egress.md). Ordinary runc containers still share the kernel; when gVisor is declared, a missing runtime fails immediately; for unfinished items on MicroVM and persistent disk hard quotas, see [Implementation status](docs/completion.md).
 
-授权文件读取必须从可信目录句柄逐层打开，拒绝符号链接和特殊文件；路径字符串校验不能替代这一边界。二进制证据经私有 staging 完整发布到优化器只读挂载 `/evidence`，不由宿主向模型可写 `/workspace` 写入。该机制不把证据内容当可信指令，也不证明同进程的候选遥测无法伪造。
+Authorized file reads must be opened layer by layer from a trusted directory handle, rejecting symbolic links and special files; path string validation cannot replace this boundary. Binary evidence is fully published via private staging to the optimizer's read-only mount `/evidence`, and is not written by the host into the model-writable `/workspace`. This mechanism does not treat evidence content as trusted instructions, nor does it prove that candidate telemetry in the same process cannot be forged.
 
-`/tmp` 显式允许执行，以支持 DSH 原生动态库缓存；保留 nosuid/nodev。评分器禁网不等于公式文件没有本地攻击面，评分镜像必须及时修复。
+`/tmp` explicitly allows execution to support DSH native dynamic library caching; nosuid/nodev are retained. The scorer having no network does not mean formula files have no local attack surface; scoring images must be patched promptly.
 
-实验凭证仅注入可信 broker，不放入模型 prompt 或候选代码。[独立能力入口](docs/use-capability.md)仅面向已审查可信 Bundle，它直接将模型凭证传给容器，同进程插件可以读取；不能用该体验入口运行未审查候选。运行轨迹可能含输入、生成代码与工具输出，默认属于私有研究材料；`export` 生成本地档案，**不会自动公开**。
+Experiment credentials are injected only into the trusted broker and are not placed in model prompts or candidate code. The [independent capability entry point](docs/use-capability.md) is only for reviewed trusted Bundles; it passes model credentials directly to the container, where same-process plugins can read them; this experience entry point must not be used to run unreviewed candidates. Run trajectories may contain inputs, generated code, and tool output, and by default are private research materials; `export` generates a local archive and **will not be published automatically**.

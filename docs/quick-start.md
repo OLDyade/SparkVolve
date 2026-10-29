@@ -1,66 +1,66 @@
-# 启动一次真实进化
+# Launch a Real Evolution Run
 
-[返回首页](../README.md#quick-start) · [接入自己的任务](domain-adapters.md) · [完整实验协议](optimizer-studies.md)
+[Back to README](../README.md#quick-start) · [Bring your tasks](domain-adapters.md) · [Experiment protocols](optimizer-studies.md)
 
-默认使用官方 DeepSeek，任务是三个公开合成的结构化数据例子：事件归并、请求日志聚合、依赖清单匹配。任务适配器可替换，进化控制器保持通用。
+The default setup uses the official DeepSeek API and three public synthetic structured-data tasks: event merging, request-log aggregation, and dependency-manifest matching. Replace the task adapter to use the same evolution controller in another domain.
 
-## 准备
+## Preparation
 
-需要 Node.js 24.16.0 或更高版本、npm、Python 3，以及运行中的 Docker。系统需要支持 Unix 目录文件描述符操作。默认使用 Docker 的 runc；已有 gVisor 部署可指定 `--runtime runsc`，见[隔离配置](isolation.md)。
+Install Node.js 24.16.0 or later, npm, Python 3, and Docker. Start the Docker daemon. The host must support Unix directory file descriptor operations. The default runtime is Docker's runc; existing gVisor deployments can select `--runtime runsc`. See [runtime isolation](isolation.md).
 
-1. 克隆 `https://github.com/OLDyade/spark-harness-evolution.git`，进入仓库目录。
-2. 在仓库外的私有环境文件中设置 `DEEPSEEK_API_KEY`，文件权限设为 `0600`；也可直接在当前进程环境中配置同名变量。
-3. 将 `HE_EGRESS_POOL` 设为部署方预留、与宿主/LAN/VPN 不冲突的私有 IPv4 CIDR。每个模型执行占两个 `/29` 子网；默认示例三个执行器加一个优化器至少需要一个 `/26` 地址池。初次配置见[网络说明](isolation.md)。
+1. Clone `https://github.com/OLDyade/spark-harness-evolution.git` and enter the repository directory.
+2. Set `DEEPSEEK_API_KEY` in a private environment file outside the repository and set its permissions to `0600`. You can also set the variable directly in your shell environment.
+3. Set `HE_EGRESS_POOL` to a reserved private IPv4 CIDR that does not overlap your host, LAN, or VPN networks. Each model execution uses two `/29` subnets. The default three executors plus one optimizer require at least a `/26` pool. See [network configuration](isolation.md).
 
 ```bash
 npm ci
 npm start -- --env-file /absolute/private/deepseek.env --pool "$HE_EGRESS_POOL"
 ```
 
-默认入口通过官方 Anthropic 兼容 API 使用 `deepseek-flash`；凭证仅交给可信出口代理。模型配置见[官方 DeepSeek](../examples/deepseek/README.md)。调用真实服务会消耗相应账户额度。
+The entry point uses `deepseek-flash` through the official Anthropic-compatible API. Only the trusted egress proxy receives credentials. See [DeepSeek configuration](../examples/deepseek/README.md). Real model calls consume your account quota.
 
-## 一个命令完成什么
+## What the command does
 
 ```text
-任务 recipe + 模型 Provider
+Task recipe + model Provider
        │
        ▼
-构建运行镜像 → 发现 DNS / 宿主地址 → 冻结任务、模型与隔离合同
+Build runtime image → discover DNS / host addresses → freeze task, model, and isolation contract
        │
        ▼
-运行 H0 → DSH 优化器读取证据 → 自主修改插件 → 独立构建与评分
+Run H0 → DSH optimizer reads evidence → autonomously modifies plugins → independent build and scoring
        │
        ▼
-保存完整报告、轨迹、失败记录 → 导出选中候选的原始 Bundle
+Save reports, traces, and failures → export the selected candidate's original Bundle
 ```
 
-每题默认 600 秒，可用 `--task-seconds` 显式调整；优化器总预算按完整计划计算。地址与 DNS 从实际 Docker 部署读取，`--dns` 可以显式指定部署批准的解析器。运行端口自动分配并持久保存。
+Each task defaults to 600 seconds, adjustable explicitly with `--task-seconds`; the optimizer's total budget is computed from the full plan. Addresses and DNS are read from the actual Docker deployment, and `--dns` can explicitly specify a deployment-approved resolver. Runtime ports are allocated automatically and persisted.
 
-输出位于 `.evolution/<recipe>-<时间>/`：
+Output is located in `.evolution/<recipe>-<time>/`:
 
-| 产物 | 内容 |
+| Artifact | Content |
 |---|---|
-| `startup.json` | 启动阶段、配置身份及失败原因 |
-| `spec.json`、`search/` | 冻结合同、事件账本、候选、轨迹与逐题交付 |
-| `report.json` | 实际评分、裁决与模型用量 |
-| `capability/bundle.tgz` | 选中候选的原始构建包 |
-| `command-logs/` | 逐阶段日志，保留原始失败 |
+| `startup.json` | Startup phase, configuration identity, and failure reasons |
+| `spec.json`, `search/` | Frozen contract, event ledger, candidates, trajectories, and per-task deliverables |
+| `report.json` | Actual scores, verdicts, and model usage |
+| `capability/bundle.tgz` | Raw build package of the selected candidate |
+| `command-logs/` | Per-phase logs, preserving original failures |
 
-启动时会打印事件观察命令。运行失败直接报错，保留原目录；需要恢复时使用[原生 CLI](events.md)，入口不会重新抽样。选中候选可能仍是 H0，完成运行不等于质量提升。独立评分与另行留出的验证集也是不同证据层级；本入口完成开发任务闭环，方法比较使用专门的[预注册实验](experiments/2026-10-29-mutation-space-registration.md)。
+Startup prints a command for watching events. Failures report an error and preserve the run directory; use the [native CLI](events.md) for recovery. The entry point never resamples failed tasks. The selected candidate may still be H0: completing a run does not establish a quality gain. This entry completes the development-task loop with independent grading. Method comparisons use a separate validation set and a [pre-registered protocol](experiments/2026-10-29-mutation-space-registration.md).
 
-## 换成你的任务
+## Bring your tasks
 
-传入另一份 `--recipe path/to/recipe.json` 即可。自定义 recipe 的生成命令在镜像中运行，目录只读挂载为 `/recipe`，输出目录为 `/workspace`；它生成 `dataset`。准备脚本接收数据、镜像、模型、合同输出、隔离配置、Provider 目录与每题秒数，生成通用 Experiment 合同。
+Pass `--recipe path/to/recipe.json` to select another domain. Its generation command runs inside the image, with the recipe directory mounted read-only at `/recipe` and output written to `/workspace/dataset`. The preparation script receives the dataset, image, model, contract output path, isolation settings, Provider directory, and per-task time budget, then creates a generic Experiment contract.
 
-| Recipe 字段 | 用途 |
+| Recipe Field | Purpose |
 |---|---|
-| `name` | 运行名称 |
-| `dockerfile` | 领域依赖镜像；`null` 使用通用运行镜像 |
-| `generate` | 数据生成命令的 argv，无 shell 拼接 |
-| `prepare` | 领域合同准备脚本 |
-| `seed` | 起始能力 Bundle |
-| `preflight` | 可选领域运行环境验证脚本 |
+| `name` | Run name |
+| `dockerfile` | Domain dependency image; `null` uses the generic runtime image |
+| `generate` | argv of the data generation command, no shell concatenation |
+| `prepare` | Domain contract preparation script |
+| `seed` | Starting capability Bundle |
+| `preflight` | Optional domain runtime environment validation script |
 
-所有文件路径均相对 recipe 所在目录。参考[结构化数据 recipe](../examples/structured-data/recipe.json)与[表格 recipe](../examples/spreadsheet/recipe.json)。Excel 示例只需添加 `--recipe examples/spreadsheet/recipe.json`，自动安装所需 LibreOffice 与 Python 依赖。可使用 `--image sha256:...` 指定已经构建的对应领域镜像，或以 `--provider` 选择另一份原生 Provider 配置，不会自动切换模型。
+All file paths are relative to the directory containing the recipe. See the [structured data recipe](../examples/structured-data/recipe.json) and the [spreadsheet recipe](../examples/spreadsheet/recipe.json). The Excel example only requires adding `--recipe examples/spreadsheet/recipe.json`, which automatically installs the required LibreOffice and Python dependencies. You can use `--image sha256:...` to specify an already-built corresponding domain image, or `--provider` to select another native Provider configuration; the model will not be switched automatically.
 
-公开示例用于体验自主插件改造和产物交付。正式研究应使用自己的任务清单、独立验证集与重复搜索计划，详见[领域适配](domain-adapters.md)。
+Use the public examples to try autonomous plugin modification and artifact delivery. For formal research, supply your own task manifest, independent validation set, and repeated-search protocol. See [domain adapters](domain-adapters.md).

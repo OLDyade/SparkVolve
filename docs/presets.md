@@ -1,44 +1,44 @@
-# Evolution Preset：把进化装进原生会话
+# Evolution Preset: Putting Evolution into Native Sessions
 
 ```text
-SDK Profile：Agent Loop / 模型 / 文件 / Shell / 原生压缩
-                         │ 共享运行基础
+SDK Profile: Agent Loop / Model / Files / Shell / Native Compression
+                         │ Shared runtime foundation
                   Agent Preset Registry
                     ┌────┴────┐
-             evolution       其他 Preset
-             进化工具         各自能力
-             冻结研究方法     无进化工具、无研究方法
+             evolution       Other Presets
+             Evolution tools  Their own capabilities
+             Frozen research method  No evolution tools, no research method
                     │
-         原生模型请求 → 工具执行 → 独立实验 API
+         Native model request → Tool execution → Independent experiment API
 ```
 
-`evolve` 自动装配 `evolution` Preset。合同中的 `optimizerHarness` 指定来源及 `composition` 原生条目清单；`optimizers/evidence-driven/plugins.yml` 是默认实现。方法先准备为验真的冻结构建包，清单由原生 Include 在 Preset 作用域加载。执行器继续使用其冻结候选，与优化器的方法和控制权限分开。
+`evolve` automatically assembles the `evolution` Preset. The `optimizerHarness` in the contract specifies the source and the `composition` native entry list; `optimizers/evidence-driven/plugins.yml` is the default implementation. The method is first prepared as a verified frozen build package, and the list is loaded by native Include within the Preset scope. The executor continues to use its frozen candidate, separate from the optimizer's method and control permissions.
 
-| 输入种类 | 必填身份 | 准备行为 |
+| Input type | Required identity | Preparation behavior |
 |---|---|---|
-| `kind: source` | `source: {directory, digest}`、`composition`、`build: {image, timeoutSeconds}` | 冻结源码、依赖锁定、实际构建、原生 QA |
-| `kind: artifact` | `source: {directory, digest}`、`artifact: {directory, identity}`、`composition` | 验真并导入原构建包、原生 QA；不重新构建 |
+| `kind: source` | `source: {directory, digest}`, `composition`, `build: {image, timeoutSeconds}` | Freeze source, lock dependencies, actual build, native QA |
+| `kind: artifact` | `source: {directory, digest}`, `artifact: {directory, identity}`, `composition` | Verify and import the original build package, native QA; do not rebuild |
 
-`PreparedOptimizer` 固定源码摘要、完整 `BuildIdentity` 与装配入口，位于实验的 `optimizer-harness/prepared.json`。恢复沿用原准备意图及构建容器；已有产物缺失或被修改会直接失败。活动会话挂载构建包为只读目录，不加载可变输入源码。
+`PreparedOptimizer` fixes the source digest, the complete `BuildIdentity`, and the assembly entry point, located in the experiment's `optimizer-harness/prepared.json`. Recovery reuses the original preparation intent and build container; if an existing artifact is missing or modified, it fails directly. The active session mounts the build package as a read-only directory and does not load mutable input source.
 
-## 在已有 DSH 中安装
+## Installing in an Existing DSH
 
-打包本仓库，使用原生 `dsh plugin --profile <目标 Profile> add <tarball>` 安装。启动前设置 `EVOLUTION_ENDPOINT` 与 `EVOLUTION_TOKEN`，指向一个实际 `search` 实验控制服务。安装提供名为 **Harness Evolution**、ID 为 `evolution` 的原生 Preset；有 Preset 注册表和选择界面的部署可直接选择它。不会把进化工具注册到所有会话。
+Package this repository and install it using the native `dsh plugin --profile <target Profile> add <tarball>`. Before starting, set `EVOLUTION_ENDPOINT` and `EVOLUTION_TOKEN` to point to an actual `search` experiment control service. Installation provides a native Preset named **Harness Evolution** with ID `evolution`; deployments with a Preset registry and selection UI can select it directly. Evolution tools are not registered to all sessions.
 
-工具安装只完成原生注册。自行托管优化器时，还须建立其工作目录与控制服务之间的挂载合同：实验的 `drafts/` 可写映射到 `/workspace`，`materialized/` 只读映射到 `/evidence`，合同声明的方法和验证目录也须按对应只读路径挂载。API 返回的是优化器运行环境路径，不是下载 URL；仅连接 HTTP API 不会传输或创建这些挂载。推荐通过 `evolve` 使用已实现的隔离启动路径，它自动建立并核验这些映射，不向优化器暴露数据库、评分材料或 Docker socket。
+Tool installation only completes native registration. When self-hosting the optimizer, you must also establish a mount contract between its working directory and the control service: the experiment's `drafts/` is mapped writable to `/workspace`, `materialized/` is mapped read-only to `/evidence`, and the method and validation directories declared in the contract must also be mounted at the corresponding read-only paths. The API returns optimizer runtime environment paths, not download URLs; merely connecting to the HTTP API does not transfer or create these mounts. It is recommended to use the implemented isolated launch path via `evolve`, which automatically establishes and verifies these mappings and does not expose the database, scoring materials, or Docker socket to the optimizer.
 
-研究方法也可独立打包安装：
+The research method can also be packaged and installed independently:
 
 ```bash
 npm pack ./optimizers/evidence-driven
-dsh plugin --profile <目标 Profile> add ./harness-evolution-optimizer-evidence-driven-0.1.0.tgz
+dsh plugin --profile <target Profile> add ./harness-evolution-optimizer-evidence-driven-0.1.0.tgz
 ```
 
-方法 Bundle 的 patch 完整替换 Evolution Preset 的子插件清单。安装顺序为进化设施 Bundle → 研究方法 Bundle；按原生语义，替换清单不会自动合并未来版本的默认子插件。
+The method Bundle's patch fully replaces the Evolution Preset's sub-plugin list. The installation order is evolution infrastructure Bundle → research method Bundle; per native semantics, a replacement list does not automatically merge future versions' default sub-plugins.
 
-## SDK 的明确接入
+## Explicit SDK Integration
 
-锁定的 DSH `0.2.1-rc.4` 中，`sdk` / `sdk-minimal` 没有 Preset 注册表，高层 SDK 没有会话 Preset 参数。独立安装后的 SDK 使用以下原生 patch，并在 `DeepSeekHarness({ patches: [...] })` 中加载：
+In the locked DSH `0.2.1-rc.4`, `sdk` / `sdk-minimal` have no Preset registry, and the high-level SDK has no session Preset parameter. The independently installed SDK uses the following native patch and loads it in `DeepSeekHarness({ patches: [...] })`:
 
 ```yaml
 - insert:
@@ -52,14 +52,14 @@ dsh plugin --profile <目标 Profile> add ./harness-evolution-optimizer-evidence
         preset: evolution
 ```
 
-此 SDK 进程的新根会话明确选择该 Preset。已有原生装配的会话及子 Agent 保留原绑定；恢复读取会话投影中的 Preset 身份。缺失定义或恢复记录直接报错。桥接插件仅使用原生生命周期和注册表，不替换 Agent Loop，不修改 SDK。
+New root sessions of this SDK process explicitly select this Preset. Sessions with existing native assembly and sub-Agents retain their original binding; recovery reads the Preset identity from the session projection. A missing definition or recovery record errors directly. The bridge plugin uses only native lifecycle and registry, does not replace the Agent Loop, and does not modify the SDK.
 
-Web 等已经提供注册表的 Profile **不加载这份 SDK patch**，沿用部署自身的原生会话选择。Preset 管理注册可见性，系统安全隔离仍由独立进程、容器和权限合同承担。
+Profiles that already provide a registry, such as Web, **do not load this SDK patch** and use the deployment's own native session selection. The Preset manages registration visibility, while system security isolation is still handled by independent processes, containers, and permission contracts.
 
-## 验收边界
+## Acceptance Boundaries
 
-- 实际 SDK 子进程：进化工具调用、同进程普通会话无泄漏、研究方法隔离、原生 spawn 子 Agent 继承并调用进化工具、进程重启后恢复、缺失 Preset 在首个模型请求前失败。
-- 实际优化器容器：冻结方法 → Preset → 原生模型工具请求 → 真实控制服务 → 搜索结束记录。
-- 干净 Profile：实际安装打包后的进化设施与方法 Bundle，并检查首个模型请求及真实工具回执。
+- Actual SDK subprocess: evolution tool invocation, no leakage into ordinary sessions in the same process, research method isolation, native spawn sub-Agents inheriting and invoking evolution tools, recovery after process restart, missing Preset failing before the first model request.
+- Actual optimizer container: frozen method → Preset → native model tool request → real control service → search end record.
+- Clean Profile: actually install the packaged evolution infrastructure and method Bundle, and check the first model request and real tool receipts.
 
-以上采用确定性 Provider 验证协议，不能据此宣称准确率提升；真实模型搜索的研究结果另行记录。
+The above uses a deterministic Provider validation protocol and cannot be used to claim accuracy improvements; research results from real model searches are recorded separately.

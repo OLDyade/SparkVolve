@@ -1,83 +1,83 @@
-# 优化器自身进化：G/H 独立版本与同预算实验
+# Optimizer Self-Evolution: Independent G/H Versions and Same-Budget Experiments
 
-状态：**协议已实现，真实模型研究已完成，分发收尾单独验收**。本文对应 `11.md` 的“优化器自身进化 · 扩展模式”，记录设计依据和实现边界；原生接口、持久协调、恢复、取消与证据读取已通过定向验收。真实 G0/G1 开发同分，最终保留 G0；新工具注册并未转化为实际使用，尚未证明 G 自进化收益。研究核验日期：2026-10-28。公开接口见 [Optimizer Studies](../optimizer-studies.md)，原始结果与缺陷见[实际研究报告](../experiments/2026-10-28-optimizer-study-results.md)。
+Status: **protocol implemented, real-model study completed, distribution wrap-up accepted separately**. This document corresponds to the "Optimizer Self-Evolution · Extended Mode" of `11.md`, and records the design rationale and implementation boundaries; the native interface, persistent coordination, recovery, cancellation, and evidence reading have passed targeted acceptance. The real G0/G1 development scores were tied, and G0 was ultimately retained; the new tool registration did not translate into actual use, and a G self-evolution benefit has not yet been demonstrated. Study verification date: 2026-10-28. For the public interface see [Optimizer Studies](../optimizer-studies.md); for raw results and defects see the [actual study report](../experiments/2026-10-28-optimizer-study-results.md).
 
-优化器 G 研究、修改执行器 H；G 自身的研究与验证插件也可成为进化对象。G/H 分别冻结版本，以相同起点和预算比较新旧 G 最终搜索得到的 H，进化成果继续使用 DSH 原生插件及装配机制交付。
+Optimizer G studies and modifies executor H; G's own research and validation plugins can also become evolution targets. G/H are frozen as separate versions, and the H ultimately found by the old and new G are compared from the same starting point and budget; evolutionary results continue to be delivered using native DSH plugins and the assembly mechanism.
 
-## 当前实现与缺口
+## Current Implementation and Gaps
 
-| 机制 | 复用能力 | 当前实现 |
+| Mechanism | Reused Capability | Current Implementation |
 | --- | --- | --- |
-| `src/optimizer.ts`、`src/preset.ts` | 原生 DSH 会话、插件组合、候选提交及受控实验工具 | `optimizer-harness.ts` 统一源码构建和冻结产物导入；运行只装载验真的构建包 |
-| `src/build.ts` | 源码、lock、bundle、tarball 身份及构建验真 | G/H 共用实际 Bundle 构建协议，同一 G 在各搜索臂导入原产物而不重建 |
-| `src/controller.ts` | H 候选调度、任务隔离、评分和持久化 | `optimizer-study.ts` 在可信宿主调度既有搜索，`optimizer-study-runner.ts` 运行原生 DSH 元优化器 |
-| `src/validation.ts` | 固定 H 的同合同配对验证和完整分母 | `validateFrozenArm` 接收原冻结 H*；Study 以完整搜索实例配对，开发选 G 后关闭反馈再最终验证 |
-| `src/contracts.ts` | 单实验候选数、优化器时间、任务超时、并发和网络合同 | `optimizer-study-store.ts` 启动前预留预算与后代身份；取消沿注册执行回收并可恢复 |
+| `src/optimizer.ts`, `src/preset.ts` | Native DSH sessions, plugin composition, candidate submission, and controlled experiment tools | `optimizer-harness.ts` unifies source builds and frozen artifact import; runtime loads only verified build packages |
+| `src/build.ts` | Source, lock, bundle, tarball identity, and build verification | G/H share the actual Bundle build protocol; the same G imports the original artifact in each search arm without rebuilding |
+| `src/controller.ts` | H candidate scheduling, task isolation, scoring, and persistence | `optimizer-study.ts` schedules existing searches on the trusted host, and `optimizer-study-runner.ts` runs the native DSH meta-optimizer |
+| `src/validation.ts` | Paired validation under the same contract for a fixed H and the full denominator | `validateFrozenArm` accepts the original frozen H*; the Study pairs by complete search instance, and after development selects G, feedback is closed before final validation |
+| `src/contracts.ts` | Per-experiment candidate count, optimizer time, task timeout, concurrency, and network contract | `optimizer-study-store.ts` reserves budget and descendant identity before launch; cancellation reclaims along registered executions and is recoverable |
 
-现有 generic domain 接口继续承载各个任务域。普通任务容器只获得输入、候选、工作区和轨迹，grader 独立禁网；它们没有调度内层研究所需的宿主权限。将 Controller 直接塞进领域插件，会迫使普通候选代码接触调度权限、模型凭证或私有评测材料。
+The existing generic domain interface continues to carry each task domain. Ordinary task containers receive only inputs, candidates, workspace, and traces, and the grader is independently network-isolated; they do not have the host permissions needed to schedule inner-layer research. Putting the Controller directly into a domain plugin would force ordinary candidate code to touch scheduling permissions, model credentials, or private evaluation materials.
 
-因此，嵌套研究由**可信宿主侧 `OptimizerStudy` 协调能力**承载，复用现有 Controller、optimizer、build 和 validation。内层任务仍通过原生 DSH 运行，不增加第二套 AgentLoop，也不向普通候选开放 Docker socket。宿主规定资源和数据边界，优化器自主决定如何研究、修改插件及组织能力。
+Therefore, nested research is carried by the **trusted host-side `OptimizerStudy` coordination capability**, reusing the existing Controller, optimizer, build, and validation. Inner-layer tasks still run through native DSH, without adding a second AgentLoop, and without exposing the Docker socket to ordinary candidates. The host defines resource and data boundaries, and the optimizer autonomously decides how to research, modify plugins, and organize capabilities.
 
-## 完整实验路径
+## Complete Experiment Path
 
 ```text
-冻结 G0、H0、数据分区与研究合同
+Freeze G0, H0, data partitions, and the research contract
                  │
-        原生 DSH 元优化器会话
-  获准轨迹 / 开发反馈 / 失败 / 成本
-  自主修改 G 的插件代码、配置和组合
+        Native DSH meta-optimizer session
+  Approved traces / development feedback / failures / cost
+  Autonomously modify G's plugin code, configuration, and composition
                  │
-       G1 构建、原生 QA、独立冻结
+       G1 build, native QA, independent freeze
                  │
-       可信 OptimizerStudy 协调器
+       Trusted OptimizerStudy coordinator
                  │
     ┌────────────┴────────────┐
     │                         │
- 冻结 G0                   冻结 G1
- 相同 H0                   相同 H0
- 相同搜索数据              相同搜索数据
- 相同预算上限              相同预算上限
+ Frozen G0                   Frozen G1
+ Same H0                     Same H0
+ Same search data            Same search data
+ Same budget cap             Same budget cap
     │                         │
- 原生 DSH 搜索 H           原生 DSH 搜索 H
+ Native DSH searches H       Native DSH searches H
     │                         │
- 依据开发反馈选择 H*       依据开发反馈选择 H*
+ Select H* from dev feedback Select H* from dev feedback
     └────────────┬────────────┘
                  │
-       冻结 H*，独立验证端评分
+       Freeze H*, score on independent validation side
                  │
-     搜索实例配对报告、完整失败与成本
+     Search-instance paired report, complete failures and cost
                  │
-      按研究合同在轮次边界选择 G
+      Select G at round boundaries per the research contract
 ```
 
-这里的构建、隔离和评分由实验系统执行，不要求模型遵守写死的研究步骤。G1 必须保留真实生成轨迹、源码与装配差异；人工预写方法再由模型复述，不能计为自主改进。
+Here, building, isolation, and scoring are performed by the experiment system, and the model is not required to follow hard-coded research steps. G1 must retain real generation traces, source code, and assembly differences; a manually pre-written method that the model merely restates cannot count as autonomous improvement.
 
-## 同预算与独立证据
+## Same Budget and Independent Evidence
 
-反馈是否改善变异与 G 自进化是否改善搜索，是两个需要分别检验的问题。[反馈因果比较方案](2026-10-28-feedback-causal-protocol.md)记录固定比较臂、反馈视图和搜索实例级分析的依据；该方案尚未准入，当前真实合成 Study 仍属于机制验收。
+Whether feedback improves mutation and whether G self-evolution improves search are two questions that must be tested separately. The [feedback causal comparison plan](2026-10-28-feedback-causal-protocol.md) records the rationale for fixed comparison arms, feedback views, and search-instance-level analysis; that plan has not yet been admitted, and the current real synthetic Study still belongs to mechanism acceptance.
 
-- **共同起点**：每个配对搜索实例使用相同 H0、任务合同、数据和资源上限。新实例不暗中继承上一实例的冠军。
-- **明确预算**：比较相同分配上限，记录实际消耗。候选、探针、构建、任务与优化器成本分别记账；G1 元优化成本单列。单次 `maxTokens` 不等于整轮 Token 预算，未实现累计限额时不宣称等 Token 实验。
-- **独立选择与验证**：各 G 依据获准开发反馈选择 H*，再冻结 H* 交给独立验证。该轮验证材料及结果不回流当前搜索与元优化会话。多个 G 候选的开发选择与最终验证也应分开。
-- **有效实验单位**：主比较单位是完整搜索实例；每个实例记录 G 构建身份、H0、合同、数据、重复编号及 H*。不能把同一次搜索中的多道题当成多次独立 G 实验。
-- **完整结果**：失败与未完成实例保留，按预注册规则进入报告，不丢弃、不补抽。报告最终验证质量、配对差值、退步与成本，区分单次有效实验和可复现收益。
-- **有区分度的任务**：优先使用预注册的多域任务与重复配对。若基线已满分，该任务可以验收流程，不能证明优化收益；更换任务须重新注册，不能看到 G 的结果后挑选有利样例。
+- **Common starting point**: each paired search instance uses the same H0, task contract, data, and resource cap. A new instance does not secretly inherit the previous instance's champion.
+- **Explicit budget**: compare the same allocation cap and record actual consumption. Candidate, probe, build, task, and optimizer costs are accounted separately; G1 meta-optimization cost is listed separately. A single `maxTokens` does not equal a whole-round token budget, and without an implemented cumulative limit, no equal-token experiment is claimed.
+- **Independent selection and validation**: each G selects H* based on approved development feedback, then freezes H* and hands it to independent validation. That round's validation materials and results do not flow back into the current search and meta-optimization sessions. Development selection and final validation of multiple G candidates should also be kept separate.
+- **Effective experimental unit**: the primary comparison unit is the complete search instance; each instance records the G build identity, H0, contract, data, repetition number, and H*. Multiple problems within the same search cannot be treated as multiple independent G experiments.
+- **Complete results**: failed and incomplete instances are retained and enter the report per pre-registered rules, without discarding or resampling. The report covers final validation quality, paired differences, regressions, and cost, distinguishing a single valid experiment from a reproducible benefit.
+- **Discriminative tasks**: prioritize pre-registered multi-domain tasks and repeated pairing. If the baseline is already at full score, the task can validate the process but cannot prove an optimization benefit; changing tasks requires re-registration, and favorable samples cannot be selected after seeing G's results.
 
-## 落地接口与验收
+## Landing Interfaces and Acceptance
 
-1. **冻结方法引用**：将 G 的源码、构建 receipt 与 composition 一起绑定，运行时验真并从冻结产物装载；G/H 分别版本化，活动会话不热改。
-2. **研究合同与协调器**：登记比较臂、共同 H0、数据分区、搜索预算及结果选择规则。子实验仅获得自己的受限控制能力，私有验证材料留在独立评分端。
-3. **研究生命周期**：子实验启动前持久化资源预留；父研究取消时处理所有后代；恢复沿用原研究与 attempt 身份。G 加载或 QA 失败直接暴露并保留，不静默切回 G0。
-4. **搜索配对报告**：复用现有固定 H 验证，再汇总各 G 搜索得到的 H*；保存可安装的 G/H 产物和谱系，不能只输出更高的数字。
+1. **Frozen method reference**: bind G's source code, build receipt, and composition together, verify at runtime, and load from the frozen artifact; G/H are versioned separately, and active sessions are not hot-modified.
+2. **Research contract and coordinator**: register comparison arms, common H0, data partitions, search budget, and result selection rules. Sub-experiments receive only their own restricted control capability, and private validation materials remain on the independent scoring side.
+3. **Research lifecycle**: persist resource reservations before sub-experiment launch; handle all descendants when the parent study is cancelled; recovery reuses the original study and attempt identity. G load or QA failures are exposed directly and retained, without silently falling back to G0.
+4. **Search paired report**: reuse the existing fixed-H validation, then aggregate the H* found by each G's search; save installable G/H artifacts and lineage, and do not merely output higher numbers.
 
-确定性与原生验收覆盖：冻结产物身份、预算越界在启动前被拒绝、终止/恢复不重复创建子实验、父子权限隔离、验证材料不可被 G 读取，以及 G 插件在真实 DSH 会话中的加载。真实闭环已运行“元优化器生成 G1 → G1 搜索 H → 独立比较”；本轮 G1 工具未实际调用，加载、使用与质量收益分别报告。
+Deterministic and native acceptance covers: frozen artifact identity, budget overruns rejected before launch, termination/recovery not duplicating sub-experiments, parent-child permission isolation, validation materials unreadable by G, and loading of G plugins in real DSH sessions. The real closed loop has run "meta-optimizer generates G1 → G1 searches H → independent comparison"; in this round the G1 tools were not actually invoked, and loading, usage, and quality benefit are reported separately.
 
-## 已核实生态依据
+## Verified Ecosystem Evidence
 
-| 来源与固定版本 | 核实结论及采用边界 |
+| Source and Pinned Version | Verification Conclusion and Adoption Boundary |
 | --- | --- |
-| [DSH composition 指南](https://github.com/deepseek-ai/deepseek-harness/blob/22ddee3792402c3e70ec5f86a63c3e3e895a2f60/packages/preset/agent-preset/skills/editing-cordis-compositions/SKILL.md)、[preset 挂载检查](https://github.com/deepseek-ai/deepseek-harness/blob/22ddee3792402c3e70ec5f86a63c3e3e895a2f60/packages/preset/agent-preset-registry/src/mount.ts) | 区分宿主服务与 preset 作用域贡献，服务提供者和使用者需要一致的 isolate realm。采用原生装配与生命周期；项目锁定的 `0.2.1-rc.4` 与此 HEAD 有版本差异，接入以实际锁定源码为准。 |
-| [VERSE meta_teacher.py](https://github.com/wzekai/VERSE/blob/d8ff0adab0cf82e13d7878f84ff84f823cb2f6c9/verse/evolution/meta_teacher.py) | 区分 H 搜索与 G 自修改；方法文档、tools/hooks 可演化，轮次边界进行机械健康验收；单轮 H 分数不足以归因 G 修改。借鉴独立版本和受控预算；其部分异常后继续、卸载失效 hooks 的 fail-open 路径不引入本项目。 |
-| [AutoSaddler 优化器不变量](https://github.com/microsoft/AutoSaddler/blob/e841543ce6cf6bdf690e65134b12a829ec9f66d1/src/autosaddler/v2/prompting/methodology/system/optimizer-invariants.md)、[方法提示](https://github.com/microsoft/AutoSaddler/blob/e841543ce6cf6bdf690e65134b12a829ec9f66d1/src/autosaddler/v2/prompting/methodology/prompts/evolve-method.md) | 引擎负责采样、评分、策略、持久化和恢复；候选不可变，训练/开发/留出材料有明确边界。采用这些实验基础。仓库中的 Meta-ARE 属于 GAIA2 任务适配，不能据名称把它解释为优化器自进化。 |
+| [DSH composition guide](https://github.com/deepseek-ai/deepseek-harness/blob/22ddee3792402c3e70ec5f86a63c3e3e895a2f60/packages/preset/agent-preset/skills/editing-cordis-compositions/SKILL.md), [preset mount check](https://github.com/deepseek-ai/deepseek-harness/blob/22ddee3792402c3e70ec5f86a63c3e3e895a2f60/packages/preset/agent-preset-registry/src/mount.ts) | Distinguish host services from preset-scoped contributions; service providers and consumers need a consistent isolate realm. Adopt native assembly and lifecycle; the project-pinned `0.2.1-rc.4` differs in version from this HEAD, and integration follows the actually pinned source. |
+| [VERSE meta_teacher.py](https://github.com/wzekai/VERSE/blob/d8ff0adab0cf82e13d7878f84ff84f823cb2f6c9/verse/evolution/meta_teacher.py) | Distinguish H search from G self-modification; method documents, tools/hooks can evolve, and mechanical health acceptance is performed at round boundaries; a single round's H score is insufficient to attribute G modifications. Borrow independent versioning and controlled budget; its fail-open path of continuing after some exceptions and unloading invalid hooks is not introduced into this project. |
+| [AutoSaddler optimizer invariants](https://github.com/microsoft/AutoSaddler/blob/e841543ce6cf6bdf690e65134b12a829ec9f66d1/src/autosaddler/v2/prompting/methodology/system/optimizer-invariants.md), [method prompt](https://github.com/microsoft/AutoSaddler/blob/e841543ce6cf6bdf690e65134b12a829ec9f66d1/src/autosaddler/v2/prompting/methodology/prompts/evolve-method.md) | The engine handles sampling, scoring, policy, persistence, and recovery; candidates are immutable, and training/development/holdout materials have clear boundaries. Adopt these experimental foundations. Meta-ARE in the repository is a GAIA2 task adaptation and cannot be interpreted by name as optimizer self-evolution. |
 
-以上三个 HEAD 已通过 GitHub API 核对；DSH 文档同时通过 Context7 官方库查证。本次 X 指定日期窗口检索未返回匹配结果，没有新增热度证据。社区讨论用于发现方向，源码机制和实验结果分别承担实现与收益证据。
+The above three HEADs have been checked via the GitHub API; the DSH documentation was also verified via the official Context7 library. This X search over the specified date window returned no matching results, so there is no new popularity evidence. Community discussion is used to discover directions, while source mechanisms and experimental results respectively provide implementation and benefit evidence.

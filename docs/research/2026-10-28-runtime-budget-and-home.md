@@ -1,40 +1,40 @@
-# 原生运行环境与长请求预算
+# Native Runtime Environment and Long-Request Budget
 
-核实版本：DSH `0.2.1-rc.4`、Cordis `4.0.5`、Undici `8.12.2`。本次修复不改变模型、Agent Loop、候选源码、评分器或失败分母。
+Verified versions: DSH `0.2.1-rc.4`, Cordis `4.0.5`, Undici `8.12.2`. This fix does not change the model, Agent Loop, candidate source code, scorer, or failure denominator.
 
-## 两个实际故障
+## Two Actual Failures
 
-| 故障 | 直接证据 | 处理 |
+| Failure | Direct Evidence | Handling |
 | --- | --- | --- |
-| Docker HOME 可写，原生 bash 内仍拒绝写入 | 原生 Landlock `workspace-write` 只放行工作区、`/tmp` 等；`/home/node` 不在该集合 | 将有独立容量限制的 HOME tmpfs 放在 `/tmp/evolution-home`，明确设置并创建 XDG 目录；保留原生沙箱 |
-| 任务及模型都配置 600 秒，HTTP 仍在约 302 秒终止 | 原生 Pi/OpenAI 返回 `TIMEOUT`，明确提示 Node fetch 的 response-header timeout；同次 broker 记录为调用方取消 | 在隔离的原生 DSH 宿主装入 Cordis transport 插件，使用匹配的 Undici fetch 与 Agent；连接、响应头及响应体空闲预算与宿主执行预算一致 |
+| Docker HOME is writable, yet writes are still rejected inside native bash | Native Landlock `workspace-write` only allows the workspace, `/tmp`, etc.; `/home/node` is not in that set | Place a HOME tmpfs with its own capacity limit at `/tmp/evolution-home`, explicitly set and create the XDG directories; keep the native sandbox |
+| Both the task and the model are configured for 600 seconds, yet HTTP still terminates at about 302 seconds | Native Pi/OpenAI returns `TIMEOUT`, explicitly indicating the Node fetch response-header timeout; the same broker records it as a caller cancellation | Install the Cordis transport plugin in the isolated native DSH host, using a matching Undici fetch and Agent; the connect, response-header, and response-body idle budgets match the host execution budget |
 
-任务的总墙钟限制仍由控制器执行。模型配置自己的单次请求及 stream-idle 限制继续生效。延长底层传输预算不增加模型调用次数，不重试失败请求，也不延长已经开始的实验合同。
+The task's total wall-clock limit is still enforced by the controller. The model's own per-request and stream-idle limits remain in effect. Extending the underlying transport budget does not increase the number of model calls, does not retry failed requests, and does not extend an experiment contract that has already started.
 
-## 原生接线
+## Native Wiring
 
 ```text
-实验合同的执行预算
-  ├─ Docker 进程监督 → worker / SDK 请求截止
-  └─ worker 注入原生 Cordis 插件
-       ├─ http-transport：匹配 fetch / Request / Response 与显式 Agent
-       │    └─ 原生 Pi adapter → OpenAI SDK → 受控出口 → 供应商
-       └─ telemetry：请求、会话、Agent 生命周期、工具执行的原生身份
+Experiment contract execution budget
+  ├─ Docker process supervision → worker / SDK request deadline
+  └─ worker injects native Cordis plugin
+       ├─ http-transport: matching fetch / Request / Response and explicit Agent
+       │    └─ native Pi adapter → OpenAI SDK → controlled egress → provider
+       └─ telemetry: native identity for requests, sessions, Agent lifecycle, and tool execution
 
-Docker 独立 HOME tmpfs（128 MiB，0700，合同 UID/GID）
+Docker isolated HOME tmpfs (128 MiB, 0700, contract UID/GID)
   └─ /tmp/evolution-home/{config,cache,data,state,run}
-       └─ 原生 bash / Landlock → LibreOffice 默认用户配置
+       └─ native bash / Landlock → LibreOffice default user configuration
 ```
 
-HTTP 插件每个隔离宿主只允许一份；卸载时释放自己的连接并恢复仍由它持有的全局对象。未修改 DSH 或供应商 SDK 文件。原生事件账本与请求用量账本分别保存；工具计时不重复计入 token，未提供的响应模型或 usage 明确缺失，不推测。
+Only one HTTP plugin is allowed per isolated host; on unload it releases its own connections and restores the global objects it still holds. No DSH or provider SDK files were modified. The native event ledger and the request usage ledger are stored separately; tool timing is not counted again as tokens, and a response model or usage that is not provided is explicitly marked missing, not inferred.
 
-HOME/XDG 由运行时合同统一设置。启动前先验证所有环境值，再创建目录；调用者传入冲突配置直接报错。已验证的默认 LibreOffice 路径来自实际原生 bash，未绕过内层沙箱。此记录不外推到尚未实测的其他沙箱实现。
+HOME/XDG is set uniformly by the runtime contract. All environment values are validated before directories are created; conflicting configuration passed by the caller raises an error directly. The verified default LibreOffice path comes from actual native bash and does not bypass the inner sandbox. This record is not extrapolated to other sandbox implementations that have not yet been tested.
 
-## 上游依据
+## Upstream Basis
 
-- [Undici 超时配置](https://github.com/nodejs/undici/blob/v8.12.2/docs/docs/getting-started.md)：Agent 的 `headersTimeout` 与 `bodyTimeout` 默认各 300 秒。
-- [Undici install](https://github.com/nodejs/undici/blob/v8.12.2/index.js)：安装同一实现的 fetch 家族。
-- 实际安装的 `openai/client.d.mts` 明确说明：SDK timeout 与 Node fetch 超时相互独立，需要匹配的 Undici fetch/dispatcher。
-- 实际 DSH `dsh-llm-pi-ai/lib/index.js` 将 profile timeout 传给 Pi；当前版本未通过 profile JSON 暴露 custom fetch。因此在原生宿主生命周期内装配传输插件，保留原适配器。
+- [Undici timeout configuration](https://github.com/nodejs/undici/blob/v8.12.2/docs/docs/getting-started.md): the Agent's `headersTimeout` and `bodyTimeout` each default to 300 seconds.
+- [Undici install](https://github.com/nodejs/undici/blob/v8.12.2/index.js): installs the fetch family of the same implementation.
+- The actually installed `openai/client.d.mts` explicitly states: the SDK timeout and the Node fetch timeout are independent of each other, and a matching Undici fetch/dispatcher is required.
+- The actual DSH `dsh-llm-pi-ai/lib/index.js` passes the profile timeout to Pi; the current version does not expose custom fetch through profile JSON. Therefore the transport plugin is assembled within the native host lifecycle, preserving the original adapter.
 
-回归入口：`tests/http-transport.test.ts`、`tests/native/http-transport.test.ts`、`tests/container/runtime-home.test.ts`。设置 `HE_HTTP_HEADER_DELAY_MS=305000` 会启动真实本地 HTTP 服务，等候 305 秒才发送响应头，通过原生 DSH → Pi → OpenAI SDK 完成一次请求；不消耗远端模型 token。
+Regression entry points: `tests/http-transport.test.ts`, `tests/native/http-transport.test.ts`, `tests/container/runtime-home.test.ts`. Setting `HE_HTTP_HEADER_DELAY_MS=305000` starts a real local HTTP service that waits 305 seconds before sending response headers, completing one request through native DSH → Pi → OpenAI SDK; it does not consume remote model tokens.
