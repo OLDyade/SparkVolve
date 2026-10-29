@@ -638,6 +638,38 @@ summary {
     font-size: 0.65rem;
   }
 }
+@media (max-width: 500px) {
+  .lineage {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .version {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 12px;
+    padding: 14px 16px;
+    text-align: left;
+  }
+  .version small {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .version strong {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+  .version span {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .version .bar {
+    grid-column: 1 / -1;
+  }
+  .version:not(:last-child)::after {
+    content: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

@@ -141,10 +141,18 @@
           </p>
           <h3>H0 → H1 · implementation and tool interface</h3>
           <a href="evidence/source/h0-to-h1.patch" download>Download patch</a>
-          <pre><code>{{patch01}}</code></pre>
+          <pre
+            tabindex="0"
+            role="region"
+            aria-label="Complete H0 to H1 source diff"
+          ><code>{{patch01}}</code></pre>
           <h3>H1 → H2 · tool-description refinement</h3>
           <a href="evidence/source/h1-to-h2.patch" download>Download patch</a>
-          <pre><code>{{patch12}}</code></pre>
+          <pre
+            tabindex="0"
+            role="region"
+            aria-label="Complete H1 to H2 source diff"
+          ><code>{{patch12}}</code></pre>
         </details>
 
         <div class="results-heading">
@@ -284,7 +292,7 @@
             Clone the repository. Prepare Node.js 24, Python 3, Docker, a reserved network pool and an
             official DeepSeek API key.
           </p>
-          <pre><code>npm ci
+          <pre tabindex="0" role="region" aria-label="Quick start commands"><code>npm ci
 npm start -- --env-file /absolute/private/deepseek.env</code></pre>
           <p class="fine">
             Real API usage is billed by your provider. First launch builds container images. Tasks default to

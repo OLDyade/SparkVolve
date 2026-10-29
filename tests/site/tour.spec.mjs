@@ -51,7 +51,9 @@ test.describe('without JavaScript', () => {
   test('the recorded search results and evidence links remain readable', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('tfoot')).toContainText('56.25%');
-    await expect(page.locator('noscript')).toContainText('All phases are available');
+    await expect(
+      page.getByText(/Phase switching requires JavaScript\. All phases are available/),
+    ).toBeVisible();
     await expect(page.getByRole('link', { name: 'Download case data' })).toBeVisible();
   });
 });
