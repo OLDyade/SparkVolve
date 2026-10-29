@@ -76,13 +76,13 @@ G 的通用说明明确两种反馈协议、原始输入入口及 `candidate.set
 # 不调用模型：先校验实际领域镜像、构建 G/H0 并解析完整合同。
 node scripts/verify-feedback-study.mjs \
   --root <NEW-contract-check> --image <immutable-spreadsheet-image> \
-  --isolation <isolation.json> --model <model.json> \
+  --isolation <isolation.json> --model <model.json> --provider-directory <provider-directory> \
   --controller-ip <IPv4> --check-contracts
 
 # 明确执行：凭证仅从私有环境文件加载，使用新的独立运行目录。
 node --env-file=<private-env-file> scripts/verify-feedback-study.mjs \
   --root <NEW-real-study> --image <immutable-spreadsheet-image> \
-  --isolation <isolation.json> --model <model.json> \
+  --isolation <isolation.json> --model <model.json> --provider-directory <provider-directory> \
   --controller-ip <IPv4>
 ```
 

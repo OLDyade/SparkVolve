@@ -6,6 +6,8 @@
 
 | 实验 | 观察与边界 |
 |---|---|
+| [官方 DeepSeek 简化入口](2026-10-29-official-startup-results.md) | 一个命令完成真实自主修改、六次任务评分和原包导出；H0/H1 均为 100%，同分保留 H0 |
+| [插件变异空间对照登记](2026-10-29-mutation-space-registration.md) | 同 G/H0、三组变异范围、六次独立搜索；完整分母与成本，运行结果另行登记 |
 | [官方 DeepSeek 原生闭环](2026-10-28-official-deepseek-results.md) | 自主改造、独立验证、原归档安装及四类任务复用；同时保留人工修复衍生包的业务退步 |
 | [联合插件开发](../acceptance-joint-development.md) | 65.625% → 81.25%；候选含不接受的启发式恢复，未作为接受能力分发 |
 | [联合候选独立复验](2026-10-28-joint-independent-results.md) | 基线 93.75%，候选 77.08%；24/24 次评分，拒绝晋级 |

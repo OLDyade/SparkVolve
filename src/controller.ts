@@ -15,6 +15,7 @@ import type { Candidate, CandidateProposal, ExperimentSpec, TaskRun } from './co
 import { createEgressSession, type EgressFactory, type EgressLifecycle } from './egress-session.js';
 import { prepareExecution, collectExecution, ReclamationError, settleExecutionFailure } from './execution.js';
 import { assertNotCancelled } from './cancellation-state.js';
+import { assertMutationScope } from './mutation-scope.js';
 
 export class Controller {
   readonly owner = randomUUID();
@@ -150,6 +151,13 @@ export class Controller {
     const origin = draftOrigin(this.store, proposal.draft);
     const source = confined(path.join(this.root, 'drafts'), proposal.draft);
     const hash = await treeDigest(source);
+    if (!initial && this.spec.hostSearchProtocol.editableFiles) {
+      const seed = this.store.candidates()[0];
+      if (!seed) throw new Error('Mutation scope requires a frozen initial harness');
+      const seedRoot = path.join(this.root, 'candidates', seed.digest);
+      if ((await treeDigest(seedRoot)) !== seed.digest) throw new Error('Initial harness content mismatch');
+      await assertMutationScope(seedRoot, source, hash, this.spec.hostSearchProtocol.editableFiles);
+    }
     const existing = this.store.candidates().find((candidate) => candidate.digest === hash);
     if (existing) {
       if (

@@ -162,7 +162,7 @@ for (const example of ['spreadsheet', 'structured-data']) {
         new URL('../examples/venus/model.json', import.meta.url).pathname,
         path.join(root, 'experiment.json'),
         path.join(root, 'isolation.json'),
-        ...(example === 'spreadsheet' ? [new URL('../examples/venus', import.meta.url).pathname] : []),
+        new URL('../examples/venus', import.meta.url).pathname,
         ...(selected ? [selected] : []),
       ];
       await promisify(execFile)(process.execPath, args, { timeout: 30000 });

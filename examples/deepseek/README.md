@@ -6,7 +6,9 @@
 
 将 `DEEPSEEK_API_KEY` 放在仓库外的私有环境文件中，权限设为 `0600`。模型凭证只进入可信出口代理，DSH 执行进程拿到本地占位值。`egress.mjs` 生成精确的 `/anthropic/v1/messages` 路由，显式保留适配器的 `anthropic-version`、`anthropic-beta` 和 `accept` 请求头，不发送模型目录探测，也不改写请求正文。官方目前说明 version 被忽略、beta 除 Files 图片场景外被忽略；保留协议头不代表它们是旧流中断的原因。
 
-表格场景的准备命令显式选择提供方目录：
+首次体验可直接运行 `npm start -- --env-file <private.env> --pool <reserved-CIDR>`，自动构建并启动；默认官方 DeepSeek，无需单独拼接准备命令。见[启动指南](../../docs/quick-start.md)。
+
+需要自行编排实验时，表格场景的准备命令显式选择提供方目录：
 
 ```bash
 node examples/spreadsheet/prepare.mjs <dataset> <immutable-image> \

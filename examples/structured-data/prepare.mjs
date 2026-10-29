@@ -2,23 +2,36 @@ import { readFile, writeFile, cp } from 'node:fs/promises';
 import path from 'node:path';
 import { treeDigest } from '../../dist/artifacts.js';
 import { Experiment } from '../../dist/contracts.js';
-import { configureEgress } from '../venus/egress.mjs';
+import { prepareProvider } from '../provider-runtime.mjs';
 import { timeoutSeconds, optimizerSecondsForPlan } from '../timeouts.mjs';
 
-const [dataset, image, modelFile, output, isolationFile, taskLimit, optimizerLimit, httpLimit, probeLimit] =
-  process.argv.slice(2);
+const [
+  dataset,
+  image,
+  modelFile,
+  output,
+  isolationFile,
+  providerDirectory,
+  taskLimit,
+  optimizerLimit,
+  httpLimit,
+  probeLimit,
+] = process.argv.slice(2);
 const taskTimeoutSeconds = timeoutSeconds(taskLimit);
 const httpTimeoutSeconds = timeoutSeconds(httpLimit, taskTimeoutSeconds);
 const probeTimeoutSeconds = timeoutSeconds(probeLimit, taskTimeoutSeconds);
-if (!dataset || !image || !modelFile || !output || !isolationFile)
+if (!dataset || !image || !modelFile || !output || !isolationFile || !providerDirectory)
   throw new Error(
-    'Usage: prepare.mjs <dataset> <image-digest> <model.json> <spec-output> <isolation.json> [task-seconds] [optimizer-seconds] [model-http-seconds] [probe-seconds]',
+    'Usage: prepare.mjs <dataset> <image-digest> <model.json> <spec-output> <isolation.json> <provider-directory> [task-seconds] [optimizer-seconds] [model-http-seconds] [probe-seconds]',
   );
 const model = JSON.parse(await readFile(modelFile, 'utf8'));
-for (const [source, destination] of [
-  ['../venus/', 'runtime'],
-  ['../../optimizers/evidence-driven/', 'optimizer-bundle'],
-]) {
+const egress = await prepareProvider(
+  providerDirectory,
+  path.join(dataset, 'runtime'),
+  model,
+  httpTimeoutSeconds,
+);
+for (const [source, destination] of [['../../optimizers/evidence-driven/', 'optimizer-bundle']]) {
   await cp(new URL(source, import.meta.url), path.join(dataset, destination), {
     recursive: true,
     force: false,
@@ -31,7 +44,7 @@ for (const task of tasks) {
   task.evaluationDigest = await treeDigest(path.join(dataset, task.evaluation));
 }
 const spec = Experiment.parse({
-  egress: await configureEgress(path.join(dataset, 'runtime'), model, httpTimeoutSeconds),
+  egress,
   name: 'structured-data-native-evolution',
   purpose: 'search',
   hostSearchProtocol: { ancestry: 'unrestricted', feedback: 'full' },

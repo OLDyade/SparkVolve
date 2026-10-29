@@ -41,7 +41,7 @@ node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 
 python3 examples/structured-data/generate.py .evolution/data/dataset
 node examples/structured-data/prepare.mjs .evolution/data/dataset \
   "$(docker image inspect harness-evolution:local --format '{{.Id}}')" \
-  examples/venus/model.json .evolution/data/spec.json .evolution/data/isolation.json
+  examples/venus/model.json .evolution/data/spec.json .evolution/data/isolation.json examples/venus
 node dist/cli.js init --root .evolution/data/search \
   --spec .evolution/data/spec.json --dataset .evolution/data/dataset \
   --seed examples/structured-data/seed

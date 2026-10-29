@@ -42,11 +42,13 @@
     }
   },
   "scripts": {
+    "prestart": "npm run build",
+    "start": "node scripts/start.mjs",
     "build": "tsc -p tsconfig.json",
     "typecheck": "npm run build && tsc -p tsconfig.tests.json",
     "format": "prettier --write src tests examples optimizers .github package.json tsconfig.json tsconfig.tests.json cordis.patch.yml",
     "format:check": "prettier --check src tests examples optimizers .github package.json tsconfig.json tsconfig.tests.json cordis.patch.yml",
-    "test": "node --import tsx --test tests/*.test.ts tests/optimizer-study-driver.test.mjs tests/feedback-study-driver.test.mjs tests/native-authoring-driver.test.mjs tests/example-timeouts.test.mjs tests/installed-capability-driver.test.mjs",
+    "test": "node --import tsx --test tests/*.test.ts tests/optimizer-study-driver.test.mjs tests/feedback-study-driver.test.mjs tests/native-authoring-driver.test.mjs tests/example-timeouts.test.mjs tests/installed-capability-driver.test.mjs tests/start.test.mjs",
     "test:native": "npm run build && node --import tsx --test tests/native/*.test.ts",
     "test:container": "npm run build && node --import tsx --test tests/container/*.test.ts",
     "check": "npm run format:check && npm run docs:check && npm run typecheck && npm test && npm run test:native",

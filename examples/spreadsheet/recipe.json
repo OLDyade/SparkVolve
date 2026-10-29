@@ -1,0 +1,8 @@
+{
+  "name": "spreadsheet",
+  "dockerfile": "Dockerfile",
+  "generate": ["python3", "-B", "/recipe/generate.py", "/workspace/dataset"],
+  "prepare": "prepare.mjs",
+  "seed": "seed",
+  "preflight": "verify-image.mjs"
+}

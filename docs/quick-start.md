@@ -1,75 +1,66 @@
 # 启动一次真实进化
 
-[返回首页](../README.md#quick-start) · [完整用户旅程](user-journey.md) · [接入自己的任务](domain-adapters.md)
+[返回首页](../README.md#quick-start) · [接入自己的任务](domain-adapters.md) · [完整实验协议](optimizer-studies.md)
 
-以下命令从仓库根目录执行。Excel 是这份可运行指南选用的示例，任务、运行环境、种子插件与评分器均可通过领域适配器替换。准备一次环境后，使用页面末尾的 evolve 命令启动。
+默认使用官方 DeepSeek，任务是三个公开合成的结构化数据例子：事件归并、请求日志聚合、依赖清单匹配。任务适配器可替换，进化控制器保持通用。
 
-首次使用先获取源码：
+## 准备
 
-```bash
-git clone https://github.com/OLDyade/spark-harness-evolution.git
-cd spark-harness-evolution
-```
+需要 Node.js 24.16.0 或更高版本、npm、Python 3，以及运行中的 Docker。系统需要支持 Unix 目录文件描述符操作。默认使用 Docker 的 runc；已有 gVisor 部署可指定 `--runtime runsc`，见[隔离配置](isolation.md)。
 
-官方 DeepSeek 配置见[提供方指南](../examples/deepseek/README.md)；选择它时，prepare 的模型与提供方目录均改为 examples/deepseek，私有环境文件使用 DEEPSEEK_API_KEY。不要混用两套提供方参数。
-
-
-[完整用户旅程](user-journey.md)提供公开命令串联、逐步日志、真实事件观察和负结果分支。下面先准备运行环境，再启动真实模型闭环。
-
-运行前显式生成[隔离合同](isolation.md)：五类角色使用声明的运行时、非 root 身份和资源预算。原容器恢复时重新核验权限，运行时缺失直接报错。
-
-支持显式选择 runc 或 gVisor；gVisor 已完成插件构建、原生 DSH 执行、独立评分、恢复及真实模型接续验收。[固定版本安装与测试矩阵](isolation.md)提供可复现入口。
-
-需要 Node **24.16.0**、npm **12.2.0**、pnpm **12.15.0**、Python 3 和运行中的 Docker。宿主 Python 必须支持 Unix `dir_fd`、`O_NOFOLLOW` 和 `O_DIRECTORY`，用于按授权目录读取不可信文件；缺失时明确报错，不退回存在竞态的路径读取。示例采用用户指定的 Venus 模型快照；其他模型通过原生 DSH Provider 配置接入。没有自动模型降级。
-
-将 `HE_EGRESS_POOL` 设为部署方已预留、与宿主/LAN/VPN 不冲突的私有 IPv4 CIDR。每个受控执行占两个 `/29` 网段，30 执行器加 1 优化器需要至少 62 个；一个 `/23` 提供 64 个。地址池进入合同，容量不足直接拒绝，终态归档后释放。
-
-将 `HE_TEST_DNS` 设为部署方确认可达的 IPv4 DNS 列表，以逗号分隔。可按[部署发现说明](isolation.md#出口-dns)从同一镜像和运行时的 default bridge 获取候选地址；框架不内置公共 DNS，发现记录不代表最终受控网络已通过解析验收。
+1. 克隆 `https://github.com/OLDyade/spark-harness-evolution.git`，进入仓库目录。
+2. 在仓库外的私有环境文件中设置 `DEEPSEEK_API_KEY`，文件权限设为 `0600`；也可直接在当前进程环境中配置同名变量。
+3. 将 `HE_EGRESS_POOL` 设为部署方预留、与宿主/LAN/VPN 不冲突的私有 IPv4 CIDR。每个模型执行占两个 `/29` 子网；默认示例三个执行器加一个优化器至少需要一个 `/26` 地址池。初次配置见[网络说明](isolation.md)。
 
 ```bash
 npm ci
-npm run check
-docker build -t harness-evolution:local .
-docker build --build-arg HARNESS_IMAGE=harness-evolution:local \
-  -f examples/spreadsheet/Dockerfile -t harness-evolution-spreadsheet:local .
-
-mkdir -p .evolution/business
-node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
-  "${HE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > .evolution/business/isolation.json
-node examples/spreadsheet/verify-image.mjs \
-  "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')" \
-  .evolution/business/isolation.json .evolution/business/image-check
-docker run --rm \
-  --user "$(id -u):$(id -g)" \
-  --mount type=bind,src="$PWD/examples/spreadsheet",dst=/example,readonly \
-  --mount type=bind,src="$PWD/.evolution/business",dst=/workspace \
-  harness-evolution-spreadsheet:local python3 /example/generate.py /workspace/dataset
-
-node examples/spreadsheet/prepare.mjs .evolution/business/dataset \
-  "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')" \
-  examples/venus/model.json .evolution/business/spec.json .evolution/business/isolation.json examples/venus
-
-node dist/cli.js init --root .evolution/business/search \
-  --spec .evolution/business/spec.json --dataset .evolution/business/dataset \
-  --seed examples/spreadsheet/seed
+npm start -- --env-file /absolute/private/deepseek.env --pool "$HE_EGRESS_POOL"
 ```
 
-将密钥写入仓库外权限为 `0600` 的环境文件，变量名为 `VENUS_API_KEY`。真实凭证仅交给可信出口代理；优化器和执行器使用本地占位值。一条命令管理控制服务、执行、评分和优化器会话。控制地址使用容器可达的明确 IP，下面的辅助命令读取 Docker 的 `host-gateway` 映射；Linux 主机也可明确指定已配置的可达接口。端口需空闲，防火墙需允许代理访问。
+默认入口通过官方 Anthropic 兼容 API 使用 `deepseek-flash`；凭证仅交给可信出口代理。模型配置见[官方 DeepSeek](../examples/deepseek/README.md)。调用真实服务会消耗相应账户额度。
 
-```bash
-HE_CONTROLLER_IP=$(node scripts/controller-address.mjs \
-  "$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')")
-node --env-file=/absolute/private/venus.env dist/cli.js evolve \
-  --root .evolution/business/search --host 0.0.0.0 --port 18948 \
-  --endpoint "http://${HE_CONTROLLER_IP}:18948"
+## 一个命令完成什么
 
-# 查看真实产物与裁决
-node dist/cli.js status --root .evolution/business/search
-# 在另一个终端跟随已提交事件；Ctrl-C 只停止观察
-node dist/cli.js events --root .evolution/business/search --follow
+```text
+任务 recipe + 模型 Provider
+       │
+       ▼
+构建运行镜像 → 发现 DNS / 宿主地址 → 冻结任务、模型与隔离合同
+       │
+       ▼
+运行 H0 → DSH 优化器读取证据 → 自主修改插件 → 独立构建与评分
+       │
+       ▼
+保存完整报告、轨迹、失败记录 → 导出选中候选的原始 Bundle
 ```
 
-示例生成公开合成 XLSX 业务任务，使用真实模型和独立 LibreOffice 重算。生成合同同时冻结[独立领域 QA](domain-verification.md)，通过原生工具检查显式写入和源文件保留，再运行正式任务。它验证产品闭环，不能代表 SpreadsheetBench 分数、迁移收益或统计显著性。历史私有题库、答案和运行产物没有进入仓库。
+每题默认 600 秒，可用 `--task-seconds` 显式调整；优化器总预算按完整计划计算。地址与 DNS 从实际 Docker 部署读取，`--dns` 可以显式指定部署批准的解析器。运行端口自动分配并持久保存。
 
-需要研究实验时，使用 `research.py` 生成四类业务机制任务，在 `init` 前登记任务角色、重复次数、候选与失败预算。全部候选使用同一合同；[已登记的联合插件实验](experiments/2026-10-27-joint-plugin-development.json)提供一份具体示例。工程演示与研究实验分别记账。
+输出位于 `.evolution/<recipe>-<时间>/`：
 
+| 产物 | 内容 |
+|---|---|
+| `startup.json` | 启动阶段、配置身份及失败原因 |
+| `spec.json`、`search/` | 冻结合同、事件账本、候选、轨迹与逐题交付 |
+| `report.json` | 实际评分、裁决与模型用量 |
+| `capability/bundle.tgz` | 选中候选的原始构建包 |
+| `command-logs/` | 逐阶段日志，保留原始失败 |
+
+启动时会打印事件观察命令。运行失败直接报错，保留原目录；需要恢复时使用[原生 CLI](events.md)，入口不会重新抽样。选中候选可能仍是 H0，完成运行不等于质量提升。独立评分与另行留出的验证集也是不同证据层级；本入口完成开发任务闭环，方法比较使用专门的[预注册实验](experiments/2026-10-29-mutation-space-registration.md)。
+
+## 换成你的任务
+
+传入另一份 `--recipe path/to/recipe.json` 即可。自定义 recipe 的生成命令在镜像中运行，目录只读挂载为 `/recipe`，输出目录为 `/workspace`；它生成 `dataset`。准备脚本接收数据、镜像、模型、合同输出、隔离配置、Provider 目录与每题秒数，生成通用 Experiment 合同。
+
+| Recipe 字段 | 用途 |
+|---|---|
+| `name` | 运行名称 |
+| `dockerfile` | 领域依赖镜像；`null` 使用通用运行镜像 |
+| `generate` | 数据生成命令的 argv，无 shell 拼接 |
+| `prepare` | 领域合同准备脚本 |
+| `seed` | 起始能力 Bundle |
+| `preflight` | 可选领域运行环境验证脚本 |
+
+所有文件路径均相对 recipe 所在目录。参考[结构化数据 recipe](../examples/structured-data/recipe.json)与[表格 recipe](../examples/spreadsheet/recipe.json)。Excel 示例只需添加 `--recipe examples/spreadsheet/recipe.json`，自动安装所需 LibreOffice 与 Python 依赖。可使用 `--image sha256:...` 指定已经构建的对应领域镜像，或以 `--provider` 选择另一份原生 Provider 配置，不会自动切换模型。
+
+公开示例用于体验自主插件改造和产物交付。正式研究应使用自己的任务清单、独立验证集与重复搜索计划，详见[领域适配](domain-adapters.md)。

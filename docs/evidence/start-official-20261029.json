@@ -1,0 +1,51 @@
+{
+  "kind": "real-startup-acceptance",
+  "startedAt": "2026-10-29T02:10:59.642Z",
+  "endedAt": "2026-10-29T02:18:15.578Z",
+  "state": "complete",
+  "entry": "npm start",
+  "recipe": "structured-data",
+  "model": "deepseek-official/deepseek-flash",
+  "reasoningEffort": "off",
+  "taskTimeoutSeconds": 600,
+  "image": "sha256:69bda025e652622e0b8544531262989d1f148359261af6abe360e9beab960487",
+  "recipeSha256": "612c984a59bb99215fe0e72e9c896dfa5b0070d8a0f2d6b06100a4025330174e",
+  "sources": {
+    "run": ".evolution/start-official-20261029",
+    "reportSha256": "228817d17ee52a3bb83c6b8af902207708837af8efd5018255853930be6307cc",
+    "startupSha256": "ae9d99e3de07028d4f742a73d9c00d4fd551515590a15441a92c73d90e357275"
+  },
+  "candidates": [
+    {
+      "ordinal": 0,
+      "digest": "564c1e7c89b4e5f27abb8f6dc1b5414413285f87b56345c49240f17c435162be",
+      "mean": 1,
+      "denominator": 3,
+      "failures": 0,
+      "phase": "champion"
+    },
+    {
+      "ordinal": 1,
+      "digest": "f245a9b3896adc3de73ccc86d686e2be5e8eb8d9bea84aaba2aa25d79df0d85c",
+      "mean": 1,
+      "denominator": 3,
+      "failures": 0,
+      "phase": "rejected",
+      "changedFiles": ["index.mjs"],
+      "newTools": ["data_events_latest", "data_group_stats", "data_exact_join"]
+    }
+  ],
+  "optimizerAuthoredProbes": { "total": 3, "failed": 3, "passed": 0 },
+  "exportedTarballSha256": "8d601c638fab194035fa40e5c49bad89de6789ea0108e38d3accca7e7a6d702c",
+  "usage": {
+    "started": 162,
+    "results": 162,
+    "failed": 0,
+    "unfinished": 0,
+    "inputTokensReported": 150777,
+    "outputTokensReported": 46136,
+    "requestDurationMsSum": 415009.3631479999,
+    "missingUsage": 0
+  },
+  "boundary": "DSH adapter request accounting; no provider retry. Development example only. Both candidates scored 1; strict selection kept H0. Three failed autonomous probes remain failures. Export completion does not certify H1 semantics or independently demonstrate quality improvement. No independent validation or installed-task rerun was included in this startup acceptance."
+}

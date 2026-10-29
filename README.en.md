@@ -33,17 +33,16 @@ Ship improvements with the original Bundle, candidate lineage, capability card a
 
 ## Quick start
 
-**Explore a real run:** clone the repository and open the [interactive experiment tour](docs/tour.html) in your browser. Inspect candidates, task-level results and downloadable records. This offline replay needs no API key.
-
-**Run evolution:** install Node.js 24, Python 3 and Docker, and configure model credentials. The [startup guide](docs/quick-start.md) covers installation, sample inputs and model setup. Once prepared, launch:
+**Run real evolution:** clone the repository and prepare Node.js 24, Python 3, Docker and an official DeepSeek key. Set `HE_EGRESS_POOL` to a reserved private subnet and keep credentials in an environment file outside the repository; see the [startup guide](docs/quick-start.md).
 
 ```bash
-node --env-file=/absolute/private/venus.env dist/cli.js evolve \
-  --root .evolution/business/search --host 0.0.0.0 --port 18948 \
-  --endpoint "http://${HE_CONTROLLER_IP:?Complete the startup guide}:18948"
+npm ci
+npm start -- --env-file /absolute/private/deepseek.env --pool "$HE_EGRESS_POOL"
 ```
 
-The command manages the optimizer session, candidate execution, grading and event recovery. The example allows **600 seconds per task**. Model, tasks, budget and concurrency are declared in the experiment contract. [Official DeepSeek](examples/deepseek/README.md) and [native Provider configuration](docs/compatibility.md) are supported.
+The entry builds the environment, generates sample tasks, starts the native DSH optimizer, independently grades executions and exports the selected Bundle. Defaults: official DeepSeek, a structured-data example and **600 seconds per task**. Replace tasks and the seed plugin with `--recipe`; Excel is an optional example. Model, tasks, budgets and concurrency enter a frozen contract.
+
+**Explore existing evidence:** open the [interactive experiment tour](docs/tour.html) to inspect candidates, task-level results and downloadable records offline. No API key needed.
 
 | Your goal | Start here |
 |:---|:---|

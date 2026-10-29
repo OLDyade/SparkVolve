@@ -33,17 +33,16 @@
 
 ## Quick start
 
-**先看一轮进化**：克隆后用浏览器打开 [交互式实验导览](docs/tour.html)。可切换候选、查看逐题结果和下载记录；离线回放无需密钥。
-
-**启动真实进化**：需要 Node.js 24、Python 3、Docker 和模型凭证。[启动指南](docs/quick-start.md)集中提供安装、示例数据与模型配置；完成一次准备后，运行：
+**启动真实进化**：克隆仓库，准备 Node.js 24、Python 3、Docker 和官方 DeepSeek 密钥。将 `HE_EGRESS_POOL` 设为部署方预留的私有网段，凭证放在仓库外的环境文件中，详见[启动指南](docs/quick-start.md)。
 
 ```bash
-node --env-file=/absolute/private/venus.env dist/cli.js evolve \
-  --root .evolution/business/search --host 0.0.0.0 --port 18948 \
-  --endpoint "http://${HE_CONTROLLER_IP:?请先完成启动指南中的地址配置}:18948"
+npm ci
+npm start -- --env-file /absolute/private/deepseek.env --pool "$HE_EGRESS_POOL"
 ```
 
-这个入口接管优化器会话、候选执行、评分与事件接续。示例默认每题 **600 秒**；模型、任务、预算和并发写入实验合同。支持[官方 DeepSeek](examples/deepseek/README.md)及[原生 Provider 配置](docs/compatibility.md)。
+入口自动构建环境、生成示例任务、启动 DSH 原生优化器、执行独立评分并导出选中的 Bundle。默认使用官方 DeepSeek 和结构化数据示例，每题 **600 秒**；通过 `--recipe` 替换任务与种子插件，Excel 是可选示例。模型、任务、预算和并发均进入冻结合同。
+
+**先看实际记录**：用浏览器打开[交互式实验导览](docs/tour.html)，离线查看候选、逐题结果和下载记录，无需密钥。
 
 | 想做什么 | 从这里进入 |
 |:---|:---|

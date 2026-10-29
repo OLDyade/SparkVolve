@@ -6,6 +6,8 @@ import path from 'node:path';
 import { specification, hash } from './fixtures.ts';
 import {
   comparisonRegistration,
+  mutationRegistration,
+  prepareMutationSeed,
   validateStudyShape,
   runLogged,
   snapshotReports,
@@ -66,6 +68,33 @@ test('feedback registration shares G/H0 and admits exactly 72 task executions, w
   const unsafe = structuredClone(spec);
   unsafe.cases[0].search.specification.probes = { limit: 1, timeoutSeconds: 10 };
   assert.throws(() => validateStudyShape(unsafe, baseline), /Seed-only/);
+});
+
+test('mutation comparison isolates editable source scope with identical G/H0 and 104-task ceiling', () => {
+  const { spec: feedback, baseline } = contracts();
+  const { seed, search, assessment } = feedback.cases[0];
+  const spec = mutationRegistration(feedback.arms[0].method, seed, search, assessment);
+  assert.equal(validateStudyShape(spec, baseline, 'mutation-space').totalTaskExecutions, 104);
+  assert.equal(new Set(spec.arms.map(studyArmIdentity)).size, 3);
+  const altered = structuredClone(spec);
+  altered.arms[0].hostSearchProtocol.editableFiles.push('index.mjs');
+  assert.throws(() => validateStudyShape(altered, baseline, 'mutation-space'));
+});
+
+test('all mutation arms start with the same native prompt section and packaged guidance', async () => {
+  const parent = await mkdtemp(path.join(os.tmpdir(), 'mutation-seed-'));
+  const target = path.join(parent, 'seed');
+  await prepareMutationSeed(new URL('../examples/spreadsheet/seed', import.meta.url), target);
+  const source = await readFile(path.join(target, 'index.mjs'), 'utf8');
+  assert.match(source, /systemPrompt.section/);
+  assert.match(source, /guidance.md/);
+  assert.ok(
+    JSON.parse(await readFile(path.join(target, 'package.json'), 'utf8')).files.includes('guidance.md'),
+  );
+  assert.equal(
+    await readFile(path.join(target, 'workbook.py'), 'utf8'),
+    await readFile(new URL('../examples/spreadsheet/seed/workbook.py', import.meta.url), 'utf8'),
+  );
 });
 
 test('command logs preserve failed output and never overwrite authoritative reports or rerun labels', async () => {
@@ -239,6 +268,8 @@ test('an existing evidence root is rejected before preparation or model invocati
       isolationFile,
       '--model',
       modelFile,
+      '--provider-directory',
+      'examples/venus',
       '--controller-ip',
       '192.0.2.1',
       '--check-contracts',

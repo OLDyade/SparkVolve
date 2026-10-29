@@ -77,6 +77,47 @@ class LifecycleDriver extends Docker {
   }
 }
 
+test('restricted mutation admission rejects out-of-scope source before consuming candidate budget', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'he-controller-scope-'));
+  const spec = specification();
+  spec.hostSearchProtocol = { ancestry: 'seed-only', feedback: 'full', editableFiles: ['guidance.md'] };
+  for (const task of spec.tasks) {
+    for (const folder of [task.input, task.evaluation])
+      await mkdir(path.join(root, 'dataset', folder), { recursive: true });
+    task.inputDigest = await treeDigest(path.join(root, 'dataset', task.input));
+    task.evaluationDigest = await treeDigest(path.join(root, 'dataset', task.evaluation));
+  }
+  const seed = path.join(root, 'seed');
+  await mkdir(seed);
+  await writeFile(
+    path.join(seed, 'package.json'),
+    JSON.stringify({ name: 'fixture', dsh: { bundle: { patch: './cordis.patch.yml' } } }),
+  );
+  await writeFile(path.join(seed, 'cordis.patch.yml'), '[]');
+  await writeFile(path.join(seed, 'package-lock.json'), '{}');
+  await writeFile(path.join(seed, 'guidance.md'), 'original');
+  const store = new Store(path.join(root, 'state.sqlite'), spec);
+  const controller = new Controller(root, path.join(root, 'dataset'), spec, store, new LifecycleDriver());
+  await controller.start();
+  try {
+    const initial = await controller.seed(seed);
+    await controller.draft(initial.digest, 'bad');
+    await writeFile(path.join(root, 'drafts/bad/cordis.patch.yml'), '# outside scope\n[]');
+    await assert.rejects(
+      controller.submit({ ...initial.proposal, draft: 'bad', parents: [initial.digest] }),
+      /Mutation scope violation/,
+    );
+    assert.equal(store.candidates().length, 1);
+    await controller.draft(initial.digest, 'good');
+    await writeFile(path.join(root, 'drafts/good/guidance.md'), 'changed');
+    await controller.submit({ ...initial.proposal, draft: 'good', parents: [initial.digest] });
+    assert.equal(store.candidates().length, 2);
+  } finally {
+    await controller.close();
+    store.close();
+  }
+});
+
 test('controller resumes failed resource cleanup before declaring terminal failure, without rerunning', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'he-controller-failed-cleanup-'));
   const spec = specification();

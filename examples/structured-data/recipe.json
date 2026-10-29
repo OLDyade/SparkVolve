@@ -1,0 +1,8 @@
+{
+  "name": "structured-data",
+  "dockerfile": null,
+  "generate": ["python3", "-B", "/recipe/generate.py", "/workspace/dataset"],
+  "prepare": "prepare.mjs",
+  "seed": "seed",
+  "preflight": null
+}

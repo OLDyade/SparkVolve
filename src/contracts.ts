@@ -125,6 +125,12 @@ export type OutcomeConstraintSpec = z.infer<typeof OutcomeConstraint>;
 export const HostSearchProtocol = z.strictObject({
   ancestry: z.enum(['unrestricted', 'seed-only']),
   feedback: z.enum(['full', 'mechanical']),
+  /** Exact source files editable relative to H0; omitted means unrestricted source evolution. */
+  editableFiles: z
+    .array(RelativePath)
+    .min(1)
+    .refine((files) => new Set(files).size === files.length, 'Duplicate editable file')
+    .optional(),
 });
 export type HostSearchProtocolSpec = z.infer<typeof HostSearchProtocol>;
 export const Experiment = z

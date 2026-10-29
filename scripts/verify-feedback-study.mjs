@@ -24,7 +24,7 @@ import {
   inventory,
   treeDigest,
 } from '../dist/artifacts.js';
-import { configureEgress } from '../examples/venus/egress.mjs';
+import { prepareProvider } from '../examples/provider-runtime.mjs';
 import { timeoutSeconds, optimizerSecondsForPlan } from '../examples/timeouts.mjs';
 
 export function comparisonRegistration(method, seed, search, assessment) {
@@ -45,6 +45,58 @@ export function comparisonRegistration(method, seed, search, assessment) {
   });
 }
 
+export function mutationRegistration(method, seed, search, assessment) {
+  return FixedOptimizerComparison.parse({
+    kind: 'fixed-comparison',
+    name: 'plugin-mutation-space-study',
+    objective:
+      'Compare prompt-only, one-plugin implementation, and open plugin composition under identical G, H0, feedback, ancestry and budgets. Validation is independent; no automatic release.',
+    baseline: 'prompt',
+    arms: [
+      { id: 'prompt', editableFiles: ['guidance.md'] },
+      { id: 'single-plugin', editableFiles: ['guidance.md', 'index.mjs', 'workbook.py'] },
+      { id: 'open-plugins' },
+    ].map(({ id, ...scope }) => ({
+      id,
+      method,
+      hostSearchProtocol: { ancestry: 'seed-only', feedback: 'full', ...scope },
+    })),
+    cases: [{ id: 'public-spreadsheet-families', seed, search, assessment }],
+    repetitions: 2,
+    budget: { concurrentSearches: 2 },
+  });
+}
+
+/** Identical prompt-bearing H0 for all mutation arms; no arm receives extra executor capability. */
+export async function prepareMutationSeed(original, destination) {
+  await cp(original, destination, { recursive: true, force: false, errorOnExist: true });
+  const entry = path.join(destination, 'index.mjs');
+  const source = await readFile(entry, 'utf8');
+  assert.ok(source.includes("export const inject = ['tools'];"));
+  assert.ok(source.includes('export function apply(ctx) {'));
+  await writeFile(
+    entry,
+    "import { readFileSync } from 'node:fs';\n" +
+      source
+        .replace("export const inject = ['tools'];", "export const inject = ['tools', 'systemPrompt'];")
+        .replace(
+          'export function apply(ctx) {',
+          `export function apply(ctx) {
+  ctx.systemPrompt.section({ name: 'spreadsheet-guidance', order: 500,
+    text: readFileSync(new URL('./guidance.md', import.meta.url), 'utf8') });`,
+        ),
+  );
+  await writeFile(
+    path.join(destination, 'guidance.md'),
+    'Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.\n',
+    { flag: 'wx' },
+  );
+  const manifestPath = path.join(destination, 'package.json');
+  const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+  manifest.files.push('guidance.md');
+  await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+}
+
 export function allocationRegistration(spec, baseline) {
   const study = studyAllocationCeiling(spec);
   const baselineTasks = baseline.tasks.length * baseline.repetitions;
@@ -57,7 +109,7 @@ export function allocationRegistration(spec, baseline) {
   };
 }
 
-export function validateStudyShape(spec, baseline) {
+export function validateStudyShape(spec, baseline, comparison = 'feedback') {
   FixedOptimizerComparison.parse(spec);
   Experiment.parse(baseline);
   assert.equal(spec.cases.length, 1);
@@ -65,11 +117,27 @@ export function validateStudyShape(spec, baseline) {
   assert.equal(spec.budget.concurrentSearches, 2);
   assert.deepEqual(
     spec.arms.map((arm) => arm.id),
-    ['full', 'mechanical'],
+    comparison === 'mutation-space' ? ['prompt', 'single-plugin', 'open-plugins'] : ['full', 'mechanical'],
   );
-  assert.deepEqual(spec.arms[0].method, spec.arms[1].method, 'Both arms must use the same frozen G');
-  for (const arm of spec.arms)
-    assert.deepEqual(arm.hostSearchProtocol, { ancestry: 'seed-only', feedback: arm.id });
+  const expected =
+    comparison === 'mutation-space'
+      ? mutationRegistration(
+          spec.arms[0].method,
+          spec.cases[0].seed,
+          spec.cases[0].search,
+          spec.cases[0].assessment,
+        )
+      : comparisonRegistration(
+          spec.arms[0].method,
+          spec.cases[0].seed,
+          spec.cases[0].search,
+          spec.cases[0].assessment,
+        );
+  assert.deepEqual(
+    spec.arms,
+    expected.arms,
+    'All arms must share frozen G and the registered scope protocol',
+  );
   const { search, assessment } = spec.cases[0];
   for (const split of [search, assessment]) {
     assert.equal(split.specification.tasks.length, 4);
@@ -87,10 +155,10 @@ export function validateStudyShape(spec, baseline) {
     repetitions: 2,
   });
   const allocation = allocationRegistration(spec, baseline);
-  assert.equal(allocation.study.searchTasks, 48);
-  assert.equal(allocation.study.assessmentTasks, 16);
+  assert.equal(allocation.study.searchTasks, spec.arms.length * 24);
+  assert.equal(allocation.study.assessmentTasks, spec.arms.length * 8);
   assert.equal(allocation.baselineTasks, 8);
-  assert.equal(allocation.totalTaskExecutions, 72);
+  assert.equal(allocation.totalTaskExecutions, spec.arms.length * 32 + 8);
   return allocation;
 }
 
@@ -270,7 +338,7 @@ export function validationComparison(study, baseline, spec) {
 }
 
 export async function main(args = process.argv.slice(2)) {
-  const required = ['root', 'image', 'isolation', 'model', 'controller-ip'];
+  const required = ['root', 'image', 'isolation', 'model', 'provider-directory', 'controller-ip'];
   const { values } = parseArgs({
     args,
     options: {
@@ -278,17 +346,19 @@ export async function main(args = process.argv.slice(2)) {
       'task-timeout-seconds': { type: 'string' },
       'model-http-timeout-seconds': { type: 'string' },
       'optimizer-seconds': { type: 'string' },
+      comparison: { type: 'string', default: 'feedback' },
       help: { type: 'boolean' },
       'check-contracts': { type: 'boolean' },
     },
   });
   if (values.help) {
     console.log(
-      'node --env-file=<private-env> scripts/verify-feedback-study.mjs --root <NEW> --image <immutable> --isolation <JSON file> --model <JSON file> --controller-ip <IPv4> [--check-contracts] [--task-timeout-seconds 600] [--model-http-timeout-seconds N] [--optimizer-seconds N]\nExplicit execution uses real Venus inference, at most 72 task executions plus optimizer calls. --check-contracts freezes/builds/preflights/parses with no model calls. Existing roots and automatic retries are forbidden.',
+      'node --env-file=<private-env> scripts/verify-feedback-study.mjs --root <NEW> --image <immutable> --isolation <JSON file> --model <JSON file> --provider-directory <directory> --controller-ip <IPv4> [--comparison feedback|mutation-space] [--check-contracts] [--task-timeout-seconds 600]\nReal inference: feedback <=72 task executions; mutation-space <=104, plus optimizer calls. --check-contracts performs no inference. Existing roots and automatic retries are forbidden.',
     );
     return;
   }
   for (const key of required) assert.ok(values[key], `Required --${key}`);
+  assert.ok(['feedback', 'mutation-space'].includes(values.comparison), 'Unknown comparison');
   const taskTimeoutSeconds = timeoutSeconds(values['task-timeout-seconds']);
   const httpTimeoutSeconds = timeoutSeconds(values['model-http-timeout-seconds'], taskTimeoutSeconds);
   const image = Image.parse(values.image),
@@ -296,10 +366,9 @@ export async function main(args = process.argv.slice(2)) {
     model = Model.parse(JSON.parse(await readFile(values.model, 'utf8')));
   assert.equal(isIP(values['controller-ip']), 4, 'Controller must be a literal IPv4 address');
   assert.equal(isolation.network.executor, 'controlled');
-  assert.equal(model.provider, 'venus');
-  assert.deepEqual(model.credentialEnv, ['VENUS_API_KEY']);
   if (!values['check-contracts'])
-    assert.ok(process.env.VENUS_API_KEY, 'Load VENUS_API_KEY through a private launcher environment');
+    for (const key of model.credentialEnv)
+      assert.ok(process.env[key], `Missing private credential environment: ${key}`);
   const secrets = model.credentialEnv.map((key) => process.env[key]).filter(Boolean);
   const redact = (value) =>
     secrets.reduce((text, secret) => text.split(secret).join('[REDACTED]'), String(value));
@@ -314,7 +383,9 @@ export async function main(args = process.argv.slice(2)) {
   const interrupt = () => abort.abort(new Error('Research driver interrupted; original attempts retained'));
   for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, interrupt);
   const receipt = {
-    mode: values['check-contracts'] ? 'non-inference-contract-check' : 'real-model-feedback-study',
+    mode: values['check-contracts']
+      ? 'non-inference-contract-check'
+      : `real-model-${values.comparison}-study`,
     passed: false,
     startedAt: new Date().toISOString(),
     image,
@@ -322,7 +393,7 @@ export async function main(args = process.argv.slice(2)) {
     driverSha256: await fileDigest(fileURLToPath(import.meta.url)),
     failures: [],
     boundary:
-      'Research on public synthetic spreadsheet families, real Venus G/H, fixed frozen methods. Scores do not gate engineering success or automatically promote artifacts. No retry, fallback, benchmark claim or code-generated task answers.',
+      'Research on public synthetic spreadsheet families, real model G/H, fixed frozen methods. Scores do not gate engineering success or automatically promote artifacts. No retry, fallback, benchmark claim or code-generated task answers.',
   };
   const run = (label, program, commandArgs, env = process.env) =>
     runLogged(root, label, program, commandArgs, { cwd: repo, env, signal: abort.signal, secrets });
@@ -401,7 +472,13 @@ export async function main(args = process.argv.slice(2)) {
       ...(await bundle('g', path.join(repo, 'optimizers/evidence-driven'))),
       composition: 'plugins.yml',
     };
-    const seed = await bundle('h0', path.join(repo, 'examples/spreadsheet/seed'));
+    let seedSource = path.join(repo, 'examples/spreadsheet/seed');
+    if (values.comparison === 'mutation-space') {
+      const staging = path.join(root, 'seed-staging');
+      await prepareMutationSeed(seedSource, staging);
+      seedSource = staging;
+    }
+    const seed = await bundle('h0', seedSource);
     const generator = path.join(root, 'generator');
     await mkdir(generator);
     for (const file of ['research.py', 'grade.py'])
@@ -437,12 +514,12 @@ export async function main(args = process.argv.slice(2)) {
         ],
         { PATH: process.env.PATH },
       );
-      await cp(path.join(repo, 'examples/venus'), path.join(directory, 'runtime'), {
-        recursive: true,
-        force: false,
-        errorOnExist: true,
-      });
-      const egress = await configureEgress(path.join(directory, 'runtime'), model, httpTimeoutSeconds);
+      const egress = await prepareProvider(
+        values['provider-directory'],
+        path.join(directory, 'runtime'),
+        model,
+        httpTimeoutSeconds,
+      );
       await freeze(
         confined(inputs, method.source.directory),
         path.join(directory, 'method/source'),
@@ -463,7 +540,7 @@ export async function main(args = process.argv.slice(2)) {
         purpose,
         hostSearchProtocol: { ancestry: 'seed-only', feedback: 'full' },
         objective:
-          'Improve general spreadsheet plugin implementation or composition using authorized source and task evidence. Choose substantive mechanisms, submit distinct candidates, and wait for each to settle before concluding. Follow the declared host feedback and ancestry protocol. Do not encode task IDs, coordinates, fixture values or expected answers; do not change evaluation or resample unchanged versions. Negative results are valid.',
+          'Improve the general spreadsheet capability within the declared hostSearchProtocol.editableFiles scope, when present. Choose substantive prompt, implementation or composition changes permitted by that scope using authorized evidence, submit distinct candidates, and wait for each to settle. Follow the declared feedback and ancestry protocol. Do not encode task IDs, coordinates, fixture values or expected answers; do not change evaluation or resample unchanged versions. Negative results are valid.',
         isolation,
         egress,
         runtime: {
@@ -509,13 +586,18 @@ export async function main(args = process.argv.slice(2)) {
     }
     const search = await dataset('development', 'search'),
       assessment = await dataset('validation', 'validation');
-    spec = comparisonRegistration(method, seed, search, assessment);
+    spec = (values.comparison === 'mutation-space' ? mutationRegistration : comparisonRegistration)(
+      method,
+      seed,
+      search,
+      assessment,
+    );
     baseline = Experiment.parse({
       ...assessment.specification,
       name: 'spreadsheet-h0-validation',
       repetitions: 2,
     });
-    const allocation = validateStudyShape(spec, baseline);
+    const allocation = validateStudyShape(spec, baseline, values.comparison);
     await atomicJSON(path.join(root, 'study-spec.json'), spec);
     await atomicJSON(path.join(root, 'h0-validation-spec.json'), baseline);
     await atomicJSON(path.join(root, 'research-registration.json'), {
