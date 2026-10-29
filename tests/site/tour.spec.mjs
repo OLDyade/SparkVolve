@@ -46,6 +46,13 @@ for (const width of [320, 390, 768, 1440]) {
   });
 }
 
+test('narrow layouts accommodate wider system-font metrics', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto('/');
+  await page.addStyleTag({ content: 'body { font-family: Verdana, sans-serif; }' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
 test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
   test('the recorded search results and evidence links remain readable', async ({ page }) => {

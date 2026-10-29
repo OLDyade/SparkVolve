@@ -240,7 +240,7 @@ img {
 .text-link {
   font-size: 0.88rem;
   font-weight: 650;
-  white-space: nowrap;
+  white-space: normal;
 }
 .section-top .text-link {
   margin-bottom: 26px;
