@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/assets/brand/logo.png" alt="Harness Evolution — 双螺旋环绕星火的品牌标识" width="160" height="160">
+
 # 让 Harness 自己进化
 
 **Evolve the Harness, Not the Model.**

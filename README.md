@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/assets/brand/logo.png" alt="Harness Evolution — an evolving double helix around a spark" width="160" height="160">
+
 # Let the Harness Evolve
 
 **Evolve the Harness, Not the Model.**
