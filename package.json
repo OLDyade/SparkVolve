@@ -87,7 +87,7 @@
     "@axe-core/playwright": "4.14.0",
     "@babel/parser": "8.0.8",
     "@playwright/test": "1.64.1",
-    "@types/node": "24.10.1",
+    "@types/node": "26.6.5",
     "github-slugger": "2.0.0",
     "parse5": "8.0.1",
     "pnpm": "12.15.0",
