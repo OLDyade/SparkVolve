@@ -82,7 +82,7 @@ export async function prepareMutationSeed(original, destination) {
         .replace(
           'export function apply(ctx) {',
           `export function apply(ctx) {
-  ctx.systemPrompt.section({ name: 'spreadsheet-guidance', order: 500,
+  ctx.systemPrompt.section({ name: 'spreadsheet-guidance', order: 500, interpolate: false,
     text: readFileSync(new URL('./guidance.md', import.meta.url), 'utf8') });`,
         ),
   );

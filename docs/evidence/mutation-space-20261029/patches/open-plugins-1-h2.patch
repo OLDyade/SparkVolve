@@ -1,0 +1,284 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..de7f2d0 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,4 @@
+ Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++Read comments before deciding formulas: they state units and which cells are intentionally blank.
++Write formulas where formulas are asked for, and call workbook_recalculate before delivering to
++confirm what an independent engine computes and that no cell returns an error value.
+diff --git a/index.mjs b/index.mjs
+index 05a4784..c690c27 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -61,4 +61,21 @@ export function apply(ctx) {
+       execute: (args, exec) => invoke({ operation: 'write', ...args }, exec.signal),
+     }),
+   );
++  ctx.tools.register(
++    defineTool({
++      name: 'workbook_recalculate',
++      description:
++        'Evaluate every formula in an XLSX workbook through an independent engine (LibreOffice) and return computed values plus error cells (#DIV/0!, #REF!, ...). Use it before delivering to see what a calculator will compute. It supplies no business conclusions; you judge the numbers.',
++      parameters: {
++        file: { type: 'string', required: true },
++        save_to: {
++          type: 'string',
++          description: 'Optional /workspace path to also save the recalculated workbook.',
++        },
++      },
++      output,
++      timeoutMs: 240000,
++      execute: (args, exec) => invoke({ operation: 'recalculate', ...args }, exec.signal),
++    }),
++  );
+ }
+diff --git a/workbook.py b/workbook.py
+index 5b58d96..65efa9d 100644
+--- a/workbook.py
++++ b/workbook.py
+@@ -1,29 +1,229 @@
++"""Spreadsheet engine: inspect, write (formula-preserving), recalculate, verify.
++
++Derived from the baseline workbook.py. It keeps the baseline's two
++proven operations (`inspect`, `write`) and adds:
++
++  * `recalculate` - evaluate every formula in a delivered workbook through an
++    independent engine (LibreOffice headless) and report computed values and
++    error cells. The bridge that grades deliveries recalculates formulas; a raw
++    openpyxl file carries no cached values, so this is the only way an agent can
++    see what the independent engine will see before handing the file in.
++  * `verify` - recalculate and compare named cells against caller-supplied
++    expectations, returning per-cell pass/fail so a wrong assumption is caught
++    before delivery instead of after.
++
++Nothing here infers business semantics or business answers: callers supply the
++formulas and the expectations. The engine only computes and compares.
++"""
+ import json
++import shutil
++import subprocess
+ import sys
++import tempfile
+ from pathlib import Path
++
+ from openpyxl import load_workbook
+ from openpyxl.utils.cell import coordinate_to_tuple
+ 
+-args = json.load(sys.stdin)
+-if args['operation'] == 'inspect':
+-    workbook = load_workbook(args['file'])
+-    print(json.dumps({sheet.title: [{'cell': cell.coordinate, 'value': cell.value, 'comment': cell.comment.text if cell.comment else None}
+-                                  for row in sheet for cell in row if cell.value is not None or cell.comment]
+-                      for sheet in workbook}, default=str))
+-elif args['operation'] == 'write':
++WORKSPACE = Path('/workspace')
++RECALC_TIMEOUT = 180
++
++
++def _load(path, data_only=False):
++    return load_workbook(path, data_only=data_only)
++
++
++def _cell_entry(cell, data_only):
++    entry = {'cell': cell.coordinate, 'value': cell.value}
++    if cell.comment:
++        entry['comment'] = cell.comment.text
++    if not data_only and isinstance(cell.value, str) and cell.value.startswith('='):
++        entry['is_formula'] = True
++    return entry
++
++
++def do_inspect(args):
++    data_only = bool(args.get('data_only'))
++    wb = _load(args['file'], data_only=data_only)
++    result = {}
++    for sheet in wb:
++        cells = []
++        for row in sheet.iter_rows():
++            for cell in row:
++                if cell.value is not None or cell.comment:
++                    cells.append(_cell_entry(cell, data_only))
++        result[sheet.title] = cells
++    return {
++        'file': args['file'],
++        'sheets': result,
++        'note': 'Stored contents. A string starting with "=" is an Excel formula. '
++                'Comments are original source facts, not business conclusions.',
++    }
++
++
++def do_write(args):
+     target = Path(args['destination']).resolve()
+-    if not target.is_relative_to('/workspace'):
++    if not target.is_relative_to(WORKSPACE):
+         raise ValueError('Destination must be inside /workspace')
+-    workbook = load_workbook(args['source'])
++    wb = _load(args['source'])
+     seen = set()
+     for edit in args['edits']:
+-        position = (edit['sheet'], coordinate_to_tuple(edit['cell']))
++        sheet = edit['sheet']
++        if sheet not in wb.sheetnames:
++            raise ValueError(f'Unknown sheet: {sheet}')
++        position = (sheet, coordinate_to_tuple(edit['cell']))
+         if position in seen:
+             raise ValueError('Duplicate target')
+         seen.add(position)
+-        workbook[edit['sheet']][edit['cell']] = edit['value']
++        wb[sheet][edit['cell']] = edit['value']
+     target.parent.mkdir(parents=True, exist_ok=True)
+-    workbook.save(target)
+-    print(json.dumps({'saved': str(target), 'submitted_cells': len(seen), 'formula_values_recalculated': False}))
+-else:
+-    raise ValueError('Unknown workbook operation')
++    wb.save(target)
++    return {
++        'saved': str(target),
++        'submitted_cells': len(seen),
++        'formula_values_recalculated': False,
++        'next_step': 'Call workbook_recalculate on the saved path to see what an independent engine computes.',
++    }
++
++
++def _libreoffice_recalc(source):
++    """Recalculate through LibreOffice; caller owns and removes the returned dir."""
++    outdir = tempfile.mkdtemp(prefix='wb-recalc-')
++    try:
++        subprocess.run(
++            ['soffice', '--headless', '--calc', '--convert-to', 'xlsx',
++             '--outdir', outdir, source],
++            capture_output=True, timeout=RECALC_TIMEOUT, check=False,
++        )
++        produced = sorted(Path(outdir).glob('*.xlsx'))
++        if not produced:
++            raise RuntimeError(
++                'LibreOffice produced no recalculated workbook; the engine could not '
++                'evaluate this file.'
++            )
++        return Path(produced[0])
++    except BaseException:
++        shutil.rmtree(outdir, ignore_errors=True)
++        raise
++
++
++def _collect(source, recalculated):
++    """Pair each formula in `source` with the value the engine computed."""
++    wb_form = _load(str(source))
++    wb_val = _load(str(recalculated), data_only=True)
++    rows = []
++    errors = []
++    for sheet in wb_form:
++        if sheet.title not in wb_val.sheetnames:
++            continue
++        target = wb_val[sheet.title]
++        for row in sheet.iter_rows():
++            for cell in row:
++                computed = target[cell.coordinate].value
++                if isinstance(computed, str) and computed.startswith('#'):
++                    errors.append({'sheet': sheet.title, 'cell': cell.coordinate, 'value': computed})
++                if cell.data_type == 'f':
++                    rows.append({
++                        'sheet': sheet.title,
++                        'cell': cell.coordinate,
++                        'formula': cell.value,
++                        'computed': computed,
++                    })
++    return rows, errors
++
++
++def do_recalculate(args):
++    source = Path(args['file']).resolve()
++    if not source.exists():
++        raise ValueError(f'File not found: {source}')
++    recalculated = _libreoffice_recalc(str(source))
++    try:
++        rows, errors = _collect(source, recalculated)
++        save_to = args.get('save_to')
++        saved = None
++        if save_to:
++            target = Path(save_to).resolve()
++            if not target.is_relative_to(WORKSPACE):
++                raise ValueError('save_to must be inside /workspace')
++            target.parent.mkdir(parents=True, exist_ok=True)
++            shutil.copyfile(str(recalculated), str(target))
++            saved = str(target)
++    finally:
++        shutil.rmtree(recalculated.parent, ignore_errors=True)
++    return {
++        'file': str(source),
++        'formula_cells': len(rows),
++        'formulas': rows,
++        'error_cells': errors,
++        'saved_recalculated_copy': saved,
++        'note': 'Computed values come from an independent engine. Compare them against your own logic.',
++    }
++
++
++def _close(a, b, tolerance):
++    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
++        return abs(float(a) - float(b)) <= tolerance * max(1.0, abs(float(a)), abs(float(b)))
++    if a is None or b is None:
++        return a == b
++    try:
++        fa, fb = float(a), float(b)
++    except (TypeError, ValueError):
++        return str(a).strip() == str(b).strip()
++    return abs(fa - fb) <= tolerance * max(1.0, abs(fa), abs(fb))
++
++
++def do_verify(args):
++    source = Path(args['file']).resolve()
++    if not source.exists():
++        raise ValueError(f'File not found: {source}')
++    checks = args.get('checks') or []
++    tolerance = float(args.get('tolerance') or 1e-9)
++    recalculated = _libreoffice_recalc(str(source))
++    try:
++        wb_val = _load(str(recalculated), data_only=True)
++        wb_form = _load(str(source))
++        rows, errors = _collect(source, recalculated)
++    finally:
++        shutil.rmtree(recalculated.parent, ignore_errors=True)
++    comparisons = []
++    mismatches = []
++    for check in checks:
++        sheet = check['sheet']
++        cell = check['cell']
++        expected = check['expected']
++        computed = wb_val[sheet][cell].value if sheet in wb_val.sheetnames else None
++        ok = _close(computed, expected, tolerance)
++        entry = {
++            'sheet': sheet, 'cell': cell, 'expected': expected,
++            'computed': computed, 'matches': ok,
++            'formula': wb_form[sheet][cell].value,
++        }
++        comparisons.append(entry)
++        if not ok:
++            mismatches.append(entry)
++    return {
++        'file': str(source),
++        'comparisons': comparisons,
++        'mismatches': mismatches,
++        'error_cells': errors,
++        'formula_cells': len(rows),
++        'all_checks_pass': not mismatches,
++        'note': 'Each check compares an engine-computed value with the expected value you supplied. '
++                'A pass only means the engine agrees with your expectation, not that the expectation is right.',
++    }
++
++
++HANDLERS = {
++    'inspect': do_inspect,
++    'write': do_write,
++    'recalculate': do_recalculate,
++    'verify': do_verify,
++}
++
++
++if __name__ == '__main__':
++    args = json.load(sys.stdin)
++    operation = args.get('operation')
++    if operation not in HANDLERS:
++        raise ValueError(f'Unknown workbook operation: {operation}')
++    print(json.dumps(HANDLERS[operation](args), default=str))

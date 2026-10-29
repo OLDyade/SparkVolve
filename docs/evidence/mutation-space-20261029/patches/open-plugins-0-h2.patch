@@ -1,0 +1,234 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..51fc2ea 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,9 @@
+ Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++
++Working method:
++- Inspect the source workbook first, and read every comment: comments state the intended business rule, the required units, and the base-to-scenario distinction.
++- Enter Excel formulas (strings beginning with "=") in the target cells rather than hard-coded numbers. Anchor one formula per row and let relative references fill every displayed period.
++- Cover every column that has a period header. A row counts as complete only when every displayed period is filled, including the first forecast column. A value in a period column to the left of the first forecast column, or a section labelled historical, is a base for the projection, not a substitute for the first forecast period.
++- Keep each figure in the unit the row header states. When an input unit differs from the display unit the comment requires, convert inside the formula.
++- Do not fill cells the source marks or leaves intentionally blank, and keep the original labels, units and note text untouched.
++- After writing, run workbook_verify and confirm every formula resolves to a plausible value with no formula errors before delivering.
+diff --git a/index.mjs b/index.mjs
+index 05a4784..d8d7ce1 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -61,4 +61,27 @@ export function apply(ctx) {
+       execute: (args, exec) => invoke({ operation: 'write', ...args }, exec.signal),
+     }),
+   );
++  ctx.tools.register(
++    defineTool({
++      name: 'workbook_verify',
++      description:
++        'Recalculate an XLSX with the resident office engine and report the computed value of each formula, so typed formulas can be checked before delivery. Omit cells to check every formula; pass cells to check specific ones. Flags #REF!/#VALUE!-style formula errors. Does not certify business correctness.',
++      parameters: {
++        file: { type: 'string', required: true },
++        cells: {
++          type: 'array',
++          items: {
++            type: 'object',
++            additionalProperties: false,
++            properties: {
++              sheet: { type: 'string', required: true },
++              cell: { type: 'string', required: true },
++            },
++          },
++        },
++      },
++      output,
++      execute: (args, exec) => invoke({ operation: 'verify', ...args }, exec.signal),
++    }),
++  );
+ }
+diff --git a/workbook.py b/workbook.py
+index 5b58d96..efcfbad 100644
+--- a/workbook.py
++++ b/workbook.py
+@@ -1,29 +1,173 @@
+ import json
++import shutil
++import subprocess
+ import sys
++import tempfile
+ from pathlib import Path
++
+ from openpyxl import load_workbook
+ from openpyxl.utils.cell import coordinate_to_tuple
+ 
+-args = json.load(sys.stdin)
+-if args['operation'] == 'inspect':
+-    workbook = load_workbook(args['file'])
+-    print(json.dumps({sheet.title: [{'cell': cell.coordinate, 'value': cell.value, 'comment': cell.comment.text if cell.comment else None}
+-                                  for row in sheet for cell in row if cell.value is not None or cell.comment]
+-                      for sheet in workbook}, default=str))
+-elif args['operation'] == 'write':
++ERROR_TEXT = ('#REF!', '#VALUE!', '#DIV/0!', '#NAME?', '#N/A', '#NUM!', '#NULL!')
++ERROR_PREFIX = ('Err:', '#SPILL', '#CALC')
++
++
++def is_error_value(value):
++    return isinstance(value, str) and (value.strip() in ERROR_TEXT or value.strip().startswith(ERROR_PREFIX))
++
++
++def recalculate(source):
++    """Recalculate an XLSX with LibreOffice, returning work dir and recalculated copy."""
++    work = Path(tempfile.mkdtemp(prefix='wbverify-'))
++    try:
++        staged = work / 'in.xlsx'
++        shutil.copyfile(source, staged)
++        out_dir = work / 'out'
++        out_dir.mkdir()
++        profile = work / 'profile'
++        result = subprocess.run(
++            [
++                'soffice',
++                '--headless',
++                '--norestore',
++                '--nologo',
++                '--invisible',
++                f'-env:UserInstallation=file://{profile}',
++                '--convert-to',
++                'xlsx',
++                '--outdir',
++                str(out_dir),
++                str(staged),
++            ],
++            capture_output=True,
++            timeout=240,
++        )
++        produced = out_dir / 'in.xlsx'
++        if not produced.exists():
++            raise RuntimeError(
++                'Recalculation failed: ' + result.stderr.decode('utf-8', 'replace')[-2000:]
++            )
++        return work, produced
++    except Exception:
++        shutil.rmtree(work, ignore_errors=True)
++        raise
++
++
++def inspect_workbook(path):
++    workbook = load_workbook(path)
++    return {
++        sheet.title: [
++            {
++                'cell': cell.coordinate,
++                'value': cell.value,
++                'comment': cell.comment.text if cell.comment else None,
++            }
++            for row in sheet
++            for cell in row
++            if cell.value is not None or cell.comment
++        ]
++        for sheet in workbook
++    }
++
++
++def verify_workbook(args):
++    source = Path(args['file']).resolve()
++    formula_book = load_workbook(source)
++    work, recalculated = recalculate(source)
++    try:
++        values = load_workbook(recalculated, data_only=True)
++        targets = args.get('cells') or []
++        selected = []
++        if targets:
++            for entry in targets:
++                name = entry['sheet']
++                if name not in formula_book.sheetnames:
++                    raise ValueError(
++                        'Sheet does not exist: '
++                        + name
++                        + '; available sheets: '
++                        + ', '.join(formula_book.sheetnames)
++                    )
++                formula = formula_book[name][entry['cell']].value
++                value = values[name][entry['cell']].value
++                selected.append(
++                    {
++                        'sheet': name,
++                        'cell': entry['cell'],
++                        'formula': formula,
++                        'value': value,
++                        'is_formula': isinstance(formula, str) and formula.startswith('='),
++                        'error': is_error_value(value),
++                    }
++                )
++        else:
++            for sheet in formula_book:
++                target = values[sheet.title]
++                for row in sheet:
++                    for cell in row:
++                        if isinstance(cell.value, str) and cell.value.startswith('='):
++                            value = target[cell.coordinate].value
++                            selected.append(
++                                {
++                                    'sheet': sheet.title,
++                                    'cell': cell.coordinate,
++                                    'formula': cell.value,
++                                    'value': value,
++                                    'is_formula': True,
++                                    'error': is_error_value(value),
++                                }
++                            )
++        errors = [item for item in selected if item['error']]
++        return {
++            'file': str(source),
++            'checked': len(selected),
++            'error_count': len(errors),
++            'all_formulas_ok': not errors,
++            'cells': selected,
++        }
++    finally:
++        shutil.rmtree(work, ignore_errors=True)
++
++
++def write_workbook(args):
+     target = Path(args['destination']).resolve()
+     if not target.is_relative_to('/workspace'):
+         raise ValueError('Destination must be inside /workspace')
+     workbook = load_workbook(args['source'])
+     seen = set()
++    missing = []
+     for edit in args['edits']:
+-        position = (edit['sheet'], coordinate_to_tuple(edit['cell']))
++        name = edit['sheet']
++        if name not in workbook.sheetnames:
++            missing.append(name)
++            continue
++        position = (name, coordinate_to_tuple(edit['cell']))
+         if position in seen:
+             raise ValueError('Duplicate target')
+         seen.add(position)
+-        workbook[edit['sheet']][edit['cell']] = edit['value']
++        workbook[name][edit['cell']] = edit['value']
++    if missing:
++        raise ValueError(
++            'Unknown sheet(s) '
++            + ', '.join(sorted(set(missing)))
++            + '; available sheets: '
++            + ', '.join(workbook.sheetnames)
++        )
+     target.parent.mkdir(parents=True, exist_ok=True)
+     workbook.save(target)
+-    print(json.dumps({'saved': str(target), 'submitted_cells': len(seen), 'formula_values_recalculated': False}))
++    return {
++        'saved': str(target),
++        'submitted_cells': len(seen),
++        'formula_values_recalculated': False,
++    }
++
++
++args = json.load(sys.stdin)
++if args['operation'] == 'inspect':
++    print(json.dumps(inspect_workbook(args['file']), default=str))
++elif args['operation'] == 'write':
++    print(json.dumps(write_workbook(args)))
++elif args['operation'] == 'verify':
++    print(json.dumps(verify_workbook(args), default=str))
+ else:
+     raise ValueError('Unknown workbook operation')

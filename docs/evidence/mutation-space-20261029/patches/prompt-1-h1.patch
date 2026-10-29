@@ -1,0 +1,38 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..56bf911 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,32 @@
+-Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++Spreadsheet completion procedure. Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++
++## Scope and preservation (do this first)
++1. Run workbook_inspect on the source and treat it as the complete inventory: sheets, every occupied cell, each cell's exact value or formula, and every comment. Comments are part of the specification and often carry units, rates, sign conventions or exceptions that are not visible in labels — read all of them before computing anything.
++2. Never overwrite, reformat, relabel or clear a cell that already holds an input value, a label, a unit, or a pre-existing formula. Only fill cells that are empty and are part of the requested output.
++3. Blank output cells are intentional (the task states which). Leave them blank; never place 0, "n/a", a formula or a placeholder in a cell you were told to keep blank. Likewise, never "helpfully" fill adjacent cells, add total rows, insert columns or add sheets.
++4. Keep the delivered workbook structure identical: same sheet names, same row/column positions, same number formats and units as the source. Do not convert units unless the requested output explicitly needs it.
++
++## Required deliverable form
++The independent engine recalculates formulas, so every computed output must be a live Excel formula that references the source input cells — not a hard-coded number. Exceptions: text labels, and pass-through cells that deliberately reference a computed cell.
++- Bind formulas to the actual input cells so the model is auditable and survives recalculation.
++- Use standard, widely supported functions only (SUM, SUMIF/SUMIFS, SUMPRODUCT, AVERAGE, MIN, MAX, IF, IFS, IFERROR, ROUND, ABS, LOOKUP, INDEX, MATCH, CHOOSE, VALUE, YEAR, and basic arithmetic operators). Prefer SUMPRODUCT/SUMIFS over dynamic arrays; avoid structured table references, LET, LAMBDA, XLOOKUP and spilled ranges unless there is no alternative.
++- Use `=`-prefixed A1-style formulas with `,` argument separators and English function names. Reference other sheets as `'Sheet'!A1` when the name contains spaces.
++- Sign conventions: keep expense figures positive unless the source uses negatives; follow the source convention exactly and let formulas propagate it rather than pre-flipping signs by hand in several places.
++
++## How to compute (the method, not just the answer)
++- Read the whole model as a grid: rows are line items, columns are periods. Once you understand a row, fill the entire row across all periods in one batch so the pattern is consistent, then move to the next row.
++- For each period column, use the same formula pattern shifted by column, with absolute `$` references for anchors that must not drift (rates, original principal, base year).
++- Build in dependency order: raw inputs and assumptions, then drivers, then first-level derived columns, then subtotals, then aggregates and ratios. Never compute a downstream line from a value you have not yet placed.
++- Ratio lines: compute as a ratio of two cells, guarding with IFERROR only when a zero denominator is genuinely possible.
++- Multi-year waterfall / rollforward: opening balance = prior closing balance; movements reference their own-year inputs; closing = opening + increases − decreases. The first year opens from the source's stated opening figure, not from a prior column that does not exist.
++- Adjustments of different kinds: apply each adjustment's own rate/base only to that adjustment; do not apply one rate to a combined subtotal.
++- Weighted/portfolio aggregates: compute the aggregate from the components rather than averaging margins; total margin = total gross profit / total revenue.
++- Time-dependent outputs (final/exit year only): place the formula only in the specified year and leave other years blank; use an explicit switch in the formula (an IF on the year or column) if a single shared pattern must cover the row.
++
++## Self-check before writing
++- List every target cell, confirm it was empty in the source and is a requested output, and confirm no input, label or preserve-blank cell appears in the edit list.
++- Verify coverage: every requested output row and every displayed period has a value; the set of filled cells equals the set of requested outputs (no missing periods, no extra cells).
++- Verify consistency: percentages match their components; component sums match subtotals; balances roll forward continuously with no jumps at year boundaries; totals equal the sum of their parts.
++- Recalculate one representative column by hand from the source inputs and compare with the formula logic before writing.
++- Deliver the file to the exact destination path requested by the task using workbook_write with a single coherent edit batch where possible.
++- Final pass: re-inspect the delivered file and confirm the original inputs, labels, units and intentional blanks are all still exactly as they were in the source.

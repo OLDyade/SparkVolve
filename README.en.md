@@ -102,6 +102,8 @@ The [official DeepSeek end-to-end experiment](docs/experiments/2026-10-28-offici
 
 These are engineering acceptance results on public synthetic tasks. They do not establish stable improvement or cross-domain transfer. Regressions, semantic errors and transport failures remain public in the [experiment index](docs/experiments/README.md).
 
+The latest [mutation-space comparison](docs/experiments/2026-10-29-mutation-space-results.md) completed three arms, six independent searches and 100 task executions. Candidate patches, observed tool calls and counterexamples are public. This study has not established an advantage for unrestricted plugin mutation.
+
 ## Explore further
 
 | Direction | Documentation |

@@ -4,7 +4,9 @@
 
 已将官方 DeepSeek 接入 `npm start`，通过 recipe 替换任务生成、领域依赖与种子插件。真实结构化数据运行完成六次任务评分、一次自主实现变异与原包导出；H0/H1 均为 100%，保留 H0，三次失败探测完整保留。[结果与原记录摘要](experiments/2026-10-29-official-startup-results.md)。
 
-同一 G/H0 的三组变异空间对照已[预注册](experiments/2026-10-29-mutation-space-registration.md)并启动：prompt-only、single-plugin、open-plugins，每组两次独立搜索。通用合同限制源码范围，控制器拒绝越界；每题 600 秒，失败不重抽，独立验证后才解释收益。主指标与核心思想保持原裁决。266 单元、27 原生测试通过；未使用 subagent。[设计来源](research/2026-10-29-native-start-and-mutation-study.md)。
+同一 G/H0 的三组变异空间对照已[完整执行](experiments/2026-10-29-mutation-space-results.md)：prompt-only、single-plugin、open-plugins，每组两次独立搜索，100 次任务执行、95 次评分、5 次失败。通用合同限制源码范围，控制器拒绝越界；每题 600 秒，失败不重抽。五次选择原 H0，唯一入选变异存在已复现的语义反例，当前未证明开放空间优势。11 个源码变异、逐题成绩与成本公开，未作为推荐包发布。
+
+主指标与核心思想保持原裁决。实现提交的公开 CI 四路通过，266 单元、27 原生、两个容器后端各 24 项。实验收尾后按官方 DSH 原文渲染接口修正后续种子的模板误解析，新增原生回归；不修改或重跑本轮冻结候选。全程未使用 subagent。[设计来源](research/2026-10-29-native-start-and-mutation-study.md)。
 
 ## 2026-10-29：对 dc0d2be 评审的取舍
 

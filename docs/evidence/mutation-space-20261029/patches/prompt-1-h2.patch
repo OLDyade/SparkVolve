@@ -1,0 +1,14 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..521019e 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,9 @@
+ Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++
++Work from the workbook itself, not from general assumptions:
++
++- Inspect the whole sheet first (every occupied cell, formula and comment). Comments are part of the specification.
++- Fill only the output cells the task asks for, each with a live Excel formula that references the real source cells. Leave cells the task says are intentionally blank empty. Do not add, relabel, reformat or overwrite inputs, labels, units or existing formulas.
++- Prefer plain arithmetic with standard functions (SUM, SUMIFS, SUMPRODUCT, IF, IFERROR, INDEX/MATCH) over engine-specific or modern-only syntax.
++- Apply the sign convention that actually holds in the sheet: adjustments carry their own arithmetic only where the model says so, and each rate applies to its own adjustment rather than to a combined total.
++- Re-read the finished model before saving: every requested output row is filled for every period, and each computed row is internally consistent with the rows it depends on.

@@ -1,0 +1,76 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..e564975 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,71 @@
+ Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++
++## Period alignment
++
++The period header row is the authority for which period a column belongs to.
++Each rate, price, margin or growth figure in a column applies to THAT column's
++period and to no other column. Never compensate for spending an anchor opener by
++shifting a later column's rate into an earlier column.
++
++Anchor and predecessor rules:
++
++- A forecast that builds from a historical or opening figure starts in the FIRST
++  displayed forecast period and applies that period's own rate.
++- Only genuinely later periods chain from their own immediately preceding
++  forecast period.
++- Do not leave a required forecast cell blank to make room for a later period.
++
++Fill every cell the task asks for. Cells the task calls intentionally blank stay
++blank; nothing else should be blank.
++
++## Normalizing reported results
++
++Normalization rebuilds a period's result as if the non-recurring items had not
++occurred. It is not a weighted-average or a re-weighting of the reported base.
++
++Work out the direction of each line item from what it did to the reported figure:
++
++- A non-recurring EXPENSE reduced the reported result, so removing it ADDS its
++  full amount back to the pre-tax base.
++- A non-recurring GAIN raised the reported result, so removing it SUBTRACTS its
++  full amount from the pre-tax base.
++
++Use the item's own full amount, not the amount multiplied by a rate. The tax rate
++associated with an item governs only the tax effect, never the base movement.
++
++## Tax effect per adjustment
++
++Each adjustment's tax effect is computed separately, on that adjustment's own
++amount, at that adjustment's own rate:
++
++- Removing an expense restores the tax it sheltered: reported tax PLUS
++  expense_amount * expense_rate.
++- Removing a gain removes the tax it attracted: reported tax MINUS
++  gain_amount * gain_rate.
++
++Reported tax already embeds the tax on the reported result. Add the separate
++adjustment effects to it; never recompute the whole tax charge from a blended
++rate and never apply one adjustment's rate to another adjustment or to the
++adjusted pre-tax total.
++
++## Consistency check
++
++Derived rows should equal their own definitions: net profit = pre-tax minus tax;
++a margin divides the matching numerator by the matching period's revenue. If an
++adjustment's tax effect and its base movement have opposite signs of benefit, one
++direction is inverted; re-derive both before delivering.
++
++## Building the workbook
++
++Put real Excel formulas in the cells, referencing the source cells, so an
++independent engine can recalculate them. Do not paste precomputed numbers.
++Reference the row holding a true constant (an opening or historical value, a
++fixed rate) with absolute markers where a formula needs it, and chain forecast
++periods with ordinary relative references so the arithmetic reads period by
++period.
++
++Use the workbook tools to inspect the source and write the requested output path
++as a copy of the source, changing only the cells the task asks for. Leave
++original inputs, labels, units and intentionally blank cells exactly as they are,
++and do not add, delete or rename rows, columns, sheets or labels. Read the cell
++comments first, since they carry conventions the labels leave ambiguous.

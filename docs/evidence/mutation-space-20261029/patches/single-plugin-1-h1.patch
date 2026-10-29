@@ -1,0 +1,574 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..7493024 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,25 @@
+-Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++Spreadsheet work. `workbook_inspect`, `workbook_write`, `workbook_recalc`, `workbook_review` and `workbook_diff` operate on XLSX files. An independent engine recalculates the delivered file, so the deliverable must contain live formulas, not typed-in numbers.
++
++How to read the source before writing anything:
++
++- Inspect the whole workbook first. Read every comment. A comment states a scope rule for the cell or row it sits on; treat it as the binding definition of that cell, and re-read it before building a formula that uses the cell.
++- Use the label text as the definition of what a row is. Do not assume a row's role from its position. Classify each labelled row: a reported input, a component of a build-up, a rate, a total, or a ratio.
++- Check indentation and grouping. Source workbooks often indent the components of a build-up block and set peaks or totals at a wider indent. A block's components and its total are different things even when the labels look similar.
++- A rate applies only to the base it is defined on. If a comment restricts a rate to one adjustment, that rate must not multiply a total, and a rate must never be averaged into a metric.
++
++Building formulas:
++
++- Every requested output cell must be a formula that references the source cells, so that the engine recomputes it. Never paste the numeric result of your own arithmetic into a cell the task asks you to fill.
++- Build one column's formulas correctly, verify them, then extend across every displayed period column. A row that is filled for some periods and empty for others is a defect.
++- Follow the workbook's own arithmetic. If the source builds a total from components, your totals must reference those component cells, and derived metrics must reference the totals rather than re-derive them.
++- Match the workbook's existing direction and sign conventions for each component. Before trusting a sign, check it against the comment for that row, and confirm that the components of a single block move together as the block's inputs grow.
++- Respect intentionally blank cells. Cells the task says are blank, or that are blank in the source for a structural reason, stay blank. Never fill a cell that the task marks as intentionally empty, and never clear a cell you were not asked to change.
++- Use the workbook's own conventions for units, scale and number format. If margins and rates are stored as fractions, return fractions. Do not multiply by 100, do not change number formats, and do not add units or labels that are not asked for.
++- When a value is asked for in one period only, leave the other period cells blank instead of repeating or extrapolating.
++
++Before delivering:
++
++- Write to a copy, keeping every original input, label, comment and unit byte-identical.
++- Run `workbook_recalc` to confirm every formula evaluates to a number. A formula that returns nothing or an error is a defect.
++- Run `workbook_review` with the source workbook to check arithmetic consistency, sign conventions, partial rows and preserved inputs. Then run `workbook_diff` against the source and confirm that only the intended target cells changed.
++- Read your computed values back and sanity check their direction and magnitude against the source trends before you finish.
+diff --git a/index.mjs b/index.mjs
+index 05a4784..afe563b 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -61,4 +61,41 @@ export function apply(ctx) {
+       execute: (args, exec) => invoke({ operation: 'write', ...args }, exec.signal),
+     }),
+   );
++  ctx.tools.register(
++    defineTool({
++      name: 'workbook_recalc',
++      description:
++        'Recalculate an XLSX workbook with a real spreadsheet engine and return each formula together with the value it computes to. Use this to confirm that written formulas evaluate before delivering.',
++      parameters: { file: { type: 'string', required: true } },
++      output,
++      execute: (args, exec) => invoke({ operation: 'recalc', ...args }, exec.signal),
++    }),
++  );
++  ctx.tools.register(
++    defineTool({
++      name: 'workbook_review',
++      description:
++        'Read-only arithmetic self-check of a delivered workbook. Recalculates it, then reports sign-convention, rate-scope, margin-scale, partial-row, formula-error and preserved-input findings. It never edits the workbook, never fills cells, and does not certify business correctness.',
++      parameters: {
++        delivery: { type: 'string', required: true },
++        source: { type: 'string' },
++        sheet: { type: 'string' },
++      },
++      output,
++      execute: (args, exec) => invoke({ operation: 'review', ...args }, exec.signal),
++    }),
++  );
++  ctx.tools.register(
++    defineTool({
++      name: 'workbook_diff',
++      description:
++        'Compare a workbook against its source and list every source input, label or comment that changed. Use it to prove original inputs were preserved before delivering.',
++      parameters: {
++        file: { type: 'string', required: true },
++        source: { type: 'string', required: true },
++      },
++      output,
++      execute: (args, exec) => invoke({ operation: 'diff', ...args }, exec.signal),
++    }),
++  );
+ }
+diff --git a/workbook.py b/workbook.py
+index 5b58d96..95b3436 100644
+--- a/workbook.py
++++ b/workbook.py
+@@ -1,29 +1,482 @@
++"""Workbook operations for the spreadsheet harness.
++
++Operations
++  inspect  exact occupied cells, formulas, comments, label indent and number format
++  write    apply caller-supplied values/formulas to a copy of a workbook
++  recalc   recompute through a real spreadsheet engine and report formula -> value
++  review   read-only arithmetic self-check of a delivery (never edits anything)
++  diff     compare a delivery with its source to show preserved-input changes
++"""
++
+ import json
++import shutil
++import subprocess
+ import sys
++import tempfile
+ from pathlib import Path
++
+ from openpyxl import load_workbook
+ from openpyxl.utils.cell import coordinate_to_tuple
+ 
+-args = json.load(sys.stdin)
+-if args['operation'] == 'inspect':
++# ---------------------------------------------------------------------------
++# value helpers
++# ---------------------------------------------------------------------------
++
++
++def is_formula(value):
++    return isinstance(value, str) and value.startswith('=')
++
++
++def is_number(value):
++    return isinstance(value, (int, float)) and not isinstance(value, bool)
++
++
++def norm(value):
++    if value is None:
++        return ''
++    text = str(value).strip().lower()
++    for char in (':', '_', '-', '.', '/', '('):
++        text = text.replace(char, ' ')
++    text = text.replace(')', ' ')
++    return ' '.join(text.split())
++
++
++def any_of(text, needles):
++    return any(needle in text for needle in needles)
++
++
++def indent_of(workbook, cell):
++    if not cell.has_style:
++        return 0
++    try:
++        return int(workbook._fonts[cell._style.fontId].indent or 0)
++    except Exception:
++        return 0
++
++
++def is_percent(cell):
++    return '%' in (cell.number_format or '')
++
++
++def num(value):
++    return value if is_number(value) else None
++
++
++# ---------------------------------------------------------------------------
++# labels -> roles
++# ---------------------------------------------------------------------------
++
++HURTS = ('expense', 'cost', 'interest', 'loss', 'amortization', 'depreciation',
++         'repayment', 'principal', 'principal payment', 'capex', 'tax')
++HELPS = ('gain', 'recurring gain', 'benefit', 'income', 'add back', 'addback')
++LINETOTALS = ('ebt', 'ebitda', 'ebit', 'operating income', 'pretax income',
++              'pre tax income', 'earnings before')
++ADJUSTMENT = ('non recurring', 'nonrecurring', 'adjust', 'one time', 'onetime',
++              'add back', 'addback')
++BLOCKTOTAL = ('normalized', 'adjusted', 'underlying', 'operating', 'pro forma', 'proforma')
++EXIT = ('exit', 'terminal', 'enterprise value', 'equity value')
++
++
++def role(label):
++    text = norm(label)
++    if not text:
++        return 'blank'
++    if 'margin' in text:
++        return 'margin'
++    if is_rate_row(text):
++        return 'rate'
++    if any_of(text, ('exit ', 'exit_', 'terminal', 'implied')):
++        return 'exit'
++    if any_of(text, ADJUSTMENT) or (any_of(text, HURTS + HELPS) and
++                                    any_of(text, ('adjustment', 'add back', 'addback'))):
++        return 'adjustment'
++    if any_of(text, LINETOTALS):
++        return 'line'
++    return 'other'
++
++
++def is_rate_row(text):
++    if 'margin' in text or 'multiple' in text or 'growth' in text or 'escalation' in text:
++        return any_of(text, ('margin', 'multiple', 'growth', 'escalation'))
++    if 'rate' in text and ('tax rate' in text or 'adjustment tax' in text or
++                           'apply' in text or 'only' in text):
++        return True
++    if text.startswith('gain adjustment tax') or text.startswith('expense adjustment tax'):
++        return True
++    return False
++
++
++def direction(text, sign=1):
++    """+1 when the row raises the block total, -1 when it lowers it."""
++    text = ' ' + norm(text) + ' '
++    negative = any_of(text, (' expense', ' costs', ' interest', ' loss', ' repayment',
++                             ' principal', ' capex', ' tax'))
++    positive = any_of(text, (' gain', ' benefit', ' income', ' profit'))
++    if negative and not positive:
++        return -1 * sign
++    if positive and not negative:
++        return 1 * sign
++    if text.strip().startswith('effect'):
++        return sign
++    return 0
++
++
++# ---------------------------------------------------------------------------
++# workbook value access
++# ---------------------------------------------------------------------------
++
++
++def libreoffice():
++    for name in ('soffice', 'libreoffice', 'localc'):
++        found = shutil.which(name)
++        if found:
++            return found
++    return None
++
++
++def recalculate(path):
++    """Return (recalculated_path, engine, error). The caller cleans temp dir."""
++    binary = libreoffice()
++    if not binary:
++        return None, None, 'no LibreOffice binary on PATH'
++    outdir = Path(tempfile.mkdtemp(prefix='recalc-'))
++    try:
++        proc = subprocess.run(
++            [binary, '--headless', '--calc', '--convert-to', 'xlsx',
++             '--outdir', str(outdir), str(path)],
++            capture_output=True, text=True, timeout=240,
++        )
++    except subprocess.TimeoutExpired:
++        shutil.rmtree(outdir, ignore_errors=True)
++        return None, None, 'LibreOffice conversion timed out'
++    produced = Path(outdir) / (Path(path).stem + '.xlsx')
++    if not produced.exists():
++        detail = (proc.stderr or proc.stdout or '').strip()[-500:]
++        shutil.rmtree(outdir, ignore_errors=True)
++        return None, None, 'LibreOffice produced no output: ' + detail
++    return produced, 'libreoffice', None
++
++
++def column_letters(sheet, first_col=2):
++    last = 0
++    for row in sheet.iter_rows():
++        for cell in row:
++            if cell.column > 1 and (cell.value is not None):
++                last = max(last, cell.column)
++    return list(range(first_col, last + 1))
++
++
++def values_maps(workbook, title, columns, rows=range(1, 1)):
++    """Computed numbers per period column, taken from a data_only workbook."""
++    sheet = workbook[title]
++    out = {}
++    for column in columns:
++        out[column] = {
++            row: num(sheet.cell(row=row, column=column).value)
++            for row in (rows or range(1, sheet.max_row + 1))
++        }
++    return out
++
++
++def labelled_rows(formula_workbook, sheet):
++    rows = {}
++    for row in range(1, sheet.max_row + 1):
++        cell = sheet.cell(row=row, column=1)
++        if cell.value is None or str(cell.value).strip() == '':
++            continue
++        rows[row] = {'label': str(cell.value).strip(), 'role': role(cell.value),
++                     'indent': indent_of(formula_workbook, cell)}
++    return rows
++
++
++# ---------------------------------------------------------------------------
++# findings
++# ---------------------------------------------------------------------------
++
++
++def margin_scale_findings(sheet, rows, values, columns):
++    findings = []
++    for row, info in sorted(rows.items()):
++        if info['role'] != 'margin':
++            continue
++        for column in columns:
++            value = values.get(column, {}).get(row)
++            if value is None:
++                continue
++            if is_percent(sheet.cell(row=row, column=column)):
++                continue
++            if 1.5 < abs(value) <= 100.5:
++                findings.append({
++                    'issue': 'margin_scale', 'row': row, 'label': info['label'],
++                    'column': column, 'value': value,
++                    'message': 'Margin values are fractions in this workbook; a value of %s '
++                               'in a plain-formatted cell suggests a stray x100. Return the '
++                               'fraction and leave unit/format unchanged.' % value,
++                })
++                break
++    return findings
++
++
++def rate_relabel_findings(wb, sheet, rows, values, columns):
++    """A percent-formatted metric where the source puts percentages on a rate row."""
++    findings = []
++    rate_rows = [r for r, i in rows.items() if i['role'] == 'rate']
++    metric_rows = [r for r, i in rows.items()
++                   if i['role'] in ('other',) and is_percent(sheet.cell(row=r, column=1))]
++    if not rate_rows:
++        return findings
++    for row in metric_rows:
++        label = norm(rows[row]['label'])
++        if any_of(label, ('margin', 'ratio', 'percent')):
++            continue
++        findings.append({
++            'issue': 'percent_on_metric_row', 'row': row, 'label': rows[row]['label'],
++            'message': '"%s" is percent-formatted like a rate row, but the input percentages '
++                       'live on a rate row and each rate applies only to its own adjustment. '
++                       'A rate is never a metric row; check that this row is not a mislabelled '
++                       'rate before filling it.' % rows[row]['label'],
++        })
++    return findings
++
++
++def exit_row_findings(rows, values, columns):
++    """Exit/terminal values appear only in the final column."""
++    findings = []
++    exit_rows = [r for r, i in rows.items() if i['role'] == 'exit']
++    if not exit_rows or len(columns) < 2:
++        return findings
++    last = columns[-1]
++    for row in exit_rows:
++        for column in columns[:-1]:
++            if values.get(column, {}).get(row) is not None:
++                findings.append({
++                    'issue': 'exit_value_not_final_period', 'row': row,
++                    'label': rows[row]['label'], 'column': column,
++                    'message': 'The exit/terminal row for "%s" has a value outside the final '
++                               'period. Exit value is computed once, in the final year; the '
++                               'earlier cells are intentionally blank.' % rows[row]['label'],
++                })
++                break
++    return findings
++
++
++def write_back_findings(wb, sheet, values_wb, title):
++    """Formulas must remain formulas and must compute to a value."""
++    findings = []
++    computed = values_wb[title] if values_wb is not None and title in values_wb.sheetnames else None
++    for row in sheet.iter_rows():
++        for cell in row:
++            if not is_formula(cell.value):
++                continue
++            value = computed[cell.coordinate].value if computed is not None else None
++            if value is None:
++                findings.append({'issue': 'formula_without_value', 'cell': cell.coordinate,
++                                 'formula': cell.value,
++                                 'message': 'This formula did not return a value when the '
++                                            'engine recalculated the workbook.'})
++            elif isinstance(value, str) and value.startswith('#'):
++                findings.append({'issue': 'formula_error', 'cell': cell.coordinate,
++                                 'formula': cell.value, 'value': value,
++                                 'message': 'This formula evaluates to an error.'})
++    return findings
++
++
++def partial_fill_findings(sheet, rows, columns):
++    findings = []
++    for row, info in sorted(rows.items()):
++        filled = [c for c in columns if sheet.cell(row=row, column=c).value not in (None, '')]
++        if not filled:
++            continue
++        missing = [c for c in columns if c not in filled]
++        if missing and len(filled) > 1:
++            findings.append({
++                'issue': 'partial_row', 'row': row, 'label': info['label'],
++                'empty_columns': missing,
++                'message': 'Row "%s" is filled for some columns only. Fill every displayed '
++                           'period column for it, or leave the row entirely blank if the '
++                           'workbook intends that.' % info['label'],
++            })
++    return findings
++
++
++def preserved_findings(source, delivery):
++    changes = []
++    if not Path(source).exists():
++        return [{'issue': 'source_missing', 'message': 'source not found: %s' % source}]
++    before = load_workbook(source)
++    for sheet in before:
++        if sheet.title not in delivery.sheetnames:
++            changes.append({'sheet': sheet.title, 'cell': '', 'kind': 'sheet_missing'})
++            continue
++        after = delivery[sheet.title]
++        for row in sheet.iter_rows():
++            for cell in row:
++                if cell.value is None and not cell.comment:
++                    continue
++                target = after[cell.coordinate]
++                if cell.comment and (target.comment is None or
++                                     target.comment.text != cell.comment.text):
++                    changes.append({'sheet': sheet.title, 'cell': cell.coordinate,
++                                    'kind': 'comment_changed'})
++                if target.value != cell.value:
++                    kind = 'text_changed' if isinstance(cell.value, str) else 'source_value_changed'
++                    changes.append({'sheet': sheet.title, 'cell': cell.coordinate,
++                                    'kind': kind, 'before': cell.value, 'after': target.value})
++    return [{'issue': 'source_not_preserved', 'changes': changes,
++             'message': 'Original inputs, labels, units and comments must be preserved '
++                        'exactly; only the intended target cells should change.'}] if changes else []
++
++
++# ---------------------------------------------------------------------------
++# operations
++# ---------------------------------------------------------------------------
++
++
++def op_inspect(args):
+     workbook = load_workbook(args['file'])
+-    print(json.dumps({sheet.title: [{'cell': cell.coordinate, 'value': cell.value, 'comment': cell.comment.text if cell.comment else None}
+-                                  for row in sheet for cell in row if cell.value is not None or cell.comment]
+-                      for sheet in workbook}, default=str))
+-elif args['operation'] == 'write':
++    payload = {}
++    for sheet in workbook:
++        entries = []
++        for row in sheet.iter_rows():
++            for cell in row:
++                if cell.value is None and not cell.comment:
++                    continue
++                entries.append({
++                    'cell': cell.coordinate,
++                    'value': cell.value,
++                    'comment': cell.comment.text if cell.comment else None,
++                    'indent': indent_of(workbook, cell) if cell.column == 1 else None,
++                    'number_format': cell.number_format,
++                })
++        payload[sheet.title] = entries
++    return payload
++
++
++def op_write(args):
+     target = Path(args['destination']).resolve()
+     if not target.is_relative_to('/workspace'):
+         raise ValueError('Destination must be inside /workspace')
+     workbook = load_workbook(args['source'])
+     seen = set()
++    notes = []
+     for edit in args['edits']:
+         position = (edit['sheet'], coordinate_to_tuple(edit['cell']))
+         if position in seen:
+-            raise ValueError('Duplicate target')
++            raise ValueError('Duplicate target cell')
+         seen.add(position)
++        if edit['sheet'] not in workbook.sheetnames:
++            raise ValueError('Unknown sheet: %r' % edit['sheet'])
++        existing = workbook[edit['sheet']][edit['cell']]
++        previous = existing.value
++        if previous is not None and previous != '' and not is_formula(previous):
++            # overwriting a populated source value changes a reported input
++            notes.append({'cell': edit['cell'], 'overwrote_input': True,
++                          'previous_value': previous, 'kind': 'source_value'})
++        elif previous is not None and is_formula(previous):
++            notes.append({'cell': edit['cell'], 'overwrote_formula': True,
++                          'previous_value': previous})
+         workbook[edit['sheet']][edit['cell']] = edit['value']
+     target.parent.mkdir(parents=True, exist_ok=True)
+     workbook.save(target)
+-    print(json.dumps({'saved': str(target), 'submitted_cells': len(seen), 'formula_values_recalculated': False}))
+-else:
+-    raise ValueError('Unknown workbook operation')
++    return {'saved': str(target), 'submitted_cells': len(seen),
++            'formula_values_recalculated': False,
++            'overwritten_populated_cells': [n for n in notes if n.get('overwrote_input')],
++            'note': 'Workbook saved unchanged apart from the listed target cells; computed '
++                    'formula results are not stored, so recalculate before reading values.'}
++
++
++def op_recalc(args):
++    path, engine, error = recalculate(args['file'])
++    if path is None:
++        raise ValueError(error or 'recalculation failed')
++    try:
++        computed = load_workbook(path, data_only=True)
++        formulas = load_workbook(args['file'])
++        payload = {}
++        for sheet in computed:
++            source = formulas[sheet.title] if sheet.title in formulas.sheetnames else None
++            entries = []
++            for row in sheet.iter_rows():
++                for cell in row:
++                    original = source[cell.coordinate].value if source is not None else None
++                    if is_formula(original):
++                        entries.append({'cell': cell.coordinate, 'formula': original,
++                                        'value': cell.value})
++                    elif cell.value is not None:
++                        entries.append({'cell': cell.coordinate, 'value': cell.value})
++            payload[sheet.title] = entries
++        return {'engine': engine, 'sheets': payload}
++    finally:
++        shutil.rmtree(Path(path).parent, ignore_errors=True)
++
++
++def op_diff(args):
++    delivery = load_workbook(args['file'])
++    changes = preserved_findings(args['source'], delivery)
++    detail = changes[0]['changes'] if changes else []
++    return {'source': args['source'], 'file': args['file'],
++            'change_count': len(detail), 'changes': detail}
++
++
++def op_review(args):
++    delivery_path = Path(args['delivery'])
++    if not delivery_path.exists():
++        raise ValueError('delivery not found: %s' % delivery_path)
++    wb = load_workbook(delivery_path)
++    title = args.get('sheet') or wb.sheetnames[0]
++    if title not in wb.sheetnames:
++        raise ValueError('sheet not found: %r' % title)
++    sheet = wb[title]
++    columns = column_letters(sheet)
++
++    engine = 'openpyxl-cache'
++    recalc_path, engine_name, engine_error = recalculate(delivery_path)
++    if recalc_path is not None:
++        values_wb = load_workbook(recalc_path, data_only=True)
++        engine = engine_name
++    else:
++        values_wb = load_workbook(delivery_path, data_only=True)
++
++    rows = labelled_rows(wb, sheet)
++    values = (values_maps(values_wb, title, columns, list(rows))
++              if title in values_wb.sheetnames else {})
++
++    findings = []
++    if engine_error:
++        findings.append({'issue': 'engine_unavailable', 'message': engine_error})
++    findings += margin_scale_findings(sheet, rows, values, columns)
++    findings += rate_relabel_findings(wb, sheet, rows, values, columns)
++    findings += exit_row_findings(rows, values, columns)
++    findings += partial_fill_findings(sheet, rows, columns)
++    findings += write_back_findings(wb, sheet, values_wb, title)
++    if args.get('source'):
++        findings += preserved_findings(args['source'], wb)
++
++    formula_cells = sum(1 for r in sheet.iter_rows() for c in r if is_formula(c.value))
++    return {
++        'delivery': str(delivery_path),
++        'source': args.get('source'),
++        'sheet': title,
++        'engine': engine,
++        'period_columns': columns,
++        'formula_cells': formula_cells,
++        'finding_count': len(findings),
++        'findings': findings,
++        'note': 'Arithmetic consistency self-check only. It never edits the workbook and '
++                'does not certify business correctness.',
++    }
++
++
++def main():
++    args = json.load(sys.stdin)
++    operation = args.get('operation')
++    handlers = {'inspect': op_inspect, 'write': op_write, 'recalc': op_recalc,
++                'review': op_review, 'diff': op_diff}
++    handler = handlers.get(operation)
++    if handler is None:
++        raise ValueError('Unknown workbook operation: %r' % operation)
++    print(json.dumps(handler(args), default=str))
++
++
++if __name__ == '__main__':
++    main()

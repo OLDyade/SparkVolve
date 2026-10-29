@@ -1,0 +1,519 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..6d825f4 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,7 @@
+-Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++Spreadsheet work protocol.
++
++1. Inspect first: read the workbook with `workbook_inspect` (formulas, number formats, merged ranges) and read every cell comment. Comments and labels are the authoritative specification for units, scale and rate conventions. Identify given input rows, blank target rows, intentional blanks and the delivery path.
++2. Derive first: compute every target figure yourself from the original inputs (by hand or with Python) before writing anything, so you can check the engine's result against an independent derivation.
++3. Write live formulas: use `workbook_write` to copy the source to the scheduled delivery path and write Excel formulas that reference the original input cells. Prefer relative `fill` templates (`{{C}}` column, `{{R}}` row, offsets like `{{C-1}}`) for a row or column of targets instead of per-cell edits. Respect stated conventions: which balance a rate applies to, whether a rate applies only to its own adjustment, which year receives a terminal or exit metric, and any scale conversion the header or comment states.
++4. Recalculate and compare: call `workbook_verify` with the target ranges and the source path. Compare every reported value with your own derivation, confirm `errors` is empty, and make sure the diff against the source lists only the cells the task asked you to fill.
++5. Preserve the source: never overwrite inputs, labels, units or intentional blanks; never add, delete or reorder rows, columns or sheets; never replace formulas with constants. Do not fill cells the prompt says must stay blank.
+diff --git a/index.mjs b/index.mjs
+index 05a4784..868b425 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -2,63 +2,127 @@ import { readFileSync } from 'node:fs';
+ import { defineTool } from '@deepseek-ai/dsh-tools';
+ import { spawn } from 'node:child_process';
+ import { fileURLToPath } from 'node:url';
++
+ export const inject = ['tools', 'systemPrompt'];
++
++const editSchema = {
++  type: 'array',
++  description:
++    'Explicit cell writes. Each item sets one cell to a literal value or an Excel formula (a string starting with "=", or the separate formula field).',
++  items: {
++    type: 'object',
++    additionalProperties: false,
++    properties: {
++      sheet: { type: 'string', required: true },
++      cell: { type: 'string', required: true },
++      value: { type: 'json' },
++      formula: { type: 'string' },
++    },
++  },
++};
++
++const fillSchema = {
++  type: 'array',
++  description:
++    'Relative formula blocks, one template rendered across a rectangular range. In template, {{C}} is the A1 column letter of the current cell and {{R}} its row; offsets such as {{C-1}} or {{R+1}} are allowed. Use this instead of listing every cell of a row or column.',
++  items: {
++    type: 'object',
++    additionalProperties: false,
++    properties: {
++      sheet: { type: 'string', required: true },
++      range: { type: 'string', required: true },
++      template: { type: 'string', required: true },
++    },
++  },
++};
++
++const checkSchema = {
++  type: 'array',
++  description:
++    'Target cells or ranges to report after recalculation, e.g. {sheet:"Model", range:"B10:E13"}. Omit to verify the whole delivered file structurally.',
++  items: {
++    type: 'object',
++    additionalProperties: false,
++    properties: {
++      sheet: { type: 'string' },
++      range: { type: 'string', required: true },
++    },
++  },
++};
++
+ export function apply(ctx) {
+-  ctx.systemPrompt.section({ name: 'spreadsheet-guidance', order: 500,
+-    text: readFileSync(new URL('./guidance.md', import.meta.url), 'utf8') });
++  ctx.systemPrompt.section({
++    name: 'spreadsheet-guidance',
++    order: 500,
++    text: readFileSync(new URL('./guidance.md', import.meta.url), 'utf8'),
++  });
++
+   const invoke = (args, signal) =>
+     new Promise((resolve, reject) => {
+       const child = spawn('python3', [fileURLToPath(new URL('./workbook.py', import.meta.url))], {
+         signal,
+         stdio: ['pipe', 'pipe', 'pipe'],
+       });
+-      const out = [],
+-        err = [];
++      const out = [];
++      const err = [];
+       child.stdout.on('data', (chunk) => out.push(chunk));
+       child.stderr.on('data', (chunk) => err.push(chunk));
+       child.on('error', reject);
+       child.on('close', (code) =>
+         code === 0
+           ? resolve(Buffer.concat(out).toString())
+-          : reject(new Error(Buffer.concat(err).toString())),
++          : reject(new Error(Buffer.concat(err).toString() || `workbook helper exited with ${code}`)),
+       );
+       child.stdin.end(JSON.stringify(args));
+     });
+-  const output = { schema: { type: 'string' }, render: (_args, value) => [{ type: 'text', text: value }] };
++
++  const output = {
++    schema: { type: 'string' },
++    render: (_args, value) => [{ type: 'text', text: value }],
++  };
++
+   ctx.tools.register(
+     defineTool({
+       name: 'workbook_inspect',
+       description:
+-        'Read exact occupied cells, formulas and comments in an XLSX workbook. Source labels are facts; this tool does not infer business semantics.',
+-      parameters: { file: { type: 'string', required: true } },
++        'Read exact occupied cells, formulas and comments in an XLSX workbook, including number formats and merged ranges. Source labels and comments are the authoritative specification; this tool does not infer business semantics.',
++      parameters: {
++        file: { type: 'string', required: true },
++        data_only: { type: 'boolean', description: 'Read cached values instead of formulas.' },
++      },
+       output,
+       execute: (args, exec) => invoke({ operation: 'inspect', ...args }, exec.signal),
+     }),
+   );
++
+   ctx.tools.register(
+     defineTool({
+       name: 'workbook_write',
+       description:
+-        'Apply explicit caller-supplied values or formulas to a copy of an XLSX workbook. Preserve original input. Destination must be inside /workspace. Does not calculate formulas or certify correctness.',
++        'Apply explicit caller-supplied values or formulas to a copy of an XLSX workbook, overwriting nothing but the listed cells. Preserve original input. Destination must be inside /workspace. Does not calculate formulas or certify correctness; call workbook_verify afterwards.',
+       parameters: {
+         source: { type: 'string', required: true },
+         destination: { type: 'string', required: true },
+-        edits: {
+-          type: 'array',
+-          required: true,
+-          items: {
+-            type: 'object',
+-            additionalProperties: false,
+-            properties: {
+-              sheet: { type: 'string', required: true },
+-              cell: { type: 'string', required: true },
+-              value: { type: 'json', required: true },
+-            },
+-          },
+-        },
++        edits: editSchema,
++        fill: fillSchema,
+       },
+       output,
+       execute: (args, exec) => invoke({ operation: 'write', ...args }, exec.signal),
+     }),
+   );
++
++  ctx.tools.register(
++    defineTool({
++      name: 'workbook_verify',
++      description:
++        'Recalculate the delivered workbook with an independent engine (headless LibreOffice) and report, for each requested cell or range, its formula, computed value and any #ERROR; also reports every difference between the delivered file and the untouched source with a requested flag. Use it to confirm the numbers you intend before finishing.',
++      parameters: {
++        file: { type: 'string', required: true },
++        source: { type: 'string', description: 'Original workbook to diff structural preservation against.' },
++        checks: checkSchema,
++      },
++      output,
++      execute: (args, exec) => invoke({ operation: 'verify', ...args }, exec.signal),
++    }),
++  );
+ }
+diff --git a/workbook.py b/workbook.py
+index 5b58d96..819c0be 100644
+--- a/workbook.py
++++ b/workbook.py
+@@ -1,29 +1,329 @@
++"""Spreadsheet helpers for the harness: inspect, write and verify XLSX workbooks.
++
++Dependency-light (openpyxl only). The module never guesses business semantics:
++formulas are written exactly as supplied by the caller and the verifier only
++reports what an independent engine computed.
++"""
++
+ import json
++import re
++import shutil
++import subprocess
+ import sys
++import tempfile
+ from pathlib import Path
++
+ from openpyxl import load_workbook
+ from openpyxl.utils.cell import coordinate_to_tuple
+ 
+-args = json.load(sys.stdin)
+-if args['operation'] == 'inspect':
+-    workbook = load_workbook(args['file'])
+-    print(json.dumps({sheet.title: [{'cell': cell.coordinate, 'value': cell.value, 'comment': cell.comment.text if cell.comment else None}
+-                                  for row in sheet for cell in row if cell.value is not None or cell.comment]
+-                      for sheet in workbook}, default=str))
+-elif args['operation'] == 'write':
+-    target = Path(args['destination']).resolve()
+-    if not target.is_relative_to('/workspace'):
+-        raise ValueError('Destination must be inside /workspace')
+-    workbook = load_workbook(args['source'])
++
++# --------------------------------------------------------------------------- #
++# column helpers
++# --------------------------------------------------------------------------- #
++def _column_letter(col):
++    letters = ""
++    while col > 0:
++        col, rem = divmod(col - 1, 26)
++        letters = chr(65 + rem) + letters
++    return letters
++
++
++def _rowcol_ref(row, col):
++    return f"{_column_letter(col)}{row}"
++
++
++# --------------------------------------------------------------------------- #
++# inspect
++# --------------------------------------------------------------------------- #
++def op_inspect(args):
++    data_only = bool(args.get("data_only"))
++    path = Path(args["file"])
++    if not path.exists():
++        raise ValueError(f"Workbook not found: {path}")
++    workbook = load_workbook(path, data_only=data_only)
++    out = {}
++    for sheet in workbook:
++        rows = []
++        for row in sheet.iter_rows():
++            for cell in row:
++                if cell.value is None and not cell.comment:
++                    continue
++                item = {"cell": cell.coordinate, "value": cell.value}
++                fmt = cell.number_format
++                if fmt and fmt != "General":
++                    item["number_format"] = fmt
++                if cell.comment:
++                    item["comment"] = cell.comment.text
++                rows.append(item)
++        entry = {"cells": rows}
++        if sheet.merged_cells.ranges:
++            entry["merged"] = [str(r) for r in sheet.merged_cells.ranges]
++        out[sheet.title] = entry
++    print(json.dumps(out, default=str))
++
++
++# --------------------------------------------------------------------------- #
++# write
++# --------------------------------------------------------------------------- #
++def _render_template(cell, template):
++    """Expand a relative formula template for one cell.
++
++    ``{{C}}``/``{{C+n}}``/``{{C-n}}`` -> column letter of ``cell`` shifted by n,
++    ``{{R}}``/``{{R+n}}``/``{{R-n}}`` -> row of ``cell`` shifted by n.
++    """
++    r, c = coordinate_to_tuple(cell)
++
++    def repl(match):
++        kind = match.group(1)
++        offset = int((match.group(2) or "0").replace(" ", ""))
++        if kind == "C":
++            return _column_letter(c + offset)
++        return str(r + offset)
++
++    return re.sub(r"\{\{\s*([CR])\s*([+-]\s*\d+)?\s*\}\}", repl, template)
++
++
++def op_write(args):
++    target = Path(args["destination"]).resolve()
++    if not str(target).startswith("/workspace/"):
++        raise ValueError("Destination must be inside /workspace")
++    source = Path(args["source"]).resolve()
++    workbook = load_workbook(source, keep_vba=source.suffix.lower() == ".xlsm")
++    edits = list(args.get("edits") or [])
++    fill = args.get("fill") or []
++
+     seen = set()
+-    for edit in args['edits']:
+-        position = (edit['sheet'], coordinate_to_tuple(edit['cell']))
++
++    def take(sheet_name, cell):
++        cell = cell.upper().replace("$", "")
++        position = (sheet_name, coordinate_to_tuple(cell))
+         if position in seen:
+-            raise ValueError('Duplicate target')
++            raise ValueError(f"Duplicate target: {sheet_name}!{cell}")
+         seen.add(position)
+-        workbook[edit['sheet']][edit['cell']] = edit['value']
++        return cell
++
++    for edit in edits:
++        sheet_name = edit["sheet"]
++        if sheet_name not in workbook.sheetnames:
++            raise ValueError(f"Unknown sheet: {sheet_name}")
++        cell = take(sheet_name, edit["cell"])
++        value = edit.get("formula")
++        if value is None:
++            value = edit.get("value")
++        elif not value.startswith("="):
++            value = "=" + value
++        workbook[sheet_name][cell].value = value
++
++    for block in fill:
++        sheet_name = block["sheet"]
++        if sheet_name not in workbook.sheetnames:
++            raise ValueError(f"Unknown sheet: {sheet_name}")
++        sheet = workbook[sheet_name]
++        rng = str(block["range"]).replace("$", "")
++        if ":" not in rng:
++            rng = f"{rng}:{rng}"
++        start, end = rng.split(":")
++        r1, c1 = coordinate_to_tuple(start)
++        r2, c2 = coordinate_to_tuple(end)
++        for r in range(min(r1, r2), max(r1, r2) + 1):
++            for c in range(min(c1, c2), max(c1, c2) + 1):
++                ref = take(sheet_name, _rowcol_ref(r, c))
++                text = _render_template(ref, block["template"])
++                sheet[ref].value = text if text.startswith("=") else "=" + text
++
+     target.parent.mkdir(parents=True, exist_ok=True)
+     workbook.save(target)
+-    print(json.dumps({'saved': str(target), 'submitted_cells': len(seen), 'formula_values_recalculated': False}))
+-else:
+-    raise ValueError('Unknown workbook operation')
++    print(
++        json.dumps(
++            {
++                "saved": str(target),
++                "submitted_cells": len(seen),
++                "formula_values_recalculated": False,
++            }
++        )
++    )
++
++
++# --------------------------------------------------------------------------- #
++# verify through an independent engine (LibreOffice)
++# --------------------------------------------------------------------------- #
++def _find_soffice():
++    for name in ("soffice", "libreoffice"):
++        found = shutil.which(name)
++        if found:
++            return found
++    for candidate in (
++        "/usr/bin/soffice",
++        "/usr/lib/libreoffice/program/soffice",
++        "/opt/libreoffice/program/soffice",
++    ):
++        if Path(candidate).exists():
++            return candidate
++    return None
++
++
++def _recalculate(path):
++    soffice = _find_soffice()
++    if soffice is None:
++        raise RuntimeError("LibreOffice (soffice) is not available for recalculation")
++    outdir = Path(tempfile.mkdtemp(prefix="wbverify-"))
++    profile = outdir / "profile"
++    cmd = [
++        soffice,
++        "--headless",
++        "--norestore",
++        f"-env:UserInstallation=file://{profile}",
++        "--convert-to",
++        "xlsx",
++        "--outdir",
++        str(outdir),
++        str(path),
++    ]
++    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
++    if proc.returncode != 0:
++        raise RuntimeError(f"LibreOffice recalculation failed: {proc.stderr.strip()}")
++    converted = outdir / (Path(path).stem + ".xlsx")
++    if not converted.exists():
++        matches = sorted(outdir.glob("*.xlsx"))
++        if not matches:
++            raise RuntimeError("LibreOffice produced no workbook")
++        converted = matches[0]
++    return converted
++
++
++def _expand_range(ref, default_sheet):
++    """Expand ``Sheet!A1:B3`` into (sheet, [cell, ...]); None when not a range."""
++    if ":" not in ref:
++        return None
++    sheet_name = default_sheet
++    body = ref
++    if "!" in ref:
++        sheet_name, body = ref.rsplit("!", 1)
++        sheet_name = sheet_name.strip("'")
++    start, _, end = body.partition(":")
++    r1, c1 = coordinate_to_tuple(start.replace("$", ""))
++    r2, c2 = coordinate_to_tuple((end or start).replace("$", ""))
++    return sheet_name, [
++        _rowcol_ref(r, c)
++        for r in range(min(r1, r2), max(r1, r2) + 1)
++        for c in range(min(c1, c2), max(c1, c2) + 1)
++    ]
++
++
++def _requested_positions(checks):
++    positions = set()
++    for check in checks:
++        sheet = check.get("sheet") or ""
++        expanded = _expand_range(check["range"], sheet)
++        if expanded is None:
++            ref = check["range"]
++            positions.add((check.get("sheet") or sheet, ref.replace("$", "").upper()))
++        else:
++            name, cells = expanded
++            for cell in cells:
++                positions.add((name, cell))
++    return positions
++
++
++def op_verify(args):
++    target = Path(args["file"]).resolve()
++    if not target.exists():
++        raise ValueError(f"Workbook not found: {target}")
++    checks = args.get("checks") or []
++    formulas = load_workbook(target, data_only=False)
++    converted = _recalculate(target)
++    values = load_workbook(converted, data_only=True)
++
++    results = []
++    for check in checks:
++        sheet = check.get("sheet") or formulas.sheetnames[0]
++        if sheet not in formulas.sheetnames:
++            results.append({"range": check["range"], "error": f"unknown sheet {sheet}"})
++            continue
++        expanded = _expand_range(check["range"], sheet)
++        if expanded is None:
++            sheet_for_cells, cells = sheet, [check["range"].replace("$", "").upper()]
++        else:
++            sheet_for_cells, cells = expanded
++        if sheet_for_cells not in values.sheetnames:
++            results.append({"range": check["range"], "error": f"unknown sheet {sheet_for_cells}"})
++            continue
++        items = []
++        for cell in cells:
++            formula = formulas[sheet_for_cells][cell].value
++            value = values[sheet_for_cells][cell].value
++            is_formula = isinstance(formula, str) and formula.startswith("=")
++            item = {
++                "cell": cell,
++                "has_formula": is_formula,
++                "value": value,
++            }
++            if is_formula:
++                item["formula"] = formula
++            if isinstance(value, str) and value.startswith("#"):
++                item["error"] = value
++            items.append(item)
++        results.append({"sheet": sheet_for_cells, "range": check["range"], "cells": items})
++
++    differences = []
++    source = args.get("source")
++    if source:
++        src = load_workbook(source, data_only=False)
++        requested = _requested_positions(checks)
++        for ws in src:
++            if ws.title not in formulas.sheetnames:
++                differences.append({"sheet": ws.title, "issue": "sheet removed"})
++                continue
++            target_ws = formulas[ws.title]
++            for row in ws.iter_rows():
++                for cell in row:
++                    here = target_ws[cell.coordinate].value
++                    there = cell.value
++                    if here != there:
++                        differences.append(
++                            {
++                                "sheet": ws.title,
++                                "cell": cell.coordinate,
++                                "source": there,
++                                "target": here,
++                                "requested": (ws.title, cell.coordinate) in requested,
++                            }
++                        )
++        for name in formulas.sheetnames:
++            if name not in src.sheetnames:
++                differences.append({"sheet": name, "issue": "sheet added"})
++
++    print(
++        json.dumps(
++            {
++                "file": str(target),
++                "checks": results,
++                "differences_vs_source": differences,
++                "errors": [
++                    f"{item.get('sheet')}!{c['cell']}: {c['error']}"
++                    for item in results
++                    for c in item.get("cells", [])
++                    if c.get("error")
++                ],
++                "recalculated_by": "LibreOffice",
++            },
++            default=str,
++        )
++    )
++
++
++def main():
++    args = json.load(sys.stdin)
++    operation = args.get("operation")
++    if operation == "inspect":
++        op_inspect(args)
++    elif operation == "write":
++        op_write(args)
++    elif operation == "verify":
++        op_verify(args)
++    else:
++        raise ValueError("Unknown workbook operation")
++
++
++if __name__ == "__main__":
++    main()

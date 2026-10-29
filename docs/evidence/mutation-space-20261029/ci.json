@@ -1,0 +1,580 @@
+{
+  "conclusion": "success",
+  "headSha": "6590b97ac3b025c8650e7f3f68f9c0c86c12b20b",
+  "jobs": [
+    {
+      "completedAt": "2026-10-29T02:26:17Z",
+      "conclusion": "success",
+      "databaseId": 123224556815,
+      "name": "contracts-and-native (macos-latest)",
+      "startedAt": "2026-10-29T02:21:37Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-29T02:21:41Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-29T02:21:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:44Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 2,
+          "startedAt": "2026-10-29T02:21:41Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:56Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "number": 3,
+          "startedAt": "2026-10-29T02:21:44Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:59Z",
+          "conclusion": "success",
+          "name": "Run npm install -g npm@12.2.0",
+          "number": 4,
+          "startedAt": "2026-10-29T02:21:56Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:13Z",
+          "conclusion": "success",
+          "name": "Run npm ci",
+          "number": 5,
+          "startedAt": "2026-10-29T02:21:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:32Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+          "number": 6,
+          "startedAt": "2026-10-29T02:22:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:41Z",
+          "conclusion": "success",
+          "name": "Validate workflow expressions",
+          "number": 7,
+          "startedAt": "2026-10-29T02:22:32Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:42Z",
+          "conclusion": "success",
+          "name": "Run npm audit --audit-level=moderate",
+          "number": 8,
+          "startedAt": "2026-10-29T02:22:41Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:25:06Z",
+          "conclusion": "success",
+          "name": "Run npm run check",
+          "number": 9,
+          "startedAt": "2026-10-29T02:22:42Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:25:09Z",
+          "conclusion": "success",
+          "name": "Run npm pack --dry-run",
+          "number": 10,
+          "startedAt": "2026-10-29T02:25:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:25:13Z",
+          "conclusion": "success",
+          "name": "Prepare reviewable package and dependency inventory",
+          "number": 11,
+          "startedAt": "2026-10-29T02:25:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:06Z",
+          "conclusion": "success",
+          "name": "Install and exercise the exact distributable",
+          "number": 12,
+          "startedAt": "2026-10-29T02:25:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:08Z",
+          "conclusion": "success",
+          "name": "Retain unpublished package artifacts",
+          "number": 13,
+          "startedAt": "2026-10-29T02:26:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:08Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+          "number": 24,
+          "startedAt": "2026-10-29T02:26:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:09Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "number": 25,
+          "startedAt": "2026-10-29T02:26:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:10Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 26,
+          "startedAt": "2026-10-29T02:26:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:13Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 27,
+          "startedAt": "2026-10-29T02:26:10Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/OLDyade/spark-harness-evolution/actions/runs/40805867567/job/123224556815"
+    },
+    {
+      "completedAt": "2026-10-29T02:26:13Z",
+      "conclusion": "success",
+      "databaseId": 123224557046,
+      "name": "containers (he-runsc-20261019)",
+      "startedAt": "2026-10-29T02:21:36Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-29T02:21:37Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-29T02:21:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:39Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 2,
+          "startedAt": "2026-10-29T02:21:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:46Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "number": 3,
+          "startedAt": "2026-10-29T02:21:39Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:48Z",
+          "conclusion": "success",
+          "name": "Run npm install -g npm@12.2.0",
+          "number": 4,
+          "startedAt": "2026-10-29T02:21:46Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:57Z",
+          "conclusion": "success",
+          "name": "Run npm ci",
+          "number": 5,
+          "startedAt": "2026-10-29T02:21:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:57Z",
+          "conclusion": "success",
+          "name": "Prepare evidence directory",
+          "number": 6,
+          "startedAt": "2026-10-29T02:21:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:08Z",
+          "conclusion": "success",
+          "name": "Install pinned gVisor runtime",
+          "number": 7,
+          "startedAt": "2026-10-29T02:21:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:51Z",
+          "conclusion": "success",
+          "name": "Run docker build -t harness-evolution:test .",
+          "number": 8,
+          "startedAt": "2026-10-29T02:22:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:52Z",
+          "conclusion": "success",
+          "name": "Discover explicit DNS servers on the declared runtime",
+          "number": 9,
+          "startedAt": "2026-10-29T02:22:51Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:57Z",
+          "conclusion": "success",
+          "name": "Verify controlled-egress architecture against the actual runtime",
+          "number": 10,
+          "startedAt": "2026-10-29T02:22:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:23:23Z",
+          "conclusion": "success",
+          "name": "Verify spreadsheet runtime before model tasks",
+          "number": 11,
+          "startedAt": "2026-10-29T02:22:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:09Z",
+          "conclusion": "success",
+          "name": "Exercise declared runtime end to end",
+          "number": 12,
+          "startedAt": "2026-10-29T02:23:23Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:11Z",
+          "conclusion": "success",
+          "name": "Retain logs and isolation receipts",
+          "number": 13,
+          "startedAt": "2026-10-29T02:26:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:11Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "number": 25,
+          "startedAt": "2026-10-29T02:26:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:11Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 26,
+          "startedAt": "2026-10-29T02:26:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:11Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 27,
+          "startedAt": "2026-10-29T02:26:11Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/OLDyade/spark-harness-evolution/actions/runs/40805867567/job/123224557046"
+    },
+    {
+      "completedAt": "2026-10-29T02:24:38Z",
+      "conclusion": "success",
+      "databaseId": 123224557111,
+      "name": "contracts-and-native (ubuntu-latest)",
+      "startedAt": "2026-10-29T02:21:36Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-29T02:21:39Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-29T02:21:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:40Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 2,
+          "startedAt": "2026-10-29T02:21:39Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:47Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "number": 3,
+          "startedAt": "2026-10-29T02:21:40Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:49Z",
+          "conclusion": "success",
+          "name": "Run npm install -g npm@12.2.0",
+          "number": 4,
+          "startedAt": "2026-10-29T02:21:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:00Z",
+          "conclusion": "success",
+          "name": "Run npm ci",
+          "number": 5,
+          "startedAt": "2026-10-29T02:21:49Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:07Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+          "number": 6,
+          "startedAt": "2026-10-29T02:22:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:20Z",
+          "conclusion": "success",
+          "name": "Validate workflow expressions",
+          "number": 7,
+          "startedAt": "2026-10-29T02:22:07Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:20Z",
+          "conclusion": "success",
+          "name": "Run npm audit --audit-level=moderate",
+          "number": 8,
+          "startedAt": "2026-10-29T02:22:20Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:24:04Z",
+          "conclusion": "success",
+          "name": "Run npm run check",
+          "number": 9,
+          "startedAt": "2026-10-29T02:22:20Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:24:06Z",
+          "conclusion": "success",
+          "name": "Run npm pack --dry-run",
+          "number": 10,
+          "startedAt": "2026-10-29T02:24:04Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:24:09Z",
+          "conclusion": "success",
+          "name": "Prepare reviewable package and dependency inventory",
+          "number": 11,
+          "startedAt": "2026-10-29T02:24:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:24:33Z",
+          "conclusion": "success",
+          "name": "Install and exercise the exact distributable",
+          "number": 12,
+          "startedAt": "2026-10-29T02:24:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:24:35Z",
+          "conclusion": "success",
+          "name": "Retain unpublished package artifacts",
+          "number": 13,
+          "startedAt": "2026-10-29T02:24:33Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:24:35Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+          "number": 24,
+          "startedAt": "2026-10-29T02:24:35Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:24:35Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "number": 25,
+          "startedAt": "2026-10-29T02:24:35Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:24:35Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 26,
+          "startedAt": "2026-10-29T02:24:35Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:24:35Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 27,
+          "startedAt": "2026-10-29T02:24:35Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/OLDyade/spark-harness-evolution/actions/runs/40805867567/job/123224557111"
+    },
+    {
+      "completedAt": "2026-10-29T02:26:21Z",
+      "conclusion": "success",
+      "databaseId": 123224557190,
+      "name": "containers (runc)",
+      "startedAt": "2026-10-29T02:21:36Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-29T02:21:38Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-29T02:21:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:40Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 2,
+          "startedAt": "2026-10-29T02:21:38Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:48Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "number": 3,
+          "startedAt": "2026-10-29T02:21:40Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:21:50Z",
+          "conclusion": "success",
+          "name": "Run npm install -g npm@12.2.0",
+          "number": 4,
+          "startedAt": "2026-10-29T02:21:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:02Z",
+          "conclusion": "success",
+          "name": "Run npm ci",
+          "number": 5,
+          "startedAt": "2026-10-29T02:21:50Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:02Z",
+          "conclusion": "success",
+          "name": "Prepare evidence directory",
+          "number": 6,
+          "startedAt": "2026-10-29T02:22:02Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:02Z",
+          "conclusion": "skipped",
+          "name": "Install pinned gVisor runtime",
+          "number": 7,
+          "startedAt": "2026-10-29T02:22:02Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:51Z",
+          "conclusion": "success",
+          "name": "Run docker build -t harness-evolution:test .",
+          "number": 8,
+          "startedAt": "2026-10-29T02:22:02Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:53Z",
+          "conclusion": "success",
+          "name": "Discover explicit DNS servers on the declared runtime",
+          "number": 9,
+          "startedAt": "2026-10-29T02:22:51Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:22:59Z",
+          "conclusion": "success",
+          "name": "Verify controlled-egress architecture against the actual runtime",
+          "number": 10,
+          "startedAt": "2026-10-29T02:22:53Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:23:27Z",
+          "conclusion": "success",
+          "name": "Verify spreadsheet runtime before model tasks",
+          "number": 11,
+          "startedAt": "2026-10-29T02:22:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:16Z",
+          "conclusion": "success",
+          "name": "Exercise declared runtime end to end",
+          "number": 12,
+          "startedAt": "2026-10-29T02:23:27Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:18Z",
+          "conclusion": "success",
+          "name": "Retain logs and isolation receipts",
+          "number": 13,
+          "startedAt": "2026-10-29T02:26:16Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:18Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "number": 25,
+          "startedAt": "2026-10-29T02:26:18Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:19Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 26,
+          "startedAt": "2026-10-29T02:26:18Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-29T02:26:19Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 27,
+          "startedAt": "2026-10-29T02:26:19Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/OLDyade/spark-harness-evolution/actions/runs/40805867567/job/123224557190"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/OLDyade/spark-harness-evolution/actions/runs/40805867567"
+}

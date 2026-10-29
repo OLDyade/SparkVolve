@@ -1,0 +1,55 @@
+{
+  "candidate": "01a983e0ba302871c2b1836942f3f07362b0f246db33994d74e991420b6bcfa4",
+  "boundary": "Deterministic direct helper counterexamples in the frozen runtime; no model calls, no evaluator changes, no changes to recorded research scores.",
+  "cases": [
+    {
+      "name": "parallel-scenarios",
+      "input": "Three parallel exit scenarios, each legitimately populated.",
+      "observation": [
+        {
+          "issue": "exit_value_not_final_period",
+          "row": 2,
+          "label": "Exit enterprise value",
+          "column": 2,
+          "message": "The exit/terminal row for \"Exit enterprise value\" has a value outside the final period. Exit value is computed once, in the final year; the earlier cells are intentionally blank."
+        }
+      ]
+    },
+    {
+      "name": "explicit-percentage-points",
+      "input": "Gross margin explicitly expressed in percentage points; 25 means 25%.",
+      "observation": [
+        {
+          "issue": "margin_scale",
+          "row": 3,
+          "label": "Gross margin (percentage points)",
+          "column": 2,
+          "value": 25,
+          "message": "Margin values are fractions in this workbook; a value of 25 in a plain-formatted cell suggests a stray x100. Return the fraction and leave unit/format unchanged."
+        }
+      ]
+    },
+    {
+      "name": "literal-error-looking-text",
+      "input": "Formula returns the ordinary string #N/A; cached cell data_type is s.",
+      "observation": [
+        {
+          "issue": "formula_error",
+          "cell": "A1",
+          "formula": "=\"#N/A\"",
+          "value": "#N/A",
+          "message": "This formula evaluates to an error."
+        }
+      ]
+    },
+    {
+      "name": "alignment-indent",
+      "input": {
+        "alignmentIndent": 2
+      },
+      "observation": {
+        "reportedIndent": 0
+      }
+    }
+  ]
+}

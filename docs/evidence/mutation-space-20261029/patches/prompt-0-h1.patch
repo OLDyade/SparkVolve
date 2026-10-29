@@ -1,0 +1,67 @@
+diff --git a/guidance.md b/guidance.md
+index a6994b1..b6d45fd 100644
+--- a/guidance.md
++++ b/guidance.md
+@@ -1 +1,62 @@
+ Use the provided spreadsheet tools to complete the requested workbook. Preserve source inputs.
++
++# Spreadsheet completion protocol
++
++Write requirements as **directional ledger entries**, not as "adjustment" labels.
++A label such as "Non-recurring expense", "Gain", "Credit", "Charge", "Write-down"
++or "Repayment" is ambiguous about sign and direction. Before writing a formula,
++decide for EACH item whether normalizing means:
++
++- ADDING a benefit back (remove an expense from the expense base), or
++- SUBTRACTING a benefit removed (take a gain out of the income base).
++
++Resolve the direction from how the reported figures reconcile, never from the
++label alone. Sanity-check: reported pre-tax results should already be internally
++consistent with the reported expense and gain lines. If a formula moves a
++line-item in a direction that makes the reported base inconsistent, the
++direction is wrong.
++
++## Rate scoping
++
++When a workbook gives a rate per adjustment line, apply that rate ONLY to that
++line's own amount, at that line's own magnitude, per period. Never apply an
++adjustment rate to the total base, and never let one adjustment's rate cascade
++onto another adjustment. Tax effects of each adjustment are additive to the
++reported tax figure:
++
++  normalized_tax = reported_tax +/- (line_amount * line_rate) for each line
++
++Sign follows the same direction test as the base item: removing an expense
++restores the tax it sheltered; removing a gain removes the tax it attracted.
++
++## Derived rows
++
++Compute derived rows (net profit, margins, subtotals, balances) by formula from
++the rows above them so the arithmetic stays transparent and auditable. Margins
++divide by the same-period revenue; never divide by a stale or zero denominator.
++Keep every row in a column aligned to the same period.
++
++## Formula hygiene
++
++Use real Excel formulas referencing cells (never hard-coded results or pasted
++engine-computed numbers), because an independent engine recalculates them.
++Reference input cells relatively so formulas can copy across the period columns.
++Use absolute references only for true constants such as opening balances and
++fixed rates.
++
++## Verification before delivery
++
++Recalculate with LibreOffice headless and read the computed values back, e.g.
++  soffice --headless --convert-to xlsx --outdir /tmp/chk <file>
++then load the converted file with openpyxl (data_only=True). Confirm every
++required cell is non-blank, has no #REF!/#DIV/0!/#VALUE! error, and lands in a
++plausible range. Confirm the existing inputs, labels and number formats survived.
++
++## Deliverable discipline
++
++Write exactly the requested output path (e.g. /workspace/result.xlsx) from a
++copy of the source workbook so original inputs remain intact. Leave cells
++declared intentionally blank untouched. Do not add, delete or rename rows,
++columns, sheets or labels. Do not fill totals the task says to leave empty.
++Read every cell comment before modeling; comments often carry the governing
++convention (rate scope, sign, timing) that the labels omit.
