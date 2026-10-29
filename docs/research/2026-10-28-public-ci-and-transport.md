@@ -1,6 +1,6 @@
 # Public CI and Transport-Stage Diagnosis
 
-On 2026-10-28 the user explicitly authorized making `OLDyade/spark-harness-evolution` public and re-running CI. The actual API returned `isPrivate=false`; for run `40624792713` of main branch `a42416c`, all four jobs started on the second attempt, and the billing rejection from the first attempt remains recorded.
+On 2026-10-28 the user explicitly authorized making `OLDyade/SparkVolve` public and re-running CI. The actual API returned `isPrivate=false`; for run `40624792713` of main branch `a42416c`, all four jobs started on the second attempt, and the billing rejection from the first attempt remains recorded.
 
 The actionlint step on macOS runner `macos-26-arm64` reported `go: command not found`. The workflow previously assumed Go was preinstalled; it now explicitly uses the official `actions/setup-go` v7.0.0 (pinned commit `b7ad1dad31e06c5925ef5d2fc7ad053ef454303e`) to install Go 1.27.3. The version comes from the official `actions/go-versions` release; actionlint v1.7.12's go.mod requires at least Go 1.25. The two host platforms each complete independently, so one failure does not cancel the other.
 

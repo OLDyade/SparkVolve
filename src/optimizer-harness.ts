@@ -155,7 +155,7 @@ export async function prepareOptimizer(
             evolutionPreset({
               plugin: '/app/dist/plugin.js',
               endpoint: 'http://evolution-egress:8080',
-              tokenEnv: 'EVOLUTION_TOKEN',
+              tokenEnv: 'SPARKVOLVE_TOKEN',
               composition: `/method/${prepared.composition}`,
             }),
           ],
@@ -187,7 +187,7 @@ export async function prepareOptimizer(
           network: 'none',
           timeoutSeconds: spec.timeoutSeconds,
           env: Object.fromEntries(
-            ['EVOLUTION_TOKEN', ...spec.optimizer.credentialEnv].map((key) => [
+            ['SPARKVOLVE_TOKEN', ...spec.optimizer.credentialEnv].map((key) => [
               key,
               'native-load-only-placeholder',
             ]),

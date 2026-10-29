@@ -181,7 +181,7 @@ test(
     import { materializeEvidence } from './src/evidence.ts';
     const root=process.argv[1], spec=JSON.parse(readFileSync(path.join(root,'spec.json'),'utf8'));
     const store=new Store(path.join(root,'state.sqlite'),spec,'read');
-    channel('harness-evolution:materialization').subscribe(event=>{
+    channel('sparkvolve:materialization').subscribe(event=>{
       if(event.phase!=='prepared') return;
       process.send({prepared:event});
       const start=Date.now(), lock=new Int32Array(new SharedArrayBuffer(4));

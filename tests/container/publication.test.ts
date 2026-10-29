@@ -17,8 +17,8 @@ test(
   'real containers survive SIGKILL during source, build and delivery publication without resampling',
   { timeout: 180_000, concurrency: true },
   async (t) => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'HE_TEST_IMAGE is required');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_TEST_IMAGE is required');
     await Promise.all(
       ['candidates', 'artifacts', 'delivery'].map((area) =>
         t.test(area, { concurrency: true }, async () => {
@@ -29,7 +29,7 @@ test(
           await mkdir(seed);
           await cp(new URL('./fixture.mjs', import.meta.url), path.join(seed, 'fixture.mjs'));
           const pkg = {
-            name: '@harness-evolution/publication-fixture',
+            name: '@sparkvolve/publication-fixture',
             version: '1.0.0',
             type: 'module',
             scripts: { build: 'node --check fixture.mjs' },

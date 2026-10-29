@@ -25,24 +25,24 @@ Researcher declares isolation ──freeze──► experiment contract
 
 ```bash
 # Use the current non-root user identity, explicitly select a registered runtime; do not change daemon configuration.
-node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
-  "${HE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > isolation.json
+node examples/isolation.mjs runc "${SPARKVOLVE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
+  "${SPARKVOLVE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > isolation.json
 # Install a pinned version on a dedicated Linux Docker host, then select it explicitly.
 bash scripts/install-runsc.sh
-node examples/isolation.mjs he-runsc-20261019 "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
-  "${HE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > isolation.json
+node examples/isolation.mjs sparkvolve-runsc-20261019 "${SPARKVOLVE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
+  "${SPARKVOLVE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > isolation.json
 ```
 
-The install script pins gVisor `20261019.0` and the SHA256 for each architecture, installs the complete runsc/sidecar distribution package into a separate directory, registers `he-runsc-20261019`, and uses systrap; it does not replace existing runtimes or defaults. The host requires Docker, systemd, sudo, tar, bzip2, and sha256sum; online installation also requires curl. Only Linux x86_64/aarch64 is supported. An existing install directory or a registration with the same name is rejected outright rather than overwritten.
+The install script pins gVisor `20261019.0` and the SHA256 for each architecture, installs the complete runsc/sidecar distribution package into a separate directory, registers `sparkvolve-runsc-20261019`, and uses systrap; it does not replace existing runtimes or defaults. The host requires Docker, systemd, sudo, tar, bzip2, and sha256sum; online installation also requires curl. Only Linux x86_64/aarch64 is supported. An existing install directory or a registration with the same name is rejected outright rather than overwritten.
 
 An isolated host can first supply the official distribution package, then run `bash scripts/install-runsc.sh /absolute/path/gvisor-aarch64.tar.bz2`. Offline mode still verifies the same pinned digest and does not download over the network or switch runtimes. Installation involves host configuration and should be performed on a dedicated Docker host managed by the researcher.
 
-The same acceptance suite covers both runtimes; `HE_TEST_RUNTIME` and the deployer-confirmed `HE_TEST_DNS` must be declared, and a missing value fails immediately:
+The same acceptance suite covers both runtimes; `SPARKVOLVE_TEST_RUNTIME` and the deployer-confirmed `SPARKVOLVE_TEST_DNS` must be declared, and a missing value fails immediately:
 
 ```bash
-HE_TEST_RUNTIME=he-runsc-20261019 \
-  HE_TEST_DNS="${HE_TEST_DNS:?Set approved IPv4 DNS servers}" \
-  HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}') \
+SPARKVOLVE_TEST_RUNTIME=sparkvolve-runsc-20261019 \
+  SPARKVOLVE_TEST_DNS="${SPARKVOLVE_TEST_DNS:?Set approved IPv4 DNS servers}" \
+  SPARKVOLVE_TEST_IMAGE=$(docker image inspect sparkvolve:local --format '{{.Id}}') \
   npm run test:container
 ```
 
@@ -76,14 +76,14 @@ If the deployer has not yet provided a resolver, the candidate list can be read 
 npm run build
 mkdir -p .evolution/deployment
 node scripts/egress-dns.mjs \
-  "$(docker image inspect harness-evolution:local --format '{{.Id}}')" \
-  "${HE_TEST_RUNTIME:?Select a registered Docker runtime}" > .evolution/deployment/dns-discovery.json
+  "$(docker image inspect sparkvolve:local --format '{{.Id}}')" \
+  "${SPARKVOLVE_TEST_RUNTIME:?Select a registered Docker runtime}" > .evolution/deployment/dns-discovery.json
 # After checking the discovery record and the deployment network, explicitly adopt the confirmed list; addresses provided directly by the deployer may also be used.
-export HE_TEST_DNS=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).servers.join(","))' \
+export SPARKVOLVE_TEST_DNS=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).servers.join(","))' \
   .evolution/deployment/dns-discovery.json)
 ```
 
-The script only reports the raw `resolv.conf` and IPv4 list for that image/runtime and does not prove that the target network is reachable. Final acceptance must complete actual resolution and requests under the declared runtime, controlled dual networks, and read-only resolver file, and verify restoration of the original broker. An internal-only resolver may be explicitly declared; the address must not fall within the candidate address pool, to avoid route override. CI likewise first discovers and explicitly writes `HE_TEST_DNS`, then runs the real controlled container test.
+The script only reports the raw `resolv.conf` and IPv4 list for that image/runtime and does not prove that the target network is reachable. Final acceptance must complete actual resolution and requests under the declared runtime, controlled dual networks, and read-only resolver file, and verify restoration of the original broker. An internal-only resolver may be explicitly declared; the address must not fall within the candidate address pool, to avoid route override. CI likewise first discovers and explicitly writes `SPARKVOLVE_TEST_DNS`, then runs the real controlled container test.
 
 ## Evidence and boundaries
 

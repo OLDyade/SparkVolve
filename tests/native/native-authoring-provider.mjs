@@ -26,7 +26,7 @@ const query = (provider, method, input) => ({
 
 export function apply(ctx) {
   const record = (kind, value) =>
-    appendFileSync(process.env.HE_AUTHORING_RECORDS, JSON.stringify({ kind, value }) + '\n');
+    appendFileSync(process.env.SPARKVOLVE_AUTHORING_RECORDS, JSON.stringify({ kind, value }) + '\n');
   ctx.on('agent/created', async ({ agent }) => {
     if (agent.id === 'ordinary-session') await ctx.agentPresets.select(agent, 'ordinary');
     let observed = false;

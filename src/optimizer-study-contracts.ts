@@ -100,7 +100,7 @@ export const OptimizerStudy = z
     if (
       routes.some(
         (route) =>
-          route.credential?.env === 'EVOLUTION_TOKEN' ||
+          route.credential?.env === 'SPARKVOLVE_TOKEN' ||
           [...controlPaths, ...studyPaths].some((reserved) => reserved === route.path),
       )
     )

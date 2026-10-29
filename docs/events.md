@@ -29,9 +29,9 @@ States and events become visible only after the transaction commits; a rollback 
 Independent deployment requires distinguishing the host address from the container address:
 
 ```sh
-harness-evolve serve --root ./experiment --host 0.0.0.0 --port 8787
-harness-evolve optimize --root ./experiment \
-  --endpoint "http://${HE_CONTROLLER_IP}:8787"
+sparkvolve serve --root ./experiment --host 0.0.0.0 --port 8787
+sparkvolve optimize --root ./experiment \
+  --endpoint "http://${SPARKVOLVE_CONTROLLER_IP}:8787"
 ```
 
 `endpoint` writes into the Preset of the optimizer container, and the address must match the actual deployment network. The host continuer reads the ledger of the same `root` directly; `optimize` no longer accepts `--control-endpoint`. `evolve` manages the control service automatically, and the user still provides a container-reachable entry point.
@@ -39,7 +39,7 @@ harness-evolve optimize --root ./experiment \
 Real-model lifecycle acceptance runs explicitly and is not part of the default offline tests:
 
 ```sh
-HE_TEST_IMAGE=sha256:<run image digest> node --env-file=/secure-directory/venus.env \
+SPARKVOLVE_TEST_IMAGE=sha256:<run image digest> node --env-file=/secure-directory/venus.env \
   --import tsx --test tests/live/events.test.ts
 ```
 

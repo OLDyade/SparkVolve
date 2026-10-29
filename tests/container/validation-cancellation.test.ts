@@ -18,7 +18,7 @@ test(
   'public validate SIGINT retains original task; cancel-validation removes it and forbids new arms',
   { timeout: 180_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
     assert.match(image ?? '', /^sha256:[0-9a-f]{64}$/);
     const base = containerSpecification();
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-validation-cancellation-native-')),
@@ -36,7 +36,7 @@ test(
       ),
     );
     const pkg = {
-      name: '@harness-evolution/validation-cancel-fixture',
+      name: '@sparkvolve/validation-cancel-fixture',
       version: '1.0.0',
       type: 'module',
       scripts: { build: 'node --check fixture.mjs' },

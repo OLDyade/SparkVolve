@@ -12,8 +12,8 @@ test(
   'locked TypeScript build bundles runtime dependencies; recovery reuses original container; tampering fails',
   { timeout: 180_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'HE_TEST_IMAGE is required; no skipped container acceptance');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_TEST_IMAGE is required; no skipped container acceptance');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-compiled-build-'));
     console.log(`Compiled build evidence retained: ${root}`);
     const source = path.join(import.meta.dirname, 'build-fixture');
@@ -112,7 +112,7 @@ test(
           'node',
           '--input-type=module',
           '-e',
-          "import { numeric } from '/workspace/node_modules/@harness-evolution/compiled-fixture/dist/index.js'; if (!numeric(42) || numeric('x')) throw Error('Installed package failed');",
+          "import { numeric } from '/workspace/node_modules/@sparkvolve/compiled-fixture/dist/index.js'; if (!numeric(42) || numeric('x')) throw Error('Installed package failed');",
         ],
         mounts: [{ source: installed, target: '/workspace', writable: false }],
         network: 'none',

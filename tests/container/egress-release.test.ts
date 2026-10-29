@@ -18,8 +18,8 @@ test(
   'terminal archive precedes reclamation; interrupted removal resumes without any execution',
   { timeout: 60_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'HE_TEST_IMAGE required');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_TEST_IMAGE required');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-egress-release-'));
     console.log(`Egress reclamation evidence retained: ${root}`);
     const isolation = containerSpecification().isolation;
@@ -114,8 +114,8 @@ test(
   'recovery verification failure stops original running worker and resumes interrupted failure cleanup',
   { timeout: 60_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'HE_TEST_IMAGE required');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_TEST_IMAGE required');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-egress-failed-release-'));
     console.log(`Failure reclamation evidence retained: ${root}`);
     const workerName = `he-failure-${randomUUID()}`;

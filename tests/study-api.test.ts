@@ -104,7 +104,7 @@ test('study capability admits registered development operations and exposes no v
     assert.equal(routes.length, 8);
     assert.equal(new Set(routes.map((route) => route.id)).size, 8);
     assert.ok(routes.every((route) => route.path.startsWith('/study/')));
-    assert.ok(routes.every((route) => route.credential?.env === 'EVOLUTION_TOKEN'));
+    assert.ok(routes.every((route) => route.credential?.env === 'SPARKVOLVE_TOKEN'));
     assert.throws(() => studyControlRoutes('http://untrusted.example', 30), /literal IP/);
   } finally {
     signal.abort(new Error('test cleanup'));

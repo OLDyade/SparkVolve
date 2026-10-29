@@ -11,7 +11,7 @@ import { StudyBranchReceipt } from '../../src/study-control.js';
 test('native study tools send actual validated requests and unload their registrations', async () => {
   const requests: Array<{ operation: string; input: unknown }> = [];
   const abort = new AbortController();
-  process.env.HE_STUDY_TEST_CAPABILITY = 'd'.repeat(64);
+  process.env.SPARKVOLVE_STUDY_TEST_CAPABILITY = 'd'.repeat(64);
   const server = await serveStudy(
     {
       status: () => ({ phase: 'developing' }),
@@ -45,7 +45,7 @@ test('native study tools send actual validated requests and unload their registr
       events: async (input) => ({ cursor: input.cursor, events: [], hasMore: false }),
       finish: async (reason) => ({ reason }),
     },
-    process.env.HE_STUDY_TEST_CAPABILITY,
+    process.env.SPARKVOLVE_STUDY_TEST_CAPABILITY,
     0,
     '127.0.0.1',
     abort.signal,
@@ -58,7 +58,7 @@ test('native study tools send actual validated requests and unload their registr
     await ctx.plugin(Tools);
     const fork = ctx.plugin(Study, {
       endpoint: `http://127.0.0.1:${address.port}`,
-      tokenEnv: 'HE_STUDY_TEST_CAPABILITY',
+      tokenEnv: 'SPARKVOLVE_STUDY_TEST_CAPABILITY',
     });
     await fork;
     assert.deepEqual(
@@ -195,7 +195,7 @@ test('native study tools send actual validated requests and unload their registr
     assert.deepEqual(ctx.tools.schemas(), []);
   } finally {
     await ctx.fiber.dispose();
-    delete process.env.HE_STUDY_TEST_CAPABILITY;
+    delete process.env.SPARKVOLVE_STUDY_TEST_CAPABILITY;
     abort.abort(new Error('test cleanup'));
     await new Promise<void>((resolve, reject) =>
       server.close((error) => (error ? reject(error) : resolve())),

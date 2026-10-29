@@ -9,7 +9,7 @@ import { authorizeOptimizerEvidence } from './optimizer-access.js';
 import { confined, digest, inventory, treeDigest } from './artifacts.js';
 import { readAuthorizedFile } from './file-reader.js';
 
-const publications = channel('harness-evolution:materialization');
+const publications = channel('sparkvolve:materialization');
 
 export const TaskEvidenceReference = z.strictObject({
   kind: z.literal('task'),

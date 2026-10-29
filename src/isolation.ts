@@ -68,7 +68,7 @@ export function verifyIsolation(spec: ContainerSpec, actual: InspectedContainer)
     if (!condition) throw new Error(`Container isolation mismatch: ${field} (${spec.name})`);
   };
   const { Config: config, HostConfig: host } = actual;
-  check(config.Labels['org.harness-evolution.intent'] === containerIdentity(spec), 'intent');
+  check(config.Labels['org.sparkvolve.intent'] === containerIdentity(spec), 'intent');
   check(config.Image === spec.image && isDeepStrictEqual(config.Cmd, spec.command), 'image/command');
   check(!config.Entrypoint?.length, 'entrypoint');
   check(config.User === `${spec.isolation.user.uid}:${spec.isolation.user.gid}`, 'user');

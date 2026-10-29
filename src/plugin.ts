@@ -2,7 +2,7 @@ import type { Context } from '@deepseek-ai/cordis';
 import Schema from '@deepseek-ai/schemastery';
 import { defineTool } from '@deepseek-ai/dsh-tools';
 
-export const name = 'harness-evolution';
+export const name = 'sparkvolve';
 export const inject = ['tools'];
 export const Config = Schema.object({
   endpoint: Schema.string().required(),

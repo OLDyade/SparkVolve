@@ -73,8 +73,8 @@ test(
   'same frozen G runs full/mechanical host views through actual DSH containers and independent assessment',
   { timeout: 600_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'HE_TEST_IMAGE must name the immutable tested runtime image');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_TEST_IMAGE must name the immutable tested runtime image');
     assert.match(image, /^sha256:[0-9a-f]{64}$/);
     const base = containerSpecification();
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-host-feedback-native-'));
@@ -126,7 +126,7 @@ test(
     const bundle = async (id: string, files: Record<string, string>): Promise<FrozenStudyBundleRef> => {
       const source = path.join(root, 'source', id);
       await mkdir(source, { recursive: true });
-      const name = `@harness-evolution/feedback-protocol-${id}`;
+      const name = `@sparkvolve/feedback-protocol-${id}`;
       await atomicJSON(path.join(source, 'package.json'), {
         name,
         version: '1.0.0',
@@ -477,14 +477,14 @@ test(
         const address = server.address();
         assert.ok(address && typeof address !== 'string');
         const ctx = new Context();
-        process.env.HE_FEEDBACK_TEST_CAPABILITY = token;
+        process.env.SPARKVOLVE_FEEDBACK_TEST_CAPABILITY = token;
         const probes: Array<{ name: string; args: Record<string, unknown>; result: unknown }> = [];
         try {
           await ctx.plugin(SystemPrompt);
           await ctx.plugin(Tools);
           await ctx.plugin(Evolution, {
             endpoint: `http://127.0.0.1:${address.port}`,
-            tokenEnv: 'HE_FEEDBACK_TEST_CAPABILITY',
+            tokenEnv: 'SPARKVOLVE_FEEDBACK_TEST_CAPABILITY',
           });
           const call = async (name: string, args: Record<string, unknown>) => {
             const result = await ctx.tools.execute({
@@ -531,7 +531,7 @@ test(
           }
         } finally {
           await ctx.fiber.dispose();
-          delete process.env.HE_FEEDBACK_TEST_CAPABILITY;
+          delete process.env.SPARKVOLVE_FEEDBACK_TEST_CAPABILITY;
           await new Promise<void>((resolve, reject) =>
             server.close((error) => (error ? reject(error) : resolve())),
           );

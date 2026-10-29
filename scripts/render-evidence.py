@@ -18,7 +18,7 @@ search = evidence['search']['candidates']
 validation = evidence['validation']['comparison']['results']
 selected = next(c for c in search if c['digest'] == evidence['validation']['selection']['candidate'])
 plt.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 11,
-                     'svg.hashsalt': 'harness-evolution-evidence', 'axes.titleweight': 'bold'})
+                     'svg.hashsalt': 'sparkvolve-evidence', 'axes.titleweight': 'bold'})
 fig, axes = plt.subplots(1, 2, figsize=(12, 5.8), gridspec_kw={'wspace': .55})
 fig.patch.set_facecolor('#ffffff')
 blue, gray, rust = '#3157c8', '#60718b', '#b84b34'

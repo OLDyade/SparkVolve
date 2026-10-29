@@ -29,7 +29,7 @@ Persistent publication intent → OS write lock → copy and verify → atomic r
 - The intent fixes the content digest and staging path; after acquiring `BEGIN IMMEDIATE`, the state is re-read. An active concurrent publication explicitly returns SQLite busy; takeover is not guessed based on PID, time, or directory age.
 - pending + complete destination exists: verify the digest, then resume commit; pending + destination does not exist: only rebuild the staging copy for that intent. published + artifact missing or mismatched: fail explicitly, without regenerating to mask corruption.
 - On startup, the controller resumes persistent candidate commits, preserving the original proposal, provenance, and budget. Replaying a request with the same identity returns the original candidate; the same content with a different submission identity is rejected, without increasing the task attempt.
-- The `harness-evolution:publication` native diagnostics channel provides the reserved/copying/ready/published/committed phases, destination, and digest. Subscribers execute synchronously per Node native rules; events do not contain file contents and do not replace persistent state.
+- The `sparkvolve:publication` native diagnostics channel provides the reserved/copying/ready/published/committed phases, destination, and digest. Subscribers execute synchronously per Node native rules; events do not contain file contents and do not replace persistent state.
 
 ## Research Basis
 

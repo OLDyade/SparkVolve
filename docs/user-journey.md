@@ -40,14 +40,14 @@ First follow the [startup guide](quick-start.md) to install dependencies, pass c
 Running the following acceptance actually consumes model quota. The default example includes three tasks, at most four candidates, and a 1,800-second optimizer budget; if there is a re-verifiable mutation, it then runs four tasks × two groups. It is an engineering experience; a single repetition and public tasks cannot prove stable score improvement.
 
 ```bash
-HE_IMAGE=$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')
-HE_CONTROLLER_IP=$(node scripts/controller-address.mjs "$HE_IMAGE")
+SPARKVOLVE_IMAGE=$(docker image inspect sparkvolve-spreadsheet:local --format '{{.Id}}')
+SPARKVOLVE_CONTROLLER_IP=$(node scripts/controller-address.mjs "$SPARKVOLVE_IMAGE")
 node --env-file=/absolute/private/venus.env scripts/accept-walkthrough.mjs \
   --root "$PWD/.evolution/user-journey" \
-  --image "$HE_IMAGE" --runtime runc \
-  --pool "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
-  --dns "${HE_TEST_DNS:?Set approved IPv4 DNS servers}" \
-  --endpoint "http://${HE_CONTROLLER_IP}:18958"
+  --image "$SPARKVOLVE_IMAGE" --runtime runc \
+  --pool "${SPARKVOLVE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
+  --dns "${SPARKVOLVE_TEST_DNS:?Set approved IPv4 DNS servers}" \
+  --endpoint "http://${SPARKVOLVE_CONTROLLER_IP}:18958"
 ```
 
 `--root` must be a directory that does not yet exist. On failure it stops immediately and preserves the original command logs, exit status, and experiment; this driver does not retry, and does not support running again in the original directory. To resume an experiment, after inspecting the original failure use the [CLI's resume semantics](events.md); do not create a new attempt to mask the failure.

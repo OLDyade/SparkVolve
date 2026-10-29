@@ -67,7 +67,7 @@ export async function exportCandidate(
     }),
   );
   await atomicJSON(path.join(destination, 'research-record.json'), {
-    format: 'harness-evolution-research-archive',
+    format: 'sparkvolve-research-archive',
     archiveId: archiveIdentity(store, id),
     experimentId: store.getMeta('experimentId'),
     candidate,

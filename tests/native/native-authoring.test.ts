@@ -35,7 +35,7 @@ for (const profile of ['sdk', 'sdk-minimal'] as const) {
               evolutionPreset({
                 plugin: path.resolve('dist/plugin.js'),
                 endpoint: 'http://127.0.0.1:1',
-                tokenEnv: 'HE_AUTHORING_TOKEN',
+                tokenEnv: 'SPARKVOLVE_AUTHORING_TOKEN',
               }),
               {
                 id: 'preset-ordinary',
@@ -53,7 +53,12 @@ for (const profile of ['sdk', 'sdk-minimal'] as const) {
         cwd: root,
         provider: 'native-authoring-fixture',
         model: 'protocol-fixture',
-        env: { ...process.env, HOME: root, HE_AUTHORING_RECORDS: records, HE_AUTHORING_TOKEN: 'test-only' },
+        env: {
+          ...process.env,
+          HOME: root,
+          SPARKVOLVE_AUTHORING_RECORDS: records,
+          SPARKVOLVE_AUTHORING_TOKEN: 'test-only',
+        },
       });
       let passed = false;
       try {

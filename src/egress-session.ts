@@ -90,7 +90,7 @@ export class EgressSession {
       actual.Driver !== 'bridge' ||
       actual.Internal !== (kind === 'isolated') ||
       actual.EnableIPv6 ||
-      actual.Labels['org.harness-evolution.egress'] !== this.identity ||
+      actual.Labels['org.sparkvolve.egress'] !== this.identity ||
       (expectedId && actual.Id !== expectedId)
     )
       throw Error(`Egress ${kind} network identity/configuration mismatch`);
@@ -199,7 +199,7 @@ export class EgressSession {
           intent[kind],
           [
             '--label',
-            `org.harness-evolution.egress=${this.identity}`,
+            `org.sparkvolve.egress=${this.identity}`,
             ...(kind === 'isolated'
               ? [
                   '--internal',
@@ -386,7 +386,7 @@ export class EgressSession {
     for (const expected of release.networks) {
       const actual = await this.network(expected.name);
       if (!actual) continue;
-      if (actual.Id !== expected.id || actual.Labels['org.harness-evolution.egress'] !== this.identity)
+      if (actual.Id !== expected.id || actual.Labels['org.sparkvolve.egress'] !== this.identity)
         throw Error('Refusing to remove a replacement network');
       if (Object.keys(actual.Containers ?? {}).length)
         throw Error('Cannot reclaim a network with active endpoints');

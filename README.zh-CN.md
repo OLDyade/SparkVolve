@@ -1,20 +1,20 @@
 <div align="center">
 
-<img src="docs/assets/brand/logo.png" alt="Harness Evolution — 双螺旋环绕星火的品牌标识" width="160" height="160">
+<img src="docs/assets/brand/logo.png" alt="SparkVolve — 双螺旋环绕星火的品牌标识" width="160" height="160">
 
-# 让 Harness 自己进化
+# SparkVolve
 
 **Evolve the Harness, Not the Model.**
 
 不改模型权重，让 Harness 在任务中持续进化。
 
-[![CI](https://github.com/OLDyade/spark-harness-evolution/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/OLDyade/spark-harness-evolution/actions/workflows/verify.yml)
+[![CI](https://github.com/OLDyade/SparkVolve/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/OLDyade/SparkVolve/actions/workflows/verify.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-202124?style=flat-square)](LICENSE)
 [![DSH](https://img.shields.io/badge/DSH-Native_plugins-DDEAF5?style=flat-square&labelColor=202124)](docs/components.md)
 
 [English](README.md) · [快速开始](#quick-start) · [工作原理](#工作原理) · [接入任务](#把你的任务接进来) · [项目全景](11.md)
 
-![Harness Evolution：固定模型，进化插件代码、配置与组合，以任务反馈沉淀可复用 Bundle](docs/assets/readme/hero.png)
+![SparkVolve：固定模型，进化插件代码、配置与组合，以任务反馈沉淀可复用 Bundle](docs/assets/readme/hero.png)
 
 </div>
 
@@ -78,7 +78,7 @@
 
 ## Quick start
 
-**启动真实进化**：克隆仓库，准备 Node.js 24、Python 3、Docker 和官方 DeepSeek 密钥。将 `HE_EGRESS_POOL` 设为部署方预留的私有网段，凭证放在仓库外的环境文件中，详见[启动指南](docs/quick-start.md)。
+**启动真实进化**：克隆仓库，准备 Node.js 24、Python 3、Docker 和官方 DeepSeek 密钥。将 `SPARKVOLVE_EGRESS_POOL` 设为部署方预留的私有网段，凭证放在仓库外的环境文件中，详见[启动指南](docs/quick-start.md)。
 
 ```bash
 npm ci
@@ -158,7 +158,7 @@ DSH 优化器读取真实任务、轨迹和交付，研究原因并自主编码�
 | **研究与复现** | [独立实验协议](docs/research-protocol.md) · [优化器自身进化](docs/optimizer-studies.md) · [实验索引](docs/experiments/README.md) |
 | **交付与贡献** | [能力安装](docs/use-capability.md) · [发布](docs/releasing.md) · [贡献指南](CONTRIBUTING.md) · [安全边界](SECURITY.md) |
 
-欢迎贡献新的任务适配器、插件变异机制与可复现实验。也欢迎带着失败案例提出 [Issue](https://github.com/OLDyade/spark-harness-evolution/issues)。
+欢迎贡献新的任务适配器、插件变异机制与可复现实验。也欢迎带着失败案例提出 [Issue](https://github.com/OLDyade/SparkVolve/issues)。
 
 ---
 

@@ -17,14 +17,14 @@ test('native Cordis registers, executes and disposes evolution capabilities', as
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
   const address = server.address();
   if (!address || typeof address === 'string') throw new Error('Server did not bind');
-  process.env.HE_TEST_CAPABILITY = 'native-test-capability';
+  process.env.SPARKVOLVE_TEST_CAPABILITY = 'native-test-capability';
   const ctx = new Context();
   try {
     await ctx.plugin(SystemPrompt);
     await ctx.plugin(Tools);
     const fork = ctx.plugin(Evolution, {
       endpoint: `http://127.0.0.1:${address.port}`,
-      tokenEnv: 'HE_TEST_CAPABILITY',
+      tokenEnv: 'SPARKVOLVE_TEST_CAPABILITY',
     });
     await fork;
     assert.deepEqual(
@@ -63,7 +63,7 @@ test('native Cordis registers, executes and disposes evolution capabilities', as
     try {
       await ctx.fiber.dispose();
     } finally {
-      delete process.env.HE_TEST_CAPABILITY;
+      delete process.env.SPARKVOLVE_TEST_CAPABILITY;
       await new Promise<void>((resolve, reject) =>
         server.close((error) => (error ? reject(error) : resolve())),
       );

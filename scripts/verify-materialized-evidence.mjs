@@ -90,7 +90,7 @@ try {
     sha256 = createHash('sha256').update(bytes).digest('hex');
   await writeFile(path.join(root, 'seed/payload.bin'), bytes);
   const pkg = {
-    name: '@harness-evolution/materialization-fixture',
+    name: '@sparkvolve/materialization-fixture',
     version: '1.0.0',
     type: 'module',
     scripts: { build: 'node --check index.mjs' },
@@ -180,7 +180,7 @@ try {
           evolutionPreset({
             plugin: '/app/dist/plugin.js',
             endpoint: 'http://evolution-egress:8080',
-            tokenEnv: 'EVOLUTION_TOKEN',
+            tokenEnv: 'SPARKVOLVE_TOKEN',
           }),
         ],
       },
@@ -242,7 +242,7 @@ try {
       network: await gateway.candidateNetwork(),
       timeoutSeconds: taskTimeoutSeconds,
       env: Object.fromEntries(
-        ['EVOLUTION_TOKEN', ...model.credentialEnv].map((key) => [key, 'egress-client-placeholder']),
+        ['SPARKVOLVE_TOKEN', ...model.credentialEnv].map((key) => [key, 'egress-client-placeholder']),
       ),
       mounts: [
         { source: path.join(dataset, 'environment'), target: '/environment', writable: false },
@@ -257,7 +257,7 @@ try {
         },
       ],
     }),
-    { ...process.env, EVOLUTION_TOKEN: token },
+    { ...process.env, SPARKVOLVE_TOKEN: token },
   );
   const result = await collectExecution(executionRoot, execution, executionRoot, docker, gateway);
   receipt.container = result;

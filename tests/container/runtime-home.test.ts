@@ -10,8 +10,8 @@ test(
   'native sandbox can initialize default LibreOffice profile in quota-bound HOME',
   { timeout: 180000 },
   async () => {
-    const image = process.env.HE_SPREADSHEET_IMAGE;
-    assert.ok(image, 'HE_SPREADSHEET_IMAGE must identify the immutable spreadsheet runtime');
+    const image = process.env.SPARKVOLVE_SPREADSHEET_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_SPREADSHEET_IMAGE must identify the immutable spreadsheet runtime');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-native-home-'));
     console.log(`Native HOME evidence retained: ${root}`);
     await mkdir(path.join(root, 'work'));

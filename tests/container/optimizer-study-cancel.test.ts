@@ -16,8 +16,8 @@ test(
   'real parent study cancellation reclaims completed method and meta workers across interruption',
   { timeout: 120_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'HE_TEST_IMAGE required');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_TEST_IMAGE required');
     const base = containerSpecification(),
       root = await mkdtemp(path.join(os.tmpdir(), 'he-real-study-cancel-'));
     console.log(`Study cancellation evidence retained: ${root}`);

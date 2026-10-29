@@ -13,7 +13,7 @@ import { Docker } from './docker.js';
 import { listenControlTransport, closeControlServer } from './control-transport.js';
 import type { Server } from 'node:http';
 
-const preparations = channel('harness-evolution:initialization');
+const preparations = channel('sparkvolve:initialization');
 
 export async function initialize(
   root: string,

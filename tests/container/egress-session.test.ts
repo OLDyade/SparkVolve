@@ -14,8 +14,8 @@ test(
   'controlled egress: original network/broker recovery, credential boundary and terminal loss',
   { timeout: 120_000 },
   async (t) => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'HE_TEST_IMAGE is required; real network acceptance cannot skip');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_TEST_IMAGE is required; real network acceptance cannot skip');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-egress-session-'));
     console.log(`Egress lifecycle evidence retained: ${root}`);
     const docker = new Docker(),

@@ -7,10 +7,10 @@ import { promisify } from 'node:util';
 
 // Architectural acceptance only: these HTTP fixtures are not the production credential broker.
 const exec = promisify(execFile);
-const image = process.env.HE_TEST_IMAGE;
-const runtime = process.env.HE_TEST_RUNTIME;
-assert.match(image ?? '', /^sha256:[a-f0-9]{64}$/, 'HE_TEST_IMAGE must be an immutable local image ID');
-assert.ok(runtime, 'HE_TEST_RUNTIME is required');
+const image = process.env.SPARKVOLVE_TEST_IMAGE;
+const runtime = process.env.SPARKVOLVE_TEST_RUNTIME;
+assert.match(image ?? '', /^sha256:[a-f0-9]{64}$/, 'SPARKVOLVE_TEST_IMAGE must be an immutable local image ID');
+assert.ok(runtime, 'SPARKVOLVE_TEST_RUNTIME is required');
 const root = path.resolve(process.argv[2] ?? '');
 assert.ok(process.argv[2], 'Usage: node scripts/verify-egress-boundary.mjs <new-evidence-directory>');
 await mkdir(root); // Refuse to overwrite evidence from any earlier invocation.

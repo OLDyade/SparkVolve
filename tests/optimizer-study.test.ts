@@ -371,7 +371,7 @@ test('SIGKILL before and after editable draft publication resumes one registered
         const root=${JSON.stringify(f.root)},spec=JSON.parse(await readFile(root+'/registration.json','utf8'));
         const store=new OptimizerStudyStore(root+'/study.sqlite',spec),coordinator=new OptimizerStudyCoordinator(root,store);
         store.acquire(coordinator.owner,Date.now(),500);
-        channel('harness-evolution:study-branch').subscribe(event=>{if(event.phase===${JSON.stringify(phase)})process.kill(process.pid,'SIGKILL')});
+        channel('sparkvolve:study-branch').subscribe(event=>{if(event.phase===${JSON.stringify(phase)})process.kill(process.pid,'SIGKILL')});
         await coordinator.branch(${JSON.stringify(parent)},'recoverable');`;
         const result = await new Promise<{ signal: NodeJS.Signals | null; stderr: string }>(
           (resolve, reject) => {

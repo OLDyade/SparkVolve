@@ -2,7 +2,7 @@
 
 ## Reporting vulnerabilities
 
-This repository is a public project. Please use GitHub's [private vulnerability reporting entry point](https://github.com/OLDyade/spark-harness-evolution/security/advisories/new) (Security → Report a vulnerability) to submit security issues; this feature was enabled on 2026-10-29 and confirmed via API read-back. Ordinary feature issues continue to use public Issues.
+This repository is a public project. Please use GitHub's [private vulnerability reporting entry point](https://github.com/OLDyade/SparkVolve/security/advisories/new) (Security → Report a vulnerability) to submit security issues; this feature was enabled on 2026-10-29 and confirmed via API read-back. Ordinary feature issues continue to use public Issues.
 
 Please provide the affected commit or version, runtime environment, minimal reproduction, expected and actual permission boundaries, and scope of impact. Attach only redacted materials; do not submit real keys, customer inputs, private scoring answers, or other people's full model trajectories, and do not disclose exploitable details in public Issues.
 

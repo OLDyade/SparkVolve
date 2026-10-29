@@ -10,8 +10,8 @@ test(
   'native recalculation preserves formulas, typed errors and original bytes through real DSH tools',
   { timeout: 600000 },
   async () => {
-    const image = process.env.HE_SPREADSHEET_IMAGE;
-    assert.ok(image, 'HE_SPREADSHEET_IMAGE must identify the spreadsheet runtime');
+    const image = process.env.SPARKVOLVE_SPREADSHEET_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_SPREADSHEET_IMAGE must identify the spreadsheet runtime');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-engine-semantics-'));
     console.log(`Native engine evidence: ${root}`);
     await mkdir(path.join(root, 'work'));

@@ -23,7 +23,7 @@ assert.ok(
 );
 const taskTimeoutSeconds = timeoutSeconds(process.argv[3]);
 const httpTimeoutSeconds = timeoutSeconds(process.argv[4], taskTimeoutSeconds);
-const image = process.env.HE_TEST_IMAGE;
+const image = process.env.SPARKVOLVE_TEST_IMAGE;
 assert.match(image ?? '', /^sha256:[a-f0-9]{64}$/);
 assert.ok(process.env.VENUS_API_KEY, 'VENUS_API_KEY is required in the trusted launcher environment');
 const uid = process.getuid(),

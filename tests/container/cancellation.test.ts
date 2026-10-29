@@ -14,8 +14,8 @@ test(
   'real cancellation stops only registered execution IDs, recovers removal and reclaims controlled egress',
   { timeout: 120_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'HE_TEST_IMAGE required');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_TEST_IMAGE required');
     const isolation = containerSpecification().isolation;
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-real-cancellation-'));
     console.log(`Cancellation evidence retained: ${root}`);
@@ -127,8 +127,8 @@ test(
   'real same-name replacement is never stopped or removed by the original cancellation authority',
   { timeout: 60_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'HE_TEST_IMAGE required');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_TEST_IMAGE required');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-cancel-replacement-'));
     console.log(`Replacement refusal evidence retained: ${root}`);
     const home = path.join(root, 'execution');

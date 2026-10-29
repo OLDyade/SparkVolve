@@ -1,4 +1,8 @@
-# Brand mark
+# SparkVolve brand
+
+Use **SparkVolve** with this capitalization in project names, headings and diagrams. The repository is `OLDyade/SparkVolve`; npm packages use the lowercase `@sparkvolve/` scope, the CLI is `sparkvolve`, and project environment variables use `SPARKVOLVE_`.
+
+The project slogan remains **Evolve the Harness, Not the Model.** Historical experiment receipts and policy archives retain their original names, paths and hashes as recorded evidence.
 
 The interwoven blue and teal ribbons represent the harness evolving through composition. The violet spark represents the model capability at its center.
 

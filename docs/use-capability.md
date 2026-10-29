@@ -21,7 +21,7 @@ Build the spreadsheet runtime image following the README; select a reviewed capa
 The following commands are run from the repository root. `CAPABILITY_IMAGE` uses the immutable ID of the local image; the credentials file contains only `VENUS_API_KEY=...`, is placed outside the repository and set as `0600`, and is not copied into the image. When choosing another native model adapter, replace the two model patches; do not change the Agent Loop.
 
 ```bash
-export CAPABILITY_IMAGE=$(docker image inspect harness-evolution-spreadsheet:local --format '{{.Id}}')
+export CAPABILITY_IMAGE=$(docker image inspect sparkvolve-spreadsheet:local --format '{{.Id}}')
 export CAPABILITY_BUNDLE=/absolute/path/to/export/bundle.tgz
 export CAPABILITY_CREDENTIALS=/absolute/private/path/venus.env
 export TASK_DIR=$(mktemp -d)

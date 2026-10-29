@@ -8,9 +8,9 @@ The default setup uses the official DeepSeek API and three public synthetic stru
 
 Install Node.js 24.16.0 or later, npm, Python 3, and Docker. Start the Docker daemon. The host must support Unix directory file descriptor operations. The default runtime is Docker's runc; existing gVisor deployments can select `--runtime runsc`. See [runtime isolation](isolation.md).
 
-1. Clone `https://github.com/OLDyade/spark-harness-evolution.git` and enter the repository directory.
+1. Clone `https://github.com/OLDyade/SparkVolve.git` and enter the repository directory.
 2. Set `DEEPSEEK_API_KEY` in a private environment file outside the repository and set its permissions to `0600`. You can also set the variable directly in your shell environment.
-3. Set `HE_EGRESS_POOL` to a reserved private IPv4 CIDR that does not overlap your host, LAN, or VPN networks. Each model execution uses two `/29` subnets. The default three executors plus one optimizer require at least a `/26` pool. See [network configuration](isolation.md).
+3. Set `SPARKVOLVE_EGRESS_POOL` to a reserved private IPv4 CIDR that does not overlap your host, LAN, or VPN networks. Each model execution uses two `/29` subnets. The default three executors plus one optimizer require at least a `/26` pool. See [network configuration](isolation.md).
 
 ```bash
 npm ci
@@ -52,7 +52,7 @@ Output is located in `.evolution/<recipe>-<time>/`:
 | `capability/bundle.tgz` | Raw build package of the selected candidate |
 | `command-logs/` | Per-phase logs, preserving original failures |
 
-Startup prints a command for watching events. Failures report an error and preserve the run directory; use the [native CLI](events.md) to inspect or recover the original controller. The entry point never resamples failed tasks. The selected candidate may still be H0: completing the loop does not establish a quality gain. Validation and reuse scores never change the selected version. Default synthetic splits vary inputs within the same task families; they do not establish cross-domain generalization. Task counts, concurrency and deadlines come from the recipe's contract. `HE_EGRESS_POOL` supplies the network pool; `--pool` explicitly overrides it.
+Startup prints a command for watching events. Failures report an error and preserve the run directory; use the [native CLI](events.md) to inspect or recover the original controller. The entry point never resamples failed tasks. The selected candidate may still be H0: completing the loop does not establish a quality gain. Validation and reuse scores never change the selected version. Default synthetic splits vary inputs within the same task families; they do not establish cross-domain generalization. Task counts, concurrency and deadlines come from the recipe's contract. `SPARKVOLVE_EGRESS_POOL` supplies the network pool; `--pool` explicitly overrides it.
 
 ## Bring your tasks
 

@@ -38,10 +38,10 @@ export async function configureLiveModel(dataset: string, spec: ExperimentSpec):
 }
 
 export function liveControllerEndpoint(port: number): string {
-  const address = process.env.HE_TEST_CONTROLLER_IP;
+  const address = process.env.SPARKVOLVE_TEST_CONTROLLER_IP;
   assert.ok(
     address && isIP(address) === 4,
-    'HE_TEST_CONTROLLER_IP must be an explicit broker-reachable IPv4 address',
+    'SPARKVOLVE_TEST_CONTROLLER_IP must be an explicit broker-reachable IPv4 address',
   );
   return `http://${address}:${port}`;
 }

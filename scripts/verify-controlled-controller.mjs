@@ -15,7 +15,7 @@ assert.ok(process.argv[2], 'Provide a NEW evidence directory [task-seconds] [mod
 const taskTimeoutSeconds = timeoutSeconds(process.argv[3]);
 const httpTimeoutSeconds = timeoutSeconds(process.argv[4], taskTimeoutSeconds);
 assert.ok(process.env.VENUS_API_KEY, 'Trusted launcher requires VENUS_API_KEY');
-assert.match(process.env.HE_TEST_IMAGE ?? '', /^sha256:[a-f0-9]{64}$/);
+assert.match(process.env.SPARKVOLVE_TEST_IMAGE ?? '', /^sha256:[a-f0-9]{64}$/);
 const root = path.resolve(process.argv[2]),
   dataset = path.join(root, 'dataset');
 await mkdir(root);
@@ -35,7 +35,7 @@ await writeFile('/workspace/result.json',JSON.stringify({score:Number(result.sum
 `,
 );
 const packageJSON = {
-  name: '@harness-evolution/native-network-acceptance',
+  name: '@sparkvolve/native-network-acceptance',
   version: '1.0.0',
   type: 'module',
   scripts: { build: 'node --check index.mjs' },
@@ -56,7 +56,7 @@ await writeFile(
 await writeFile(path.join(root, 'seed/cordis.patch.yml'), '[]\n');
 const defaults = containerSpecification();
 defaults.isolation.network.executor = 'controlled';
-const image = process.env.HE_TEST_IMAGE;
+const image = process.env.SPARKVOLVE_TEST_IMAGE;
 const spec = Experiment.parse({
   ...defaults,
   name: 'controlled-native-acceptance',

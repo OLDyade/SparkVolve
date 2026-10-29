@@ -9,9 +9,9 @@ import { stringify } from 'yaml';
 import { DeepSeekHarness } from '@deepseek-ai/dsh-sdk-client';
 import { requestMetrics } from '../../src/metrics.js';
 
-// Set HE_HTTP_HEADER_DELAY_MS=305000 for a real socket regression beyond Node's
+// Set SPARKVOLVE_HTTP_HEADER_DELAY_MS=305000 for a real socket regression beyond Node's
 // former five-minute limit. Normal CI exercises the same native provider path.
-const delay = Number(process.env.HE_HTTP_HEADER_DELAY_MS ?? 250);
+const delay = Number(process.env.SPARKVOLVE_HTTP_HEADER_DELAY_MS ?? 250);
 if (!Number.isFinite(delay) || delay < 0 || delay >= 600000) throw Error('Invalid header delay');
 test(
   'native Pi/OpenAI transport honors a 600s budget without an independent 300s header limit',
@@ -57,7 +57,7 @@ test(
               'http-fixture': {
                 api: 'openai-completions',
                 baseURL: `http://127.0.0.1:${addr.port}/v1`,
-                apiKeyEnv: 'HE_HTTP_FIXTURE_KEY',
+                apiKeyEnv: 'SPARKVOLVE_HTTP_FIXTURE_KEY',
                 timeoutMs: 600000,
                 streamIdleTimeoutMs: 600000,
                 retryPolicy: { mode: 'normal', maxRetries: 0 },
@@ -109,7 +109,7 @@ test(
       model: 'protocol-test',
       initializeTimeoutMs: 30000,
       requestTimeoutMs: 600000,
-      env: { ...process.env, HE_HTTP_FIXTURE_KEY: 'local-protocol-fixture' },
+      env: { ...process.env, SPARKVOLVE_HTTP_FIXTURE_KEY: 'local-protocol-fixture' },
     });
     const start = performance.now();
     try {

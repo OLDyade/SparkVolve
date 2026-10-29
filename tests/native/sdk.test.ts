@@ -32,7 +32,7 @@ test(
             evolutionPreset({
               plugin: path.resolve('dist/plugin.js'),
               endpoint: `http://127.0.0.1:${address.port}`,
-              tokenEnv: 'HE_TEST_TOKEN',
+              tokenEnv: 'SPARKVOLVE_TEST_TOKEN',
               composition: path.resolve('optimizers/evidence-driven/plugins.yml'),
             }),
             {
@@ -53,8 +53,8 @@ test(
       model: 'protocol-test',
       env: {
         ...process.env,
-        HE_TEST_TOKEN: 'child-fixture',
-        HE_FIXTURE_REQUESTS: path.join(root, 'requests.jsonl'),
+        SPARKVOLVE_TEST_TOKEN: 'child-fixture',
+        SPARKVOLVE_FIXTURE_REQUESTS: path.join(root, 'requests.jsonl'),
       },
     });
     try {
@@ -106,7 +106,7 @@ test('missing selected preset fails before any model request', { timeout: 30_000
     cwd: root,
     provider: 'evolution-fixture',
     model: 'protocol-test',
-    env: { ...process.env, HE_FIXTURE_REQUESTS: path.join(root, 'requests.jsonl') },
+    env: { ...process.env, SPARKVOLVE_FIXTURE_REQUESTS: path.join(root, 'requests.jsonl') },
   });
   try {
     await assert.rejects(runtime.run('Never invoke a model with a missing composition'), /preset/i);
@@ -157,7 +157,7 @@ test(
             evolutionPreset({
               plugin: path.resolve('dist/plugin.js'),
               endpoint: `http://127.0.0.1:${address.port}`,
-              tokenEnv: 'HE_TEST_TOKEN',
+              tokenEnv: 'SPARKVOLVE_TEST_TOKEN',
               composition: path.resolve('optimizers/evidence-driven/plugins.yml'),
             }),
             {
@@ -186,8 +186,8 @@ test(
       env: {
         PATH: process.env.PATH,
         HOME: root,
-        HE_TEST_TOKEN: 'native-fixture-token',
-        HE_FIXTURE_REQUESTS: path.join(root, 'requests.jsonl'),
+        SPARKVOLVE_TEST_TOKEN: 'native-fixture-token',
+        SPARKVOLVE_FIXTURE_REQUESTS: path.join(root, 'requests.jsonl'),
       },
     };
     let runtime = new DeepSeekHarness(options);

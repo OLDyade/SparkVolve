@@ -124,7 +124,7 @@ test('aborting after actual bind closes the socket and rolls back its unpublishe
   const root = await mkdtemp(path.join(os.tmpdir(), 'he-control-abort-'));
   const abort = new AbortController();
   let boundPort = 0;
-  const events = channel('harness-evolution:control-transport');
+  const events = channel('sparkvolve:control-transport');
   const listener = (message: unknown) => {
     const event = message as { root: string; phase: string; record: { bound: { port: number } } };
     if (event.root === root && event.phase === 'bound') {
@@ -152,7 +152,7 @@ test('SIGKILL before or after commit recovers a complete transport record withou
       import { writeFileSync } from 'node:fs';
       import { listenControlTransport } from ${JSON.stringify(pathToFileURL(path.resolve('src/control-transport.ts')).href)};
       const root=${JSON.stringify(root)};
-      channel('harness-evolution:control-transport').subscribe(e=>{
+      channel('sparkvolve:control-transport').subscribe(e=>{
         if(e.phase===${JSON.stringify(phase)}) { writeFileSync(root+'/observed.json',JSON.stringify(e.record)); process.kill(process.pid,'SIGKILL'); }
       });
       await listenControlTransport(root,${JSON.stringify(request)},async port=>{

@@ -25,7 +25,7 @@ After completing checks, native installation, and acceptance in the correspondin
 
 ```bash
 npm run package:artifacts -- .evolution/release-inspection
-HE_INSTALL_PACKAGE="$PWD/.evolution/release-inspection/harness-evolution-dsh-bundle-0.0.0-development.tgz" \
+SPARKVOLVE_INSTALL_PACKAGE="$PWD/.evolution/release-inspection/sparkvolve-dsh-bundle-0.0.0-development.tgz" \
   npm run test:install
 cd .evolution/release-inspection
 shasum -a 256 -c SHA256SUMS
@@ -41,7 +41,7 @@ The output directory must not already exist; failure evidence is not overwritten
 | `package-lock.json`     | Full repository lockfile snapshot at the time this manifest was generated                                                    |
 | `SHA256SUMS`            | Verifies the byte identity of this delivery                                                          |
 
-The install test specifies the same actual tarball via `HE_INSTALL_PACKAGE` and verifies digests before and after installation; when unspecified, the test packs its own. When the package name or version changes, use `archive.file` in `artifact.json`; CI also reads from that field. The SBOM describes the repository dependency snapshot; final resolution of a consumer DSH Profile still requires actual installation verification. Digests can detect byte changes but cannot prove publisher identity. A dirty working tree is explicitly recorded, and the package cannot be attributed as the product of a clean commit. The current `0.0.0-development` is a development identifier and does not claim a stable release.
+The install test specifies the same actual tarball via `SPARKVOLVE_INSTALL_PACKAGE` and verifies digests before and after installation; when unspecified, the test packs its own. When the package name or version changes, use `archive.file` in `artifact.json`; CI also reads from that field. The SBOM describes the repository dependency snapshot; final resolution of a consumer DSH Profile still requires actual installation verification. Digests can detect byte changes but cannot prove publisher identity. A dirty working tree is explicitly recorded, and the package cannot be attributed as the product of a clean commit. The current `0.0.0-development` is a development identifier and does not claim a stable release.
 
 ## Original-package installation acceptance for frozen studies
 

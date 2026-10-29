@@ -653,7 +653,7 @@ shutil.copyfile(p.with_name('grade.py'),r/'evaluation'/'grade.py')
           'pack-framework',
         ),
       );
-      frameworkPackage = path.join(root, 'framework', pack['@harness-evolution/dsh-bundle'].filename);
+      frameworkPackage = path.join(root, 'framework', pack['@sparkvolve/dsh-bundle'].filename);
     }
     const frameworkDigest = await fileDigest(frameworkPackage);
     await cp(frameworkPackage, path.join(root, 'framework/package.tgz'), { errorOnExist: true });

@@ -22,7 +22,7 @@ Previously, GitHub Actions was subject to account payment/spending quota limits,
 
 Based on the [GitHub context scoping table](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts), the temporary directory initialization was moved into a step and passed to subsequent steps via `GITHUB_ENV`; the artifact upload step `with` continues to use the valid `runner.temp`. A pinned version of [actionlint 1.7.12](https://github.com/rhysd/actionlint/tree/v1.7.12) was added, the original error was reproduced locally, and the fix was verified to pass. The same `go run` as in CI first failed due to an EOF from the Go checksum service; after retaining the checksum settings, it succeeded on re-execution; dependency verification was not disabled. A read-only subagent review passed.
 
-The post-push [a2905ca run](https://github.com/OLDyade/spark-harness-evolution/actions/runs/40536959221) resolved four jobs; the job annotations explicitly report payment failure or spending quota limits, and no steps started. The scoping fix has been verified by remote parsing, but cloud execution acceptance remains incomplete.
+The post-push [a2905ca run](https://github.com/OLDyade/SparkVolve/actions/runs/40536959221) resolved four jobs; the job annotations explicitly report payment failure or spending quota limits, and no steps started. The scoping fix has been verified by remote parsing, but cloud execution acceptance remains incomplete.
 
 ## Bilingual Entry Points, Technical Diagrams, and Measured-Result Diagrams
 

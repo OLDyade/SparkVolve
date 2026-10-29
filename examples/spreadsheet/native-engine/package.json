@@ -1,5 +1,5 @@
 {
-  "name": "@harness-evolution/spreadsheet-native-engine",
+  "name": "@sparkvolve/spreadsheet-native-engine",
   "version": "0.1.0",
   "type": "module",
   "scripts": {

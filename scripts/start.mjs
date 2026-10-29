@@ -69,7 +69,7 @@ export async function main(args = process.argv.slice(2)) {
     args,
     options: {
       'env-file': { type: 'string' },
-      pool: { type: 'string', default: process.env.HE_EGRESS_POOL },
+      pool: { type: 'string', default: process.env.SPARKVOLVE_EGRESS_POOL },
       root: { type: 'string' },
       recipe: { type: 'string', default: 'examples/structured-data/recipe.json' },
       provider: { type: 'string', default: 'examples/deepseek' },
@@ -82,7 +82,7 @@ export async function main(args = process.argv.slice(2)) {
   });
   if (values.help) {
     console.log(
-      'npm start -- --env-file <private.env> [--pool <reserved-private-CIDR>] [--recipe <recipe.json>] [--root <NEW directory>]\nDefaults: official DeepSeek, structured-data example, 600 seconds per task. HE_EGRESS_POOL supplies --pool. Builds the runtime, freezes three task splits, runs native evolution, independently validates H0/H*, and installs the unchanged selected bundle into clean Profiles for fresh reuse tasks. --image accepts an already-built immutable image ID. No task retry.',
+      'npm start -- --env-file <private.env> [--pool <reserved-private-CIDR>] [--recipe <recipe.json>] [--root <NEW directory>]\nDefaults: official DeepSeek, structured-data example, 600 seconds per task. SPARKVOLVE_EGRESS_POOL supplies --pool. Builds the runtime, freezes three task splits, runs native evolution, independently validates H0/H*, and installs the unchanged selected bundle into clean Profiles for fresh reuse tasks. --image accepts an already-built immutable image ID. No task retry.',
     );
     return;
   }
@@ -141,7 +141,7 @@ export async function main(args = process.argv.slice(2)) {
       if (recipe.dockerfile) {
         const domainId = path.join(root, 'domain-image.txt');
         // BuildKit FROM resolves image names, not Docker's local content-ID syntax.
-        const baseReference = `harness-evolution-runtime:${image.slice('sha256:'.length)}`;
+        const baseReference = `sparkvolve-runtime:${image.slice('sha256:'.length)}`;
         await run('name-runtime-image', 'docker', ['image', 'tag', image, baseReference]);
         assert.equal(
           (

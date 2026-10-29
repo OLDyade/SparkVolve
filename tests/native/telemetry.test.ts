@@ -139,7 +139,7 @@ test('native error finish is recorded as failed even when the adapter does not t
     model: 'protocol-test',
     initializeTimeoutMs: 30000,
     requestTimeoutMs: 30000,
-    env: { ...process.env, HE_FIXTURE_FINISH_ERROR: '1' },
+    env: { ...process.env, SPARKVOLVE_FIXTURE_FINISH_ERROR: '1' },
   });
   try {
     const result = await runtime.run('Exercise native error termination');

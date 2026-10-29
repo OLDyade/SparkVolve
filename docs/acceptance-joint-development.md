@@ -1,6 +1,6 @@
 # Native Autonomous Mutation: Development-Set Experiment and Independent Review
 
-The preregistration [`a486ce5`](https://github.com/OLDyade/spark-harness-evolution/commit/a486ce5606144ecf8f928d66f143fe20e24328cf) froze the [contract](experiments/2026-10-27-joint-plugin-development.json) before launch. Actual implementation `fcf76f2`, DSH `0.2.1-rc.4`; both optimizer and executor are `deepseek/deepseek-v4.1-flash-1017`, thinking off. This round used four public synthetic development tasks, two runs per task, a budget of four candidates including the baseline; the complete record is in [machine evidence](evidence/2026-10-28-joint-development.json).
+The preregistration [`a486ce5`](https://github.com/OLDyade/SparkVolve/commit/a486ce5606144ecf8f928d66f143fe20e24328cf) froze the [contract](experiments/2026-10-27-joint-plugin-development.json) before launch. Actual implementation `fcf76f2`, DSH `0.2.1-rc.4`; both optimizer and executor are `deepseek/deepseek-v4.1-flash-1017`, thinking off. This round used four public synthetic development tasks, two runs per task, a budget of four candidates including the baseline; the complete record is in [machine evidence](evidence/2026-10-28-joint-development.json).
 
 ## Results and Full Budget
 

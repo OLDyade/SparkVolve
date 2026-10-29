@@ -17,8 +17,8 @@ test(
   'fixed comparison CLI executes every frozen method with real native search, independent assessment and no meta session',
   { timeout: 600_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'HE_TEST_IMAGE must name the explicit immutable tested image');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_TEST_IMAGE must name the explicit immutable tested image');
     assert.match(image, /^sha256:[0-9a-f]{64}$/);
     const base = containerSpecification();
     await mkdir('.evolution', { recursive: true });
@@ -58,7 +58,7 @@ test(
     const createBundle = async (id: string, files: Record<string, string>): Promise<FrozenStudyBundleRef> => {
       const source = path.join(root, 'source', id);
       await mkdir(source, { recursive: true });
-      const name = `@harness-evolution/fixed-protocol-${id}`;
+      const name = `@sparkvolve/fixed-protocol-${id}`;
       const manifest = {
         name,
         version: '1.0.0',

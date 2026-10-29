@@ -6,7 +6,7 @@ Status: research and host capability probing. Not yet integrated into the produc
 
 The writable bind mount of `src/docker.ts`, the stdout/stderr copied out after completion, and the frozen artifact archive currently have no hard capacity limit. The existing read-only rootfs, bounded tmpfs, and memory/PID limits cannot substitute for a persistent disk boundary.
 
-he-runsc-lab uses OrbStack-managed btrfs; Docker 29.9.2 uses the containerd overlayfs snapshotter with default json-file logging. btrfs has squota enabled; this session did not modify OrbStack's global quota or machine security settings. Without `/dev/kvm`, Firecracker independent guest kernel acceptance cannot be completed on this basis.
+sparkvolve-runsc-lab uses OrbStack-managed btrfs; Docker 29.9.2 uses the containerd overlayfs snapshotter with default json-file logging. btrfs has squota enabled; this session did not modify OrbStack's global quota or machine security settings. Without `/dev/kvm`, Firecracker independent guest kernel acceptance cannot be completed on this basis.
 
 ## Recommended Design
 

@@ -13,7 +13,7 @@ test(
   'independent container observations reject an infeasible seed and admit a feasible bundle',
   { timeout: 120_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
     assert.ok(image, 'An explicit immutable image is required');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-constraints-'));
     console.log(`Constraint evidence retained: ${root}`);
@@ -26,7 +26,7 @@ test(
     await writeFile(
       path.join(seed, 'package.json'),
       JSON.stringify({
-        name: '@harness-evolution/constraint-fixture',
+        name: '@sparkvolve/constraint-fixture',
         version: '1.0.0',
         type: 'module',
         scripts: { build: 'node --check fixture.mjs' },
@@ -37,10 +37,10 @@ test(
     await writeFile(
       path.join(seed, 'package-lock.json'),
       JSON.stringify({
-        name: '@harness-evolution/constraint-fixture',
+        name: '@sparkvolve/constraint-fixture',
         version: '1.0.0',
         lockfileVersion: 3,
-        packages: { '': { name: '@harness-evolution/constraint-fixture', version: '1.0.0' } },
+        packages: { '': { name: '@sparkvolve/constraint-fixture', version: '1.0.0' } },
       }),
     );
     await writeFile(path.join(seed, 'cordis.patch.yml'), '- insert:\n    - name: ./fixture.mjs\n');

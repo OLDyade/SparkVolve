@@ -214,7 +214,7 @@ export const Experiment = z
     }
     if (
       spec.egress.optimizer.some(
-        (r) => controlPaths.some((p) => p === r.path) || r.credential?.env === 'EVOLUTION_TOKEN',
+        (r) => controlPaths.some((p) => p === r.path) || r.credential?.env === 'SPARKVOLVE_TOKEN',
       )
     )
       ctx.addIssue({ code: 'custom', message: 'Optimizer routes cannot shadow the controller capability' });

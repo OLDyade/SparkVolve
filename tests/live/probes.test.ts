@@ -17,7 +17,7 @@ test(
   'real model authors and observes a native behavioral counterexample without scoring a task',
   { timeout: liveTestTimeout(true) },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
     assert.ok(image);
     assert.ok(process.env.VENUS_API_KEY, 'Use Node --env-file');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-live-probes-'));

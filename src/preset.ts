@@ -12,7 +12,7 @@ export function evolutionPreset(options: {
     name: '@deepseek-ai/dsh-agent-preset',
     config: {
       id: 'evolution',
-      name: 'Harness Evolution',
+      name: 'SparkVolve',
       description: 'Evidence-driven plugin evolution with independent experiments',
       plugins: [
         {

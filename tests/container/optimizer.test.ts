@@ -17,8 +17,8 @@ test(
   'optimizer container mounts the native preset and concludes through the actual controller API',
   { timeout: 120_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'HE_TEST_IMAGE must name an immutable runtime image');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_TEST_IMAGE must name an immutable runtime image');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-preset-container-'));
     console.log(`Optimizer preset evidence retained: ${root}`);
     const dataset = path.join(root, 'dataset');

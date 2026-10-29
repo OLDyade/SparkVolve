@@ -13,7 +13,7 @@ A completed search may use newly generated public tasks to prepare validation. T
 docker run --rm \
   --mount type=bind,src="$PWD/examples/spreadsheet",dst=/example,readonly \
   --mount type=bind,src="$PWD/.evolution/business",dst=/workspace \
-  harness-evolution-spreadsheet:local \
+  sparkvolve-spreadsheet:local \
   python3 /example/research.py /workspace/validation-data validation
 
 node examples/spreadsheet/validation.mjs \

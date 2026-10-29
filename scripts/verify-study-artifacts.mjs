@@ -193,7 +193,7 @@ const config=JSON.parse(await readFile('/acceptance/config.json','utf8'));
 const deadline=Date.now()+config.timeoutSeconds*1000;
 function remaining(){const ms=deadline-Date.now();if(ms<=0)throw Error('Artifact installation deadline exceeded');return ms;}
 const run=(args)=>command('dsh',args,{env,timeoutMs:remaining()});
-const env={...process.env,DSH_HOME:'/workspace/native/dsh',EVOLUTION_ENDPOINT:'http://127.0.0.1:1',EVOLUTION_TOKEN:'unused-install-acceptance'};
+const env={...process.env,DSH_HOME:'/workspace/native/dsh',SPARKVOLVE_ENDPOINT:'http://127.0.0.1:1',SPARKVOLVE_TOKEN:'unused-install-acceptance'};
 for(const key of config.model.credentialEnv)env[key]='unused-install-acceptance';
 Object.assign(process.env,env);
 await run(['--profile',config.profile,'--dump-default-config']);
@@ -210,8 +210,8 @@ await mkdir('/workspace/task',{recursive:true});
 const patches=config.environmentPatch===null?[]:[path.join('/environment',config.environmentPatch)];
 if(config.composition){
  const installedComposition=path.join(profileRoot,'node_modules',manifest.name,config.composition);await readFile(installedComposition);
- const preset=evolutionPreset({plugin:'@harness-evolution/dsh-bundle',endpoint:env.EVOLUTION_ENDPOINT,tokenEnv:'EVOLUTION_TOKEN',composition:installedComposition});
- await writeFile('/workspace/preset.yml',stringify([{insert:sdkPreset('evolution','@harness-evolution/dsh-bundle/sdk-preset',config.profile)},{id:'preset-evolution',config:preset.config}]));patches.push('/workspace/preset.yml');
+ const preset=evolutionPreset({plugin:'@sparkvolve/dsh-bundle',endpoint:env.SPARKVOLVE_ENDPOINT,tokenEnv:'SPARKVOLVE_TOKEN',composition:installedComposition});
+ await writeFile('/workspace/preset.yml',stringify([{insert:sdkPreset('evolution','@sparkvolve/dsh-bundle/sdk-preset',config.profile)},{id:'preset-evolution',config:preset.config}]));patches.push('/workspace/preset.yml');
 }
 await checkComposition({profile:config.profile,model:config.model,patches,directory:'/workspace/native',processCwd:'/app',workspace:'/workspace/task',timeoutSeconds:remaining()/1000});
 const observed=JSON.parse(await readFile('/workspace/native/composition.json','utf8'));

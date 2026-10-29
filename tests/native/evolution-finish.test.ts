@@ -76,7 +76,7 @@ async function host(token: string, initial: ResponseMode) {
 test('evolution_finish concludes only after acknowledged HTTP success; rejection and cancellation do not conclude', async () => {
   const ctx = new Context(),
     token = 'e'.repeat(64),
-    tokenEnv = 'HE_EVOLUTION_FINISH_NATIVE_TOKEN';
+    tokenEnv = 'SPARKVOLVE_EVOLUTION_FINISH_NATIVE_TOKEN';
   const control = await host(token, 'accept');
   process.env[tokenEnv] = token;
   try {
@@ -143,7 +143,7 @@ test(
                 evolutionPreset({
                   plugin: path.resolve('dist/plugin.js'),
                   endpoint: control.endpoint,
-                  tokenEnv: 'HE_EVOLUTION_FINISH_SDK_TOKEN',
+                  tokenEnv: 'SPARKVOLVE_EVOLUTION_FINISH_SDK_TOKEN',
                 }),
               ],
             },
@@ -160,8 +160,8 @@ test(
           requestTimeoutMs: 30_000,
           env: {
             ...process.env,
-            HE_EVOLUTION_FINISH_SDK_TOKEN: token,
-            HE_EVOLUTION_FINISH_REQUESTS: requestsFile,
+            SPARKVOLVE_EVOLUTION_FINISH_SDK_TOKEN: token,
+            SPARKVOLVE_EVOLUTION_FINISH_REQUESTS: requestsFile,
           },
         });
         try {

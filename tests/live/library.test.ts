@@ -17,8 +17,8 @@ test(
   'real model selects, inspects and imports an authorized negative research asset',
   { timeout: liveTestTimeout() },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'Set HE_TEST_IMAGE to an immutable runtime image');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'Set SPARKVOLVE_TEST_IMAGE to an immutable runtime image');
     assert.ok(process.env.VENUS_API_KEY, 'Supply credentials using Node --env-file');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-live-library-'));
     console.log(`Live library acceptance retained: ${root}`);

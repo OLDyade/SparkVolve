@@ -12,7 +12,7 @@ export function apply(ctx) {
     async *stream(options) {
       options.signal?.throwIfAborted();
       appendFileSync(
-        process.env.HE_EVOLUTION_FINISH_REQUESTS,
+        process.env.SPARKVOLVE_EVOLUTION_FINISH_REQUESTS,
         JSON.stringify({ tools: options.tools.map((tool) => tool.name) }) + '\n',
       );
       if (this.requests++ === 0) {

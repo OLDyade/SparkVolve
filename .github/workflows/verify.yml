@@ -1,4 +1,4 @@
-name: Verify native evolution
+name: Verify SparkVolve
 on:
   push:
   pull_request:
@@ -29,28 +29,28 @@ jobs:
       - run: npm run check
       - run: npm pack --dry-run
       - name: Prepare reviewable package and dependency inventory
-        run: npm run package:artifacts -- "$RUNNER_TEMP/harness-package"
+        run: npm run package:artifacts -- "$RUNNER_TEMP/sparkvolve-package"
       - name: Install and exercise the exact distributable
         run: |
           set -euo pipefail
-          PACKAGE_FILE=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).archive.file)' "$RUNNER_TEMP/harness-package/artifact.json")
-          HE_INSTALL_PACKAGE="$RUNNER_TEMP/harness-package/$PACKAGE_FILE" npm run test:install
+          PACKAGE_FILE=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).archive.file)' "$RUNNER_TEMP/sparkvolve-package/artifact.json")
+          SPARKVOLVE_INSTALL_PACKAGE="$RUNNER_TEMP/sparkvolve-package/$PACKAGE_FILE" npm run test:install
       - name: Retain unpublished package artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: package-${{ matrix.os }}-${{ github.sha }}
-          path: ${{ runner.temp }}/harness-package
+          path: ${{ runner.temp }}/sparkvolve-package
           if-no-files-found: error
           retention-days: 14
   containers:
     strategy:
       fail-fast: false
       matrix:
-        runtime: [runc, he-runsc-20261019]
+        runtime: [runc, sparkvolve-runsc-20261019]
     runs-on: ubuntu-latest
     env:
-      HE_TEST_RUNTIME: ${{ matrix.runtime }}
-      HE_EGRESS_POOL: 10.230.0.0/16
+      SPARKVOLVE_TEST_RUNTIME: ${{ matrix.runtime }}
+      SPARKVOLVE_EGRESS_POOL: 10.230.0.0/16
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -61,41 +61,41 @@ jobs:
       - run: npm ci
       - name: Prepare evidence directory
         run: |
-          mkdir -p "$RUNNER_TEMP/harness-evolution"
-          printf 'TMPDIR=%s/harness-evolution\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/sparkvolve"
+          printf 'TMPDIR=%s/sparkvolve\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
       - name: Install pinned gVisor runtime
-        if: matrix.runtime == 'he-runsc-20261019'
+        if: matrix.runtime == 'sparkvolve-runsc-20261019'
         run: bash scripts/install-runsc.sh
-      - run: docker build -t harness-evolution:test .
+      - run: docker build -t sparkvolve:test .
       - name: Discover explicit DNS servers on the declared runtime
         run: |
           set -euo pipefail
           npm run build
           node scripts/egress-dns.mjs \
-            "$(docker image inspect harness-evolution:test --format '{{.Id}}')" \
-            "$HE_TEST_RUNTIME" > "$TMPDIR/egress-dns.json"
-          HE_TEST_DNS=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).servers.join(","))' "$TMPDIR/egress-dns.json")
-          printf 'HE_TEST_DNS=%s\n' "$HE_TEST_DNS" >> "$GITHUB_ENV"
+            "$(docker image inspect sparkvolve:test --format '{{.Id}}')" \
+            "$SPARKVOLVE_TEST_RUNTIME" > "$TMPDIR/egress-dns.json"
+          SPARKVOLVE_TEST_DNS=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).servers.join(","))' "$TMPDIR/egress-dns.json")
+          printf 'SPARKVOLVE_TEST_DNS=%s\n' "$SPARKVOLVE_TEST_DNS" >> "$GITHUB_ENV"
       - name: Verify controlled-egress architecture against the actual runtime
         run: |
           set -euo pipefail
-          HE_TEST_IMAGE=$(docker image inspect harness-evolution:test --format '{{.Id}}') \
+          SPARKVOLVE_TEST_IMAGE=$(docker image inspect sparkvolve:test --format '{{.Id}}') \
             node scripts/verify-egress-boundary.mjs "$TMPDIR/egress-boundary"
       - name: Verify spreadsheet runtime before model tasks
         run: |
           set -euo pipefail
-          docker build --build-arg HARNESS_IMAGE=harness-evolution:test \
-            -f examples/spreadsheet/Dockerfile -t harness-evolution-spreadsheet:test .
+          docker build --build-arg HARNESS_IMAGE=sparkvolve:test \
+            -f examples/spreadsheet/Dockerfile -t sparkvolve-spreadsheet:test .
           npm run build
-          node examples/isolation.mjs "$HE_TEST_RUNTIME" "$HE_EGRESS_POOL" "$HE_TEST_DNS" > "$TMPDIR/spreadsheet-isolation.json"
+          node examples/isolation.mjs "$SPARKVOLVE_TEST_RUNTIME" "$SPARKVOLVE_EGRESS_POOL" "$SPARKVOLVE_TEST_DNS" > "$TMPDIR/spreadsheet-isolation.json"
           node examples/spreadsheet/verify-image.mjs \
-            "$(docker image inspect harness-evolution-spreadsheet:test --format '{{.Id}}')" \
+            "$(docker image inspect sparkvolve-spreadsheet:test --format '{{.Id}}')" \
             "$TMPDIR/spreadsheet-isolation.json" "$TMPDIR/spreadsheet-image"
       - name: Exercise declared runtime end to end
         run: |
           set -euo pipefail
-          HE_TEST_IMAGE=$(docker image inspect harness-evolution:test --format '{{.Id}}') \
-          HE_SPREADSHEET_IMAGE=$(docker image inspect harness-evolution-spreadsheet:test --format '{{.Id}}') \
+          SPARKVOLVE_TEST_IMAGE=$(docker image inspect sparkvolve:test --format '{{.Id}}') \
+          SPARKVOLVE_SPREADSHEET_IMAGE=$(docker image inspect sparkvolve-spreadsheet:test --format '{{.Id}}') \
             node --import tsx --test --test-reporter=tap tests/container/*.test.ts 2>&1 | tee "$TMPDIR/acceptance.log"
       - name: Retain logs and isolation receipts
         if: always()
@@ -103,16 +103,16 @@ jobs:
         with:
           name: runtime-${{ matrix.runtime }}-${{ github.run_attempt }}
           path: |
-            ${{ runner.temp }}/harness-evolution/acceptance.log
-            ${{ runner.temp }}/harness-evolution/egress-dns.json
-            ${{ runner.temp }}/harness-evolution/**/isolation*.json
-            ${{ runner.temp }}/harness-evolution/**/stdout.log
-            ${{ runner.temp }}/harness-evolution/**/stderr.log
-            ${{ runner.temp }}/harness-evolution/**/execution-completion.json
-            ${{ runner.temp }}/harness-evolution/spreadsheet-image/work/*.json
-            ${{ runner.temp }}/harness-evolution/spreadsheet-image/logs/*.log
-            ${{ runner.temp }}/harness-evolution/egress-boundary/*
-            ${{ runner.temp }}/harness-evolution/**/report.json
-            ${{ runner.temp }}/harness-evolution/**/acceptance.json
+            ${{ runner.temp }}/sparkvolve/acceptance.log
+            ${{ runner.temp }}/sparkvolve/egress-dns.json
+            ${{ runner.temp }}/sparkvolve/**/isolation*.json
+            ${{ runner.temp }}/sparkvolve/**/stdout.log
+            ${{ runner.temp }}/sparkvolve/**/stderr.log
+            ${{ runner.temp }}/sparkvolve/**/execution-completion.json
+            ${{ runner.temp }}/sparkvolve/spreadsheet-image/work/*.json
+            ${{ runner.temp }}/sparkvolve/spreadsheet-image/logs/*.log
+            ${{ runner.temp }}/sparkvolve/egress-boundary/*
+            ${{ runner.temp }}/sparkvolve/**/report.json
+            ${{ runner.temp }}/sparkvolve/**/acceptance.json
           if-no-files-found: warn
           retention-days: 14

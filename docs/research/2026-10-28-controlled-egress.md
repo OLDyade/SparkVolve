@@ -32,11 +32,11 @@ Trusted test controller (sole holder of the Docker socket; saves logs/receipts)
                └─ direct host / external IPv4, IPv6 / external DNS: probes fail
 ```
 
-Run `HE_TEST_IMAGE=<local immutable image ID> HE_TEST_RUNTIME=<exact runtime> node scripts/verify-egress-boundary.mjs <fresh evidence directory>`. Only Node is required inside the image; no real model credentials are used and no paid models are called. A trusted Docker daemon is required; the host network fixture uses runc, and the candidate under test uses the specified runtime. The script preserves each container's original logs and allowlist configuration, and finally deletes the fixtures and networks with this run's unique prefix; if the output directory exists, it refuses to overwrite.
+Run `SPARKVOLVE_TEST_IMAGE=<local immutable image ID> SPARKVOLVE_TEST_RUNTIME=<exact runtime> node scripts/verify-egress-boundary.mjs <fresh evidence directory>`. Only Node is required inside the image; no real model credentials are used and no paid models are called. A trusted Docker daemon is required; the host network fixture uses runc, and the candidate under test uses the specified runtime. The script preserves each container's original logs and allowlist configuration, and finally deletes the fixtures and networks with this run's unique prefix; if the output directory exists, it refuses to overwrite.
 
 ## Observed Results
 
-- Docker 29.8.2/runc and the dedicated Debian Docker 29.9.2/gVisor `he-runsc-20261019` both pass the final script.
+- Docker 29.8.2/runc and the dedicated Debian Docker 29.9.2/gVisor `sparkvolve-runsc-20261019` both pass the final script.
 - The normal internal positive control read the random nonce from the host service, proving the service is genuinely available; the isolated candidate's direct connections to the host address and external IPv4/IPv6 fail.
 - The candidate did not receive the test credential; even when submitting a wrong Authorization, the trusted proxy still completed authentication to the same upstream using its own credential; unpermitted paths were rejected.
 - The actual Docker configuration was verified for a single candidate network, the specified runtime, DNS, and hosts; the guest routing/resolution configuration was read. Resolution requests to both the external default DNS and the specified public DNS failed.

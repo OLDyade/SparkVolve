@@ -23,7 +23,7 @@ SDK Profile: Agent Loop / Model / Files / Shell / Native Compression
 
 ## Installing in an Existing DSH
 
-Package this repository and install it using the native `dsh plugin --profile <target Profile> add <tarball>`. Before starting, set `EVOLUTION_ENDPOINT` and `EVOLUTION_TOKEN` to point to an actual `search` experiment control service. Installation provides a native Preset named **Harness Evolution** with ID `evolution`; deployments with a Preset registry and selection UI can select it directly. Evolution tools are not registered to all sessions.
+Package this repository and install it using the native `dsh plugin --profile <target Profile> add <tarball>`. Before starting, set `SPARKVOLVE_ENDPOINT` and `SPARKVOLVE_TOKEN` to point to an actual `search` experiment control service. Installation provides a native Preset named **SparkVolve** with ID `evolution`; deployments with a Preset registry and selection UI can select it directly. Evolution tools are not registered to all sessions.
 
 Tool installation only completes native registration. When self-hosting the optimizer, you must also establish a mount contract between its working directory and the control service: the experiment's `drafts/` is mapped writable to `/workspace`, `materialized/` is mapped read-only to `/evidence`, and the method and validation directories declared in the contract must also be mounted at the corresponding read-only paths. The API returns optimizer runtime environment paths, not download URLs; merely connecting to the HTTP API does not transfer or create these mounts. It is recommended to use the implemented isolated launch path via `evolve`, which automatically establishes and verifies these mappings and does not expose the database, scoring materials, or Docker socket to the optimizer.
 
@@ -31,7 +31,7 @@ The research method can also be packaged and installed independently:
 
 ```bash
 npm pack ./optimizers/evidence-driven
-dsh plugin --profile <target Profile> add ./harness-evolution-optimizer-evidence-driven-0.1.0.tgz
+dsh plugin --profile <target Profile> add ./sparkvolve-optimizer-evidence-driven-0.1.0.tgz
 ```
 
 The method Bundle's patch fully replaces the Evolution Preset's sub-plugin list. The installation order is evolution infrastructure Bundle → research method Bundle; per native semantics, a replacement list does not automatically merge future versions' default sub-plugins.
@@ -47,7 +47,7 @@ In the locked DSH `0.2.1-rc.4`, `sdk` / `sdk-minimal` have no Preset registry, a
       config:
         default: evolution
     - id: evolution-sdk-preset
-      name: '@harness-evolution/dsh-bundle/sdk-preset'
+      name: '@sparkvolve/dsh-bundle/sdk-preset'
       config:
         preset: evolution
 ```

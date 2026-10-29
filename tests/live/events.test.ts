@@ -17,8 +17,8 @@ test(
   'real model waits for a committed host event through native DSH and concludes',
   { timeout: liveTestTimeout() },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'Set HE_TEST_IMAGE to an immutable runtime image');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'Set SPARKVOLVE_TEST_IMAGE to an immutable runtime image');
     assert.ok(process.env.VENUS_API_KEY, 'Supply credentials with Node --env-file');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-live-events-'));
     console.log(`Live event acceptance retained: ${root}`);

@@ -37,7 +37,7 @@ export interface StudyTransport {
   endpoint: string;
 }
 const done = new Set(['complete', 'failed', 'cancelled']);
-const branchPublications = channel('harness-evolution:study-branch');
+const branchPublications = channel('sparkvolve:study-branch');
 function requiresReclamation(error: unknown): boolean {
   return (
     error instanceof ReclamationError ||

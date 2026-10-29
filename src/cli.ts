@@ -52,7 +52,7 @@ const { positionals, values } = parseArgs({
 });
 const action = positionals[0];
 if (values.help || !action) {
-  console.log(`Harness Evolution — native DSH plugin experiments
+  console.log(`SparkVolve — native DSH plugin experiments
 
 init      --root <new-directory> --spec <json> --dataset <directory> --seed <bundle>
 serve     --root <directory> [--host 127.0.0.1] [--port 8787]

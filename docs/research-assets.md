@@ -21,9 +21,9 @@ Three native tools provide retrieval, viewing and import; selection and modifica
 
 ## Authorization and usage
 
-1. Use `harness-evolve remember --root <old experiment> --candidate <digest> --library <directory>` to collect terminal-state archives. Each subdirectory is named by archive ID.
+1. Use `sparkvolve remember --root <old experiment> --candidate <digest> --library <directory>` to collect terminal-state archives. Each subdirectory is named by archive ID.
 2. Select the archives the optimizer is allowed to read and copy them to `research-assets/` of the **new experiment dataset**. Review the access permissions of the source code, task descriptions and feedback within.
-3. Use `harness-evolve digest <dataset>/research-assets` to obtain the directory digest, and declare it in the new experiment contract:
+3. Use `sparkvolve digest <dataset>/research-assets` to obtain the directory digest, and declare it in the new experiment contract:
 
 ```json
 "researchLibrary": {
@@ -56,6 +56,6 @@ The original contract, original scores and old lineage are used to explain prove
 Unit acceptance covers unauthorized rejection, private directory overlap, path traversal, metadata/source tampering, provenance following the commit, and the three interruption points: before copy, after publish, and response loss. Native tool registration, container task recovery, and real-model retrieval import are verified separately; real-model tests use explicitly synthesized historical archives and cannot count as quality gains.
 
 ```sh
-HE_TEST_IMAGE=sha256:<runtime image digest> node --env-file=/secure-directory/venus.env \
+SPARKVOLVE_TEST_IMAGE=sha256:<runtime image digest> node --env-file=/secure-directory/venus.env \
   --import tsx --test tests/live/library.test.ts
 ```

@@ -1,6 +1,6 @@
 # Second-Domain Real Acceptance: Structured Events and Logs
 
-Before startup, the [registration record](experiments/2026-10-28-structured-data.json) was frozen at [`b15be37`](https://github.com/OLDyade/spark-harness-evolution/commit/b15be37). The experiment reused the existing Controller, DSH optimizer, build, native QA, scoring, and export; no core code was modified and no Excel dependency was installed. The fixed model was `deepseek/deepseek-v4.1-flash-1017`, DSH `0.2.1-rc.4`, one run per each of the three tasks, with a budget of two candidates including the baseline.
+Before startup, the [registration record](experiments/2026-10-28-structured-data.json) was frozen at [`b15be37`](https://github.com/OLDyade/SparkVolve/commit/b15be37). The experiment reused the existing Controller, DSH optimizer, build, native QA, scoring, and export; no core code was modified and no Excel dependency was installed. The fixed model was `deepseek/deepseek-v4.1-flash-1017`, DSH `0.2.1-rc.4`, one run per each of the three tasks, with a budget of two candidates including the baseline.
 
 ## Actual Results
 

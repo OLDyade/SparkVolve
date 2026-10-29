@@ -23,7 +23,7 @@ const Record = z.strictObject({
 });
 export type ControlTransportRequest = z.infer<typeof Request>;
 export type ControlTransportRecord = z.infer<typeof Record>;
-const observations = channel('harness-evolution:control-transport');
+const observations = channel('sparkvolve:control-transport');
 
 export async function closeControlServer(server: Server): Promise<void> {
   if (!server.listening) return;

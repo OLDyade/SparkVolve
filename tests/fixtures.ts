@@ -1,12 +1,12 @@
 import type { Candidate, ExperimentSpec, TaskRun } from '../src/contracts.js';
 export const hash = 'a'.repeat(64);
 export function containerSpecification(): ExperimentSpec {
-  const runtime = process.env.HE_TEST_RUNTIME;
-  if (!runtime) throw new Error('HE_TEST_RUNTIME must explicitly select a registered Docker runtime');
+  const runtime = process.env.SPARKVOLVE_TEST_RUNTIME;
+  if (!runtime) throw new Error('SPARKVOLVE_TEST_RUNTIME must explicitly select a registered Docker runtime');
   const spec = specification();
   spec.isolation.runtime = runtime;
-  const dns = process.env.HE_TEST_DNS;
-  if (!dns) throw new Error('HE_TEST_DNS must explicitly select reachable broker IPv4 resolvers');
+  const dns = process.env.SPARKVOLVE_TEST_DNS;
+  if (!dns) throw new Error('SPARKVOLVE_TEST_DNS must explicitly select reachable broker IPv4 resolvers');
   spec.isolation.network.egressDns = dns.split(',');
   return spec;
 }

@@ -20,7 +20,7 @@ The first review handling verified opinions against actual source code, frozen r
 
 ### Verified Facts
 
-- Baseline `dc0d2be517019fc978a523b9e7fac8413b5da104`; repository public. [That commit's CI](https://github.com/OLDyade/spark-harness-evolution/actions/runs/40665718920) succeeded on all four: Linux, macOS, runc, gVisor.
+- Baseline `dc0d2be517019fc978a523b9e7fac8413b5da104`; repository public. [That commit's CI](https://github.com/OLDyade/SparkVolve/actions/runs/40665718920) succeeded on all four: Linux, macOS, runc, gVisor.
 - The two domain generators are indeed `constraints: []`; the table objective explicitly requires accuracy first, with retention and cost reported separately. `src/store.ts` calls `assessConstraints()`, and the mechanism is connected.
 - 466 version-controlled files: src 61, tests 117, docs 183; the three homepage PNGs total about 6.2 MiB. The counts and sizes are accurate, but file count alone cannot establish that the architecture is out of control.
 - No Release published, Discussions not enabled, rulesets empty; this time the legacy branch protection API returned `Branch not protected`. This supplements a state the external review could not confirm.

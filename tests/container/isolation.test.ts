@@ -10,8 +10,8 @@ test(
   'real isolation: non-root, read-only source/root, offline network, bounded resources and refusal of drift',
   { timeout: 60_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
-    assert.ok(image, 'HE_TEST_IMAGE is required; isolation acceptance never silently skips');
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
+    assert.ok(image, 'SPARKVOLVE_TEST_IMAGE is required; isolation acceptance never silently skips');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-isolation-'));
     console.log(`Isolation evidence retained: ${root}`);
     await mkdir(path.join(root, 'work'));

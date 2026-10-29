@@ -3,13 +3,13 @@
       name: '@deepseek-ai/dsh-agent-preset'
       config:
         id: evolution
-        name: Harness Evolution
+        name: SparkVolve
         description: Evidence-driven plugin evolution with independent experiments
         plugins:
           - id: evolution-native-authoring
-            name: '@harness-evolution/dsh-bundle/native-authoring'
+            name: '@sparkvolve/dsh-bundle/native-authoring'
           - id: evolution-tools
-            name: '@harness-evolution/dsh-bundle'
+            name: '@sparkvolve/dsh-bundle'
             config:
-              endpoint: !!js process.env.EVOLUTION_ENDPOINT
-              tokenEnv: EVOLUTION_TOKEN
+              endpoint: !!js process.env.SPARKVOLVE_ENDPOINT
+              tokenEnv: SPARKVOLVE_TOKEN

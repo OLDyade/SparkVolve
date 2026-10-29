@@ -47,7 +47,7 @@ export function capabilityRoutes(
     method: 'POST',
     upstream: new URL(route, url).href,
     addresses: { kind: 'exact', values: [address] },
-    credential: { env: 'EVOLUTION_TOKEN', header: 'authorization', prefix: 'Bearer ' },
+    credential: { env: 'SPARKVOLVE_TOKEN', header: 'authorization', prefix: 'Bearer ' },
     body: { kind: 'json', equals: {}, maximum: {} },
     maxRequestBytes: 1024 * 1024,
     timeoutSeconds: Math.ceil(timeoutSeconds),

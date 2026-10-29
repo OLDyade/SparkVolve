@@ -7,7 +7,7 @@ import { Controller } from '../../src/controller.ts';
 
 const [root, area] = process.argv.slice(2);
 const canonicalRoot = await realpath(root);
-subscribe('harness-evolution:publication', (event) => {
+subscribe('sparkvolve:publication', (event) => {
   const relative = path.relative(canonicalRoot, event.destination);
   const selected = area === 'delivery' ? relative.endsWith('/delivery') : relative.startsWith(`${area}/`);
   if (!selected || event.phase !== 'copying') return;

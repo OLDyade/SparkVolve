@@ -45,7 +45,7 @@ export async function libraryFixture(
     candidate: sourceCandidate,
   });
   const record = {
-    format: 'harness-evolution-research-archive',
+    format: 'sparkvolve-research-archive',
     archiveId,
     experimentId,
     candidate: {

@@ -11,7 +11,7 @@ export function apply(ctx) {
     async *stream(options) {
       options.signal?.throwIfAborted();
       appendFileSync(
-        process.env.HE_FINISH_REQUESTS,
+        process.env.SPARKVOLVE_FINISH_REQUESTS,
         JSON.stringify({ tools: options.tools, messages: options.messages }) + '\n',
       );
       if (this.requests++ === 0) {

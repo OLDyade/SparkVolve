@@ -29,29 +29,29 @@ The generator and answer algorithm are public development samples, so these task
 
 Run from the repository root; dependency versions and credential configuration follow the main README. The image directly uses the generic base image and does not install spreadsheet dependencies.
 
-`HE_TEST_DNS` uses the IPv4 resolver list confirmed by the deployer; for the discovery method and the actual resolution acceptance boundary, see [Egress DNS](isolation.md#egress-dns).
+`SPARKVOLVE_TEST_DNS` uses the IPv4 resolver list confirmed by the deployer; for the discovery method and the actual resolution acceptance boundary, see [Egress DNS](isolation.md#egress-dns).
 
 ```bash
 npm ci
 npm run check
-docker build -t harness-evolution:local .
+docker build -t sparkvolve:local .
 mkdir -p .evolution/data
-node examples/isolation.mjs runc "${HE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
-  "${HE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > .evolution/data/isolation.json
+node examples/isolation.mjs runc "${SPARKVOLVE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
+  "${SPARKVOLVE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > .evolution/data/isolation.json
 python3 examples/structured-data/generate.py .evolution/data/dataset
 node examples/structured-data/prepare.mjs .evolution/data/dataset \
-  "$(docker image inspect harness-evolution:local --format '{{.Id}}')" \
+  "$(docker image inspect sparkvolve:local --format '{{.Id}}')" \
   examples/venus/model.json .evolution/data/spec.json .evolution/data/isolation.json examples/venus
 node dist/cli.js init --root .evolution/data/search \
   --spec .evolution/data/spec.json --dataset .evolution/data/dataset \
   --seed examples/structured-data/seed
 node --env-file=/absolute/private/venus.env dist/cli.js evolve \
   --root .evolution/data/search --host 0.0.0.0 --port 18949 \
-  --endpoint "http://${HE_CONTROLLER_IP}:18949"
+  --endpoint "http://${SPARKVOLVE_CONTROLLER_IP}:18949"
 node dist/cli.js report --root .evolution/data/search --output .evolution/data/report.json
 ```
 
-`HE_CONTROLLER_IP` must be an explicit IP reachable by the proxy container; you can read Docker's configured host mapping via the README's `scripts/controller-address.mjs`, or specify a configured reachable interface. The data directory, contract, and report all require new paths; after stopping, resume the original experiment with the same `evolve` command, and do not rebuild the directory to disguise a retry. After outputting a frozen candidate via `export`, you can install it using the [native capability entry](use-capability.md), replacing the workbook input with the corresponding JSON data and tasks.
+`SPARKVOLVE_CONTROLLER_IP` must be an explicit IP reachable by the proxy container; you can read Docker's configured host mapping via the README's `scripts/controller-address.mjs`, or specify a configured reachable interface. The data directory, contract, and report all require new paths; after stopping, resume the original experiment with the same `evolve` command, and do not rebuild the directory to disguise a retry. After outputting a frozen candidate via `export`, you can install it using the [native capability entry](use-capability.md), replacing the workbook input with the corresponding JSON data and tasks.
 
 ## Implementation Basis
 

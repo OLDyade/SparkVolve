@@ -11,7 +11,7 @@ done
 if (( $# == 0 )); then command -v curl >/dev/null; fi
 
 version=20261019.0
-runtime=he-runsc-20261019
+runtime=sparkvolve-runsc-20261019
 arch=$(uname -m)
 case "$arch" in
   x86_64) checksum=1298e8ed9c3fee900f00d2ea96ec2d79d80ed93f2175812f29b7e7da718041a3 ;;
@@ -19,7 +19,7 @@ case "$arch" in
   *) printf 'Unsupported architecture: %s\n' "$arch" >&2; exit 1 ;;
 esac
 test "$(uname -s)" = Linux
-target="/opt/harness-evolution/runsc-$version"
+target="/opt/sparkvolve/runsc-$version"
 test ! -e "$target"
 scratch=$(mktemp -d)
 trap 'rm -rf "$scratch"' EXIT

@@ -1,9 +1,9 @@
 cff-version: 1.2.0
 message: "Please cite this software and the exact commit used in your experiments."
-title: "Harness Evolution: Evolve the Harness, Not the Model."
+title: "SparkVolve: Evolve the Harness, Not the Model."
 type: software
 authors:
-  - name: Harness Evolution contributors
-repository-code: https://github.com/OLDyade/spark-harness-evolution
+  - name: SparkVolve contributors
+repository-code: https://github.com/OLDyade/SparkVolve
 license: Apache-2.0
 abstract: "A native DSH plugin framework for evidence-driven evolution of harness configuration, implementation and composition, with independent evaluation and reusable capability bundles."

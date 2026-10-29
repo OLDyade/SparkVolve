@@ -1,20 +1,20 @@
 <div align="center">
 
-<img src="docs/assets/brand/logo.png" alt="Harness Evolution — an evolving double helix around a spark" width="160" height="160">
+<img src="docs/assets/brand/logo.png" alt="SparkVolve — an evolving double helix around a spark" width="160" height="160">
 
-# Let the Harness Evolve
+# SparkVolve
 
 **Evolve the Harness, Not the Model.**
 
 Keep model weights fixed. Let the harness evolve through real tasks.
 
-[![CI](https://github.com/OLDyade/spark-harness-evolution/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/OLDyade/spark-harness-evolution/actions/workflows/verify.yml)
+[![CI](https://github.com/OLDyade/SparkVolve/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/OLDyade/SparkVolve/actions/workflows/verify.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-202124?style=flat-square)](LICENSE)
 [![DSH](https://img.shields.io/badge/DSH-Native_plugins-DDEAF5?style=flat-square&labelColor=202124)](docs/components.md)
 
 [English](README.md) · [中文](README.zh-CN.md) · [Quick start](#quick-start) · [How it works](#how-it-works) · [Bring your tasks](#bring-your-tasks) · [Blueprint](11.md)
 
-![Harness Evolution: fixed model, evolving plugin code, configuration and composition, reusable Bundles](docs/assets/readme/hero.png)
+![SparkVolve: fixed model, evolving plugin code, configuration and composition, reusable Bundles](docs/assets/readme/hero.png)
 
 </div>
 
@@ -35,7 +35,7 @@ Ship improvements with the original Bundle, candidate lineage, capability card a
 
 ## Quick start
 
-**Run real evolution:** clone the repository and prepare Node.js 24, Python 3, Docker and an official DeepSeek key. Set `HE_EGRESS_POOL` to a reserved private subnet and keep credentials in an environment file outside the repository; see the [startup guide](docs/quick-start.md).
+**Run real evolution:** clone the repository and prepare Node.js 24, Python 3, Docker and an official DeepSeek key. Set `SPARKVOLVE_EGRESS_POOL` to a reserved private subnet and keep credentials in an environment file outside the repository; see the [startup guide](docs/quick-start.md).
 
 ```bash
 npm ci
@@ -115,7 +115,7 @@ The latest [mutation-space comparison and package reuse](docs/experiments/2026-1
 | **Research and reproduce** | [Independent protocols](docs/research-protocol.md) · [Optimizer evolution](docs/optimizer-studies.md) · [Experiments](docs/experiments/README.md) |
 | **Ship and contribute** | [Install capabilities](docs/use-capability.md) · [Releasing](docs/releasing.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) |
 
-Contributions of task adapters, mutation mechanisms and reproducible studies are welcome. Bring your failure cases to [Issues](https://github.com/OLDyade/spark-harness-evolution/issues).
+Contributions of task adapters, mutation mechanisms and reproducible studies are welcome. Bring your failure cases to [Issues](https://github.com/OLDyade/SparkVolve/issues).
 
 ---
 

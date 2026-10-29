@@ -47,14 +47,15 @@ test(
       };
       await writeFile(workspace, stringify(configuration));
       let archive;
-      if (process.env.HE_INSTALL_PACKAGE) archive = path.resolve(process.env.HE_INSTALL_PACKAGE);
+      if (process.env.SPARKVOLVE_INSTALL_PACKAGE)
+        archive = path.resolve(process.env.SPARKVOLVE_INSTALL_PACKAGE);
       else {
         const packed = JSON.parse(
           await command('npm', ['pack', '--ignore-scripts', '--pack-destination', root, '--json'], {
             timeoutMs: 60000,
           }),
         );
-        archive = path.join(root, packed['@harness-evolution/dsh-bundle'].filename);
+        archive = path.join(root, packed['@sparkvolve/dsh-bundle'].filename);
       }
       const originalArchive = createHash('sha256')
         .update(await readFile(archive))
@@ -67,7 +68,13 @@ test(
       const profile = JSON.parse(
         await readFile(path.join(env.DSH_HOME, 'profiles/sdk-minimal/package.json'), 'utf8'),
       );
-      assert.ok(profile.dsh.profile.bundles.includes('@harness-evolution/dsh-bundle'));
+      assert.ok(profile.dsh.profile.bundles.includes('@sparkvolve/dsh-bundle'));
+      const installedHelp = await command(
+        path.join(env.DSH_HOME, 'profiles/sdk-minimal/node_modules/.bin/sparkvolve'),
+        ['--help'],
+        { env, timeoutMs: 30000 },
+      );
+      assert.match(installedHelp, /^SparkVolve — native DSH plugin experiments/);
       assert.equal(
         createHash('sha256')
           .update(await readFile(archive))
@@ -92,7 +99,7 @@ test(
           '--profile',
           'sdk-minimal',
           'add',
-          path.join(root, methodPack['@harness-evolution/optimizer-evidence-driven'].filename),
+          path.join(root, methodPack['@sparkvolve/optimizer-evidence-driven'].filename),
         ],
         { env, timeoutMs: 180000 },
       );
@@ -103,7 +110,7 @@ test(
           {
             insert: [
               { id: 'fixture-provider', name: path.resolve('tests/native/fixture-provider.mjs') },
-              ...sdkPreset('evolution', '@harness-evolution/dsh-bundle/sdk-preset', 'sdk-minimal'),
+              ...sdkPreset('evolution', '@sparkvolve/dsh-bundle/sdk-preset', 'sdk-minimal'),
             ],
           },
         ]),
@@ -119,9 +126,9 @@ test(
         requestTimeoutMs: 30000,
         env: {
           ...env,
-          EVOLUTION_ENDPOINT: `http://127.0.0.1:${address.port}`,
-          EVOLUTION_TOKEN: 'installation-fixture',
-          HE_FIXTURE_REQUESTS: path.join(root, 'requests.jsonl'),
+          SPARKVOLVE_ENDPOINT: `http://127.0.0.1:${address.port}`,
+          SPARKVOLVE_TOKEN: 'installation-fixture',
+          SPARKVOLVE_FIXTURE_REQUESTS: path.join(root, 'requests.jsonl'),
         },
       });
       const result = await runtime.run('Call evolution_status once.');

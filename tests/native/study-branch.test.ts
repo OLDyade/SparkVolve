@@ -15,7 +15,7 @@ test('native DSH branch tool renders the actual coordinator receipt and preserve
   const f = await studyBranchFixture(),
     abort = new AbortController(),
     ctx = new Context();
-  const env = 'HE_NATIVE_BRANCH_CAPABILITY';
+  const env = 'SPARKVOLVE_NATIVE_BRANCH_CAPABILITY';
   process.env[env] = 'e'.repeat(64);
   const server = await serveStudy(f.control, process.env[env], 0, '127.0.0.1', abort.signal);
   const address = server.address();

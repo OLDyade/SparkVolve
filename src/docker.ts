@@ -91,9 +91,9 @@ export class Docker {
       '--name',
       spec.name,
       '--label',
-      'org.harness-evolution.managed=true',
+      'org.sparkvolve.managed=true',
       '--label',
-      `org.harness-evolution.intent=${containerIdentity(spec)}`,
+      `org.sparkvolve.intent=${containerIdentity(spec)}`,
       '--runtime',
       spec.isolation.runtime,
       '--user',
@@ -139,7 +139,7 @@ export class Docker {
         expected.intent !== containerIdentity(spec))
     )
       throw Error('Refusing to stop a replacement execution container');
-    if (actual.Config.Labels['org.harness-evolution.intent'] !== containerIdentity(spec))
+    if (actual.Config.Labels['org.sparkvolve.intent'] !== containerIdentity(spec))
       throw Error('Refusing to stop a container with a different execution identity');
     if (state.Running) await command('docker', ['stop', '--time=5', actual.Id]);
   }
@@ -151,10 +151,7 @@ export class Docker {
   async remove(reference: ContainerReference): Promise<void> {
     if (!(await this.inspect(reference.name))) return;
     const actual = await this.configuration(reference.name);
-    if (
-      actual.Id !== reference.id ||
-      actual.Config.Labels['org.harness-evolution.intent'] !== reference.intent
-    )
+    if (actual.Id !== reference.id || actual.Config.Labels['org.sparkvolve.intent'] !== reference.intent)
       throw Error('Refusing to remove a replacement container');
     if (actual.State.Running) throw Error('Refusing to remove an active execution');
     await command('docker', ['rm', reference.id]);

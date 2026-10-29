@@ -1,11 +1,11 @@
 {
-  "name": "@harness-evolution/dsh-bundle",
+  "name": "@sparkvolve/dsh-bundle",
   "version": "0.0.0-development",
-  "description": "Native DSH plugins for evidence-driven harness evolution",
+  "description": "SparkVolve: native DSH plugins for evidence-driven harness evolution",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OLDyade/spark-harness-evolution.git"
+    "url": "git+https://github.com/OLDyade/SparkVolve.git"
   },
   "packageManager": "npm@12.2.0",
   "type": "module",
@@ -22,7 +22,7 @@
     "./study-contracts": "./dist/optimizer-study-contracts.js"
   },
   "bin": {
-    "harness-evolve": "./dist/cli.js"
+    "sparkvolve": "./dist/cli.js"
   },
   "files": [
     "dist",
@@ -105,11 +105,12 @@
     "fflate": "0.8.3",
     "@modelcontextprotocol/client": "2.3.0"
   },
-  "homepage": "https://github.com/OLDyade/spark-harness-evolution#readme",
+  "homepage": "https://github.com/OLDyade/SparkVolve#readme",
   "bugs": {
-    "url": "https://github.com/OLDyade/spark-harness-evolution/issues"
+    "url": "https://github.com/OLDyade/SparkVolve/issues"
   },
   "keywords": [
+    "sparkvolve",
     "deepseek-harness",
     "dsh-plugin",
     "harness-evolution",

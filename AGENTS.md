@@ -2,7 +2,7 @@
 
 ## Working baseline
 
-- `OLDyade/spark-harness-evolution` is the primary repository for subsequent design and implementation. Use root `11.md` as the target blueprint and follow the user's latest decisions. The original `spark-harness` directory is a source of historical evidence and implementations to evaluate.
+- `OLDyade/SparkVolve` is the primary repository for subsequent design and implementation. Use root `11.md` as the target blueprint and follow the user's latest decisions. The original `spark-harness` directory is a source of historical evidence and implementations to evaluate.
 - Preserve the user-defined core ideas. The three core designs and six stated principles are open-ended guidance, not an exhaustive requirements list. Proactively complete the architecture, interfaces, experiments, operations, and delivery details.
 - Retain the complete workflow, branches, feedback loops, and technical detail. Explain the evidence and tradeoffs behind design changes; distinguish goals, implemented behavior, hypotheses, and verified results.
 - English is the repository's working language: documentation, code comments, examples, CLI messages, diagrams, and generated pages. Root `README.md` and `README.zh-CN.md` are the bilingual entry points; Chinese is confined to these files. Preserve the original Chinese core statements in `README.zh-CN.md` and their meaning in the English blueprint.

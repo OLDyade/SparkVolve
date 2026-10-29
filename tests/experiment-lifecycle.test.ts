@@ -40,7 +40,7 @@ async function fixture() {
   await writeFile(
     path.join(seed, 'package.json'),
     JSON.stringify({
-      name: '@harness-evolution/initialization-fixture',
+      name: '@sparkvolve/initialization-fixture',
       dsh: { bundle: { patch: './cordis.patch.yml' } },
     }),
   );
@@ -112,7 +112,7 @@ test('SIGKILL at initialization publication boundaries resumes without duplicate
           import {readFile} from 'node:fs/promises';
           import {prepareExperiment} from ${JSON.stringify(new URL('../src/experiment.ts', import.meta.url).href)};
           const launch=JSON.parse(await readFile(${JSON.stringify(config)},'utf8'));
-          channel('harness-evolution:initialization').subscribe(event=>{if(event.phase===${JSON.stringify(phase)})process.kill(process.pid,'SIGKILL');});
+          channel('sparkvolve:initialization').subscribe(event=>{if(event.phase===${JSON.stringify(phase)})process.kill(process.pid,'SIGKILL');});
           await prepareExperiment(launch.root,launch.spec,launch.dataset,launch.seed);`;
         const result = await new Promise<{
           code: number | null;
@@ -234,7 +234,7 @@ test('prepared snapshots are verification-only and missing or damaged content is
 test('dataset changes after initialization identity is reserved cannot publish a prepared experiment', async () => {
   const f = await fixture(),
     root = path.join(f.root, 'experiment');
-  const observations = channel('harness-evolution:initialization');
+  const observations = channel('sparkvolve:initialization');
   const changeSource = (message: unknown) => {
     const event = message as { root: string; phase: string };
     if (event.root === root && event.phase === 'reserved')

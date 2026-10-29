@@ -133,7 +133,7 @@ async function runOptimizer(
               evolutionPreset({
                 plugin: '/app/dist/plugin.js',
                 endpoint: 'http://evolution-egress:8080',
-                tokenEnv: 'EVOLUTION_TOKEN',
+                tokenEnv: 'SPARKVOLVE_TOKEN',
                 composition: `/method/${spec.optimizerHarness.composition}`,
               }),
             ],
@@ -182,7 +182,7 @@ async function runOptimizer(
         docker,
         gateway,
         () => launch(episode!, episodeRoot, gateway),
-        { ...process.env, EVOLUTION_TOKEN: token },
+        { ...process.env, SPARKVOLVE_TOKEN: token },
       );
       result = await collectExecution(episodeRoot, execution, episodeRoot, docker, gateway, signal);
     } catch (error) {
@@ -208,7 +208,7 @@ async function runOptimizer(
     gateway: EgressLifecycle,
   ): Promise<import('./docker.js').ContainerSpec> {
     const env: Record<string, string> = Object.fromEntries(
-      ['EVOLUTION_TOKEN', ...spec.optimizer.credentialEnv].map((key) => [key, 'egress-client-placeholder']),
+      ['SPARKVOLVE_TOKEN', ...spec.optimizer.credentialEnv].map((key) => [key, 'egress-client-placeholder']),
     );
     const environment = spec.runtime.environment;
     return {

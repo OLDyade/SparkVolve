@@ -43,7 +43,7 @@ test('native finish marks only host-acknowledged successful results; rejection a
     release = resolve;
   });
   const token = 'd'.repeat(64),
-    env = 'HE_NATIVE_FINISH_CAPABILITY';
+    env = 'SPARKVOLVE_NATIVE_FINISH_CAPABILITY';
   process.env[env] = token;
   const server = await serveStudy(
     control(async (reason) => {
@@ -133,7 +133,7 @@ test(
                 evolutionPreset({
                   plugin: path.resolve('dist/study-plugin.js'),
                   endpoint: `http://127.0.0.1:${address.port}`,
-                  tokenEnv: 'HE_FINISH_CAPABILITY',
+                  tokenEnv: 'SPARKVOLVE_FINISH_CAPABILITY',
                 }),
               ],
             },
@@ -149,7 +149,11 @@ test(
           model: 'protocol-fixture',
           initializeTimeoutMs: 30_000,
           requestTimeoutMs: 30_000,
-          env: { ...process.env, HE_FINISH_CAPABILITY: token, HE_FINISH_REQUESTS: requestsFile },
+          env: {
+            ...process.env,
+            SPARKVOLVE_FINISH_CAPABILITY: token,
+            SPARKVOLVE_FINISH_REQUESTS: requestsFile,
+          },
         });
         try {
           const result = await runtime.run('Exercise native study finish protocol.');

@@ -13,7 +13,7 @@ test(
   'native behavioral probes exercise real composed services and tools in isolated containers',
   { timeout: 180_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
     assert.ok(image, 'An explicit immutable image is required');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-native-probes-'));
     console.log(`Probe container evidence retained: ${root}`);
@@ -76,7 +76,7 @@ output:{schema:{type:'number'},render:(_args,value)=>[{type:'text',text:String(v
       `import assert from 'node:assert/strict'; import {access,writeFile} from 'node:fs/promises';
 export async function probe({call,ctx,observe}) {
   for(const file of ['/evaluation','/input','/var/run/docker.sock']) await assert.rejects(access(file),{code:'ENOENT'});
-  assert.equal(process.env.VENUS_API_KEY,undefined); assert.equal(process.env.EVOLUTION_TOKEN,undefined);
+  assert.equal(process.env.VENUS_API_KEY,undefined); assert.equal(process.env.SPARKVOLVE_TOKEN,undefined);
   await assert.rejects(writeFile('/candidate/injected','x'));
   const actual=ctx.get('probeMath').double(4);
   await observe('native service return', {input:4, actual});

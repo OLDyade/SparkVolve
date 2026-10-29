@@ -18,10 +18,10 @@ test(
   'real containers: native DSH → immutable delivery → private grade → strict decision → installable archive',
   { timeout: 180_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
     assert.ok(
       image,
-      'HE_TEST_IMAGE must be an explicit immutable Docker image ID; this test never silently skips',
+      'SPARKVOLVE_TEST_IMAGE must be an explicit immutable Docker image ID; this test never silently skips',
     );
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-container-'));
     console.log(`Container evidence retained: ${root}`);
@@ -32,7 +32,7 @@ test(
     await writeFile(
       path.join(seed, 'package.json'),
       JSON.stringify({
-        name: '@harness-evolution/protocol-fixture',
+        name: '@sparkvolve/protocol-fixture',
         version: '1.0.0',
         type: 'module',
         scripts: { build: 'node --check fixture.mjs' },
@@ -43,10 +43,10 @@ test(
     await writeFile(
       path.join(seed, 'package-lock.json'),
       JSON.stringify({
-        name: '@harness-evolution/protocol-fixture',
+        name: '@sparkvolve/protocol-fixture',
         version: '1.0.0',
         lockfileVersion: 3,
-        packages: { '': { name: '@harness-evolution/protocol-fixture', version: '1.0.0' } },
+        packages: { '': { name: '@sparkvolve/protocol-fixture', version: '1.0.0' } },
       }),
     );
     await writeFile(path.join(seed, 'cordis.patch.yml'), '- insert:\n    - name: ./fixture.mjs\n');

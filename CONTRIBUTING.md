@@ -10,9 +10,9 @@ Translate documentation without changing claims, commands, versions, numerical r
 npm ci
 npm run check
 npm run test:install
-docker build -t harness-evolution:test .
-HE_TEST_RUNTIME=runc HE_TEST_DNS="${HE_TEST_DNS:?Set approved reachable IPv4 DNS servers}" \
-  HE_TEST_IMAGE=$(docker image inspect harness-evolution:test --format '{{.Id}}') npm run test:container
+docker build -t sparkvolve:test .
+SPARKVOLVE_TEST_RUNTIME=runc SPARKVOLVE_TEST_DNS="${SPARKVOLVE_TEST_DNS:?Set approved reachable IPv4 DNS servers}" \
+  SPARKVOLVE_TEST_IMAGE=$(docker image inspect sparkvolve:test --format '{{.Id}}') npm run test:container
 ```
 
 - Use Node 24.16.0 and npm 12.2.0; native Bundle installation uses pnpm 12.15.0.

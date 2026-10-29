@@ -6,7 +6,7 @@
 
 ## Actual Run
 
-2026-10-29 02:16:55–02:35:01 UTC, official `deepseek-flash`, G/H used the same model configuration and the same DSH runtime image, 600 seconds per task. Execution implementation locked to commit [`6590b97`](https://github.com/OLDyade/spark-harness-evolution/commit/6590b97ac3b025c8650e7f3f68f9c0c86c12b20b). G, H0, tasks, scoring and budget summaries were all frozen before the first model call; the raw directory is `.evolution/mutation-space-official-20261029`.
+2026-10-29 02:16:55–02:35:01 UTC, official `deepseek-flash`, G/H used the same model configuration and the same DSH runtime image, 600 seconds per task. Execution implementation locked to commit [`6590b97`](https://github.com/OLDyade/SparkVolve/commit/6590b97ac3b025c8650e7f3f68f9c0c86c12b20b). G, H0, tasks, scoring and budget summaries were all frozen before the first model call; the raw directory is `.evolution/mutation-space-official-20261029`.
 
 ```text
 Same G + same H0 + same development tasks and budget
@@ -79,6 +79,6 @@ After the experiment concluded, per the [DSH official interface](https://github.
 
 The request basis is the DSH adapter stream call records. Failed requests lack usage, and the token totals include only usage reported by the service and cannot be regarded as a complete bill; costs were not reported and cannot be filled in as zero. Per-task durations, failures and auxiliary metrics are in the JSON; speed does not affect selection. The Study's `passed: true` indicates that protocol execution and report finalization are complete, and cannot be taken as method benefit or as passing candidate semantic acceptance.
 
-The implementation commit's [GitHub four-way CI](https://github.com/OLDyade/spark-harness-evolution/actions/runs/40805867567) all passed, 24 items each for runc/gVisor. After the finalization fixes, `npm run check` all passed, including formatting, documentation, types, 266 unit tests and 28 native tests.
+The implementation commit's [GitHub four-way CI](https://github.com/OLDyade/SparkVolve/actions/runs/40805867567) all passed, 24 items each for runc/gVisor. After the finalization fixes, `npm run check` all passed, including formatting, documentation, types, 266 unit tests and 28 native tests.
 
 Follow-up research should first address native contract misuse and semantic inference not proven by inputs, and expand independent tasks that can distinguish these behaviors. Continue to preserve the full evolution space of plugin implementations, configurations and composition structures; plugin count, lines of code and the highest single-batch score are not criteria for evolutionary success.

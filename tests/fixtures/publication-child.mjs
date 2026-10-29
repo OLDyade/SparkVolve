@@ -4,7 +4,7 @@ import path from 'node:path';
 import { freeze } from '../../src/artifacts.ts';
 
 const [root, phase] = process.argv.slice(2);
-subscribe('harness-evolution:publication', (event) => {
+subscribe('sparkvolve:publication', (event) => {
   if (event.phase !== phase) return;
   writeSync(1, JSON.stringify(event) + '\n');
   process.kill(process.pid, 'SIGSTOP');

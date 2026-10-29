@@ -1,5 +1,5 @@
 {
-  "name": "@harness-evolution/optimizer-method-research",
+  "name": "@sparkvolve/optimizer-method-research",
   "version": "0.1.0",
   "type": "module",
   "exports": "./index.mjs",

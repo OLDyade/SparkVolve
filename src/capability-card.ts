@@ -121,7 +121,7 @@ These are the original experiment's declared operating conditions, not permissio
 
 ## Reuse
 
-${hasBundle ? 'The archive contains the original Bundle for inspection and native DSH installation. A rejected or QA-failed candidate remains a research artifact even when its build produced a tarball. Follow the project [capability installation guide](https://github.com/OLDyade/spark-harness-evolution/blob/main/docs/use-capability.md) with the declared Profile and your own model configuration; installation and behavior in the target environment require their own verification.' : 'Inspect the source and failure record. Resolve the recorded build failure in a new candidate before attempting capability installation; this export contains no substitute package.'}
+${hasBundle ? 'The archive contains the original Bundle for inspection and native DSH installation. A rejected or QA-failed candidate remains a research artifact even when its build produced a tarball. Follow the project [capability installation guide](https://github.com/OLDyade/SparkVolve/blob/main/docs/use-capability.md) with the declared Profile and your own model configuration; installation and behavior in the target environment require their own verification.' : 'Inspect the source and failure record. Resolve the recorded build failure in a new candidate before attempting capability installation; this export contains no substitute package.'}
 
 This card does not read or copy raw input, private-evaluation or trace files. Displayed declarations and diagnostics may quote task data or log fragments and require review before redistribution. Other task families, models, dependency versions and deployment permissions are not certified by these results.
 `;

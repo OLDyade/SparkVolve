@@ -241,7 +241,7 @@ export async function evolveOptimizerStudy(
                 evolutionPreset({
                   plugin: '/app/dist/study-plugin.js',
                   endpoint: 'http://evolution-egress:8080',
-                  tokenEnv: 'EVOLUTION_TOKEN',
+                  tokenEnv: 'SPARKVOLVE_TOKEN',
                   composition: `/method/${method.composition}`,
                 }),
               ],
@@ -350,7 +350,7 @@ export async function evolveOptimizerStudy(
             network: await gateway.candidateNetwork(),
             timeoutSeconds: intent.seconds,
             env: Object.fromEntries(
-              ['EVOLUTION_TOKEN', ...spec.metaRuntime.model.credentialEnv].map((key) => [
+              ['SPARKVOLVE_TOKEN', ...spec.metaRuntime.model.credentialEnv].map((key) => [
                 key,
                 'egress-client-placeholder',
               ]),
@@ -380,7 +380,7 @@ export async function evolveOptimizerStudy(
               },
             ],
           }),
-          { ...process.env, EVOLUTION_TOKEN: token },
+          { ...process.env, SPARKVOLVE_TOKEN: token },
         );
         result = await collectExecution(episodeRoot, execution, episodeRoot, docker, gateway, signal);
         await atomicJSON(path.join(episodeRoot, 'container-result.json'), result);

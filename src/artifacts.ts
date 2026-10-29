@@ -5,7 +5,7 @@ import { channel } from 'node:diagnostics_channel';
 import path from 'node:path';
 import { authorizedInventory, readAuthorizedFile } from './file-reader.js';
 
-const publications = channel('harness-evolution:publication');
+const publications = channel('sparkvolve:publication');
 
 export function canonical(value: unknown): string {
   if (value === null || typeof value === 'string' || typeof value === 'boolean') return JSON.stringify(value);

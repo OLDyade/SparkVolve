@@ -44,7 +44,7 @@ test('controller capability has exact pinned routes and cannot be shadowed by mo
     routes.map((r) => r.path),
     [...controlPaths],
   );
-  assert.ok(routes.every((r) => r.method === 'POST' && r.credential?.env === 'EVOLUTION_TOKEN'));
+  assert.ok(routes.every((r) => r.method === 'POST' && r.credential?.env === 'SPARKVOLVE_TOKEN'));
   for (const value of [
     'http://controller:8787',
     'http://192.0.2.10/base',
@@ -55,7 +55,7 @@ test('controller capability has exact pinned routes and cannot be shadowed by mo
   const spec = specification();
   for (const external of [
     { ...route, path: '/status' },
-    { ...route, credential: { ...route.credential, env: 'EVOLUTION_TOKEN' } },
+    { ...route, credential: { ...route.credential, env: 'SPARKVOLVE_TOKEN' } },
   ])
     assert.ok(!Experiment.safeParse({ ...spec, egress: { ...spec.egress, optimizer: [external] } }).success);
 });

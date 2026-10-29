@@ -8,7 +8,7 @@ import { verifyArtifact } from './build.js';
 import { readAuthorizedFile } from './file-reader.js';
 
 const Archive = z.looseObject({
-  format: z.literal('harness-evolution-research-archive'),
+  format: z.literal('sparkvolve-research-archive'),
   archiveId: Digest,
   experimentId: z.uuid(),
   candidate: z.looseObject({

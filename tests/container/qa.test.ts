@@ -13,7 +13,7 @@ test(
   'explicit domain QA failure remains terminal after successful native assembly',
   { timeout: 120_000 },
   async () => {
-    const image = process.env.HE_TEST_IMAGE;
+    const image = process.env.SPARKVOLVE_TEST_IMAGE;
     assert.ok(image, 'An explicit immutable image is required');
     const root = await mkdtemp(path.join(os.tmpdir(), 'he-domain-qa-'));
     console.log(`Domain QA evidence retained: ${root}`);
@@ -39,7 +39,7 @@ export async function probe({call}) {
 }`,
     );
     await cp(new URL('./fixture.mjs', import.meta.url), path.join(seed, 'fixture.mjs'));
-    const name = '@harness-evolution/domain-qa-fixture';
+    const name = '@sparkvolve/domain-qa-fixture';
     await writeFile(
       path.join(seed, 'package.json'),
       JSON.stringify({

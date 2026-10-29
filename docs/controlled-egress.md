@@ -48,7 +48,7 @@ The following script uses real models and incurs call costs. The credential file
 npm ci
 npm run build
 mkdir -p .evolution
-HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}') \
+SPARKVOLVE_TEST_IMAGE=$(docker image inspect sparkvolve:local --format '{{.Id}}') \
   node --env-file=/absolute/private/venus.env \
   scripts/verify-egress-native.mjs .evolution/egress-native-acceptance
 ```
@@ -96,8 +96,8 @@ Frozen egressPool → Docker IPAM atomically leases two /29 → original worker 
 Formal Controller reproduction (requires build first):
 
 ```bash
-HE_TEST_RUNTIME=runc HE_TEST_IMAGE=$(docker image inspect harness-evolution:local --format '{{.Id}}') \
-  HE_TEST_DNS="${HE_TEST_DNS:?Set approved IPv4 DNS servers}" \
+SPARKVOLVE_TEST_RUNTIME=runc SPARKVOLVE_TEST_IMAGE=$(docker image inspect sparkvolve:local --format '{{.Id}}') \
+  SPARKVOLVE_TEST_DNS="${SPARKVOLVE_TEST_DNS:?Set approved IPv4 DNS servers}" \
   node --env-file=/absolute/private/venus.env --import tsx \
   scripts/verify-controlled-controller.mjs .evolution/controller-resource-acceptance
 ```
