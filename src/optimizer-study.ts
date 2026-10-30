@@ -879,9 +879,13 @@ export class OptimizerStudyCoordinator {
             });
       if (isFixedComparison(this.spec)) await this.runPairedComparison(transport, externalSignal);
       else for (const target of targets) await this.evaluate(target, 'validation', transport, externalSignal);
+      const jobs = this.store.jobs().filter((job) => job.stage === 'validation');
+      const completed = jobs.filter((job) => job.phase === 'complete').length;
+      const failed = jobs.filter((job) => job.phase === 'failed').length;
+      const cancelled = jobs.filter((job) => job.phase === 'cancelled').length;
       const result = this.store.finish(
         this.owner,
-        'Registered independent validation completed; results retained without automatic release',
+        `Registered jobs settled: ${completed} independent assessments completed, ${failed} jobs failed, ${cancelled} jobs cancelled; no automatic release`,
       );
       await this.report();
       return result;

@@ -49,7 +49,7 @@ export function apply(ctx) {
     defineTool({
       name: 'workbook_inspect',
       description:
-        'Read a workbook as a model: literal cell values, formula text and the text of every cell comment, per sheet. ' +
+        'Read a workbook as a model: literal cell values, formula text, array/data-table attributes and cell comments, per sheet. ' +
         "Comments often carry the task's stated adjustments and calculation notes, so read them all before writing. " +
         'Formulas are reported as their stored text, never as computed results; this tool does not calculate, ' +
         'infer business meaning or refresh stored cached results.',
@@ -108,9 +108,9 @@ export function apply(ctx) {
       name: 'workbook_recalculate',
       description:
         'Calculate an XLSX workbook with the installed spreadsheet engine (LibreOffice headless, isolated profile) ' +
-        'and report, for every formula, its verbatim formula text plus the engine result or engine error such as ' +
+        'and report every stored formula anchor, its text and attributes, plus the engine result or engine error such as ' +
         '#DIV/0!. Results are engine outputs; they are not checked against any expectation. With a destination the ' +
-        'recalculated copy is saved (inside /workspace) for delivery. Engine failures are reported as tool errors. ' +
+        'recalculated copy is saved inside /workspace at a path different from source. Engine failures are reported as tool errors. ' +
         "Values retain their workbook types; date values are serialized as ISO text. Follow the sheet's stated units. " +
         'Note: cells whose result the engine leaves without a stored value are reported as null.',
       parameters: {
@@ -121,7 +121,8 @@ export function apply(ctx) {
         },
         destination: {
           type: 'string',
-          description: 'Optional absolute output path inside /workspace for the recalculated workbook.',
+          description:
+            'Optional absolute output path inside /workspace, different from source. Omit to observe without saving.',
         },
         sheets: {
           type: 'array',

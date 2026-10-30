@@ -20,6 +20,7 @@ from pathlib import Path
 
 from openpyxl import load_workbook
 from openpyxl.utils.cell import coordinate_to_tuple
+from openpyxl.worksheet.formula import ArrayFormula, DataTableFormula
 
 WORKSPACE_ROOT = '/workspace'
 ENGINE_BINARY = 'libreoffice'
@@ -53,7 +54,21 @@ def normalize_value(value):
 
 
 def is_formula(value):
-    return isinstance(value, str) and value.startswith('=')
+    return isinstance(value, (ArrayFormula, DataTableFormula)) or (
+        isinstance(value, str) and value.startswith('=')
+    )
+
+
+def formula_record(value):
+    """Expose loaded OOXML formula text and attributes without interpreting them."""
+    if isinstance(value, ArrayFormula):
+        return {'formula': value.text, 'formula_attributes': dict(value)}
+    if isinstance(value, DataTableFormula):
+        # Data tables store input references and flags, not a scalar formula string.
+        return {'formula': None, 'formula_attributes': dict(value)}
+    if is_formula(value):
+        return {'formula': value, 'formula_attributes': {'t': 'normal'}}
+    raise TypeError('Expected a stored formula')
 
 
 def operation_inspect(args):
@@ -75,7 +90,7 @@ def operation_inspect(args):
                     continue
                 entry = {}
                 if is_formula(cell.value):
-                    entry['formula'] = cell.value
+                    entry.update(formula_record(cell.value))
                 else:
                     entry['value'] = normalize_value(cell.value)
                 if cell.comment is not None:
@@ -92,7 +107,7 @@ def operation_inspect(args):
         'sheets': result,
         'calculation_engine_invoked': False,
         'stored_values_only': True,
-        'note': 'Reads stored cell content: literal values, formula text and comments. '
+        'note': 'Reads stored cell content: literal values, formula text, formula attributes and comments. '
                 'Stored cached results of formulas are not refreshed here; use the '
                 'recalculate operation for engine results.',
     }
@@ -233,7 +248,7 @@ def operation_recalculate(args):
                     rows.append({
                         'sheet': sheet.title,
                         'cell': cell.coordinate,
-                        'formula': cell.value,
+                        **formula_record(cell.value),
                         'engine_value': None if error_value else normalize_value(result),
                         'engine_error': error_value,
                     })
@@ -255,7 +270,9 @@ def operation_recalculate(args):
         'values_are_engine_results': True,
         'note': 'engine_value/engine_error are outputs produced by the installed '
                 'spreadsheet engine from the source bytes; null means the engine '
-                'produced no value for that cell. Formula text is reported verbatim.',
+                'produced no value for that cell. Each row represents a stored formula anchor; '
+                'array/data-table ranges and inputs are retained as formula_attributes. '
+                'Data tables have no scalar formula text, so formula is null.',
         'formulas': rows,
     }
 

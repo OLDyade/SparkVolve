@@ -34,7 +34,12 @@ test('report retains failed samples, QA budget, absent ledgers and optimizer exp
     writeFile(path.join(trace, 'requests.jsonl'), rows.map((row) => JSON.stringify(row)).join('\n'));
   await ledger(executorTrace, [
     { id: 'execute', kind: 'started' },
-    { id: 'execute', kind: 'result', durationMs: 400, usage: { inputTokens: 100, outputTokens: 10 } },
+    {
+      id: 'execute',
+      kind: 'result',
+      durationMs: 400,
+      usage: { inputTokens: 100, outputTokens: 10, cacheReadTokens: 900, totalTokens: 1010 },
+    },
   ]);
   await ledger(optimizerTrace, [
     { id: 'opt', kind: 'started' },
@@ -61,6 +66,11 @@ test('report retains failed samples, QA budget, absent ledgers and optimizer exp
     assert.equal(report.totalUsage.reportedTotals!.unfinished, 1);
     assert.equal(report.totalUsage.reportedTotals!.missingUsage, 1);
     assert.equal(report.totalUsage.reportedTotals!.inputTokensReported, 100);
+    assert.equal(report.totalUsage.reportedTotals!.cacheReadTokensReported, 900);
+    assert.equal(report.totalUsage.reportedTotals!.cacheReadUsageReports, 1);
+    assert.equal(report.totalUsage.reportedTotals!.cacheWriteTokensReported, null);
+    assert.equal(report.totalUsage.reportedTotals!.cacheWriteUsageReports, 0);
+    assert.equal(report.totalUsage.reportedTotals!.totalTokensReported, 1010);
     assert.equal(report.totalUsage.unavailableLedgers, 1);
     assert.equal(report.totalUsage.complete, false);
     assert.equal(report.monetaryCost, null);

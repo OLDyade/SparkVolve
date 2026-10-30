@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from openpyxl import Workbook, load_workbook
 from openpyxl.comments import Comment
+from openpyxl.worksheet.formula import ArrayFormula, DataTableFormula
 
 root = Path(sys.argv[2])
 formulas = {
@@ -21,6 +22,21 @@ if sys.argv[1] == 'create':
     s['A7'].number_format = 'yyyy-mm-dd'
     s['D1'].comment = Comment('An intentionally empty observation with a comment', 'contract')
     w.save(root / 'source.xlsx')
+    special = Workbook()
+    sheet = special.active
+    sheet.title = 'Special'
+    sheet['A1'], sheet['A2'], sheet['B1'], sheet['B2'] = 2, 3, 4, 5
+    sheet['C1'] = ArrayFormula(ref='C1:C2', text='=A1:A2*B1:B2')
+    special.save(root / 'array.xlsx')
+    sheet['E1'] = DataTableFormula(ref='E1:F2', dt2D=True, r1='A1', r2='B1', ca=True)
+    special.save(root / 'special.xlsx')
+elif sys.argv[1] == 'verify-array':
+    f = load_workbook(root / 'array-result.xlsx', data_only=False)
+    v = load_workbook(root / 'array-result.xlsx', data_only=True)
+    assert isinstance(f['Special']['C1'].value, ArrayFormula)
+    assert f['Special']['C1'].value.ref == 'C1:C2'
+    assert [v['Special'][cell].value for cell in ['C1', 'C2']] == [8, 15]
+    print(json.dumps({'arrayResults': [8, 15], 'range': 'C1:C2'}))
 elif sys.argv[1] == 'verify':
     f = load_workbook(root / 'result.xlsx', data_only=False)
     v = load_workbook(root / 'result.xlsx', data_only=True)

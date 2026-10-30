@@ -415,3 +415,43 @@ test('cancelling a partially executed comparison retains successful, failed and 
     await f.cleanup();
   }
 });
+
+test('terminal recovery reports actual assessments and never labels failed searches as completed validation', async () => {
+  for (const completedCount of [0, 2]) {
+    const f = await fixture();
+    try {
+      const reserved = jobs(f);
+      f.store.freezeFixedDispatchPlan(owner);
+      for (const [index, job] of reserved.entries()) {
+        if (index < completedCount) complete(f, job, 0.6);
+        else f.store.failJob(owner, job.id, 'Provider rejected the search before assessment');
+      }
+      class TerminalCoordinator extends OptimizerStudyCoordinator {
+        launches = 0;
+        protected override async runJob(): Promise<void> {
+          this.launches++;
+          throw Error('Terminal jobs must not restart');
+        }
+      }
+      const coordinator = new TerminalCoordinator(f.root, f.store);
+      f.store.release(owner);
+      f.store.acquire(coordinator.owner, Date.now(), 60_000);
+      const state = await coordinator.runValidation({
+        host: '127.0.0.1',
+        port: 0,
+        endpoint: 'http://127.0.0.1:0',
+      });
+      assert.equal(coordinator.launches, 0);
+      assert.equal(state.phase, 'complete');
+      assert.equal(
+        state.conclusion?.reason,
+        `Registered jobs settled: ${completedCount} independent assessments completed, ${12 - completedCount} jobs failed, 0 jobs cancelled; no automatic release`,
+      );
+      assert.equal(f.store.jobs().length, 12);
+      assert.equal(f.store.jobs().filter((job) => job.result).length, completedCount);
+      assert.equal(coordinator.reportSnapshot().state.conclusion?.reason, state.conclusion?.reason);
+    } finally {
+      await f.cleanup();
+    }
+  }
+});

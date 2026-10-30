@@ -14,6 +14,14 @@ const counters = [
   'outputTokensReported',
   'missingUsage',
   'requestDurationMsSum',
+  'cacheReadUsageReports',
+  'cacheWriteUsageReports',
+  'totalTokenUsageReports',
+] as const;
+const optionalCounters = [
+  'cacheReadTokensReported',
+  'cacheWriteTokensReported',
+  'totalTokensReported',
 ] as const;
 
 export async function usageAt(trace: string): Promise<Usage | null> {
@@ -32,7 +40,17 @@ export function sumUsage(rows: Array<Usage | null>) {
     availableLedgers: reported.length,
     unavailableLedgers: rows.length - reported.length,
     reportedTotals: reported.length
-      ? Object.fromEntries(counters.map((key) => [key, reported.reduce((sum, row) => sum + row[key], 0)]))
+      ? {
+          ...Object.fromEntries(
+            counters.map((key) => [key, reported.reduce((sum, row) => sum + row[key], 0)]),
+          ),
+          ...Object.fromEntries(
+            optionalCounters.map((key) => {
+              const values = reported.flatMap((row) => (row[key] === null ? [] : [row[key]]));
+              return [key, values.length ? values.reduce((a, b) => a + b, 0) : null];
+            }),
+          ),
+        }
       : null,
     complete:
       reported.length === rows.length &&
@@ -168,6 +186,7 @@ export async function experimentReport(root: string, store: Store) {
       'Full-denominator descriptive results. QA/build failures consume candidate budget but have no task score. ' +
       'Usage is recomputed from durable DSH adapter stream ledgers; hidden provider retries and prices are unknown. ' +
       'Missing ledgers and missing usage are explicit; reported totals are partial when complete=false. ' +
+      'DSH inputTokens counts uncached input only. Cache reads, writes and full-call totals retain adapter-reported values and per-field coverage; absent fields stay null. Monetary cost requires provider billing rates and is not inferred from token totals. ' +
       'Screened-out tasks were never launched and require no usage ledger; they have no task score. ' +
       'Request durations sum streams and are not wall time. Execution elapsed excludes grading; build/QA time is not token cost. ' +
       'Search selection is not independent validation or causal attribution. No inferred accuracy from optimizer narrative.',

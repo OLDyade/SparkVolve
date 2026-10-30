@@ -11,6 +11,47 @@ export async function probe({ call, workspace }) {
   const source = path.join(workspace, 'source.xlsx');
   const destination = path.join(workspace, 'result.xlsx');
   const before = await readFile(source);
+  const specialSource = path.join(workspace, 'special.xlsx');
+  const specialBefore = await readFile(specialSource);
+  const special = await call('workbook_inspect', { file: specialSource });
+  assert.equal(special.isError, false, JSON.stringify(special));
+  const cells = special.value.sheets.Special.cells;
+  assert.deepEqual(cells.C1, { formula: '=A1:A2*B1:B2', formula_attributes: { t: 'array', ref: 'C1:C2' } });
+  assert.deepEqual(cells.E1, {
+    formula: null,
+    formula_attributes: { t: 'dataTable', ref: 'E1:F2', dt2D: '1', r1: 'A1', r2: 'B1', ca: '1' },
+  });
+  const specialCopy = path.join(workspace, 'special-copy.xlsx');
+  const written = await call('workbook_write', {
+    source: specialSource,
+    destination: specialCopy,
+    edits: [{ sheet: 'Special', cell: 'H1', value: 42 }],
+  });
+  assert.equal(written.isError, false, JSON.stringify(written));
+  const copied = await call('workbook_inspect', { file: specialCopy });
+  assert.equal(copied.isError, false, JSON.stringify(copied));
+  assert.deepEqual(copied.value.sheets.Special.cells.C1, cells.C1);
+  assert.deepEqual(copied.value.sheets.Special.cells.E1, cells.E1);
+  assert.deepEqual(await readFile(specialSource), specialBefore);
+  const arraySource = path.join(workspace, 'array.xlsx');
+  const arrayBefore = await readFile(arraySource);
+  const array = await call('workbook_recalculate', {
+    source: arraySource,
+    destination: path.join(workspace, 'array-result.xlsx'),
+  });
+  assert.equal(array.isError, false, JSON.stringify(array));
+  assert.equal(array.value.formula_count, 1);
+  assert.deepEqual(array.value.formulas[0], {
+    sheet: 'Special',
+    cell: 'C1',
+    ...cells.C1,
+    engine_value: 8,
+    engine_error: null,
+  });
+  const arrayVerified = JSON.parse(
+    execFileSync('python3', [fixture, 'verify-array', workspace], { encoding: 'utf8' }),
+  );
+  assert.deepEqual(await readFile(arraySource), arrayBefore);
   const reply = await call('workbook_recalculate', { source, destination });
   assert.equal(reply.isError, false, JSON.stringify(reply));
   const report = reply.value;
@@ -44,6 +85,17 @@ export async function probe({ call, workspace }) {
   assert.deepEqual(await readFile(destination), saved);
   await writeFile(
     path.join(workspace, 'semantic-contract.json'),
-    JSON.stringify({ verified, report, sourceUnchanged: true, failedOperationsAtomic: true }, null, 2),
+    JSON.stringify(
+      {
+        verified,
+        report,
+        specialFormulas: cells,
+        arrayVerified,
+        sourceUnchanged: true,
+        failedOperationsAtomic: true,
+      },
+      null,
+      2,
+    ),
   );
 }

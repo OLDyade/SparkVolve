@@ -1,0 +1,652 @@
+{
+  "kind": "community-benchmark-infrastructure-failure",
+  "run": "sb2-mixed36-study5-20261030",
+  "sourceCommit": "d187a8f13aec0e83756900e3b62c61f20cb6e035",
+  "startedAt": "2026-10-30T07:58:54.135Z",
+  "endedAt": "2026-10-30T08:12:09.487Z",
+  "status": "blocked_by_provider_balance",
+  "validMethodComparison": false,
+  "registrationSha256": "71f34cb5f06116f297965acaae70f616c98ee5b92ca58e61a3f053b0e6860cca",
+  "originalReportSha256": "0f70d0559b800db2ea25cb65df2d8192403851e353d4334cd8eff4c0af7e8483",
+  "accountingProjection": {
+    "reconstructedAt": "2026-10-30T08:26:02.870Z",
+    "metricsSourceSha256": "8a5f1a7a50fcbde1ac899482130840a4a2df7049ff25ea857da87cab4e218f4d",
+    "reportSourceSha256": "0861da45b7deef0d306a26da06b8653dbb157de04d5ecf164e7debc9ee977027",
+    "observer": "DSH adapter request events; no provider-internal HTTP retries inferred",
+    "inputTokens": "Uncached input only; cache read/write are disjoint reported categories",
+    "missingUsage": "Failed requests retain missing usage; partial totals are not inferred as zero",
+    "originalReportPreserved": true
+  },
+  "image": "sha256:aa7b2dbf5235287a5c925f6884e9a07cd2655252c7b8180964e0af81e466d647",
+  "model": {
+    "credentialEnv": [
+      "DEEPSEEK_API_KEY"
+    ],
+    "maxTokens": 32768,
+    "model": "deepseek-flash",
+    "provider": "deepseek-official",
+    "reasoningEffort": "off"
+  },
+  "splitSizes": {
+    "development": 12,
+    "test": 14,
+    "validation": 10
+  },
+  "allocation": {
+    "installedTestTasks": 28,
+    "searchTasks": 144,
+    "total": 212,
+    "validationTasks": 40
+  },
+  "arms": [
+    {
+      "id": "prompt",
+      "identity": "b1204b084a25aa43e8960ae0266178ce5e373993b1a0a787dcc7ae24befb4a8f",
+      "phase": "failed",
+      "sourceDigest": "957f83f12d698db573e87d0b27a6f4bcb49fbc2e727d4be712f2012592a60b3f",
+      "bundleDigest": "d57fd75ae596aa71b472698277199070b0a9bd617b39f8339645c4ae20d97fab",
+      "candidates": 1,
+      "mutations": 0,
+      "denominator": 12,
+      "scored": 3,
+      "executionFailed": 6,
+      "cancelled": 3,
+      "descriptiveFailureInclusiveMean": 0.15651666666666667,
+      "validMethodComparison": false,
+      "optimizerFaults": [
+        {
+          "code": "QUOTA",
+          "status": 402
+        }
+      ],
+      "usage": {
+        "availability": "available",
+        "ledgers": 13,
+        "availableLedgers": 10,
+        "unavailableLedgers": 3,
+        "reportedTotals": {
+          "started": 452,
+          "results": 445,
+          "failed": 7,
+          "unfinished": 0,
+          "inputTokensReported": 779919,
+          "outputTokensReported": 171163,
+          "missingUsage": 7,
+          "requestDurationMsSum": 1965632.9872549998,
+          "cacheReadUsageReports": 445,
+          "cacheWriteUsageReports": 445,
+          "totalTokenUsageReports": 445,
+          "cacheReadTokensReported": 58614784,
+          "cacheWriteTokensReported": 0,
+          "totalTokensReported": 59565866
+        },
+        "complete": false,
+        "unavailableSources": 0,
+        "unobservedTaskRuns": 0,
+        "activeSources": 0,
+        "emptyLedgers": 0
+      },
+      "taskResults": [
+        {
+          "task": "Debugging-01_07",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 571408,
+          "faults": [
+            {
+              "code": "RATE_LIMIT",
+              "status": 429
+            }
+          ]
+        },
+        {
+          "task": "Debugging-03_05",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 574274,
+          "faults": [
+            {
+              "code": "QUOTA",
+              "status": 402
+            }
+          ]
+        },
+        {
+          "task": "Debugging-01_02",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 16213,
+          "faults": [
+            {
+              "code": "SERVER",
+              "status": 502
+            }
+          ]
+        },
+        {
+          "task": "Template-06_08",
+          "phase": "scored",
+          "score": 0.8571,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 0,
+            "official_regression": 1
+          },
+          "executionElapsedMs": 33366,
+          "faults": []
+        },
+        {
+          "task": "Debugging-05_03",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 548768,
+          "faults": [
+            {
+              "code": "RATE_LIMIT",
+              "status": 429
+            }
+          ]
+        },
+        {
+          "task": "Financial_Model-03_02",
+          "phase": "scored",
+          "score": 0.0211,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 0,
+            "official_regression": 0.9855
+          },
+          "executionElapsedMs": 378147,
+          "faults": []
+        },
+        {
+          "task": "Template-06_13",
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 1,
+            "official_regression": 1
+          },
+          "executionElapsedMs": 28477,
+          "faults": []
+        },
+        {
+          "task": "Debugging-05_04",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 106610,
+          "faults": [
+            {
+              "code": "RATE_LIMIT",
+              "status": 429
+            }
+          ]
+        },
+        {
+          "task": "Financial_Model-03_03",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 10693,
+          "faults": [
+            {
+              "code": "QUOTA",
+              "status": 402
+            }
+          ]
+        },
+        {
+          "task": "Debugging-03_08",
+          "phase": "cancelled",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": null,
+          "faults": []
+        },
+        {
+          "task": "Financial_Model-15_03",
+          "phase": "cancelled",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": null,
+          "faults": []
+        },
+        {
+          "task": "Financial_Model-15_05",
+          "phase": "cancelled",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": null,
+          "faults": []
+        }
+      ]
+    },
+    {
+      "id": "single-plugin",
+      "identity": "9c86a9d57ad2c29b7e8fb0bc84ce5443a669a0f77b04230608828cf582f3d81b",
+      "phase": "failed",
+      "sourceDigest": "957f83f12d698db573e87d0b27a6f4bcb49fbc2e727d4be712f2012592a60b3f",
+      "bundleDigest": "d57fd75ae596aa71b472698277199070b0a9bd617b39f8339645c4ae20d97fab",
+      "candidates": 1,
+      "mutations": 0,
+      "denominator": 12,
+      "scored": 5,
+      "executionFailed": 6,
+      "cancelled": 1,
+      "descriptiveFailureInclusiveMean": 0.22041666666666668,
+      "validMethodComparison": false,
+      "optimizerFaults": [
+        {
+          "code": "QUOTA",
+          "status": 402
+        }
+      ],
+      "usage": {
+        "availability": "available",
+        "ledgers": 13,
+        "availableLedgers": 12,
+        "unavailableLedgers": 1,
+        "reportedTotals": {
+          "started": 399,
+          "results": 392,
+          "failed": 7,
+          "unfinished": 0,
+          "inputTokensReported": 897084,
+          "outputTokensReported": 205629,
+          "missingUsage": 7,
+          "requestDurationMsSum": 1989705.551247,
+          "cacheReadUsageReports": 392,
+          "cacheWriteUsageReports": 392,
+          "totalTokenUsageReports": 392,
+          "cacheReadTokensReported": 48520832,
+          "cacheWriteTokensReported": 0,
+          "totalTokensReported": 49623545
+        },
+        "complete": false,
+        "unavailableSources": 0,
+        "unobservedTaskRuns": 0,
+        "activeSources": 0,
+        "emptyLedgers": 0
+      },
+      "taskResults": [
+        {
+          "task": "Debugging-01_07",
+          "phase": "scored",
+          "score": 0.2558,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 0,
+            "official_regression": 0.9541
+          },
+          "executionElapsedMs": 477647,
+          "faults": []
+        },
+        {
+          "task": "Debugging-03_05",
+          "phase": "scored",
+          "score": 0.2211,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 0,
+            "official_regression": 0.9635
+          },
+          "executionElapsedMs": 381470,
+          "faults": []
+        },
+        {
+          "task": "Debugging-01_02",
+          "phase": "scored",
+          "score": 0.2941,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 0,
+            "official_regression": 0.9547
+          },
+          "executionElapsedMs": 550616,
+          "faults": []
+        },
+        {
+          "task": "Template-06_08",
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 0,
+            "official_regression": 0.9843
+          },
+          "executionElapsedMs": 33738,
+          "faults": []
+        },
+        {
+          "task": "Debugging-05_03",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 534847,
+          "faults": [
+            {
+              "code": "RATE_LIMIT",
+              "status": 429
+            }
+          ]
+        },
+        {
+          "task": "Financial_Model-03_02",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 183734,
+          "faults": [
+            {
+              "code": "RATE_LIMIT",
+              "status": 429
+            }
+          ]
+        },
+        {
+          "task": "Template-06_13",
+          "phase": "scored",
+          "score": 0.874,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 0,
+            "official_regression": 1
+          },
+          "executionElapsedMs": 32030,
+          "faults": []
+        },
+        {
+          "task": "Debugging-05_04",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 88002,
+          "faults": [
+            {
+              "code": "QUOTA",
+              "status": 402
+            }
+          ]
+        },
+        {
+          "task": "Financial_Model-03_03",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 13683,
+          "faults": [
+            {
+              "code": "RATE_LIMIT",
+              "status": 429
+            }
+          ]
+        },
+        {
+          "task": "Debugging-03_08",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 7538,
+          "faults": [
+            {
+              "code": "QUOTA",
+              "status": 402
+            }
+          ]
+        },
+        {
+          "task": "Financial_Model-15_03",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 7260,
+          "faults": [
+            {
+              "code": "QUOTA",
+              "status": 402
+            }
+          ]
+        },
+        {
+          "task": "Financial_Model-15_05",
+          "phase": "cancelled",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": null,
+          "faults": []
+        }
+      ]
+    },
+    {
+      "id": "open-plugins",
+      "identity": "c9fde91a63ceba4ec07a4332463450b6630551531453972665937870821b0c3d",
+      "phase": "failed",
+      "sourceDigest": "957f83f12d698db573e87d0b27a6f4bcb49fbc2e727d4be712f2012592a60b3f",
+      "bundleDigest": "d57fd75ae596aa71b472698277199070b0a9bd617b39f8339645c4ae20d97fab",
+      "candidates": 1,
+      "mutations": 0,
+      "denominator": 12,
+      "scored": 5,
+      "executionFailed": 5,
+      "cancelled": 2,
+      "descriptiveFailureInclusiveMean": 0.19579166666666667,
+      "validMethodComparison": false,
+      "optimizerFaults": [
+        {
+          "code": "QUOTA",
+          "status": 402
+        }
+      ],
+      "usage": {
+        "availability": "available",
+        "ledgers": 13,
+        "availableLedgers": 11,
+        "unavailableLedgers": 2,
+        "reportedTotals": {
+          "started": 454,
+          "results": 448,
+          "failed": 6,
+          "unfinished": 0,
+          "inputTokensReported": 829806,
+          "outputTokensReported": 186153,
+          "missingUsage": 6,
+          "requestDurationMsSum": 1988103.5792699999,
+          "cacheReadUsageReports": 448,
+          "cacheWriteUsageReports": 448,
+          "totalTokenUsageReports": 448,
+          "cacheReadTokensReported": 52258304,
+          "cacheWriteTokensReported": 0,
+          "totalTokensReported": 53274263
+        },
+        "complete": false,
+        "unavailableSources": 0,
+        "unobservedTaskRuns": 0,
+        "activeSources": 0,
+        "emptyLedgers": 0
+      },
+      "taskResults": [
+        {
+          "task": "Debugging-01_07",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 574258,
+          "faults": [
+            {
+              "code": "QUOTA",
+              "status": 402
+            }
+          ]
+        },
+        {
+          "task": "Debugging-03_05",
+          "phase": "scored",
+          "score": 0.2947,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 0,
+            "official_regression": 0.9844
+          },
+          "executionElapsedMs": 201233,
+          "faults": []
+        },
+        {
+          "task": "Debugging-01_02",
+          "phase": "scored",
+          "score": 0.1765,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 0,
+            "official_regression": 0.9755
+          },
+          "executionElapsedMs": 379079,
+          "faults": []
+        },
+        {
+          "task": "Template-06_08",
+          "phase": "scored",
+          "score": 0.8571,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 0,
+            "official_regression": 0.9921
+          },
+          "executionElapsedMs": 30267,
+          "faults": []
+        },
+        {
+          "task": "Debugging-05_03",
+          "phase": "scored",
+          "score": 0.0212,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 0,
+            "official_regression": 0.9498
+          },
+          "executionElapsedMs": 542890,
+          "faults": []
+        },
+        {
+          "task": "Financial_Model-03_02",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 368957,
+          "faults": [
+            {
+              "code": "QUOTA",
+              "status": 402
+            }
+          ]
+        },
+        {
+          "task": "Template-06_13",
+          "phase": "scored",
+          "score": 1,
+          "auxiliary": {
+            "missing_output": 0,
+            "official_accuracy": 1,
+            "official_regression": 1
+          },
+          "executionElapsedMs": 30299,
+          "faults": []
+        },
+        {
+          "task": "Debugging-05_04",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 151357,
+          "faults": [
+            {
+              "code": "RATE_LIMIT",
+              "status": 429
+            }
+          ]
+        },
+        {
+          "task": "Financial_Model-03_03",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 10737,
+          "faults": [
+            {
+              "code": "QUOTA",
+              "status": 402
+            }
+          ]
+        },
+        {
+          "task": "Debugging-03_08",
+          "phase": "execution_failed",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": 6330,
+          "faults": [
+            {
+              "code": "QUOTA",
+              "status": 402
+            }
+          ]
+        },
+        {
+          "task": "Financial_Model-15_03",
+          "phase": "cancelled",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": null,
+          "faults": []
+        },
+        {
+          "task": "Financial_Model-15_05",
+          "phase": "cancelled",
+          "score": 0,
+          "auxiliary": null,
+          "executionElapsedMs": null,
+          "faults": []
+        }
+      ]
+    }
+  ],
+  "usage": {
+    "ledgers": 39,
+    "availableLedgers": 33,
+    "unavailableLedgers": 6,
+    "reportedTotals": {
+      "started": 1305,
+      "results": 1285,
+      "failed": 20,
+      "unfinished": 0,
+      "inputTokensReported": 2506809,
+      "outputTokensReported": 562945,
+      "missingUsage": 20,
+      "requestDurationMsSum": 5943442.117772,
+      "cacheReadUsageReports": 1285,
+      "cacheWriteUsageReports": 1285,
+      "totalTokenUsageReports": 1285,
+      "cacheReadTokensReported": 159393920,
+      "cacheWriteTokensReported": 0,
+      "totalTokensReported": 162463674
+    },
+    "complete": false,
+    "unavailableSources": 3,
+    "unobservedTaskRuns": 0,
+    "activeSources": 0,
+    "emptyLedgers": 0
+  },
+  "stages": {
+    "registered": true,
+    "h0Attempted": true,
+    "mutation": false,
+    "independentValidation": false,
+    "originalPackageReuse": false
+  },
+  "boundary": "Thirteen H0 tasks scored, seventeen execution faults, six cancellations. All three optimizer episodes failed on the first request. Original attempts and full denominators remain. Study lifecycle completion does not imply independent assessment completion. No method ranking, improvement claim or task retries. Private workbooks, grader answers, raw transcripts and credentials are excluded."
+}

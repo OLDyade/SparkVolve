@@ -97,6 +97,10 @@ test(
       assert.equal(metrics.started, 3);
       assert.equal(metrics.inputTokensReported, 60);
       assert.equal(metrics.outputTokensReported, 6);
+      assert.equal(metrics.cacheReadTokensReported, 600);
+      assert.equal(metrics.cacheWriteTokensReported, 0);
+      assert.equal(metrics.totalTokensReported, 666);
+      assert.equal(metrics.totalTokenUsageReports, 3);
       assert.equal(metrics.unfinished, 0);
     } finally {
       await runtime.close();

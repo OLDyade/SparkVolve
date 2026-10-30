@@ -38,7 +38,16 @@ export function apply(ctx) {
         yield { type: 'block-start', index: 0, blockType: 'text' };
         yield { type: 'block-end', index: 0, block: { type: 'text', text: 'telemetry-complete' } };
       }
-      yield { type: 'usage', usage: { inputTokens: turn * 10, outputTokens: turn } };
+      yield {
+        type: 'usage',
+        usage: {
+          inputTokens: turn * 10,
+          outputTokens: turn,
+          cacheReadTokens: turn * 100,
+          cacheWriteTokens: 0,
+          totalTokens: turn * 111,
+        },
+      };
       yield { type: 'finish', reason: turn < 3 ? 'tool-calls' : 'stop' };
     }
   }

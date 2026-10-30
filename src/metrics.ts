@@ -8,7 +8,13 @@ const Record = z.object({
   kind: z.enum(['started', 'result', 'failed', 'closed_incomplete']),
   durationMs: z.number().nonnegative().optional(),
   usage: z
-    .object({ inputTokens: z.number().nonnegative(), outputTokens: z.number().nonnegative() })
+    .object({
+      inputTokens: z.number().nonnegative(),
+      outputTokens: z.number().nonnegative(),
+      cacheReadTokens: z.number().nonnegative().optional(),
+      cacheWriteTokens: z.number().nonnegative().optional(),
+      totalTokens: z.number().nonnegative().optional(),
+    })
     .nullable()
     .optional(),
 });
@@ -24,6 +30,13 @@ export async function requestMetrics(file: string) {
   if (new Set(terminal.map((r) => r.id)).size !== terminal.length)
     throw new Error('Duplicate request settlement');
   if (terminal.some((r) => !started.has(r.id))) throw new Error('Settlement without request start');
+  const optionalTokens = (field: 'cacheReadTokens' | 'cacheWriteTokens' | 'totalTokens') => {
+    const values = terminal.flatMap((r) => (r.usage?.[field] === undefined ? [] : [r.usage[field]]));
+    return { sum: values.length ? values.reduce((a, b) => a + b, 0) : null, reports: values.length };
+  };
+  const cacheRead = optionalTokens('cacheReadTokens');
+  const cacheWrite = optionalTokens('cacheWriteTokens');
+  const total = optionalTokens('totalTokens');
   return {
     unit: 'DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable',
     started: started.size,
@@ -32,6 +45,12 @@ export async function requestMetrics(file: string) {
     unfinished: started.size - terminal.length,
     inputTokensReported: terminal.reduce((sum, r) => sum + (r.usage?.inputTokens ?? 0), 0),
     outputTokensReported: terminal.reduce((sum, r) => sum + (r.usage?.outputTokens ?? 0), 0),
+    cacheReadTokensReported: cacheRead.sum,
+    cacheReadUsageReports: cacheRead.reports,
+    cacheWriteTokensReported: cacheWrite.sum,
+    cacheWriteUsageReports: cacheWrite.reports,
+    totalTokensReported: total.sum,
+    totalTokenUsageReports: total.reports,
     missingUsage: terminal.filter((r) => r.usage == null).length,
     requestDurationMsSum: terminal.reduce((sum, r) => sum + (r.durationMs ?? 0), 0),
   };
