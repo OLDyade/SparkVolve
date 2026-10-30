@@ -20,6 +20,8 @@ A plugin-based harness evolution framework: agents use real task feedback to res
 
 > We used to equip agents with capabilities. Now agents can decide which capabilities they need, which to change, and which to create.
 
+![SparkVolve: fixed model weights, evolving plugin code, configuration and composition, reusable capabilities](docs/assets/readme/hero.png)
+
 ## 🧬 Three core designs
 
 | Plugins are the genes of evolution | Evolution is a plugin | Evolution results are plugins |
@@ -27,6 +29,8 @@ A plugin-based harness evolution framework: agents use real task feedback to res
 | **From manual assembly to autonomous restructuring.** Evolve plugin code, configuration and composition together. | **Equip an existing harness with the ability to evolve.** Research, coding and experiments run inside native DSH / Cordis. | **From benchmark scores to installable capabilities.** Carry improvements forward with Bundles, lineage and reproducible evidence. |
 
 **Enable · Disable · Tune · Replace · Compose · Create**
+
+![Six plugin mutation operations chosen from task evidence: enable, disable, tune, replace, compose and create across code, configuration and composition](docs/assets/readme/plugin-mutations.png)
 
 ## 🔁 A harness that evolves harnesses
 
@@ -76,6 +80,8 @@ npm start -- --env-file /absolute/private/deepseek.env
 **One entry: autonomous development → independent validation → original-package installation → fresh reuse.** Defaults: official DeepSeek, structured-data tasks, **600 seconds per task**. Keep credentials outside the repository. First launch builds images; model calls use your provider quota.
 
 **Bring your domain:** 🗂 Tasks + ⚙️ Runtime + 🧩 Seed plugins + ⚖️ Grader.
+
+![Different task domains connect through inputs, runtime, seed plugins and a grader to the same SparkVolve evolution engine](docs/assets/readme/bring-your-task.png)
 
 Use `--recipe` to select a task setup; implement and validate an adapter for a new domain. [Structured data](docs/structured-data.md) and [Excel](examples/spreadsheet) are examples. Runtime integration is native to DSH / Cordis.
 

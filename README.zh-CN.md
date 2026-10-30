@@ -20,6 +20,8 @@
 
 > 过去我们给 Agent 装能力，现在让 Agent 自己决定需要什么能力、修改什么能力，甚至创造新能力。
 
+![SparkVolve：固定模型权重，进化插件代码、配置与组合，交付可复用能力](docs/assets/readme/hero.png)
+
 ## 🧬 三个核心设计
 
 | 插件即进化基因 | 进化也是插件 | 进化成果也是插件 |
@@ -27,6 +29,8 @@
 | **让 Harness 从“人工装配”走向“自主重构”**<br>插件代码、配置与组合结构，统一纳入进化空间。 | **给已有 Harness 装上自进化能力**<br>研究、编码与实验，运行在 DSH / Cordis 原生生态中。 | **从实验分数到可安装的能力**<br>Bundle、进化谱系与实验证据，让有效改进被复用。 |
 
 **启用 · 停用 · 调优 · 替换 · 组合 · 创造**
+
+![六种插件变异：由任务证据驱动，启用、停用、调优、替换、组合与创造，覆盖代码、配置及组合结构](docs/assets/readme/plugin-mutations.png)
 
 <details>
 <summary>核心思想原文</summary>
@@ -119,6 +123,8 @@ npm start -- --env-file /absolute/private/deepseek.env
 **一个入口：自主开发 → 独立验证 → 原包安装 → 新任务复用。** 默认官方 DeepSeek、结构化数据任务、每题 **600 秒**。凭证保存在仓库外；首次启动构建镜像，模型调用消耗供应商额度。
 
 **带上你的领域：** 🗂 任务 + ⚙️ 运行环境 + 🧩 种子插件 + ⚖️ 评分器。
+
+![不同任务领域通过输入、运行环境、种子插件和评分器接入同一个 SparkVolve 进化引擎](docs/assets/readme/bring-your-task.png)
 
 通过 `--recipe` 选择任务配置，新领域需实现并验证适配器。[结构化数据](docs/structured-data.md)与 [Excel](examples/spreadsheet)都是示例。运行时原生接入 DSH / Cordis。
 
