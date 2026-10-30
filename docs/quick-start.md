@@ -64,7 +64,7 @@ Each run has a new `.evolution/<benchmark>-<time>/` directory:
 |---|---|
 | `registration.json` | Frozen sources, models, split identities, budget and selection rule |
 | `startup.json` | Current phase, original faults and delivery results |
-| `search/` or `study/jobs/` | Native G/H traces, candidate sources, actual ancestry and scores |
+| `search/` or `study/children/` | Native G/H traces, candidate sources, actual ancestry and scores |
 | `study-report.json` | Three-arm results, failures and measured model usage |
 | `validation-selection.json` | Independent validation outcomes and the pre-test decision |
 | `delivery/<arm>/capability/` | Unchanged archive, source, lineage and capability card |

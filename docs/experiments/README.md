@@ -2,7 +2,15 @@
 
 [Back to Home](../../README.md) · [Experiment Protocol](../research-protocol.md) · [Implementation Status](../completion.md)
 
-This page preserves actual run results, including gains, regressions, failures, and conclusions that do not yet hold. Engineering acceptance of public synthetic tasks and formal Benchmark research are explained separately.
+Current quality research uses community benchmark tasks. Original failures and negative results remain part of the evidence.
+
+## Community Benchmark Track
+
+[SpreadsheetBench 2 mixed36 pilot](2026-10-30-community-pilot.md): a fixed 12 / 10 / 14 family-separated panel, three mutation-space arms, autonomous ancestry and original-package delivery. The first real study stopped during H0 on provider balance faults; no method superiority or completed multi-generation result is claimed.
+
+## Historical Engineering Acceptance
+
+The records below use synthetic fixtures now stored under `tests/fixtures`. They establish integration behavior and preserve prior conclusions; they are not the main quality benchmark.
 
 | Experiment | Observations and Boundaries |
 |---|---|
