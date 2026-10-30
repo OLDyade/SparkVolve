@@ -3,9 +3,9 @@ FROM ${NODE_IMAGE}
 RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ git ca-certificates ripgrep bubblewrap && rm -rf /var/lib/apt/lists/*
 RUN --mount=type=cache,target=/root/.npm npm install -g npm@12.2.0
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY --chmod=644 package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
-COPY tsconfig.json cordis.patch.yml ./
+COPY --chmod=644 tsconfig.json cordis.patch.yml ./
 COPY src ./src
 RUN npm run build
 RUN ln -s /app/node_modules /node_modules

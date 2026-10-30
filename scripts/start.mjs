@@ -225,6 +225,17 @@ export async function main(args = process.argv.slice(2)) {
       image = Image.parse((await readFile(domain, 'utf8')).trim());
     }
     receipt.image = image;
+    await run('verify-runtime-permissions', 'docker', [
+      'run',
+      '--rm',
+      '--network=none',
+      '--user',
+      `${process.getuid()}:${process.getgid()}`,
+      image,
+      'node',
+      '-e',
+      "require('/app/package.json'); require('node:fs').readFileSync('/app/cordis.patch.yml'); console.log('Non-root runtime inputs readable')",
+    ]);
     const files = (await inventory(path.join(repo, 'dist')))
       .map((x) => x.path)
       .filter((x) => x.endsWith('.js'))
@@ -234,6 +245,8 @@ export async function main(args = process.argv.slice(2)) {
         'run',
         '--rm',
         '--network=none',
+        '--user',
+        `${process.getuid()}:${process.getgid()}`,
         image,
         'sha256sum',
         ...files.map((x) => '/app/dist/' + x),
