@@ -149,7 +149,8 @@ try {
   await json('launch/worker.json', {
     profile: 'sdk',
     model,
-    patch: '/launch/candidate.yml',
+    bundle: null,
+    patches: ['/launch/candidate.yml'],
     environmentPatch: '/launch/environment.yml',
     prompt:
       'Use your bash tool to run Python and calculate sum(range(11)). Write the result as JSON {"sum": <calculated value>} to /workspace/proof.json. Then reply briefly. This verifies a native tool invocation; do not access the network.',

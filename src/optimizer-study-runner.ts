@@ -251,7 +251,8 @@ export async function evolveOptimizerStudy(
         await atomicJSON(path.join(episodeRoot, 'launch.json'), {
           profile: 'sdk',
           model: spec.metaRuntime.model,
-          patch: '/optimizer.patch.yml',
+          bundle: '/method',
+          patches: ['/optimizer.patch.yml'],
           environmentPatch: environment ? `/environment/${environment.patch}` : null,
           prompt: [
             `Researcher objective: ${spec.objective}`,

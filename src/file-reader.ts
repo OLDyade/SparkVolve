@@ -34,16 +34,25 @@ def file_hash(fd):
             return result.hexdigest()
         result.update(data)
 
-def inventory(fd, relative, result):
+def inventory(fd, relative, result, links=False):
     info = os.fstat(fd)
     if stat.S_ISREG(info.st_mode):
         result.append({"path": relative, "hash": file_hash(fd), "executable": bool(info.st_mode & 0o111)})
     elif stat.S_ISDIR(info.st_mode):
         # Match JavaScript UTF-16 ordering in existing canonical artifact identities.
         for name in sorted(os.listdir(fd), key=lambda text: text.encode("utf-16-be", "surrogatepass")):
+            child_path = relative + "/" + name if relative else name
+            info = os.stat(name, dir_fd=fd, follow_symlinks=False)
+            if links and stat.S_ISLNK(info.st_mode):
+                target = os.readlink(name, dir_fd=fd)
+                after = os.stat(name, dir_fd=fd, follow_symlinks=False)
+                if (info.st_dev, info.st_ino, info.st_mtime_ns, info.st_ctime_ns) != (after.st_dev, after.st_ino, after.st_mtime_ns, after.st_ctime_ns):
+                    raise RuntimeError("Evidence link changed during inspection")
+                result.append({"path": child_path, "kind": "symlink", "target": target, "hash": hashlib.sha256(os.fsencode(target)).hexdigest()})
+                continue
             child = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=fd)
             try:
-                inventory(child, relative + "/" + name if relative else name, result)
+                inventory(child, child_path, result, links)
             finally:
                 os.close(child)
     else:
@@ -55,9 +64,9 @@ if operation == "capabilities":
 else:
     root = os.open(sys.argv[2], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
     try:
-        if operation == "inventory":
+        if operation in ("inventory", "evidence-inventory"):
             result = []
-            inventory(root, "", result)
+            inventory(root, "", result, operation == "evidence-inventory")
             print(json.dumps(result, ensure_ascii=True))
         elif operation == "read":
             if not stat.S_ISDIR(os.fstat(root).st_mode):
@@ -128,6 +137,20 @@ export async function authorizedInventory(
   root: string,
 ): Promise<Array<{ path: string; hash: string; executable: boolean }>> {
   return JSON.parse((await read('inventory', root)).toString());
+}
+
+/** Operational traces can contain native package links. Describe links without following them.
+ * Candidate identities, deliverables and byte reads retain the strict regular-file contract.
+ */
+export async function authorizedEvidenceInventory(
+  root: string,
+): Promise<
+  Array<
+    | { path: string; hash: string; executable: boolean }
+    | { path: string; kind: 'symlink'; target: string; hash: string }
+  >
+> {
+  return JSON.parse((await read('evidence-inventory', root)).toString());
 }
 
 export async function fileReaderCapabilities(): Promise<{

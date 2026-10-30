@@ -1,0 +1,1269 @@
+{
+  "format": "sparkvolve-capability-acceptance-evidence",
+  "date": "2026-10-30",
+  "boundary": "Engineering acceptance and one public synthetic real-model closure. No claim of stable improvement, autonomous market adoption, or SpreadsheetBench quality gain.",
+  "runtime": {
+    "dshVersion": "0.2.1-rc.4",
+    "environment": {
+      "digest": "9c60b2af818b1525d5f6e28bd11362f508e1c623abdeb879fbf6f65ddc406302",
+      "directory": "runtime",
+      "patch": "cordis.patch.yml"
+    },
+    "image": "sha256:4d61bc90036c4a6594574fdc4083c2854bb09ef612b411c89204fe2da5c7b9bc",
+    "profile": "sdk"
+  },
+  "community": {
+    "package": "dsh-office-tools",
+    "version": "1.0.8",
+    "origin": "market",
+    "catalogDigest": "28b3363a9c20c83094ca9dc5c24f6d71db047d2d323dad8c04e2ec94f67311c7",
+    "capabilityId": "7a9b7548c8e0a918b1f3156fc819a66766a719bb78e9f73e48fce2d9d883d3a4",
+    "resolution": "553437ed57ae29df27359ef97963325f66c5a1ab1adc3dbdcba1c1cf3f75dc8e",
+    "candidate": "71e93290ac4c3bbe500347b4f5361b97717da479f190002717a593dfefdc1752",
+    "build": {
+      "artifactDigest": "36be1292f4a67a791eb0ebe4872f20a8633f15d2771d3239d2d96d24279f5950",
+      "bundleDigest": "ee07f62d2e96cb910a58be5b80936466c5b115d64265b941491c363c6ee50524",
+      "image": "sha256:4d61bc90036c4a6594574fdc4083c2854bb09ef612b411c89204fe2da5c7b9bc",
+      "lockDigest": "0fb8aeb4cfc89335505b203c611af614acbeee9923e23c8092a1ae5eb206fab9",
+      "tarballDigest": "999f63031ac2975d75fa96e82dd077d76025548fa4dedd3f40007fa4b4b635ac"
+    },
+    "bundleSha256": "999f63031ac2975d75fa96e82dd077d76025548fa4dedd3f40007fa4b4b635ac",
+    "originalReport": {
+      "path": ".evolution/capability-office-bound-resolution-20261030/acceptance.json",
+      "sha256": "13f081d56325500b5b29e7dd98ee9293e07e289604ed42bb545c0bf64a80098c"
+    },
+    "built": {
+      "behavior": {
+        "observations": [
+          {
+            "arguments": {
+              "path": "acceptance.xlsx",
+              "sheets": [
+                {
+                  "name": "Evidence",
+                  "rows": [
+                    [
+                      "Item",
+                      "Value"
+                    ],
+                    [
+                      "zero",
+                      0
+                    ],
+                    [
+                      "formula",
+                      "=B2+7"
+                    ]
+                  ]
+                }
+              ]
+            },
+            "kind": "tool",
+            "name": "excel_create",
+            "result": {
+              "content": [
+                {
+                  "text": "Created Excel workbook acceptance.xlsx (4756 bytes; 1 sheet(s): Evidence 3x2).",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": {
+                "path": "acceptance.xlsx",
+                "sheets": [
+                  {
+                    "colCount": 2,
+                    "name": "Evidence",
+                    "rowCount": 3
+                  }
+                ],
+                "sizeBytes": 4756
+              }
+            },
+            "sequence": 1
+          },
+          {
+            "arguments": {
+              "path": "acceptance.xlsx"
+            },
+            "kind": "tool",
+            "name": "excel_read",
+            "result": {
+              "content": [
+                {
+                  "text": "Evidence (3 row(s)):\n[[\"Item\",\"Value\"],[\"zero\",\"0\"],[\"formula\",\"=B2+7\"]]",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": {
+                "path": "acceptance.xlsx",
+                "sheets": [
+                  {
+                    "name": "Evidence",
+                    "rows": [
+                      [
+                        "Item",
+                        "Value"
+                      ],
+                      [
+                        "zero",
+                        "0"
+                      ],
+                      [
+                        "formula",
+                        "=B2+7"
+                      ]
+                    ],
+                    "truncated": false
+                  }
+                ],
+                "sizeBytes": 4756
+              }
+            },
+            "sequence": 2
+          },
+          {
+            "arguments": {
+              "cell_updates": [
+                {
+                  "cell": "B2",
+                  "sheet": "Evidence",
+                  "value": 11
+                }
+              ],
+              "path": "acceptance.xlsx"
+            },
+            "kind": "tool",
+            "name": "excel_update",
+            "result": {
+              "content": [
+                {
+                  "text": "Updated Excel workbook acceptance.xlsx (4757 bytes). Sheets now: Evidence. Replaced/created sheets: (none). Cell writes: 1.",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": {
+                "cellUpdates": [
+                  {
+                    "cell": "B2",
+                    "sheet": "Evidence"
+                  }
+                ],
+                "path": "acceptance.xlsx",
+                "sheetNames": [
+                  "Evidence"
+                ],
+                "sizeBytes": 4757,
+                "updatedSheets": []
+              }
+            },
+            "sequence": 3
+          },
+          {
+            "arguments": {
+              "path": "acceptance.xlsx"
+            },
+            "kind": "tool",
+            "name": "excel_read",
+            "result": {
+              "content": [
+                {
+                  "text": "Evidence (3 row(s)):\n[[\"Item\",\"Value\"],[\"zero\",\"11\"],[\"formula\",\"=B2+7\"]]",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": {
+                "path": "acceptance.xlsx",
+                "sheets": [
+                  {
+                    "name": "Evidence",
+                    "rows": [
+                      [
+                        "Item",
+                        "Value"
+                      ],
+                      [
+                        "zero",
+                        "11"
+                      ],
+                      [
+                        "formula",
+                        "=B2+7"
+                      ]
+                    ],
+                    "truncated": false
+                  }
+                ],
+                "sizeBytes": 4757
+              }
+            },
+            "sequence": 4
+          },
+          {
+            "kind": "value",
+            "label": "community-office-roundtrip",
+            "sequence": 5,
+            "value": {
+              "after": "Evidence (3 row(s)):\n[[\"Item\",\"Value\"],[\"zero\",\"11\"],[\"formula\",\"=B2+7\"]]",
+              "before": "Evidence (3 row(s)):\n[[\"Item\",\"Value\"],[\"zero\",\"0\"],[\"formula\",\"=B2+7\"]]",
+              "bytes": 4757,
+              "formulaRecalculationTested": false
+            }
+          }
+        ],
+        "status": "passed"
+      },
+      "inventoryDigest": "ce215166f253a3c5ac44ec2b6136ec47325b8a39fc2fd5d85fbc0e943880ff6c",
+      "passed": true,
+      "patches": [
+        "/candidate/node_modules/dsh-office-tools/cordis.patch.yml",
+        "/candidate/cordis.patch.yml"
+      ]
+    },
+    "installed": {
+      "behavior": {
+        "observations": [
+          {
+            "arguments": {
+              "path": "acceptance.xlsx",
+              "sheets": [
+                {
+                  "name": "Evidence",
+                  "rows": [
+                    [
+                      "Item",
+                      "Value"
+                    ],
+                    [
+                      "zero",
+                      0
+                    ],
+                    [
+                      "formula",
+                      "=B2+7"
+                    ]
+                  ]
+                }
+              ]
+            },
+            "kind": "tool",
+            "name": "excel_create",
+            "result": {
+              "content": [
+                {
+                  "text": "Created Excel workbook acceptance.xlsx (4756 bytes; 1 sheet(s): Evidence 3x2).",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": {
+                "path": "acceptance.xlsx",
+                "sheets": [
+                  {
+                    "colCount": 2,
+                    "name": "Evidence",
+                    "rowCount": 3
+                  }
+                ],
+                "sizeBytes": 4756
+              }
+            },
+            "sequence": 1
+          },
+          {
+            "arguments": {
+              "path": "acceptance.xlsx"
+            },
+            "kind": "tool",
+            "name": "excel_read",
+            "result": {
+              "content": [
+                {
+                  "text": "Evidence (3 row(s)):\n[[\"Item\",\"Value\"],[\"zero\",\"0\"],[\"formula\",\"=B2+7\"]]",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": {
+                "path": "acceptance.xlsx",
+                "sheets": [
+                  {
+                    "name": "Evidence",
+                    "rows": [
+                      [
+                        "Item",
+                        "Value"
+                      ],
+                      [
+                        "zero",
+                        "0"
+                      ],
+                      [
+                        "formula",
+                        "=B2+7"
+                      ]
+                    ],
+                    "truncated": false
+                  }
+                ],
+                "sizeBytes": 4756
+              }
+            },
+            "sequence": 2
+          },
+          {
+            "arguments": {
+              "cell_updates": [
+                {
+                  "cell": "B2",
+                  "sheet": "Evidence",
+                  "value": 11
+                }
+              ],
+              "path": "acceptance.xlsx"
+            },
+            "kind": "tool",
+            "name": "excel_update",
+            "result": {
+              "content": [
+                {
+                  "text": "Updated Excel workbook acceptance.xlsx (4757 bytes). Sheets now: Evidence. Replaced/created sheets: (none). Cell writes: 1.",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": {
+                "cellUpdates": [
+                  {
+                    "cell": "B2",
+                    "sheet": "Evidence"
+                  }
+                ],
+                "path": "acceptance.xlsx",
+                "sheetNames": [
+                  "Evidence"
+                ],
+                "sizeBytes": 4757,
+                "updatedSheets": []
+              }
+            },
+            "sequence": 3
+          },
+          {
+            "arguments": {
+              "path": "acceptance.xlsx"
+            },
+            "kind": "tool",
+            "name": "excel_read",
+            "result": {
+              "content": [
+                {
+                  "text": "Evidence (3 row(s)):\n[[\"Item\",\"Value\"],[\"zero\",\"11\"],[\"formula\",\"=B2+7\"]]",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "value": {
+                "path": "acceptance.xlsx",
+                "sheets": [
+                  {
+                    "name": "Evidence",
+                    "rows": [
+                      [
+                        "Item",
+                        "Value"
+                      ],
+                      [
+                        "zero",
+                        "11"
+                      ],
+                      [
+                        "formula",
+                        "=B2+7"
+                      ]
+                    ],
+                    "truncated": false
+                  }
+                ],
+                "sizeBytes": 4757
+              }
+            },
+            "sequence": 4
+          },
+          {
+            "kind": "value",
+            "label": "community-office-roundtrip",
+            "sequence": 5,
+            "value": {
+              "after": "Evidence (3 row(s)):\n[[\"Item\",\"Value\"],[\"zero\",\"11\"],[\"formula\",\"=B2+7\"]]",
+              "before": "Evidence (3 row(s)):\n[[\"Item\",\"Value\"],[\"zero\",\"0\"],[\"formula\",\"=B2+7\"]]",
+              "bytes": 4757,
+              "formulaRecalculationTested": false
+            }
+          }
+        ],
+        "status": "passed"
+      },
+      "inventoryDigest": "656bad8756d32916b9f2f090723eef304fdda1159e31eae4b308c1b181533c70",
+      "passed": true,
+      "patches": [
+        "/workspace/dsh/profiles/reuse/node_modules/@sparkvolve/structured-data/node_modules/dsh-office-tools/cordis.patch.yml",
+        "/workspace/dsh/profiles/reuse/node_modules/@sparkvolve/structured-data/cordis.patch.yml"
+      ]
+    },
+    "passed": true,
+    "qualityClaim": false,
+    "maintainerSelected": true,
+    "formulaRecalculationTested": false
+  },
+  "realModel": {
+    "model": "deepseek-flash",
+    "provider": "official DeepSeek",
+    "taskSeconds": 600,
+    "originalRun": ".evolution/capability-native-resolution-20261030-real",
+    "originalReportSha256": "fb3e78eb59827d4d25eb28b01df9ebf6906bbabdb9669cabc20f9a14afc8482a",
+    "originalStartupSha256": "ed2df18088cc87b83c5a4b89bf88c12da3ed019f0e9a296b7f3104917d307096",
+    "closureReceiptSha256": "44f2b3b0bb3d9315d307640f257cf2794ee6600e12c5a8d5736bd7b016488f49",
+    "state": "complete",
+    "selected": "43982e28951d67978347344d5256e7ff8274f2ee0afeec9b65e180201f48ec95",
+    "search": [
+      {
+        "candidate": "43982e28951d67978347344d5256e7ff8274f2ee0afeec9b65e180201f48ec95",
+        "ordinal": 0,
+        "phase": "champion",
+        "mean": 1,
+        "build": {
+          "artifactDigest": "1567024cf03a63e680b878285393d5fc31079470e091cdfec6e0f5ba0e35e7ed",
+          "bundleDigest": "ae2344acc5fbb1a32a668fdbde765267e08ef4e8c0f628e945a38f39d1cca1da",
+          "image": "sha256:4d61bc90036c4a6594574fdc4083c2854bb09ef612b411c89204fe2da5c7b9bc",
+          "lockDigest": "e1924e66698136916c8a6627e6e3507c7dd87ff7e2c927a6afd7c1b0bd362348",
+          "tarballDigest": "34511a52a382410a912a3b4f0c3e1e385f29ed1c00f0cd6ea2e3cca586a1d4fc"
+        },
+        "decision": {
+          "candidate": "43982e28951d67978347344d5256e7ff8274f2ee0afeec9b65e180201f48ec95",
+          "constraints": [],
+          "constraintsSatisfied": true,
+          "denominator": 3,
+          "failureBudgetSatisfied": true,
+          "failures": 0,
+          "mean": 1,
+          "previousChampion": null,
+          "promoted": true,
+          "qualityImproved": true
+        },
+        "scoredRuns": 3,
+        "failedRuns": 0,
+        "executionElapsedMsReported": 40168,
+        "usage": {
+          "availableLedgers": 3,
+          "complete": true,
+          "ledgers": 3,
+          "reportedTotals": {
+            "failed": 0,
+            "inputTokensReported": 4145,
+            "missingUsage": 0,
+            "outputTokensReported": 2173,
+            "requestDurationMsSum": 22317.875523,
+            "results": 13,
+            "started": 13,
+            "unfinished": 0
+          },
+          "unavailableLedgers": 0
+        }
+      },
+      {
+        "candidate": "ceb4432de0b73e9875853bd5ee902120434359cfc2adb0a7d0cd7f3953225d2d",
+        "ordinal": 1,
+        "phase": "rejected",
+        "mean": 1,
+        "build": {
+          "artifactDigest": "00470e1eadc59fb50f67c2201d8083c215c80e5a5b73920f0be3f81e5f57b0b1",
+          "bundleDigest": "aa9d7047dd7cf44bce6ec757d4a8ba274dbc5cb3bcb131ff5c36128ecfb4d04e",
+          "image": "sha256:4d61bc90036c4a6594574fdc4083c2854bb09ef612b411c89204fe2da5c7b9bc",
+          "lockDigest": "e1924e66698136916c8a6627e6e3507c7dd87ff7e2c927a6afd7c1b0bd362348",
+          "tarballDigest": "678985fe835b0607c1b9c8b0b99fe60f9c2400be35d3528684ce59b6b6e5ed49"
+        },
+        "decision": {
+          "candidate": "ceb4432de0b73e9875853bd5ee902120434359cfc2adb0a7d0cd7f3953225d2d",
+          "constraints": [],
+          "constraintsSatisfied": true,
+          "denominator": 3,
+          "failureBudgetSatisfied": true,
+          "failures": 0,
+          "mean": 1,
+          "previousChampion": "43982e28951d67978347344d5256e7ff8274f2ee0afeec9b65e180201f48ec95",
+          "promoted": false,
+          "qualityImproved": false
+        },
+        "scoredRuns": 3,
+        "failedRuns": 0,
+        "executionElapsedMsReported": 34644,
+        "usage": {
+          "availableLedgers": 3,
+          "complete": true,
+          "ledgers": 3,
+          "reportedTotals": {
+            "failed": 0,
+            "inputTokensReported": 20571,
+            "missingUsage": 0,
+            "outputTokensReported": 1705,
+            "requestDurationMsSum": 19336.254016,
+            "results": 13,
+            "started": 13,
+            "unfinished": 0
+          },
+          "unavailableLedgers": 0
+        }
+      }
+    ],
+    "optimizerUsage": {
+      "availableLedgers": 1,
+      "complete": true,
+      "ledgers": 1,
+      "reportedTotals": {
+        "failed": 0,
+        "inputTokensReported": 103041,
+        "missingUsage": 0,
+        "outputTokensReported": 54508,
+        "requestDurationMsSum": 378827.40125099994,
+        "results": 119,
+        "started": 119,
+        "unfinished": 0
+      },
+      "unavailableLedgers": 0
+    },
+    "optimizerToolCalls": {
+      "evolution_status": 2,
+      "bash": 62,
+      "read": 3,
+      "evolution_evidence": 4,
+      "evolution_materialize": 9,
+      "evolution_input": 1,
+      "cordis_inspect_list": 1,
+      "cordis_inspect_query": 1,
+      "evolution_branch": 1,
+      "write": 2,
+      "edit": 4,
+      "evolution_probe": 2,
+      "evolution_wait": 8,
+      "evolution_probe_evidence": 4,
+      "evolution_submit": 1,
+      "evolution_candidate": 3,
+      "subagent": 1,
+      "list_agents": 6,
+      "send_message": 1,
+      "interrupt_agent": 1,
+      "evolution_finish": 1
+    },
+    "executorTools": [
+      {
+        "candidate": "43982e28951d67978347344d5256e7ff8274f2ee0afeec9b65e180201f48ec95",
+        "task": "revision-events",
+        "tools": [
+          "bash",
+          "bash",
+          "read",
+          "bash",
+          "read"
+        ]
+      },
+      {
+        "candidate": "43982e28951d67978347344d5256e7ff8274f2ee0afeec9b65e180201f48ec95",
+        "task": "request-logs",
+        "tools": [
+          "bash",
+          "bash",
+          "bash"
+        ]
+      },
+      {
+        "candidate": "43982e28951d67978347344d5256e7ff8274f2ee0afeec9b65e180201f48ec95",
+        "task": "dependency-join",
+        "tools": [
+          "bash",
+          "bash"
+        ]
+      },
+      {
+        "candidate": "ceb4432de0b73e9875853bd5ee902120434359cfc2adb0a7d0cd7f3953225d2d",
+        "task": "revision-events",
+        "tools": [
+          "bash",
+          "read",
+          "bash",
+          "read"
+        ]
+      },
+      {
+        "candidate": "ceb4432de0b73e9875853bd5ee902120434359cfc2adb0a7d0cd7f3953225d2d",
+        "task": "request-logs",
+        "tools": [
+          "bash",
+          "bash",
+          "read",
+          "bash"
+        ]
+      },
+      {
+        "candidate": "ceb4432de0b73e9875853bd5ee902120434359cfc2adb0a7d0cd7f3953225d2d",
+        "task": "dependency-join",
+        "tools": [
+          "read",
+          "write"
+        ]
+      }
+    ],
+    "totalSearchUsage": {
+      "availableLedgers": 7,
+      "complete": true,
+      "ledgers": 7,
+      "reportedTotals": {
+        "failed": 0,
+        "inputTokensReported": 127757,
+        "missingUsage": 0,
+        "outputTokensReported": 58386,
+        "requestDurationMsSum": 420481.53078999993,
+        "results": 145,
+        "started": 145,
+        "unfinished": 0
+      },
+      "unavailableLedgers": 0
+    },
+    "discoveryCalls": 0,
+    "resolutionCalls": 0,
+    "validation": {
+      "results": [
+        {
+          "build": {
+            "artifactDigest": "1567024cf03a63e680b878285393d5fc31079470e091cdfec6e0f5ba0e35e7ed",
+            "bundleDigest": "ae2344acc5fbb1a32a668fdbde765267e08ef4e8c0f628e945a38f39d1cca1da",
+            "image": "sha256:4d61bc90036c4a6594574fdc4083c2854bb09ef612b411c89204fe2da5c7b9bc",
+            "lockDigest": "e1924e66698136916c8a6627e6e3507c7dd87ff7e2c927a6afd7c1b0bd362348",
+            "tarballDigest": "34511a52a382410a912a3b4f0c3e1e385f29ed1c00f0cd6ea2e3cca586a1d4fc"
+          },
+          "candidate": "43982e28951d67978347344d5256e7ff8274f2ee0afeec9b65e180201f48ec95",
+          "complete": true,
+          "constraints": [],
+          "failures": 0,
+          "id": "h0",
+          "mean": 0.9166666666666666,
+          "samples": [
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "revision-events"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "request-logs"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 0.75,
+              "task": "dependency-join"
+            }
+          ]
+        },
+        {
+          "build": {
+            "artifactDigest": "1567024cf03a63e680b878285393d5fc31079470e091cdfec6e0f5ba0e35e7ed",
+            "bundleDigest": "ae2344acc5fbb1a32a668fdbde765267e08ef4e8c0f628e945a38f39d1cca1da",
+            "image": "sha256:4d61bc90036c4a6594574fdc4083c2854bb09ef612b411c89204fe2da5c7b9bc",
+            "lockDigest": "e1924e66698136916c8a6627e6e3507c7dd87ff7e2c927a6afd7c1b0bd362348",
+            "tarballDigest": "34511a52a382410a912a3b4f0c3e1e385f29ed1c00f0cd6ea2e3cca586a1d4fc"
+          },
+          "candidate": "43982e28951d67978347344d5256e7ff8274f2ee0afeec9b65e180201f48ec95",
+          "complete": true,
+          "constraints": [],
+          "failures": 0,
+          "id": "selected",
+          "mean": 1,
+          "samples": [
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "revision-events"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "request-logs"
+            },
+            {
+              "phase": "scored",
+              "repetition": 0,
+              "score": 1,
+              "task": "dependency-join"
+            }
+          ]
+        }
+      ],
+      "comparisons": [
+        {
+          "arm": "selected",
+          "meanDelta": 0.08333333333333333,
+          "pairs": [
+            {
+              "baseline": 1,
+              "delta": 0,
+              "repetition": 0,
+              "score": 1,
+              "task": "revision-events"
+            },
+            {
+              "baseline": 1,
+              "delta": 0,
+              "repetition": 0,
+              "score": 1,
+              "task": "request-logs"
+            },
+            {
+              "baseline": 0.75,
+              "delta": 0.25,
+              "repetition": 0,
+              "score": 1,
+              "task": "dependency-join"
+            }
+          ],
+          "perTask": [
+            {
+              "meanDelta": 0,
+              "task": "revision-events"
+            },
+            {
+              "meanDelta": 0,
+              "task": "request-logs"
+            },
+            {
+              "meanDelta": 0.25,
+              "task": "dependency-join"
+            }
+          ],
+          "sampleSd": 0.14433756729740646,
+          "status": "complete",
+          "strictImprovement": true
+        }
+      ],
+      "usage": [
+        {
+          "arm": "h0",
+          "rows": [
+            {
+              "failed": 0,
+              "inputTokensReported": 839,
+              "missingUsage": 0,
+              "outputTokensReported": 368,
+              "requestDurationMsSum": 4547.746551,
+              "results": 3,
+              "started": 3,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            },
+            {
+              "failed": 0,
+              "inputTokensReported": 1398,
+              "missingUsage": 0,
+              "outputTokensReported": 676,
+              "requestDurationMsSum": 6222.488060999999,
+              "results": 5,
+              "started": 5,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            },
+            {
+              "failed": 0,
+              "inputTokensReported": 908,
+              "missingUsage": 0,
+              "outputTokensReported": 641,
+              "requestDurationMsSum": 4670.504767999999,
+              "results": 3,
+              "started": 3,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          ]
+        },
+        {
+          "arm": "selected",
+          "rows": [
+            {
+              "failed": 0,
+              "inputTokensReported": 537,
+              "missingUsage": 0,
+              "outputTokensReported": 418,
+              "requestDurationMsSum": 4033.9953109999997,
+              "results": 3,
+              "started": 3,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            },
+            {
+              "failed": 0,
+              "inputTokensReported": 1151,
+              "missingUsage": 0,
+              "outputTokensReported": 668,
+              "requestDurationMsSum": 6008.125400999999,
+              "results": 4,
+              "started": 4,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            },
+            {
+              "failed": 0,
+              "inputTokensReported": 1299,
+              "missingUsage": 0,
+              "outputTokensReported": 787,
+              "requestDurationMsSum": 6488.279816,
+              "results": 4,
+              "started": 4,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          ]
+        }
+      ],
+      "interpretation": "Both arms used the same candidate and build. The original strictImprovement=true reflects score variation only; no evolution gain. The reporter now checks candidate and bundle identity before declaring strict improvement.",
+      "sameCandidate": true,
+      "evolutionGain": false
+    },
+    "installed": {
+      "passed": true,
+      "sha256": "34511a52a382410a912a3b4f0c3e1e385f29ed1c00f0cd6ea2e3cca586a1d4fc",
+      "result": {
+        "executionAttempts": 3,
+        "failed": 0,
+        "passed": true,
+        "quality": {
+          "boundary": "Installed delivery acceptance only. Scores are fresh observations; no improvement or transfer claim and no reuse of search/validation scores.",
+          "meanWithRegisteredFailureValue": 1,
+          "metric": {
+            "direction": "maximize",
+            "failure": 0,
+            "maximum": 1,
+            "minimum": 0,
+            "name": "structured_output_accuracy"
+          },
+          "scoringComplete": true
+        },
+        "registered": 3,
+        "rows": [
+          {
+            "deliveryDigest": "6a19999ec282c8a153afceab5b0f3bafd5ac90fe5655460cddd3622c0289cb36",
+            "error": null,
+            "execution": {
+              "Dead": false,
+              "Error": "",
+              "ExitCode": 0,
+              "FinishedAt": "2026-10-30T04:05:47.030854456Z",
+              "OOMKilled": false,
+              "Paused": false,
+              "Pid": 0,
+              "Restarting": false,
+              "Running": false,
+              "StartedAt": "2026-10-30T04:05:41.713320454Z",
+              "Status": "exited"
+            },
+            "executionAttempted": true,
+            "grade": {
+              "feedback": "{\"checks\": {\"entities\": true, \"exact_top_level_keys\": true, \"tombstones\": true, \"unique_event_count\": true}}",
+              "metrics": {
+                "valid_json": 1
+              },
+              "score": 1
+            },
+            "installation": {
+              "files": [
+                {
+                  "executable": false,
+                  "hash": "ca7e33835e7904ce60f63ef8d5c9b08ed235490b871ac16be624c1737269c8c5",
+                  "path": "LICENSE"
+                },
+                {
+                  "executable": false,
+                  "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                  "path": "cordis.patch.yml"
+                },
+                {
+                  "executable": false,
+                  "hash": "314905c8b80461765ac74c75df8b53f45afcfaad49c246c989cf8bf38e5a3e32",
+                  "path": "index.mjs"
+                },
+                {
+                  "executable": false,
+                  "hash": "0558003baadfc80f0155eb3cf2e8263e2ff04bb28d4f37e240b01851e687b566",
+                  "path": "package.json"
+                }
+              ],
+              "inferenceRequested": false,
+              "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@sparkvolve/structured-data",
+              "package": "@sparkvolve/structured-data",
+              "profile": "sdk",
+              "profileFiles": {
+                "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+                "package.json": "5e4e10c63cc94f72af00daf2b33e01eaefee6f9e2d02967ce439ea233ccbe0b2",
+                "pnpm-lock.yaml": "29cd48e48cd3f1a7c60ace4a5de3e3d919b36d4dc61def286208996a724fbc68",
+                "pnpm-workspace.yaml": "72177f8ba7d4d8012538704c49343cf448c3de4348b64e0fabc9543155827d70"
+              },
+              "resolvedPatches": [
+                {
+                  "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                  "path": "cordis.patch.yml"
+                }
+              ],
+              "tarballDigest": "34511a52a382410a912a3b4f0c3e1e385f29ed1c00f0cd6ea2e3cca586a1d4fc"
+            },
+            "integrity": {
+              "files": [
+                {
+                  "executable": false,
+                  "hash": "ca7e33835e7904ce60f63ef8d5c9b08ed235490b871ac16be624c1737269c8c5",
+                  "path": "LICENSE"
+                },
+                {
+                  "executable": false,
+                  "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                  "path": "cordis.patch.yml"
+                },
+                {
+                  "executable": false,
+                  "hash": "314905c8b80461765ac74c75df8b53f45afcfaad49c246c989cf8bf38e5a3e32",
+                  "path": "index.mjs"
+                },
+                {
+                  "executable": false,
+                  "hash": "0558003baadfc80f0155eb3cf2e8263e2ff04bb28d4f37e240b01851e687b566",
+                  "path": "package.json"
+                }
+              ],
+              "inferenceRequested": false,
+              "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@sparkvolve/structured-data",
+              "package": "@sparkvolve/structured-data",
+              "profile": "sdk",
+              "profileFiles": {
+                "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+                "package.json": "5e4e10c63cc94f72af00daf2b33e01eaefee6f9e2d02967ce439ea233ccbe0b2",
+                "pnpm-lock.yaml": "29cd48e48cd3f1a7c60ace4a5de3e3d919b36d4dc61def286208996a724fbc68",
+                "pnpm-workspace.yaml": "72177f8ba7d4d8012538704c49343cf448c3de4348b64e0fabc9543155827d70"
+              },
+              "resolvedPatches": [
+                {
+                  "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                  "path": "cordis.patch.yml"
+                }
+              ],
+              "tarballDigest": "34511a52a382410a912a3b4f0c3e1e385f29ed1c00f0cd6ea2e3cca586a1d4fc"
+            },
+            "phase": "scored",
+            "task": "revision-events",
+            "usage": {
+              "failed": 0,
+              "inputTokensReported": 960,
+              "missingUsage": 0,
+              "outputTokensReported": 576,
+              "requestDurationMsSum": 4421.084023,
+              "results": 3,
+              "started": 3,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          },
+          {
+            "deliveryDigest": "30d78c1f37ac327af33fba2d61dfe2600b72a1b242554a1a33861b34395530f2",
+            "error": null,
+            "execution": {
+              "Dead": false,
+              "Error": "",
+              "ExitCode": 0,
+              "FinishedAt": "2026-10-30T04:05:47.343192413Z",
+              "OOMKilled": false,
+              "Paused": false,
+              "Pid": 0,
+              "Restarting": false,
+              "Running": false,
+              "StartedAt": "2026-10-30T04:05:41.979085875Z",
+              "Status": "exited"
+            },
+            "executionAttempted": true,
+            "grade": {
+              "feedback": "{\"checks\": {\"exact_top_level_keys\": true, \"groups\": true, \"server_errors\": true, \"total_requests\": true}}",
+              "metrics": {
+                "valid_json": 1
+              },
+              "score": 1
+            },
+            "installation": {
+              "files": [
+                {
+                  "executable": false,
+                  "hash": "ca7e33835e7904ce60f63ef8d5c9b08ed235490b871ac16be624c1737269c8c5",
+                  "path": "LICENSE"
+                },
+                {
+                  "executable": false,
+                  "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                  "path": "cordis.patch.yml"
+                },
+                {
+                  "executable": false,
+                  "hash": "314905c8b80461765ac74c75df8b53f45afcfaad49c246c989cf8bf38e5a3e32",
+                  "path": "index.mjs"
+                },
+                {
+                  "executable": false,
+                  "hash": "0558003baadfc80f0155eb3cf2e8263e2ff04bb28d4f37e240b01851e687b566",
+                  "path": "package.json"
+                }
+              ],
+              "inferenceRequested": false,
+              "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@sparkvolve/structured-data",
+              "package": "@sparkvolve/structured-data",
+              "profile": "sdk",
+              "profileFiles": {
+                "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+                "package.json": "5e4e10c63cc94f72af00daf2b33e01eaefee6f9e2d02967ce439ea233ccbe0b2",
+                "pnpm-lock.yaml": "29cd48e48cd3f1a7c60ace4a5de3e3d919b36d4dc61def286208996a724fbc68",
+                "pnpm-workspace.yaml": "72177f8ba7d4d8012538704c49343cf448c3de4348b64e0fabc9543155827d70"
+              },
+              "resolvedPatches": [
+                {
+                  "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                  "path": "cordis.patch.yml"
+                }
+              ],
+              "tarballDigest": "34511a52a382410a912a3b4f0c3e1e385f29ed1c00f0cd6ea2e3cca586a1d4fc"
+            },
+            "integrity": {
+              "files": [
+                {
+                  "executable": false,
+                  "hash": "ca7e33835e7904ce60f63ef8d5c9b08ed235490b871ac16be624c1737269c8c5",
+                  "path": "LICENSE"
+                },
+                {
+                  "executable": false,
+                  "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                  "path": "cordis.patch.yml"
+                },
+                {
+                  "executable": false,
+                  "hash": "314905c8b80461765ac74c75df8b53f45afcfaad49c246c989cf8bf38e5a3e32",
+                  "path": "index.mjs"
+                },
+                {
+                  "executable": false,
+                  "hash": "0558003baadfc80f0155eb3cf2e8263e2ff04bb28d4f37e240b01851e687b566",
+                  "path": "package.json"
+                }
+              ],
+              "inferenceRequested": false,
+              "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@sparkvolve/structured-data",
+              "package": "@sparkvolve/structured-data",
+              "profile": "sdk",
+              "profileFiles": {
+                "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+                "package.json": "5e4e10c63cc94f72af00daf2b33e01eaefee6f9e2d02967ce439ea233ccbe0b2",
+                "pnpm-lock.yaml": "29cd48e48cd3f1a7c60ace4a5de3e3d919b36d4dc61def286208996a724fbc68",
+                "pnpm-workspace.yaml": "72177f8ba7d4d8012538704c49343cf448c3de4348b64e0fabc9543155827d70"
+              },
+              "resolvedPatches": [
+                {
+                  "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                  "path": "cordis.patch.yml"
+                }
+              ],
+              "tarballDigest": "34511a52a382410a912a3b4f0c3e1e385f29ed1c00f0cd6ea2e3cca586a1d4fc"
+            },
+            "phase": "scored",
+            "task": "request-logs",
+            "usage": {
+              "failed": 0,
+              "inputTokensReported": 922,
+              "missingUsage": 0,
+              "outputTokensReported": 677,
+              "requestDurationMsSum": 4562.482052,
+              "results": 3,
+              "started": 3,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          },
+          {
+            "deliveryDigest": "235d3c506f56827b801e4faeada137e053b18f74359c8a426775d229563ca589",
+            "error": null,
+            "execution": {
+              "Dead": false,
+              "Error": "",
+              "ExitCode": 0,
+              "FinishedAt": "2026-10-30T04:05:47.742783589Z",
+              "OOMKilled": false,
+              "Paused": false,
+              "Pid": 0,
+              "Restarting": false,
+              "Running": false,
+              "StartedAt": "2026-10-30T04:05:41.812497173Z",
+              "Status": "exited"
+            },
+            "executionAttempted": true,
+            "grade": {
+              "feedback": "{\"checks\": {\"exact_top_level_keys\": true, \"findings\": true, \"suppressed\": true, \"unmatched_advisories\": true}}",
+              "metrics": {
+                "valid_json": 1
+              },
+              "score": 1
+            },
+            "installation": {
+              "files": [
+                {
+                  "executable": false,
+                  "hash": "ca7e33835e7904ce60f63ef8d5c9b08ed235490b871ac16be624c1737269c8c5",
+                  "path": "LICENSE"
+                },
+                {
+                  "executable": false,
+                  "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                  "path": "cordis.patch.yml"
+                },
+                {
+                  "executable": false,
+                  "hash": "314905c8b80461765ac74c75df8b53f45afcfaad49c246c989cf8bf38e5a3e32",
+                  "path": "index.mjs"
+                },
+                {
+                  "executable": false,
+                  "hash": "0558003baadfc80f0155eb3cf2e8263e2ff04bb28d4f37e240b01851e687b566",
+                  "path": "package.json"
+                }
+              ],
+              "inferenceRequested": false,
+              "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@sparkvolve/structured-data",
+              "package": "@sparkvolve/structured-data",
+              "profile": "sdk",
+              "profileFiles": {
+                "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+                "package.json": "5e4e10c63cc94f72af00daf2b33e01eaefee6f9e2d02967ce439ea233ccbe0b2",
+                "pnpm-lock.yaml": "29cd48e48cd3f1a7c60ace4a5de3e3d919b36d4dc61def286208996a724fbc68",
+                "pnpm-workspace.yaml": "72177f8ba7d4d8012538704c49343cf448c3de4348b64e0fabc9543155827d70"
+              },
+              "resolvedPatches": [
+                {
+                  "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                  "path": "cordis.patch.yml"
+                }
+              ],
+              "tarballDigest": "34511a52a382410a912a3b4f0c3e1e385f29ed1c00f0cd6ea2e3cca586a1d4fc"
+            },
+            "integrity": {
+              "files": [
+                {
+                  "executable": false,
+                  "hash": "ca7e33835e7904ce60f63ef8d5c9b08ed235490b871ac16be624c1737269c8c5",
+                  "path": "LICENSE"
+                },
+                {
+                  "executable": false,
+                  "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                  "path": "cordis.patch.yml"
+                },
+                {
+                  "executable": false,
+                  "hash": "314905c8b80461765ac74c75df8b53f45afcfaad49c246c989cf8bf38e5a3e32",
+                  "path": "index.mjs"
+                },
+                {
+                  "executable": false,
+                  "hash": "0558003baadfc80f0155eb3cf2e8263e2ff04bb28d4f37e240b01851e687b566",
+                  "path": "package.json"
+                }
+              ],
+              "inferenceRequested": false,
+              "installedRoot": "/trace/dsh/profiles/sdk/node_modules/@sparkvolve/structured-data",
+              "package": "@sparkvolve/structured-data",
+              "profile": "sdk",
+              "profileFiles": {
+                "cordis.patch.yml": "ef189a8c27db6d63930aa3046a3040482e952eafcb7487c644d508e8d461f027",
+                "package.json": "5e4e10c63cc94f72af00daf2b33e01eaefee6f9e2d02967ce439ea233ccbe0b2",
+                "pnpm-lock.yaml": "29cd48e48cd3f1a7c60ace4a5de3e3d919b36d4dc61def286208996a724fbc68",
+                "pnpm-workspace.yaml": "72177f8ba7d4d8012538704c49343cf448c3de4348b64e0fabc9543155827d70"
+              },
+              "resolvedPatches": [
+                {
+                  "hash": "30da9b2653df3315672357ebe678d84b367073c41f288e2fe7cfbe28f175dacf",
+                  "path": "cordis.patch.yml"
+                }
+              ],
+              "tarballDigest": "34511a52a382410a912a3b4f0c3e1e385f29ed1c00f0cd6ea2e3cca586a1d4fc"
+            },
+            "phase": "scored",
+            "task": "dependency-join",
+            "usage": {
+              "failed": 0,
+              "inputTokensReported": 1029,
+              "missingUsage": 0,
+              "outputTokensReported": 606,
+              "requestDurationMsSum": 5117.683935,
+              "results": 3,
+              "started": 3,
+              "unfinished": 0,
+              "unit": "DSH adapter stream attempts; provider-internal HTTP retries may not be separately observable"
+            }
+          }
+        ],
+        "scored": 3,
+        "terminalExecutions": 3,
+        "usage": {
+          "availableLedgers": 3,
+          "complete": true,
+          "ledgers": 3,
+          "reportedTotals": {
+            "failed": 0,
+            "inputTokensReported": 2911,
+            "missingUsage": 0,
+            "outputTokensReported": 1859,
+            "requestDurationMsSum": 14101.25001,
+            "results": 9,
+            "started": 9,
+            "unfinished": 0
+          },
+          "unavailableLedgers": 0
+        }
+      }
+    },
+    "taskScorings": 15
+  },
+  "retainedFailures": [
+    {
+      "path": ".evolution/capability-evolution-20261030-real",
+      "kind": "official HTTP 502 interrupted optimizer",
+      "outcome": "Preserved; no quality conclusion or mixed attempts"
+    },
+    {
+      "path": ".evolution/capability-office-adoption-20261030",
+      "kind": "Native module dependency missing from Profile graph",
+      "outcome": "Repaired native binding; failed evidence retained"
+    },
+    {
+      "path": ".evolution/capability-office-native-profile-20261030",
+      "kind": "Duplicate plugin activation through direct Bundle registration",
+      "outcome": "Empty-patch dependency binding introduced; failed evidence retained"
+    },
+    {
+      "path": ".evolution/capability-native-resolution-20261030-real/startup.json",
+      "kind": "Completed search could not export operational trace symbolic links",
+      "outcome": "Record link metadata without traversal; preserve original trace and startup failure"
+    },
+    {
+      "path": ".evolution/capability-native-resolution-20261030-real/closure-continuation/receipt.json",
+      "kind": "Maintainer continuation used wrong dataset directory",
+      "outcome": "Rejected before model execution; original receipt retained"
+    }
+  ]
+}

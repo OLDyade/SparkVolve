@@ -61,12 +61,14 @@ export class OptimizerAccess {
       constraints: spec.constraints,
       probes: spec.probes,
       researchLibrary: spec.researchLibrary,
+      capabilities: spec.capabilities,
     };
     if (!this.mechanical) return { ...state, specification, cursor: this.cursor() };
     return {
       cursor: this.cursor(),
       specification,
       seed: state.candidates[0]?.digest ?? null,
+      resolutions: state.resolutions,
       candidates: state.candidates.map((item) => this.candidate(item)),
       pendingSubmissions: state.pendingSubmissions.map((item) => this.candidate(item)),
       conclusion: state.conclusion ? { reason: state.conclusion.reason, at: state.conclusion.at } : null,
@@ -80,6 +82,10 @@ export class OptimizerAccess {
       else {
         const body = event.body as Record<string, unknown>;
         switch (event.type) {
+          case 'capability.resolution_requested':
+          case 'capability.resolution_completed':
+            value = event;
+            break;
           case 'candidate.submission_started':
           case 'candidate.frozen':
             value = { at: event.at, type: event.type, body: this.candidate(event.body as Candidate) };
@@ -163,6 +169,8 @@ export class OptimizerAccess {
 /** Authorize before looking up IDs or reading bytes, including every materialization alias. */
 export function authorizeOptimizerEvidence(controller: Controller, reference: EvidenceReferenceSpec): void {
   const spec = controller.spec;
+  if (reference.kind === 'resolution' && !spec.capabilities)
+    throw Error('Capability catalog is not authorized');
   if (reference.kind === 'probe' && spec.probes === null) throw new Error('Probe evidence is not authorized');
   if (reference.kind === 'asset' && spec.researchLibrary === null)
     throw new Error('Research library evidence is not authorized');

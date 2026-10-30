@@ -86,7 +86,13 @@
 | **H · 执行器 Harness** | 业务工具、插件代码、配置与装配结构 | 独立评分真实任务交付 |
 | **G · 优化器 Harness** | 研究问题、开发插件、开展实验的方法 | 从相同 H0、相同预算上限出发，比较其产出的 H |
 
-**任务证据 → 自主变异 → 构建与 QA → 执行 → 独立评分 → 选择**
+**Discover → Adapt / Author → Compose → Evaluate → Ship**
+
+| 🔎 发现能力 | 🧩 组合进化 | 📦 交付成果 |
+|:---|:---|:---|
+| DSH 官方、社区市场、本地 Bundle 与研究资产 | 精确依赖、原生装配层及实际 Cordis 服务绑定 | 经过评测的原始能力包、真实谱系与独立验证 |
+
+优化器自主选择复用、改造或创造。冻结能力目录让选择可追溯，原生依赖解析把选择变成可继续进化的候选。[查看能力进化全链路 →](docs/capability-evolution.md)
 
 两者共用 **DeepSeek Harness / Cordis** 底座。Controller 管理实验规则、版本、预算与记录，Grader 评估交付。优化器自身的进化通过独立 **Optimizer Study** 开展。
 
@@ -153,7 +159,7 @@ npm start -- --env-file /absolute/private/deepseek.env
 | [插件变异方法对照](docs/experiments/2026-10-29-closure-study-results.md) | 三组、六次搜索、十二份改动、124 次任务评分。五次保留 H0，一份候选独立验证与复用均为 100%；尚未证明方法优势。 |
 | [单命令启动](docs/experiments/2026-10-29-official-closure-results.md) | 结构化数据搜索、独立验证与原包复用全部完成；保留 H0。 |
 
-复杂跨插件行为验收与更充分的研究证据仍待补齐。[实现状态](docs/completion.md) · [全部实验](docs/experiments/README.md) · [研究协议](docs/research-protocol.md)
+原生依赖组合与真实社区包采用已完成行为验收，包括原包安装复用。自主结构进化与稳定提分仍需更充分的研究证据。[能力集成验收](docs/experiments/2026-10-30-capability-evolution.md)。[实现状态](docs/completion.md) · [全部实验](docs/experiments/README.md) · [研究协议](docs/research-protocol.md)
 
 </details>
 

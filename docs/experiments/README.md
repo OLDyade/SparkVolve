@@ -6,6 +6,7 @@ This page preserves actual run results, including gains, regressions, failures, 
 
 | Experiment | Observations and Boundaries |
 |---|---|
+| [Capability Discovery, Resolution and Composition](2026-10-30-capability-evolution.md) | Real community package acquisition and clean installation; actual cross-plugin service binding; 15 official-model task scorings, tied H0 retained; no autonomous market adoption or quality gain claimed |
 | [One-Command Complete Native Closure](2026-10-29-official-closure-results.md) | 15 real task scorings across search, independent validation and original-package reuse; selected H0 retained, rejected mutation and counterexamples preserved |
 | [Mutation Methods with Original-Package Reuse](2026-10-29-closure-study-results.md) | Six searches, twelve mutations, 124 task scorings, six unchanged installed selections; autonomous H2 validates and reuses at 100%, method superiority unproven; separate four-task archive check retained |
 | [Official DeepSeek Simplified Entry](2026-10-29-official-startup-results.md) | A single command completes real autonomous modification, six task scorings, and export of the original package; H0/H1 both 100%, ties retain H0 |

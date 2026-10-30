@@ -44,6 +44,8 @@ test('normal session completion continues with durable feedback; restart never r
     collections: string[] = [];
     fail = false;
     override async create(spec: ContainerSpec): Promise<void> {
+      if (spec.name.endsWith('-1'))
+        assert.equal(JSON.parse(store.getMeta('resolution:fixture')!).phase, 'resolved');
       if (!spec.name.startsWith('he-gqa-')) this.creations.push(spec);
     }
     override async inspect() {
@@ -65,6 +67,14 @@ test('normal session completion continues with durable feedback; restart never r
           JSON.stringify({ intent: containerIdentity(spec), containerId: spec.name }),
         );
       for (const file of ['stdout.log', 'stderr.log']) await writeFile(path.join(logDir, file), '');
+      if (spec.name.endsWith('-0')) {
+        store.setMeta('resolution:fixture', JSON.stringify({ id: 'fixture', phase: 'queued' }));
+        store.event('capability.resolution_requested', { id: 'fixture' });
+        setTimeout(() => {
+          store.setMeta('resolution:fixture', JSON.stringify({ id: 'fixture', phase: 'resolved' }));
+          store.event('capability.resolution_completed', { id: 'fixture' });
+        }, 50);
+      }
       if (spec.name.endsWith('-1'))
         store.setMeta('searchConclusion', JSON.stringify({ reason: 'Evidence exhausted' }));
       return {

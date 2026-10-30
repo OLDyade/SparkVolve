@@ -9,6 +9,7 @@ import { Experiment, Image, Model, RelativePath } from '../dist/contracts.js';
 import { atomicJSON, digest, fileDigest, treeDigest } from '../dist/artifacts.js';
 import { timeoutSeconds } from '../examples/timeouts.mjs';
 import { runLogged } from './verify-feedback-study.mjs';
+import { prepareCapabilities } from '../dist/capabilities.js';
 
 export const Recipe = z.strictObject({
   name: z.string().regex(/^[a-z][a-z0-9-]*$/),
@@ -21,6 +22,9 @@ export const Recipe = z.strictObject({
   prepare: RelativePath,
   seed: RelativePath,
   preflight: RelativePath.nullable(),
+  capabilities: z
+    .strictObject({ configuration: RelativePath, resolutionLimit: z.number().int().positive() })
+    .nullable(),
 });
 
 export function assessmentContract(raw, name) {
@@ -31,6 +35,7 @@ export function assessmentContract(raw, name) {
     objective: 'Assess the frozen original bundle on every registered task. No optimization or task retry.',
     budget: { candidates: 1, optimizerSeconds: 1 },
     probes: null,
+    capabilities: null,
     repetitions: 1,
   });
 }
@@ -213,6 +218,23 @@ export async function main(args = process.argv.slice(2)) {
         provider,
         String(taskSeconds),
       ]);
+      if (name === 'search' && recipe.capabilities) {
+        const configFile = path.join(domain, recipe.capabilities.configuration);
+        const catalog = await prepareCapabilities(
+          JSON.parse(await readFile(configFile, 'utf8')),
+          path.dirname(configFile),
+          path.join(split.dataset, 'capabilities'),
+        );
+        const specification = JSON.parse(await readFile(split.specification, 'utf8'));
+        specification.capabilities = {
+          directory: 'capabilities',
+          digest: catalog.digest,
+          resolutionLimit: recipe.capabilities.resolutionLimit,
+        };
+        specification.budget.optimizerSeconds +=
+          recipe.capabilities.resolutionLimit * specification.candidate.build.timeoutSeconds;
+        await atomicJSON(split.specification, Experiment.parse(specification));
+      }
       if (name !== 'search')
         await atomicJSON(
           split.specification,

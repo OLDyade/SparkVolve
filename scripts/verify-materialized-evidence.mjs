@@ -135,6 +135,7 @@ try {
       build: { image, timeoutSeconds: 60 },
     },
     researchLibrary: null,
+    capabilities: null,
     candidate: { patch: 'cordis.patch.yml', build: { image, timeoutSeconds: 60 }, qa: null },
     evaluator: {
       image,
@@ -189,7 +190,8 @@ try {
   await atomicJSON(path.join(executionRoot, 'launch.json'), {
     profile: 'sdk',
     model,
-    patch: '/optimizer.patch.yml',
+    bundle: null,
+    patches: ['/optimizer.patch.yml'],
     environmentPatch: '/environment/cordis.patch.yml',
     timeoutSeconds: taskTimeoutSeconds,
     prompt: [

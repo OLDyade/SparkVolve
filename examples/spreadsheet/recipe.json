@@ -8,5 +8,6 @@
   },
   "prepare": "prepare.mjs",
   "seed": "seed",
-  "preflight": "verify-image.mjs"
+  "preflight": "verify-image.mjs",
+  "capabilities": { "configuration": "capabilities.json", "resolutionLimit": 3 }
 }

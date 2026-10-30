@@ -9,6 +9,7 @@ import { pathToFileURL } from 'node:url';
 import path from 'node:path';
 import { BehaviorJournal } from './behavior-journal.js';
 import { scopeOf } from '@deepseek-ai/dsh-scope';
+import { harnessInventory } from './harness-inventory.js';
 
 export const name = 'evolution-composition-probe';
 export const inject = ['loader', 'agents', 'tools'];
@@ -42,6 +43,10 @@ export function apply(
       })),
     };
     await atomicJSON(config.report, report);
+    await atomicJSON(
+      path.join(path.dirname(config.report), 'harness-inventory.json'),
+      await harnessInventory(ctx, agent.ctx),
+    );
     if (!report.passed) throw new Error('Native composition QA failed; inspect composition.json');
     if (config.behaviorModule) {
       const file = path.join(path.dirname(config.report), 'behavior.json');

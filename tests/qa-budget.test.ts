@@ -34,6 +34,7 @@ registerHooks({ load(url, context, next) {
         JSON.stringify({
           profile: 'sdk',
           model: specification().executor,
+          bundle: null,
           patches: ['/fixture.yml'],
           command: ['fixture'],
           behaviorModule: null,

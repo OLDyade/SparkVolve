@@ -12,6 +12,7 @@ import { controlRoutes } from './control-routes.js';
 import { prepareExecution, collectExecution, ReclamationError, settleExecutionFailure } from './execution.js';
 import { prepareOptimizer, optimizerBundlePath } from './optimizer-harness.js';
 import { assertNotCancelled } from './cancellation-state.js';
+import { resolutions } from './capability-resolution.js';
 
 interface Episode {
   identity: string;
@@ -69,6 +70,7 @@ async function runOptimizer(
       cursor: store.cursor(),
       candidates: store.candidates(),
       probes: store.probes(),
+      resolutions: resolutions(store),
       runs: store.runs(),
       conclusion: store.getMeta('searchConclusion'),
     };
@@ -91,7 +93,8 @@ async function runOptimizer(
       let state = schedulingState();
       while (
         state.candidates.some((c) => c.phase === 'frozen' || c.phase === 'running') ||
-        state.probes.some((probe) => probe.phase === 'queued')
+        state.probes.some((probe) => probe.phase === 'queued') ||
+        state.resolutions.some((resolution) => resolution.phase === 'queued')
       ) {
         if (state.runs.some((r) => r.phase === 'scoring_failed'))
           throw new Error('Scoring failed; resolve original deliveries before continuing search');
@@ -143,7 +146,8 @@ async function runOptimizer(
       await atomicJSON(path.join(episodeRoot, 'launch.json'), {
         profile: 'sdk',
         model: spec.optimizer,
-        patch: '/optimizer.patch.yml',
+        bundle: '/method',
+        patches: ['/optimizer.patch.yml'],
         environmentPatch: environment ? `/environment/${environment.patch}` : null,
         prompt: [
           `Researcher objective: ${spec.objective}`,

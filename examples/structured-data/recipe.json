@@ -8,5 +8,6 @@
   },
   "prepare": "prepare.mjs",
   "seed": "seed",
-  "preflight": null
+  "preflight": null,
+  "capabilities": { "configuration": "capabilities.json", "resolutionLimit": 3 }
 }

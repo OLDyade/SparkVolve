@@ -5,7 +5,33 @@ import { syncBuiltinESMExports } from 'node:module';
 import { mkdtemp, mkdir, writeFile, chmod, symlink } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { authorizedInventory, readAuthorizedFile, fileReaderCapabilities } from '../src/file-reader.js';
+import {
+  authorizedInventory,
+  authorizedEvidenceInventory,
+  readAuthorizedFile,
+  fileReaderCapabilities,
+} from '../src/file-reader.js';
+
+test('native trace links are described exactly without reading their targets', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'he-trace-links-'));
+  const trace = path.join(root, 'trace');
+  await mkdir(trace);
+  await writeFile(path.join(root, 'private'), 'MUST_NOT_BE_READ');
+  await writeFile(path.join(trace, 'events.jsonl'), '{"kind":"observed"}');
+  await symlink('../private', path.join(trace, 'dependency'));
+  await symlink('/nonexistent/container/artifact', path.join(trace, 'artifact'));
+  const entries = await authorizedEvidenceInventory(trace);
+  assert.deepEqual(
+    entries.map((entry) => entry.path),
+    ['artifact', 'dependency', 'events.jsonl'],
+  );
+  const link = entries.find((entry) => entry.path === 'dependency')!;
+  assert.ok('kind' in link && link.kind === 'symlink');
+  assert.equal(link.target, '../private');
+  assert.ok(!JSON.stringify(entries).includes('MUST_NOT_BE_READ'));
+  await assert.rejects(readAuthorizedFile(trace, 'dependency'), { code: 'ELOOP' });
+  await assert.rejects(authorizedInventory(trace), { code: 'ELOOP' });
+});
 
 test('descriptor reader preserves binary bytes, executable metadata and rejects links and non-files', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'he-file-reader-'));

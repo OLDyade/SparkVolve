@@ -1,5 +1,6 @@
 import { mkdir, readFile, cp, stat, chmod, readdir, lstat } from 'node:fs/promises';
 import path from 'node:path';
+import { bundleLayers } from './bundle-composition.js';
 import { randomUUID } from 'node:crypto';
 import { Store } from './store.js';
 import { atomicJSON, confined, digest, freeze, treeDigest } from './artifacts.js';
@@ -16,6 +17,11 @@ import { createEgressSession, type EgressFactory, type EgressLifecycle } from '.
 import { prepareExecution, collectExecution, ReclamationError, settleExecutionFailure } from './execution.js';
 import { assertNotCancelled } from './cancellation-state.js';
 import { assertMutationScope } from './mutation-scope.js';
+
+import { bundlePatchFiles } from '@deepseek-ai/dsh-app-boot';
+import { catalogRoot, queueResolution, executeResolution, resolutions } from './capability-resolution.js';
+import { searchCapabilities } from './capabilities.js';
+import { mutationEvidence } from './mutation-evidence.js';
 
 export class Controller {
   readonly owner = randomUUID();
@@ -36,6 +42,7 @@ export class Controller {
     assertNotCancelled(this.root);
     await fileReaderCapabilities();
     if (this.spec.researchLibrary) await this.libraryRoot();
+    if (this.spec.capabilities) await catalogRoot(this.dataset, this.spec);
     await this.verificationRoot();
     const environment = this.spec.runtime.environment;
     if (
@@ -89,6 +96,7 @@ export class Controller {
       pendingSubmissions: this.store.pendingSubmissions(),
       runs: this.store.runs(),
       probes: this.store.probes(),
+      resolutions: resolutions(this.store),
       importedDrafts: this.store.events().filter((event) => event.type === 'draft.imported'),
       conclusion: this.store.getMeta('searchConclusion')
         ? JSON.parse(this.store.getMeta('searchConclusion')!)
@@ -99,6 +107,8 @@ export class Controller {
     this.assertOwner();
     this.assertParents([parent]);
     this.store.candidate(parent);
+    if (resolutions(this.store).some((item) => item.request.draft === name))
+      throw Error('Draft reserved by capability resolution');
     const target = confined(path.join(this.root, 'drafts'), name);
     try {
       await stat(target);
@@ -136,10 +146,33 @@ export class Controller {
     this.assertOwner();
     if (this.spec.purpose !== 'search' || this.store.getMeta('searchConclusion'))
       throw new Error('Only an open search can import research assets');
+    if (resolutions(this.store).some((item) => item.request.draft === draft))
+      throw Error('Draft reserved by capability resolution');
     const library = await this.libraryRoot();
     Digest.parse(archive);
     await inspectAsset(library, archive);
     await importArchive(this.root, this.store, confined(library, archive), draft);
+  }
+  async discover(query = '', offset = 0, limit = 20) {
+    const { snapshot } = await catalogRoot(this.dataset, this.spec);
+    return searchCapabilities(snapshot, query, offset, limit);
+  }
+  async capability(id: string) {
+    Digest.parse(id);
+    const { snapshot } = await catalogRoot(this.dataset, this.spec);
+    const entry = snapshot.entries.find((item) => item.id === id);
+    if (!entry) throw Error('Unknown capability identity');
+    return entry;
+  }
+  async resolve(raw: unknown) {
+    this.assertOwner();
+    return await queueResolution(this.root, this.dataset, this.spec, this.store, raw);
+  }
+  resolution(id: string) {
+    Digest.parse(id);
+    const record = resolutions(this.store).find((item) => item.id === id);
+    if (!record) throw Error('Unknown capability resolution');
+    return record;
   }
   async submit(raw: unknown): Promise<Candidate> {
     return await this.submitProposal(raw, false);
@@ -148,6 +181,10 @@ export class Controller {
     this.assertOwner();
     const proposal = Proposal.parse(raw);
     if (!initial) this.assertParents(proposal.parents);
+    const resolution = resolutions(this.store).find((item) => item.request.draft === proposal.draft);
+    if (resolution && resolution.phase !== 'resolved') throw Error('Capability resolution has not succeeded');
+    if (resolution && !proposal.parents.includes(resolution.request.parent))
+      throw Error('Resolved draft must retain its recorded parent in candidate lineage');
     const origin = draftOrigin(this.store, proposal.draft);
     const source = confined(path.join(this.root, 'drafts'), proposal.draft);
     const hash = await treeDigest(source);
@@ -170,9 +207,9 @@ export class Controller {
     for (const parent of proposal.parents) this.store.candidate(parent);
     await stat(confined(source, this.spec.candidate.patch));
     const pkg = JSON.parse(await readFile(path.join(source, 'package.json'), 'utf8')) as {
-      dsh?: { bundle?: { patch?: string } };
+      dsh: { bundle: { patch: string | string[] } };
     };
-    if (pkg.dsh?.bundle?.patch?.replace(/^\.\//, '') !== this.spec.candidate.patch)
+    if (bundlePatchFiles(pkg.dsh.bundle).at(-1)?.replace(/^\.\//, '') !== this.spec.candidate.patch)
       throw new Error('Candidate must be a native DSH Bundle with the contracted patch');
     await stat(path.join(source, 'package-lock.json'));
     const candidate = this.store.reserveSubmission({
@@ -227,6 +264,8 @@ export class Controller {
   finish(reason: string): void {
     this.assertOwner();
     if (this.store.pendingSubmissions().length) throw new Error('Wait for pending candidate publications');
+    if (resolutions(this.store).some((item) => item.phase === 'queued'))
+      throw Error('Wait for pending capability resolutions');
     if (this.store.probes().some((probe) => probe.phase === 'queued'))
       throw new Error('Wait for pending probes before concluding');
     if (this.store.candidates().some((c) => c.phase === 'frozen' || c.phase === 'running'))
@@ -299,13 +338,26 @@ export class Controller {
       const cursor = this.store.cursor();
       if (
         this.store.candidates().some((c) => c.phase === 'frozen' || c.phase === 'running') ||
-        this.store.probes().some((probe) => probe.phase === 'queued')
+        this.store.probes().some((probe) => probe.phase === 'queued') ||
+        resolutions(this.store).some((item) => item.phase === 'queued')
       )
         continue;
       await this.store.wait(cursor, { signal });
     }
   }
   private async advance(): Promise<void> {
+    for (const record of resolutions(this.store).filter((item) => item.phase === 'queued')) {
+      this.assertOwner();
+      await executeResolution(
+        this.root,
+        this.dataset,
+        this.spec,
+        this.store,
+        record,
+        this.docker,
+        this.activeSignal,
+      );
+    }
     for (const probe of this.store.probes().filter((item) => item.phase === 'queued')) {
       this.assertOwner();
       await executeProbe({
@@ -389,6 +441,7 @@ export class Controller {
       };
     });
     await atomicJSON(path.join(this.root, 'reports', `${id}.json`), {
+      mutation: await mutationEvidence(this.root, this.store, id),
       specificationDigest: digest(this.spec),
       candidate: this.store.candidate(id),
       decision: ['champion', 'rejected'].includes(this.store.candidate(id).phase)
@@ -410,9 +463,10 @@ export class Controller {
     await atomicJSON(path.join(root, 'launch.json'), {
       profile: this.spec.runtime.profile,
       model: this.spec.executor,
+      bundle: '/candidate',
       patches: [
         ...(environment ? [`/environment/${environment.patch}`] : []),
-        `/candidate/${this.spec.candidate.patch}`,
+        ...(await bundleLayers(bundlePath(this.root, candidate), '/candidate')),
       ],
       command: null,
       behaviorModule: this.spec.candidate.qa ? `/verification/${this.spec.candidate.qa.entry}` : null,
@@ -510,7 +564,8 @@ export class Controller {
     const config = {
       profile: this.spec.runtime.profile,
       model: this.spec.executor,
-      patch: `/candidate/${this.spec.candidate.patch}`,
+      bundle: '/candidate',
+      patches: await bundleLayers(bundlePath(this.root, candidate), '/candidate'),
       environmentPatch: environment ? `/environment/${environment.patch}` : null,
       prompt: task.prompt,
       timeoutSeconds: this.spec.timeoutSeconds,

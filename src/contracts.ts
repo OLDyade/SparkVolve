@@ -153,6 +153,9 @@ export const Experiment = z
     optimizer: Model,
     optimizerHarness: OptimizerHarness,
     researchLibrary: z.strictObject({ directory: RelativePath, digest: Digest }).nullable(),
+    capabilities: z
+      .strictObject({ directory: RelativePath, digest: Digest, resolutionLimit: z.number().int().positive() })
+      .nullable(),
     evaluator: z.strictObject({
       image: Image,
       command: z.array(z.string()).min(1),
@@ -246,6 +249,7 @@ export const Experiment = z
       spec.optimizerHarness.source.directory,
       ...(spec.optimizerHarness.kind === 'artifact' ? [spec.optimizerHarness.artifact.directory] : []),
       ...(spec.researchLibrary ? [spec.researchLibrary.directory] : []),
+      ...(spec.capabilities ? [spec.capabilities.directory] : []),
       ...(spec.runtime.environment ? [spec.runtime.environment.directory] : []),
       ...(spec.candidate.qa ? [spec.candidate.qa.directory] : []),
     ];

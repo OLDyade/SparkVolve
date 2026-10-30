@@ -1,0 +1,8 @@
+{
+  "official": true,
+  "indexes": ["https://dshopen.org/index.json"],
+  "local": ["native-engine"],
+  "archives": [],
+  "registry": "https://registry.npmjs.org",
+  "timeoutSeconds": 600
+}

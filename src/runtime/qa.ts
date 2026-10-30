@@ -10,7 +10,8 @@ const config = z
   .strictObject({
     profile: z.enum(['sdk', 'sdk-minimal']),
     model: Model,
-    patches: z.array(z.string()).min(1),
+    patches: z.array(z.string()),
+    bundle: z.string().nullable(),
     command: z.array(z.string()).min(1).nullable(),
     behaviorModule: z.string().nullable(),
     timeoutSeconds: z.number().positive(),
@@ -23,6 +24,7 @@ await checkComposition({
   profile: config.profile,
   model: config.model,
   patches: config.patches,
+  ...(config.bundle ? { bundle: config.bundle } : {}),
   directory: '/workspace/native',
   processCwd: '/app',
   workspace: '/workspace',

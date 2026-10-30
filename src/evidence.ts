@@ -7,7 +7,7 @@ import type { Controller } from './controller.js';
 import { Digest, Id, RelativePath } from './contracts.js';
 import { authorizeOptimizerEvidence } from './optimizer-access.js';
 import { confined, digest, inventory, treeDigest } from './artifacts.js';
-import { readAuthorizedFile } from './file-reader.js';
+import { readAuthorizedFile, authorizedEvidenceInventory } from './file-reader.js';
 
 const publications = channel('sparkvolve:materialization');
 
@@ -41,7 +41,14 @@ export const AssetEvidenceReference = z.strictObject({
   area: z.literal('source'),
   file: RelativePath.optional(),
 });
+export const ResolutionEvidenceReference = z.strictObject({
+  kind: z.literal('resolution'),
+  id: Digest,
+  area: z.enum(['source', 'logs']),
+  file: RelativePath.optional(),
+});
 export const EvidenceReference = z.discriminatedUnion('kind', [
+  ResolutionEvidenceReference,
   TaskEvidenceReference,
   RunEvidenceReference,
   CandidateEvidenceReference,
@@ -56,6 +63,13 @@ export async function readEvidence(controller: Controller, raw: unknown): Promis
   authorizeOptimizerEvidence(controller, reference);
   let root: string;
   switch (reference.kind) {
+    case 'resolution': {
+      const record = controller.resolution(reference.id);
+      if (reference.area === 'source' && record.phase !== 'resolved')
+        throw Error('Resolution source is not published');
+      root = path.join(controller.root, 'resolutions', record.id, reference.area);
+      break;
+    }
     case 'task': {
       const task = controller.spec.tasks.find((item) => item.id === reference.id);
       if (!task) throw new Error('Unknown task');
@@ -99,7 +113,13 @@ export async function readEvidence(controller: Controller, raw: unknown): Promis
       break;
     }
   }
-  if (reference.file === undefined) return await inventory(root);
+  if (reference.file === undefined) {
+    const operational =
+      (reference.kind === 'run' && reference.area === 'trace') ||
+      (reference.kind === 'candidate' && reference.area === 'qa') ||
+      (reference.kind === 'probe' && reference.area === 'observations');
+    return await (operational ? authorizedEvidenceInventory : inventory)(root);
+  }
   return {
     file: reference.file,
     encoding: 'base64',

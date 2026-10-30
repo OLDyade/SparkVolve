@@ -51,6 +51,43 @@ export async function serve(
       const body: unknown = JSON.parse(Buffer.concat(chunks).toString());
       let result: unknown;
       switch (req.url) {
+        case '/discover': {
+          const args = z
+            .strictObject({
+              query: z.string().default(''),
+              offset: z.number().int().min(0).default(0),
+              limit: z.number().int().min(1).max(100).default(20),
+            })
+            .parse(body);
+          result = await controller.discover(args.query, args.offset, args.limit);
+          break;
+        }
+        case '/capability': {
+          const args = z.strictObject({ id: Digest }).parse(body);
+          result = await controller.capability(args.id);
+          break;
+        }
+        case '/resolve':
+          result = await controller.resolve(body);
+          break;
+        case '/resolution': {
+          const args = z
+            .strictObject({
+              id: Digest,
+              area: z.enum(['source', 'logs']).optional(),
+              file: RelativePath.optional(),
+            })
+            .parse(body);
+          result = args.area
+            ? await readEvidence(controller, {
+                kind: 'resolution',
+                id: args.id,
+                area: args.area,
+                file: args.file,
+              })
+            : controller.resolution(args.id);
+          break;
+        }
         case '/input': {
           const args = z.strictObject({ task: Id, file: RelativePath.optional() }).parse(body);
           result = await readEvidence(controller, {

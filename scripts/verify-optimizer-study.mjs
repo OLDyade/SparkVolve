@@ -353,6 +353,7 @@ shutil.copyfile(p.with_name('grade.py'),r/'evaluation'/'grade.py')
       executor: model,
       optimizer: model,
       researchLibrary: null,
+    capabilities: null,
       optimizerHarness: {
         kind: 'artifact',
         source: { ...baseline.source, directory: 'method/source' },

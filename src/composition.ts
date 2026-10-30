@@ -5,11 +5,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { stringify } from 'yaml';
 import type { ModelSpec } from './contracts.js';
+import { prepareBundleProfile } from './bundle-profile.js';
 
 export interface CompositionOptions {
   profile: 'sdk' | 'sdk-minimal';
   model: ModelSpec;
   patches: string[];
+  bundle?: string;
   directory: string;
   processCwd: string;
   workspace: string;
@@ -41,6 +43,8 @@ export async function checkComposition(options: CompositionOptions): Promise<voi
       },
     ]),
   );
+  if (options.bundle)
+    await prepareBundleProfile(options.profile, path.join(directory, 'dsh'), options.bundle);
   const runtime = new DeepSeekHarness({
     profile: options.profile,
     patches: [...options.patches, patch],

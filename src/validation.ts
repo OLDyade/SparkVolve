@@ -193,18 +193,28 @@ export async function writeStudyReport(root: string): Promise<void> {
       pairs.length > 1
         ? Math.sqrt(pairs.reduce((s, p) => s + (p.delta - meanDelta) ** 2, 0) / (pairs.length - 1))
         : null;
+    const identity =
+      arm.candidate === baseline.candidate
+        ? 'same_candidate'
+        : arm.build!.bundleDigest === baseline.build!.bundleDigest
+          ? 'same_bundle'
+          : 'different_bundle';
+    const observedScoreImprovement = spec.metric.direction === 'maximize' ? meanDelta > 0 : meanDelta < 0;
     return {
       arm: arm.id,
       status: 'complete',
+      identity,
+      observedScoreImprovement,
       meanDelta,
       sampleSd,
       pairs,
       perTask,
       strictImprovement:
+        identity === 'different_bundle' &&
         arm.failures <= spec.failureLimit &&
         baseline.failures <= spec.failureLimit &&
         arm.constraints.every((result) => result.status === 'passed') &&
-        (spec.metric.direction === 'maximize' ? meanDelta > 0 : meanDelta < 0),
+        observedScoreImprovement,
     };
   });
   await atomicJSON(path.join(root, 'comparison.json'), {

@@ -159,7 +159,19 @@ test(
       assert.match(sources.skills.sha256, /^[a-f0-9]{64}$/);
       assert.ok(sources.skills.files > 0);
       await readFile(path.join(sources.skills.directory, 'cordis-plugin-development/SKILL.md'));
-      for (const name of ['status', 'branch', 'submit', 'evidence', 'materialize', 'candidate', 'finish'])
+      for (const name of [
+        'status',
+        'branch',
+        'submit',
+        'evidence',
+        'materialize',
+        'candidate',
+        'finish',
+        'discover',
+        'capability',
+        'resolve',
+        'resolution',
+      ])
         assert.ok(names.includes('evolution_' + name));
     } finally {
       await runtime?.close();

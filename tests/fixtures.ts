@@ -52,6 +52,7 @@ export function specification(): ExperimentSpec {
       build: { image: `sha256:${hash}`, timeoutSeconds: 60 },
     },
     researchLibrary: null,
+    capabilities: null,
     evaluator: { image: `sha256:${hash}`, command: ['node', '/grader.js'], timeoutSeconds: 10 },
     candidate: {
       patch: 'cordis.patch.yml',

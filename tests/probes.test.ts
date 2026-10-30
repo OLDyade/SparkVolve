@@ -19,6 +19,10 @@ test('isolated probes freeze both inputs, resume original execution and never af
   for (const directory of ['draft', 'suite'])
     await mkdir(path.join(root, 'drafts', directory), { recursive: true });
   await writeFile(path.join(root, 'drafts/draft/package-lock.json'), '{}');
+  await writeFile(
+    path.join(root, 'drafts/draft/package.json'),
+    JSON.stringify({ dsh: { bundle: { patch: './cordis.patch.yml' } } }),
+  );
   await writeFile(path.join(root, 'drafts/draft/value.txt'), 'original');
   await writeFile(path.join(root, 'drafts/suite/check.mjs'), 'export async function probe() {}');
   const request = { draft: 'draft', suite: 'suite', entry: 'check.mjs', hypothesis: 'test actual behavior' };

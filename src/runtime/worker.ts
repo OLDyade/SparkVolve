@@ -6,6 +6,7 @@ import { Model } from '../contracts.js';
 import { stringify } from 'yaml';
 import { requestMetrics } from '../metrics.js';
 import { initializeRuntimeEnvironment } from '../runtime-environment.js';
+import { prepareBundleProfile } from '../bundle-profile.js';
 
 await initializeRuntimeEnvironment();
 
@@ -13,7 +14,8 @@ const config = z
   .strictObject({
     profile: z.enum(['sdk', 'sdk-minimal']),
     model: Model,
-    patch: z.string(),
+    patches: z.array(z.string()),
+    bundle: z.string().nullable(),
     environmentPatch: z.string().nullable(),
     prompt: z.string(),
     timeoutSeconds: z.number().positive(),
@@ -33,6 +35,11 @@ writeFileSync(
           config: { timeoutSeconds: config.timeoutSeconds },
         },
         {
+          id: 'evolution-composition-inventory',
+          name: '/app/dist/composition-probe.js',
+          config: { report: '/trace/composition.json', workspace: '/workspace' },
+        },
+        {
           id: 'evolution-observer',
           name: '/app/dist/telemetry.js',
           config: {
@@ -47,11 +54,12 @@ writeFileSync(
     },
   ]),
 );
+if (config.bundle) await prepareBundleProfile(config.profile, '/trace/dsh', config.bundle);
 const runtime = new DeepSeekHarness({
   profile: config.profile,
   patches: [
     ...(config.environmentPatch ? [config.environmentPatch] : []),
-    config.patch,
+    ...config.patches,
     '/tmp/evolution-observer.yml',
   ],
   dshHome: '/trace/dsh',

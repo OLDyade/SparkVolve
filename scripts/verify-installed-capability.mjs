@@ -385,7 +385,8 @@ export async function main(args = process.argv.slice(2)) {
       await atomicJSON(path.join(launch, 'worker.json'), {
         profile: spec.runtime.profile,
         model: spec.executor,
-        patch: '/empty.yml',
+        bundle: null,
+        patches: ['/empty.yml'],
         environmentPatch: spec.runtime.environment ? `/environment/${spec.runtime.environment.patch}` : null,
         prompt: task.prompt,
         timeoutSeconds: spec.timeoutSeconds,

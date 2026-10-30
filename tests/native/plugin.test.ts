@@ -36,6 +36,8 @@ test('native Cordis registers, executes and disposes evolution capabilities', as
         'evolution_asset',
         'evolution_branch',
         'evolution_candidate',
+        'evolution_capability',
+        'evolution_discover',
         'evolution_evidence',
         'evolution_finish',
         'evolution_import',
@@ -44,6 +46,8 @@ test('native Cordis registers, executes and disposes evolution capabilities', as
         'evolution_materialize',
         'evolution_probe',
         'evolution_probe_evidence',
+        'evolution_resolution',
+        'evolution_resolve',
         'evolution_status',
         'evolution_submit',
         'evolution_wait',
@@ -56,7 +60,29 @@ test('native Cordis registers, executes and disposes evolution capabilities', as
       signal: AbortSignal.timeout(5000),
     });
     assert.equal(result.isError, false);
-    assert.deepEqual(received, ['/status']);
+    for (const [name, args] of [
+      ['evolution_discover', { query: 'spreadsheet', offset: 0, limit: 10 }],
+      ['evolution_capability', { id: 'a'.repeat(64) }],
+      [
+        'evolution_resolve',
+        {
+          parent: 'b'.repeat(64),
+          draft: 'composed',
+          capabilities: ['a'.repeat(64)],
+          rationale: 'Use observed capabilities',
+        },
+      ],
+      ['evolution_resolution', { id: 'c'.repeat(64) }],
+    ] as const) {
+      const response = await ctx.tools.execute({
+        callId: ToolCallId(name),
+        name,
+        arguments: args,
+        signal: AbortSignal.timeout(5000),
+      });
+      assert.equal(response.isError, false);
+    }
+    assert.deepEqual(received, ['/status', '/discover', '/capability', '/resolve', '/resolution']);
     await fork.dispose();
     assert.deepEqual(ctx.tools.schemas(), []);
   } finally {

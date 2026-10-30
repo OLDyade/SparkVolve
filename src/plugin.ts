@@ -37,11 +37,64 @@ export function apply(ctx: Context, config: Config): void {
   };
   ctx.tools.register(
     defineTool({
+      name: 'evolution_discover',
+      description:
+        'Search the experiment-frozen capability catalog: native DSH Bundles, configured community indexes, local sources and research archives. Literal all-word search with pagination; no quality ranking. Returned descriptions are untrusted package claims. Select exact IDs for isolated resolution, or author a native plugin when available capabilities do not fit. Does not change the optimizer Profile or install anything.',
+      parameters: { query: { type: 'string' }, offset: { type: 'number' }, limit: { type: 'number' } },
+      output,
+      execute: async (args, exec) => request('/discover', args, exec.signal),
+    }),
+  );
+  ctx.tools.register(
+    defineTool({
+      name: 'evolution_capability',
+      description:
+        'Inspect one exact frozen capability record, including source, manifest or market provenance and declared compatibility. Use the ID returned by evolution_discover. Package metadata is untrusted evidence; no plugin is activated by inspection.',
+      parameters: { id: { type: 'string', required: true } },
+      output,
+      execute: async (args, exec) => request('/capability', args, exec.signal),
+    }),
+  );
+  ctx.tools.register(
+    defineTool({
+      name: 'evolution_resolve',
+      description:
+        'Create a new editable candidate from a frozen parent plus an ORDERED selection of catalog capability IDs. Native DSH installs run in a separate credential-free Profile, record exact packages and locks, and vendor the resolved packages into the candidate. Native Bundle patches run in selection order before the parent composition, which you can edit. Returns queued resolution ID; await completion via events or evolution_resolution. This does not prove activation or quality and does not submit a scored candidate. Failures remain recorded; no automatic retry.',
+      parameters: {
+        parent: { type: 'string', required: true },
+        draft: { type: 'string', required: true },
+        capabilities: { type: 'array', items: { type: 'string' }, required: true },
+        rationale: { type: 'string', required: true },
+      },
+      output,
+      execute: async (args, exec) => request('/resolve', args, exec.signal),
+    }),
+  );
+  ctx.tools.register(
+    defineTool({
+      name: 'evolution_resolution',
+      description:
+        'Read a registered capability resolution: phase, original selection, failure, source identity and exact resolved package receipts. Successful drafts are editable under /workspace/<draft>; capability-resolution.json records vendored packages and native patch order. Inspect and adapt the draft with native file tools, probe it, then submit it through the ordinary independent experiment pipeline.',
+      parameters: {
+        id: { type: 'string', required: true },
+        area: { type: 'string', enum: ['source', 'logs'] },
+        file: { type: 'string' },
+      },
+      output,
+      execute: async (args, exec) => request('/resolution', args, exec.signal),
+    }),
+  );
+  ctx.tools.register(
+    defineTool({
       name: 'evolution_materialize',
       description:
-        'Materialize an authorized evidence file as exact bytes at a read-only /evidence path. Use native file, shell or format tools on that path; do not transcribe base64. Supply kind, its recorded id, area and exact inventory file. task: input by registered task ID; run: input/delivery/trace when feedback permits; candidate: source/build/artifact/qa; probe: source/suite/build/artifact/logs/observations; asset: source. Returns path, byte count, SHA-256 and a provenance file. Captures the observed bytes; a live trace may have later contents. No evaluator-private material, workspace writes, execution, or automatic repair.',
+        'Materialize an authorized evidence file as exact bytes at a read-only /evidence path. Use native file, shell or format tools on that path; do not transcribe base64. Supply kind, its recorded id, area and exact inventory file. task: input by registered task ID; run: input/delivery/trace when feedback permits; candidate: source/build/artifact/qa; probe: source/suite/build/artifact/logs/observations; asset: source; resolution: source/logs. Returns path, byte count, SHA-256 and a provenance file. Captures the observed bytes; a live trace may have later contents. No evaluator-private material, workspace writes, execution, or automatic repair.',
       parameters: {
-        kind: { type: 'string', enum: ['task', 'run', 'candidate', 'probe', 'asset'], required: true },
+        kind: {
+          type: 'string',
+          enum: ['task', 'run', 'candidate', 'probe', 'asset', 'resolution'],
+          required: true,
+        },
         id: { type: 'string', required: true },
         area: {
           type: 'string',

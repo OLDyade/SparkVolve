@@ -64,6 +64,7 @@ const spec = Experiment.parse({
   executor: model,
   optimizer: model,
   researchLibrary: null,
+  capabilities: null,
   optimizerHarness: {
     kind: 'source',
     source: {

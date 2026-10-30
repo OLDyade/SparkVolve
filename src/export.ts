@@ -6,6 +6,9 @@ import type { Store } from './store.js';
 import { optimizerLedger } from './optimizer.js';
 import { experimentReport } from './report.js';
 import { capabilityCard } from './capability-card.js';
+import { mutationEvidence } from './mutation-evidence.js';
+import { resolutions } from './capability-resolution.js';
+import { authorizedEvidenceInventory } from './file-reader.js';
 
 export function archiveIdentity(store: Store, candidate: string): string {
   return digest({ experiment: store.getMeta('experimentId'), specification: digest(store.spec), candidate });
@@ -54,7 +57,9 @@ export async function exportCandidate(
           const areas: Record<string, unknown> = {};
           for (const area of ['delivery', 'trace']) {
             try {
-              areas[area] = await inventory(path.join(root, 'runs', run.id, area));
+              areas[area] = await (area === 'trace' ? authorizedEvidenceInventory : inventory)(
+                path.join(root, 'runs', run.id, area),
+              );
             } catch (error) {
               if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
               areas[area] = null;
@@ -63,7 +68,7 @@ export async function exportCandidate(
           return { run: run.id, areas };
         }),
       );
-      return { candidate: record, report, evidence };
+      return { candidate: record, report, evidence, mutation: await mutationEvidence(root, store, hash) };
     }),
   );
   await atomicJSON(path.join(destination, 'research-record.json'), {
@@ -74,6 +79,7 @@ export async function exportCandidate(
     specification: store.spec,
     runs: store.runs(id),
     lineage,
+    capabilityResolutions: resolutions(store),
     events: store.events(),
     optimizer: await optimizerLedger(root),
     sourceFiles: await inventory(source),

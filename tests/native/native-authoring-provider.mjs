@@ -111,7 +111,7 @@ export function apply(ctx) {
                 args: {
                   description: 'Read installed native tool type declarations',
                   timeoutMs: 10000,
-                  command: `sed -n '1,60p' '${file.replaceAll("'", "'\\''")}'`,
+                  command: `sed -n '1,60p' '${file.replaceAll("'", "'\\''")}' | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))'`,
                 },
               },
             ];

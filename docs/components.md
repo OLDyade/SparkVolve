@@ -14,7 +14,12 @@ flowchart TB
     Preset --> Optimizer
   end
   subgraph Protected["Protected experiment services"]
-    API["Control API<br/>Drafts · Evidence · Submissions · Asset library"]
+    API["Control API<br/>Discover · Resolve · Draft · Probe · Evaluate"]
+    Catalog["Frozen capability catalog<br/>Official · Market · Local · Research"]
+    Resolver["Native DSH resolver<br/>Exact packages · Locks · Bundle layers"]
+    Catalog --> API
+    API --> Resolver
+    Resolver -->|"Editable child + Resolution provenance"| Controller
     Store["SQLite<br/>Leases · Events · Lineage · Decisions"]
     Controller["Experiment controller<br/>Build · Scheduling · Recovery"]
     API --> Store
@@ -38,6 +43,9 @@ flowchart TB
 | Evolution Bundle / Preset | Installs evolution tools and replaceable methods into the selected Agent scope | [`plugin.ts`](../src/plugin.ts), [`preset.ts`](../src/preset.ts), [`sdk-preset.ts`](../src/sdk-preset.ts) |
 | Optimizer method | Selects parent version, mechanism, and mutation scope from evidence; can be versioned independently | [`optimizers/evidence-driven`](../optimizers/evidence-driven) |
 | Native plugin development capability | Queries DSH author contracts and official Skills on demand; records installation sources; G observations and candidate H validation are kept separate | [`native-authoring.ts`](../src/native-authoring.ts), [Development Capability Assembly](native-authoring.md) |
+| Capability discovery | Freezes authorized native catalogs, all market versions, local source and research archives; serves exact records | [`capabilities.ts`](../src/capabilities.ts), [Capability Evolution](capability-evolution.md) |
+| Candidate resolution | Reserves an acquisition, installs through native DSH, vendors exact bytes and publishes an editable child | [`capability-resolution.ts`](../src/capability-resolution.ts), [`runtime/resolve-capabilities.ts`](../src/runtime/resolve-capabilities.ts) |
+| Dependency-aware composition | Registers artifact dependencies in native Profiles; records observed Cordis bindings and actual source/assembly changes | [`bundle-profile.ts`](../src/bundle-profile.ts), [`harness-inventory.ts`](../src/harness-inventory.ts), [`mutation-evidence.ts`](../src/mutation-evidence.ts) |
 | Optimizer research | Native meta-optimizer modifies G; trusted host schedules same-budget sub-searches and closed final validation | [`study-plugin.ts`](../src/study-plugin.ts), [`optimizer-study.ts`](../src/optimizer-study.ts), [Research Protocol](optimizer-studies.md) |
 | Controller and state | Freezing, building, scheduling, resuming original containers, selection, and persistent events | [`controller.ts`](../src/controller.ts), [`store.ts`](../src/store.ts) |
 | Build and assembly | lock pins dependencies; runtime artifacts are frozen; audits the complete native plugin tree | [`build.ts`](../src/build.ts), [`composition.ts`](../src/composition.ts) |
@@ -70,7 +78,12 @@ The diagram above describes the extension mode already integrated into the code.
 
 ```mermaid
 stateDiagram-v2
-  [*] --> Draft: Select parent version / Create plugin
+  [*] --> Discovery: Investigate task evidence
+  Discovery --> Resolution: Select frozen capability IDs
+  Resolution --> Draft: Native install and editable child
+  Resolution --> ResolutionFailed: Installation or compatibility failure
+  ResolutionFailed --> [*]
+  Discovery --> Draft: Author or adapt parent directly
   Draft --> Frozen: Submission and source identity
   Frozen --> BuildFailed: Installation or compilation failure
   Frozen --> Built: Lock dependencies and build artifacts

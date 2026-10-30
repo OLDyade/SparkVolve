@@ -221,6 +221,27 @@ test('single-arm and paired validation preserve built artifacts and resume witho
     assert.equal(report.comparisons[0].pairs.length, 4);
     assert.equal(report.comparisons[0].perTask.length, 2);
     assert.equal(report.comparisons[0].strictImprovement, false);
+    assert.equal(report.comparisons[0].identity, 'different_bundle');
+    class RepeatedArmDriver extends Driver {
+      override async create(input: ContainerSpec) {
+        await super.create(input);
+        const work = input.mounts.find((mount) => mount.target === '/workspace')!.source;
+        if (work.includes('/arms/repeated/')) await writeFile(path.join(work, 'score.txt'), '0.75');
+      }
+    }
+    const repeatedStudy = path.join(root, 'same-candidate-study');
+    await validateStudy(
+      repeatedStudy,
+      { ...spec, constraints: [] },
+      dataset,
+      [arms[0], { ...arms[0], id: 'repeated' }],
+      new RepeatedArmDriver(),
+    );
+    const repeated = JSON.parse(await readFile(path.join(repeatedStudy, 'comparison.json'), 'utf8'));
+    assert.equal(repeated.comparisons[0].meanDelta, 0.5, 'Keep observed variation in the report');
+    assert.equal(repeated.comparisons[0].observedScoreImprovement, true);
+    assert.equal(repeated.comparisons[0].identity, 'same_candidate');
+    assert.equal(repeated.comparisons[0].strictImprovement, false, 'Identical H is not an evolution gain');
     assert.equal(report.results[0].constraints[0].status, 'passed');
     assert.equal(report.results[1].constraints[0].status, 'violated');
     await assert.rejects(

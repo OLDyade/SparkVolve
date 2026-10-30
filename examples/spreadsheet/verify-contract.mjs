@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { Docker } from '../../dist/docker.js';
 import { Image, Isolation, Model } from '../../dist/contracts.js';
 import { atomicJSON, treeDigest } from '../../dist/artifacts.js';
+import { bundleLayers } from '../../dist/bundle-composition.js';
 
 const [image, isolationFile, modelFile, environmentDir, bundleDir, outputDir] = process.argv.slice(2);
 if (!image || !isolationFile || !modelFile || !environmentDir || !bundleDir || !outputDir)
@@ -24,7 +25,11 @@ const launch = path.join(output, 'launch.json');
 await atomicJSON(launch, {
   profile: 'sdk',
   model,
-  patches: ['/environment/cordis.patch.yml', '/candidate/cordis.patch.yml'],
+  bundle: '/candidate',
+  patches: [
+    '/environment/cordis.patch.yml',
+    ...(await bundleLayers(bundle)).map((file) => '/candidate/' + file),
+  ],
   command: null,
   behaviorModule: '/verification/check.mjs',
   timeoutSeconds: 60,

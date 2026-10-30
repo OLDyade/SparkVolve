@@ -9,10 +9,11 @@ import { EgressSession, type EgressSessionSpec } from './egress-session.js';
 import { containerIdentity } from './isolation.js';
 import { Experiment } from './contracts.js';
 import { Store } from './store.js';
+import { resolutions } from './capability-resolution.js';
 
 export interface ExecutionRegistration {
   directory: string;
-  role: 'build' | 'qa' | 'optimizer' | 'executor' | 'scorer' | 'probe';
+  role: 'build' | 'qa' | 'optimizer' | 'executor' | 'scorer' | 'probe' | 'resolution';
 }
 interface Entry extends ExecutionRegistration {
   documents: Record<string, string>;
@@ -312,6 +313,7 @@ export async function cancelExperiment(root: string, docker = new Docker()): Pro
       for (let attempt = 0; attempt <= run.gradeAttempt; attempt++)
         add(`runs/${run.id}/grading-${attempt}`, 'scorer');
     }
+    for (const resolution of resolutions(store)) add(`resolutions/${resolution.id}`, 'resolution');
     for (const probe of store.probes()) {
       add(`probes/${probe.id}/builds/${probe.sourceDigest}`, 'build');
       add(`probes/${probe.id}/logs`, 'probe');
@@ -373,6 +375,7 @@ export async function cancelRegisteredChild(
     'qa',
     'runs',
     'probes',
+    'resolutions',
     'optimizer',
     'optimizer-harness',
     'artifacts',

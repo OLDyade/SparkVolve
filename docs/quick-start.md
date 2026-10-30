@@ -34,7 +34,7 @@ Task recipe + model Provider
 Build runtime image → discover DNS / host addresses → freeze search / validation / reuse tasks
        │
        ▼
-Run H0 → DSH optimizer reads evidence → autonomously modifies plugins → independent build and scoring
+Run H0 → discover frozen capabilities → resolve / adapt / author → native composition → independent scoring
        │
        ▼
 Freeze H* from search scores → independently assess H0 and H* on validation tasks
@@ -51,7 +51,9 @@ Output is located in `.evolution/<recipe>-<time>/`:
 |---|---|
 | `startup.json` | Startup phase, configuration identity, and failure reasons |
 | `registration.json`, `*-data/spec.json` | All three frozen task splits, model and runtime identities, selection rule |
-| `search/` | Event ledger, candidates, trajectories, and per-task deliverables |
+| `search-data/dataset/capabilities/` | Frozen official, community, local and authorized research capability catalog |
+| `search/resolutions/` | Exact dependency acquisition, native installation logs and source provenance |
+| `search/` | Event ledger, candidates, actual assembly inventories, trajectories and per-task deliverables |
 | `report.json` | Actual scores, verdicts, and model usage |
 | `validation/comparison.json` | Fresh independent H0/H* scores and paired differences |
 | `installed/acceptance.json` | Original-package installation, per-task execution, grading, identity checks and usage |
@@ -72,7 +74,8 @@ Pass `--recipe path/to/recipe.json` to select another domain. Each split's gener
 | `prepare` | Domain contract preparation script |
 | `seed` | Starting capability Bundle |
 | `preflight` | Optional domain runtime environment validation script |
+| `capabilities` | Catalog configuration path and acquisition budget; `null` disables external acquisition |
 
-All file paths are relative to the directory containing the recipe. See the [structured data recipe](../examples/structured-data/recipe.json) and the [spreadsheet recipe](../examples/spreadsheet/recipe.json). The Excel example only requires adding `--recipe examples/spreadsheet/recipe.json`, which automatically installs the required LibreOffice and Python dependencies. You can use `--image sha256:...` to specify an already-built corresponding domain image, or `--provider` to select another native Provider configuration; the model will not be switched automatically.
+Capability selection uses the [native discovery and resolution flow](capability-evolution.md). The example market is explicitly configured and snapshotted once; its packages are not preloaded into H0. All file paths are relative to the directory containing the recipe. See the [structured data recipe](../examples/structured-data/recipe.json) and the [spreadsheet recipe](../examples/spreadsheet/recipe.json). The Excel example only requires adding `--recipe examples/spreadsheet/recipe.json`, which automatically installs the required LibreOffice and Python dependencies. You can use `--image sha256:...` to specify an already-built corresponding domain image, or `--provider` to select another native Provider configuration; the model will not be switched automatically.
 
 Use the public examples to try autonomous plugin modification and artifact delivery. For formal research, supply your own task manifest, independent validation set, and repeated-search protocol. See [domain adapters](domain-adapters.md).

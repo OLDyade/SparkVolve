@@ -24,6 +24,7 @@ import { optimizerStudyReport } from './optimizer-study-report.js';
 import { cancelOptimizerStudy } from './optimizer-study-cancel.js';
 import { cancelExperiment } from './cancellation.js';
 import { cancelValidationStudy } from './validation-cancel.js';
+import { prepareCapabilities } from './capabilities.js';
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,
@@ -71,6 +72,7 @@ remember  --root <directory> --candidate <digest> --library <directory>
 library   --library <directory> [--query <literal-text>]
 import    --root <directory> --archive <research-archive> --draft <new-name>
 digest    <artifact-directory>
+capabilities --spec <catalog-config.json> --output <new-directory>
 doctor
 study-init   --root <new-study> --spec <study.json> --dataset <trusted-input-root>
 study-run    --root <study> --child-endpoint <literal-ip-origin:0> [--endpoint <meta-container-reachable-url>] [--host 127.0.0.1] [--port 8787] [--child-host <bind-address>]
@@ -81,6 +83,20 @@ study-cancel --root <study>
 
 Use Node --env-file with a private file for credentials. Existing experiments are immutable.
 run reconciles original tasks; rescore reuses the original delivery; export does not publish.`);
+} else if (action === 'capabilities') {
+  if (!values.spec || !values.output) throw Error('capabilities requires --spec and --output');
+  const spec = path.resolve(values.spec);
+  console.log(
+    JSON.stringify(
+      await prepareCapabilities(
+        JSON.parse(await readFile(spec, 'utf8')),
+        path.dirname(spec),
+        path.resolve(values.output),
+      ),
+      null,
+      2,
+    ),
+  );
 } else if (action === 'library') {
   if (!values.library) throw new Error('library requires --library');
   console.log(JSON.stringify(await catalog(path.resolve(values.library), values.query), null, 2));

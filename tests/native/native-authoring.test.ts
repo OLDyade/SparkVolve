@@ -130,10 +130,9 @@ for (const profile of ['sdk', 'sdk-minimal'] as const) {
           path.join(toolsPackage.sources.directory, 'types/index.d.ts'),
           'utf8',
         );
-        assert.ok(
-          receipt('source').includes(declaration.split('\n').slice(0, 60).join('\n')),
-          receipt('source'),
-        );
+        // Encode exact source bytes before the shell's human-readable result framing.
+        const sourceReceipt = receipt('source').split('\n[Command finished')[0]!.trim();
+        assert.equal(JSON.parse(sourceReceipt), declaration.split('\n').slice(0, 60).join('\n') + '\n');
         const firstPrompt = JSON.stringify(requests[0].messages);
         for (const source of nativeSources.packages) {
           assert.ok(firstPrompt.includes(source.version));

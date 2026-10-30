@@ -2,6 +2,10 @@ import { isIP } from 'node:net';
 import type { Route } from './egress.js';
 
 export const controlPaths = [
+  '/discover',
+  '/capability',
+  '/resolve',
+  '/resolution',
   '/input',
   '/probe',
   '/probe-evidence',

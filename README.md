@@ -43,7 +43,13 @@ A plugin-based harness evolution framework: agents use real task feedback to res
 | **H · Executor Harness** | Business tools, plugin code, configuration and assembly | Independently graded task deliveries |
 | **G · Optimizer Harness** | How it investigates, develops plugins and conducts experiments | The H candidates it produces from the same H0 under matched budget caps |
 
-**Evidence → Mutation → Build + QA → Execute → Grade → Select**
+**Discover → Adapt / Author → Compose → Evaluate → Ship**
+
+| 🔎 Discover | 🧩 Compose | 📦 Ship |
+|:---|:---|:---|
+| Official DSH, community markets, local Bundles and research assets | Exact dependencies, native Bundle layers and observed Cordis service bindings | The evaluated package, its real ancestry and independently checked delivery |
+
+The optimizer chooses what to reuse, change or create. A frozen capability catalog keeps those choices reproducible; native resolution turns them into editable candidates. [Explore Capability Evolution →](docs/capability-evolution.md)
 
 Both run on **DeepSeek Harness / Cordis**. The Controller owns experiment rules, version identity, budgets and records; the Grader evaluates deliveries. Optimizer evolution runs as a separate **Optimizer Study**.
 
@@ -110,7 +116,7 @@ Recorded synthetic-task results. Stable gains, cross-domain transfer and optimiz
 | [Mutation-space comparison](docs/experiments/2026-10-29-closure-study-results.md) | Three arms, six searches, twelve patches, 124 task scorings. Five searches retained H0; one candidate passed validation and reuse at 100%. No demonstrated method advantage. |
 | [One-command startup](docs/experiments/2026-10-29-official-closure-results.md) | Structured-data search, independent validation and original-package reuse completed; H0 was retained. |
 
-Complex cross-plugin behavioral acceptance and stronger research evidence remain open. [Implementation status](docs/completion.md) · [All experiments](docs/experiments/README.md) · [Research protocol](docs/research-protocol.md)
+Native dependency composition and real community-package adoption now have behavioral acceptance, including original-package reuse. Stronger autonomous structural-evolution and quality evidence remain open. [Capability integration](docs/experiments/2026-10-30-capability-evolution.md). [Implementation status](docs/completion.md) · [All experiments](docs/experiments/README.md) · [Research protocol](docs/research-protocol.md)
 
 </details>
 

@@ -1,7 +1,9 @@
 import { mkdir, readFile, writeFile, stat, lstat } from 'node:fs/promises';
 import path from 'node:path';
+import { bundleLayers } from './bundle-composition.js';
 import { atomicJSON, confined, digest, freeze, treeDigest } from './artifacts.js';
 import { buildCandidate, bundlePath, verifyBuild } from './build.js';
+
 import { ProbeRequest, type Probe, type Candidate, type ExperimentSpec } from './contracts.js';
 import type { Store } from './store.js';
 import type { Docker } from './docker.js';
@@ -121,9 +123,10 @@ export async function executeProbe(options: {
     await atomicJSON(launch, {
       profile: spec.runtime.profile,
       model: spec.executor,
+      bundle: '/candidate',
       patches: [
         ...(environment ? [`/environment/${environment.patch}`] : []),
-        `/candidate/${spec.candidate.patch}`,
+        ...(await bundleLayers(bundlePath(directory, candidate), '/candidate')),
       ],
       command: null,
       behaviorModule: `/suite/${probe.request.entry}`,

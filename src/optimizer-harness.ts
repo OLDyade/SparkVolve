@@ -165,6 +165,7 @@ export async function prepareOptimizer(
     await atomicJSON(path.join(qa, 'launch.json'), {
       profile: 'sdk',
       model: spec.optimizer,
+      bundle: '/method',
       patches: [...(environment ? [`/environment/${environment.patch}`] : []), '/optimizer.patch.yml'],
       command: null,
       behaviorModule: null,

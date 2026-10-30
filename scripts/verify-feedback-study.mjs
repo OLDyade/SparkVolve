@@ -588,6 +588,7 @@ export async function main(args = process.argv.slice(2)) {
         executor: model,
         optimizer: model,
         researchLibrary: null,
+    capabilities: null,
         optimizerHarness: {
           kind: 'artifact',
           source: { ...method.source, directory: 'method/source' },
