@@ -20,7 +20,7 @@
 
 > 过去我们给 Agent 装能力，现在让 Agent 自己决定需要什么能力、修改什么能力，甚至创造新能力。
 
-![SparkVolve：固定模型权重，进化插件代码、配置与组合，交付可复用能力](docs/assets/readme/hero.png)
+![SparkVolve：固定模型权重，进化插件代码、配置与组合，交付可复用能力](docs/assets/readme/hero.webp)
 
 ## 🧬 三个核心设计
 
@@ -30,7 +30,7 @@
 
 **启用 · 停用 · 调优 · 替换 · 组合 · 创造**
 
-![六种插件变异：由任务证据驱动，启用、停用、调优、替换、组合与创造，覆盖代码、配置及组合结构](docs/assets/readme/plugin-mutations.png)
+![六种插件变异：由任务证据驱动，启用、停用、调优、替换、组合与创造，覆盖代码、配置及组合结构](docs/assets/readme/plugin-mutations.webp)
 
 <details>
 <summary>核心思想原文</summary>
@@ -79,7 +79,7 @@
 
 **执行器可以进化自己的能力，优化器也可以进化自己的方法。**
 
-![双层原生 Harness 进化：优化器改造执行器插件；独立 Optimizer Study 通过同起点、同预算实验比较优化器候选。实验控制器与独立评分保持规则固定。](docs/assets/readme/two-level-evolution.png)
+![双层原生 Harness 进化：优化器改造执行器插件；独立 Optimizer Study 通过同起点、同预算实验比较优化器候选。实验控制器与独立评分保持规则固定。](docs/assets/readme/two-level-evolution.webp)
 
 | 进化对象 | 改变什么 | 如何选择 |
 |:---|:---|:---|
@@ -96,7 +96,7 @@
 
 **可安装，可追溯，可复用。**
 
-![三类可复用成果：能力 Bundle、进化谱系、实验证据；独立 Optimizer Study 还可产出供后续搜索使用的优化器 Bundle。](docs/assets/readme/evolution-deliverables.png)
+![三类可复用成果：能力 Bundle、进化谱系、实验证据；独立 Optimizer Study 还可产出供后续搜索使用的优化器 Bundle。](docs/assets/readme/evolution-deliverables.webp)
 
 | 交付物 | 包含什么 | 如何使用 |
 |:---|:---|:---|
@@ -124,7 +124,7 @@ npm start -- --env-file /absolute/private/deepseek.env
 
 **带上你的领域：** 🗂 任务 + ⚙️ 运行环境 + 🧩 种子插件 + ⚖️ 评分器。
 
-![不同任务领域通过输入、运行环境、种子插件和评分器接入同一个 SparkVolve 进化引擎](docs/assets/readme/bring-your-task.png)
+![不同任务领域通过输入、运行环境、种子插件和评分器接入同一个 SparkVolve 进化引擎](docs/assets/readme/bring-your-task.webp)
 
 通过 `--recipe` 选择任务配置，新领域需实现并验证适配器。[结构化数据](docs/structured-data.md)与 [Excel](examples/spreadsheet)都是示例。运行时原生接入 DSH / Cordis。
 

@@ -185,7 +185,7 @@ const html = template.replace(/\{\{(\w+)\}\}/g, (_, key) => {
 await put('index.html', html);
 await copy('site/style.css', 'style.css');
 await copy('site/app.js', 'app.js');
-for (const file of ['assets/brand/logo.png', 'assets/readme/hero.png', 'assets/readme/evolution-loop.png'])
+for (const file of ['assets/brand/logo.png', 'assets/readme/hero.webp', 'assets/readme/evolution-loop.png'])
   await copy(`docs/${file}`, file);
 // Preserve the older negative experiment. Its documentation links point to the repository.
 const historicalTour = (await read('docs/tour.html'))

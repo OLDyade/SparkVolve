@@ -20,7 +20,7 @@ A plugin-based harness evolution framework: agents use real task feedback to res
 
 > We used to equip agents with capabilities. Now agents can decide which capabilities they need, which to change, and which to create.
 
-![SparkVolve: fixed model weights, evolving plugin code, configuration and composition, reusable capabilities](docs/assets/readme/hero.png)
+![SparkVolve: fixed model weights, evolving plugin code, configuration and composition, reusable capabilities](docs/assets/readme/hero.webp)
 
 ## 🧬 Three core designs
 
@@ -30,13 +30,13 @@ A plugin-based harness evolution framework: agents use real task feedback to res
 
 **Enable · Disable · Tune · Replace · Compose · Create**
 
-![Six plugin mutation operations chosen from task evidence: enable, disable, tune, replace, compose and create across code, configuration and composition](docs/assets/readme/plugin-mutations.png)
+![Six plugin mutation operations chosen from task evidence: enable, disable, tune, replace, compose and create across code, configuration and composition](docs/assets/readme/plugin-mutations.webp)
 
 ## 🔁 A harness that evolves harnesses
 
 **The executor can evolve its capabilities. The optimizer can evolve its own approach.**
 
-![Two levels of native Harness evolution: an optimizer changes executor plugins; a separate Optimizer Study compares optimizer candidates through matched searches. Independent evaluation and an experiment controller keep rules fixed.](docs/assets/readme/two-level-evolution.png)
+![Two levels of native Harness evolution: an optimizer changes executor plugins; a separate Optimizer Study compares optimizer candidates through matched searches. Independent evaluation and an experiment controller keep rules fixed.](docs/assets/readme/two-level-evolution.webp)
 
 | Evolution target | What can change | What decides |
 |:---|:---|:---|
@@ -53,7 +53,7 @@ Both run on **DeepSeek Harness / Cordis**. The Controller owns experiment rules,
 
 **Install it. Inspect its history. Run it on your tasks.**
 
-![Three reusable outputs: Capability Bundle, Evolution Lineage and Evidence Package. A separate Optimizer Study can additionally deliver an Optimizer Bundle for future searches.](docs/assets/readme/evolution-deliverables.png)
+![Three reusable outputs: Capability Bundle, Evolution Lineage and Evidence Package. A separate Optimizer Study can additionally deliver an Optimizer Bundle for future searches.](docs/assets/readme/evolution-deliverables.webp)
 
 | Deliverable | Inside | Put it to work |
 |:---|:---|:---|
@@ -81,7 +81,7 @@ npm start -- --env-file /absolute/private/deepseek.env
 
 **Bring your domain:** 🗂 Tasks + ⚙️ Runtime + 🧩 Seed plugins + ⚖️ Grader.
 
-![Different task domains connect through inputs, runtime, seed plugins and a grader to the same SparkVolve evolution engine](docs/assets/readme/bring-your-task.png)
+![Different task domains connect through inputs, runtime, seed plugins and a grader to the same SparkVolve evolution engine](docs/assets/readme/bring-your-task.webp)
 
 Use `--recipe` to select a task setup; implement and validate an adapter for a new domain. [Structured data](docs/structured-data.md) and [Excel](examples/spreadsheet) are examples. Runtime integration is native to DSH / Cordis.
 
