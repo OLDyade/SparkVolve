@@ -340,3 +340,75 @@ test('build failure is terminal, retains evidence, consumes candidate budget and
     store.close();
   }
 });
+
+for (const score of [0.25, 0.9]) {
+  test('controller screens before remainder and resumes without resampling: ' + score, async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), 'he-screen-controller-'));
+    const spec = specification();
+    spec.hostSearchProtocol.screening = { tasks: ['one'], minimumBaselineDelta: 0 };
+    for (const task of spec.tasks) {
+      for (const folder of [task.input, task.evaluation])
+        await mkdir(path.join(root, 'dataset', folder), { recursive: true });
+      task.inputDigest = await treeDigest(path.join(root, 'dataset', task.input));
+      task.evaluationDigest = await treeDigest(path.join(root, 'dataset', task.evaluation));
+    }
+    const seed = path.join(root, 'seed');
+    await mkdir(seed);
+    await writeFile(
+      path.join(seed, 'package.json'),
+      JSON.stringify({ name: 'fixture', dsh: { bundle: { patch: './cordis.patch.yml' } } }),
+    );
+    await writeFile(path.join(seed, 'package-lock.json'), '{}');
+    await writeFile(path.join(seed, 'cordis.patch.yml'), '[]');
+    const store = new Store(path.join(root, 'state.sqlite'), spec);
+    class ScreenDriver extends LifecycleDriver {
+      override async create(contract: ContainerSpec) {
+        if (!contract.name.startsWith('he-build-') && this.executions === 3)
+          assert.ok(
+            store
+              .events()
+              .some((e) => e.type === 'candidate.screened' && (e.body as { passed: boolean }).passed),
+          );
+        return super.create(contract);
+      }
+      override async run(contract: ContainerSpec) {
+        const result = await super.run(contract);
+        if (
+          !contract.name.startsWith('he-build-') &&
+          !contract.name.startsWith('he-qa-') &&
+          this.grades > 2
+        ) {
+          const work = contract.mounts.find((m) => m.target === '/workspace')!.source;
+          await atomicJSON(path.join(work, 'result.json'), {
+            score,
+            metrics: {},
+            feedback: 'independent fixture',
+          });
+        }
+        return result;
+      }
+    }
+    const driver = new ScreenDriver();
+    let controller = new Controller(root, path.join(root, 'dataset'), spec, store, driver);
+    try {
+      await controller.start();
+      const h0 = await controller.seed(seed);
+      await controller.pump();
+      await controller.draft(h0.digest, 'child');
+      await writeFile(path.join(root, 'drafts/child/cordis.patch.yml'), '# mutation\n[]');
+      const child = await controller.submit({ ...h0.proposal, draft: 'child', parents: [h0.digest] });
+      await controller.pump();
+      assert.equal(driver.executions, score < 0.75 ? 3 : 4);
+      assert.equal(store.candidate(child.digest).phase, score < 0.75 ? 'screened_out' : 'champion');
+      await controller.close();
+      controller = new Controller(root, path.join(root, 'dataset'), spec, store, driver);
+      await controller.start();
+      await controller.pump();
+      assert.equal(driver.executions, score < 0.75 ? 3 : 4);
+      assert.equal(store.events().filter((e) => e.type === 'candidate.screened').length, 1);
+    } finally {
+      await controller.close();
+      store.close();
+    }
+  });
+}

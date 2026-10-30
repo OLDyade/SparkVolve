@@ -1,9 +1,9 @@
 // Prepare an independent paired protocol from a completed search and fresh task inputs.
 import { mkdir, readFile, writeFile, cp } from 'node:fs/promises';
 import path from 'node:path';
-import { treeDigest, confined } from '../../dist/artifacts.js';
-import { Experiment } from '../../dist/contracts.js';
-import { Store } from '../../dist/store.js';
+import { treeDigest, confined } from '../../../dist/artifacts.js';
+import { Experiment } from '../../../dist/contracts.js';
+import { Store } from '../../../dist/store.js';
 
 const [search, candidate, freshDataset, output, repeats] = process.argv.slice(2);
 if (!search || !candidate || !freshDataset || !output || !repeats)

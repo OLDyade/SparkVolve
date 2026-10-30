@@ -41,6 +41,6 @@ The initial seed is likewise subject to constraint review; if it is not satisfie
 
 Paired re-validation uses the same function and separately reports each arm's constraint observations and raw score difference. When the candidate violates a constraint, `strictImprovement` is false; whether the baseline itself is feasible is still listed in the results, and the score difference is not hidden. The report is a descriptive re-validation and does not prove statistical significance or causal benefit.
 
-`examples/spreadsheet/prepare.mjs` generates `constraints: []`, continuing the sample's policy of "primary accuracy adjudication, retention-rate reporting". The researcher may edit the generated experiment JSON before `init` while keeping the objective and constraints consistent. Any contract change requires a new experiment directory; old contracts are not automatically backfilled with fields or migrated.
+`tests/fixtures/spreadsheet/prepare.mjs` generates `constraints: []`, continuing the sample's policy of "primary accuracy adjudication, retention-rate reporting". The researcher may edit the generated experiment JSON before `init` while keeping the objective and constraints consistent. Any contract change requires a new experiment directory; old contracts are not automatically backfilled with fields or migrated.
 
 Mechanism reference and measurements: [research notes](research/2026-10-27-outcome-constraints.md).

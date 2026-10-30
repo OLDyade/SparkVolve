@@ -1,4 +1,6 @@
-# Second Domain: Structured Events and Logs
+# Archived Adapter Acceptance: Structured Events and Logs
+
+**Historical engineering record.** The synthetic generator now lives under `tests/fixtures`; it is not a public benchmark or the current startup example. Use the [community benchmark Quick Start](quick-start.md) for research runs.
 
 This adapter reuses the same DSH optimizer, experiment contract, frozen build, native assembly QA, independent scoring, and Bundle distribution. The controller adds no domain branches. Input is JSON / JSONL, delivery is JSON, and no Excel or LibreOffice is required.
 
@@ -38,13 +40,13 @@ docker build -t sparkvolve:local .
 mkdir -p .evolution/data
 node examples/isolation.mjs runc "${SPARKVOLVE_EGRESS_POOL:?Set a reserved private IPv4 CIDR}" \
   "${SPARKVOLVE_TEST_DNS:?Set approved comma-separated IPv4 DNS servers}" > .evolution/data/isolation.json
-python3 examples/structured-data/generate.py .evolution/data/dataset
-node examples/structured-data/prepare.mjs .evolution/data/dataset \
+python3 tests/fixtures/structured-data/generate.py .evolution/data/dataset
+node tests/fixtures/structured-data/prepare.mjs .evolution/data/dataset \
   "$(docker image inspect sparkvolve:local --format '{{.Id}}')" \
   examples/venus/model.json .evolution/data/spec.json .evolution/data/isolation.json examples/venus
 node dist/cli.js init --root .evolution/data/search \
   --spec .evolution/data/spec.json --dataset .evolution/data/dataset \
-  --seed examples/structured-data/seed
+  --seed tests/fixtures/structured-data/seed
 node --env-file=/absolute/private/venus.env dist/cli.js evolve \
   --root .evolution/data/search --host 0.0.0.0 --port 18949 \
   --endpoint "http://${SPARKVOLVE_CONTROLLER_IP}:18949"

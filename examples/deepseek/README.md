@@ -11,7 +11,7 @@ For a first experience, you can run `npm start -- --env-file <private.env> --poo
 When you need to orchestrate experiments yourself, the preparation command for the spreadsheet scenario explicitly selects the provider directory:
 
 ```bash
-node examples/spreadsheet/prepare.mjs <dataset> <immutable-image> \
+node tests/fixtures/spreadsheet/prepare.mjs <dataset> <immutable-image> \
   examples/deepseek/model.json <spec.json> <isolation.json> examples/deepseek
 ```
 

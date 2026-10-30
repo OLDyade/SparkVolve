@@ -156,7 +156,7 @@ for (const example of ['spreadsheet', 'structured-data']) {
       isolation.network.executor = 'controlled';
       await writeFile(path.join(root, 'isolation.json'), JSON.stringify(isolation));
       const args = [
-        new URL(`../examples/${example}/prepare.mjs`, import.meta.url).pathname,
+        new URL(`./fixtures/${example}/prepare.mjs`, import.meta.url).pathname,
         dataset,
         `sha256:${'a'.repeat(64)}`,
         new URL('../examples/venus/model.json', import.meta.url).pathname,

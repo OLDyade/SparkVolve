@@ -32,7 +32,7 @@ The tests and the candidate interact within the same native Agent process; indep
 
 ## Table Instance
 
-`examples/spreadsheet/prepare.mjs` copies and freezes the public synthetic tests. Verify using the existing `workbook_write` interface:
+`tests/fixtures/spreadsheet/prepare.mjs` copies and freezes the public synthetic tests. Verify using the existing `workbook_write` interface:
 
 - Explicit formulas for adjacent but different operations are preserved verbatim, including absolute references; the same `value` interface allows writing another explicit formula or a zero value onto an existing formula, and explicit clearing is preserved as requested by the caller.
 - The original file bytes are unchanged; non-target values, styles, and comments in the fixture are preserved.
@@ -46,7 +46,7 @@ The independent capability review on 2026-10-28 found that a candidate whose tas
 A native Bundle can be independently accepted before a formal model task:
 
 ```bash
-node examples/spreadsheet/verify-contract.mjs \
+node tests/fixtures/spreadsheet/verify-contract.mjs \
   <immutable-image-id> isolation.json examples/venus/model.json \
   examples/venus /absolute/built-bundle /absolute/new-evidence-directory
 ```

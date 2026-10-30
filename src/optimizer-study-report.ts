@@ -51,7 +51,11 @@ function childUsage(report: ChildReport | null, active: boolean) {
     report === null
       ? []
       : [
-          ...report.candidates.flatMap((candidate) => candidate.samples.map((sample) => sample.usage)),
+          ...report.candidates.flatMap((candidate) =>
+            candidate.samples
+              .filter((sample) => sample.phase !== 'screened_out')
+              .map((sample) => sample.usage),
+          ),
           ...report.optimizer.episodes.map((episode) => episode.usage),
         ];
   const coverage = {
@@ -65,7 +69,7 @@ function childUsage(report: ChildReport | null, active: boolean) {
               sum +
               (['build_failed', 'qa_failed'].includes(candidate.phase)
                 ? 0
-                : Math.max(0, candidate.expectedRuns - candidate.observedRuns)),
+                : Math.max(0, candidate.expectedRuns - candidate.observedRuns - candidate.screenedOutRuns)),
             0,
           ),
     activeSources: active ? 1 : 0,

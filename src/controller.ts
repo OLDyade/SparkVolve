@@ -409,7 +409,7 @@ export class Controller {
     }
     // Reports are projections of committed state. Rebuild even after a crash between decision and file write.
     for (const candidate of this.store.candidates()) {
-      if (['champion', 'rejected', 'build_failed', 'qa_failed'].includes(candidate.phase))
+      if (['champion', 'rejected', 'build_failed', 'qa_failed', 'screened_out'].includes(candidate.phase))
         await this.report(candidate.digest);
     }
   }
@@ -430,14 +430,14 @@ export class Controller {
     const baseRuns = baseline ? this.store.runs(baseline.digest) : [];
     const paired = runs.map((run) => {
       const base = baseRuns.find((item) => item.task === run.task && item.repetition === run.repetition);
-      const score = run.grade?.score ?? this.spec.metric.failure;
+      const score = run.phase === 'screened_out' ? null : (run.grade?.score ?? this.spec.metric.failure);
       const baseScore = base ? (base.grade?.score ?? this.spec.metric.failure) : null;
       return {
         task: run.task,
         repetition: run.repetition,
         score,
         baselineScore: baseScore,
-        delta: baseScore === null ? null : score - baseScore,
+        delta: baseScore === null || score === null ? null : score - baseScore,
       };
     });
     await atomicJSON(path.join(this.root, 'reports', `${id}.json`), {
@@ -738,7 +738,7 @@ export class Controller {
   private async evaluate(candidate: Candidate): Promise<void> {
     if ((await treeDigest(path.join(this.root, 'candidates', candidate.digest))) !== candidate.digest)
       throw new Error('Frozen candidate modified');
-    const queue = this.store.runs(candidate.digest);
+    let queue = this.store.runs(candidate.digest);
     if (!queue.length) throw new Error('Candidate has no registered runs; investigate interrupted admission');
     const worker = async (): Promise<void> => {
       for (;;) {
@@ -757,13 +757,24 @@ export class Controller {
         if (current.phase === 'delivered' || current.phase === 'scoring') await this.score(current);
       }
     };
-    const results = await Promise.allSettled(Array.from({ length: this.spec.concurrency }, worker));
-    const errors = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
-    if (errors.length)
-      throw new AggregateError(
-        errors.map((e) => e.reason),
-        'Experiment worker failure',
-      );
+    const runQueue = async () => {
+      const results = await Promise.allSettled(Array.from({ length: this.spec.concurrency }, worker));
+      const errors = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+      if (errors.length)
+        throw new AggregateError(
+          errors.map((e) => e.reason),
+          'Experiment worker failure',
+        );
+    };
+    const screening = this.spec.hostSearchProtocol.screening;
+    if (screening && candidate.ordinal !== 0) {
+      queue = queue.filter((run) => screening.tasks.includes(run.task));
+      await runQueue();
+      if (this.store.runs(candidate.digest).some((run) => run.phase === 'scoring_failed')) return;
+      if (!this.store.screen(candidate.digest)) return;
+      queue = this.store.runs(candidate.digest).filter((run) => !screening.tasks.includes(run.task));
+    }
+    await runQueue();
     if (this.store.runs(candidate.digest).some((r) => r.phase === 'scoring_failed')) return;
     this.store.decide(candidate.digest);
   }

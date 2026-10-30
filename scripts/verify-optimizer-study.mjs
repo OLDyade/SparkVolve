@@ -306,7 +306,7 @@ shutil.copyfile(p.with_name('grade.py'),r/'evaluation'/'grade.py')
         '-B',
         '-c',
         python,
-        path.join(repo, 'examples/structured-data/generate.py'),
+        path.join(repo, 'tests/fixtures/structured-data/generate.py'),
         directory,
         String(index),
         namespace,
@@ -763,7 +763,7 @@ shutil.copyfile(p.with_name('grade.py'),r/'evaluation'/'grade.py')
         ...(await bundle('meta', path.join(repo, 'optimizers/method-research'))),
         composition: 'plugins.yml',
       };
-      const seed = await bundle('h0', path.join(repo, 'examples/structured-data/seed'));
+      const seed = await bundle('h0', path.join(repo, 'tests/fixtures/structured-data/seed'));
       const markers = Object.fromEntries(
         ['development-search', 'development-assessment', 'validation-search', 'validation-assessment'].map(
           (name) => [name, randomUUID()],
@@ -776,8 +776,8 @@ shutil.copyfile(p.with_name('grade.py'),r/'evaluation'/'grade.py')
       }));
       await atomicJSON(path.join(root, 'data-registration.json'), {
         splits: splitRegistration,
-        generator: await fileDigest(path.join(repo, 'examples/structured-data/generate.py')),
-        evaluator: await fileDigest(path.join(repo, 'examples/structured-data/grade.py')),
+        generator: await fileDigest(path.join(repo, 'tests/fixtures/structured-data/generate.py')),
+        evaluator: await fileDigest(path.join(repo, 'tests/fixtures/structured-data/grade.py')),
         boundary:
           'Public synthetic families; disjoint bijectively renamed contents; original evaluator unchanged.',
       });

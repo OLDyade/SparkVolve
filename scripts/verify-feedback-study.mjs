@@ -465,7 +465,7 @@ export async function main(args = process.argv.slice(2)) {
       'spreadsheet-preflight',
       process.execPath,
       [
-        'examples/spreadsheet/verify-image.mjs',
+        'tests/fixtures/spreadsheet/verify-image.mjs',
         image,
         path.join(root, 'isolation.json'),
         path.join(root, 'spreadsheet-preflight'),
@@ -504,7 +504,7 @@ export async function main(args = process.argv.slice(2)) {
       ...(await bundle('g', path.join(repo, 'optimizers/evidence-driven'))),
       composition: 'plugins.yml',
     };
-    let seedSource = path.join(repo, 'examples/spreadsheet/seed');
+    let seedSource = path.join(repo, 'tests/fixtures/spreadsheet/seed');
     if (values.comparison === 'mutation-space') {
       const staging = path.join(root, 'seed-staging');
       await prepareMutationSeed(seedSource, staging);
@@ -514,7 +514,7 @@ export async function main(args = process.argv.slice(2)) {
     const generator = path.join(root, 'generator');
     await mkdir(generator);
     for (const file of ['research.py', 'grade.py'])
-      await cp(path.join(repo, 'examples/spreadsheet', file), path.join(generator, file), {
+      await cp(path.join(repo, 'tests/fixtures/spreadsheet', file), path.join(generator, file), {
         errorOnExist: true,
         force: false,
       });

@@ -125,6 +125,16 @@ export type OutcomeConstraintSpec = z.infer<typeof OutcomeConstraint>;
 export const HostSearchProtocol = z.strictObject({
   ancestry: z.enum(['unrestricted', 'seed-only']),
   feedback: z.enum(['full', 'mechanical']),
+  /** Optional fixed development subset; unsampled tasks never acquire invented scores. */
+  screening: z
+    .strictObject({
+      tasks: z
+        .array(Id)
+        .min(1)
+        .refine((ids) => new Set(ids).size === ids.length, 'Duplicate screening task'),
+      minimumBaselineDelta: z.number().finite(),
+    })
+    .optional(),
   /** Exact source files editable relative to H0; omitted means unrestricted source evolution. */
   editableFiles: z
     .array(RelativePath)
@@ -197,6 +207,18 @@ export const Experiment = z
       ctx.addIssue({
         code: 'custom',
         message: 'Seed-only protocol requires probes, researchLibrary and domain QA to be null',
+      });
+    const screening = spec.hostSearchProtocol.screening;
+    if (
+      screening &&
+      (spec.purpose !== 'search' ||
+        spec.hostSearchProtocol.feedback !== 'full' ||
+        screening.tasks.length >= spec.tasks.length ||
+        screening.tasks.some((id) => !spec.tasks.some((task) => task.id === id)))
+    )
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Screening requires a proper subset of registered search tasks',
       });
     const slots = 2 * (1 + (spec.isolation.network.executor === 'controlled' ? spec.concurrency : 0));
     if (poolCapacity(spec.isolation.network.egressPool) < slots)
@@ -313,6 +335,7 @@ export type RunPhase =
   | 'scoring'
   | 'scoring_failed'
   | 'scored'
+  | 'screened_out'
   | 'cancelled';
 export interface TaskRun {
   id: string;
@@ -333,7 +356,7 @@ export interface TaskRun {
 export interface Candidate {
   digest: string;
   proposal: CandidateProposal;
-  phase: 'frozen' | 'build_failed' | 'qa_failed' | 'running' | 'rejected' | 'champion';
+  phase: 'frozen' | 'build_failed' | 'qa_failed' | 'running' | 'rejected' | 'champion' | 'screened_out';
   ordinal: number;
   build?: z.infer<typeof BuildIdentity>;
   buildError?: string;

@@ -13,7 +13,7 @@ const Archive = z.looseObject({
   experimentId: z.uuid(),
   candidate: z.looseObject({
     digest: Digest,
-    phase: z.enum(['build_failed', 'qa_failed', 'rejected', 'champion']),
+    phase: z.enum(['build_failed', 'qa_failed', 'rejected', 'champion', 'screened_out']),
     mean: z.number().finite().optional(),
     build: BuildIdentity.optional(),
     proposal: z.looseObject({ hypothesis: z.string(), actions: z.array(z.string()) }),

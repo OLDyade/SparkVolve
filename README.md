@@ -83,28 +83,32 @@ npm ci
 npm start -- --env-file /absolute/private/deepseek.env
 ```
 
-**One entry: autonomous development → independent validation → original-package installation → fresh reuse.** Defaults: official DeepSeek, structured-data tasks, **600 seconds per task**. Keep credentials outside the repository. First launch builds images; model calls use your provider quota.
+**One entry: autonomous development → independent validation → original-package installation → fresh reuse.** Defaults: official DeepSeek, a **36-task SpreadsheetBench 2 panel**, **600 seconds per task**. Keep credentials outside the repository. First launch builds images; model calls use your provider quota.
 
 **Bring your domain:** 🗂 Tasks + ⚙️ Runtime + 🧩 Seed plugins + ⚖️ Grader.
 
 ![Different task domains connect through inputs, runtime, seed plugins and a grader to the same SparkVolve evolution engine](docs/assets/readme/bring-your-task.webp)
 
-Use `--recipe` to select a task setup; implement and validate an adapter for a new domain. [Structured data](docs/structured-data.md) and [Excel](examples/spreadsheet) are examples. Runtime integration is native to DSH / Cordis.
+Use `--benchmark` to select a community benchmark adapter. The [SpreadsheetBench 2 track](benchmarks/spreadsheetbench2/README.md) connects official inputs and scoring to the same native DSH / Cordis engine.
 
 [Full quick start](docs/quick-start.md) · [Add a domain](docs/domain-adapters.md) · [Install a capability](docs/use-capability.md)
 
-## 📊 From source change to shipped capability
+## 📊 Real tasks. Comparable searches. Installable results.
 
-A real official DeepSeek run added **`workbook_recalculate`**, backed by LibreOffice, to a read/write plugin. The next candidate refined its tool descriptions.
+**SpreadsheetBench 2 · Debugging + Financial Modeling + Templates**
 
-| Autonomous development | Independent validation | Original-package reuse |
+| Develop | Validate | Test & reuse |
 |:---:|:---:|:---:|
-| **56.25% → 81.25% → 100%** | **81.25% → 100%** | **4 / 4 tasks passed** |
-| H0 → H1 → H2 | Fresh H0 vs. H2 execution | Unchanged archive, clean Profiles |
+| **12 tasks** · fixed 4-task screen | **10 tasks** · frozen candidates | **14 tasks** · original packages |
+| Task feedback drives evolution | Same tasks compare all three arms | Workbook families kept separate |
 
-**[Read the actual source diff →](docs/experiments/anatomy-of-a-mutation.md)** · [Explore every phase](https://oldyade.github.io/SparkVolve/#experiment)
+`Prompt only` · `Single-plugin code` · `Open plugin evolution`
 
-Recorded synthetic-task results. Stable gains, cross-domain transfer and optimizer superiority remain open research questions.
+Same H0, model, tasks and budget. The optimizer chooses its ancestry and whether to discover, reuse, adapt or author. The official evaluator stays unchanged. No required mutation checklist.
+
+**[Run the community benchmark →](benchmarks/spreadsheetbench2/README.md)** · [Registered task panel](benchmarks/spreadsheetbench2/mixed36.json)
+
+Community benchmark results will be reported with failures and full denominators. Earlier synthetic runs remain in the research ledger as engineering evidence.
 
 <details>
 <summary><strong>Research ledger — results, regressions and remaining work</strong></summary>

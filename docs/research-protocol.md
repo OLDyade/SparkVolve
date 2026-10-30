@@ -13,12 +13,12 @@ A completed search may use newly generated public tasks to prepare validation. T
 ```bash
 # New task directory; development and validation generate different values
 docker run --rm \
-  --mount type=bind,src="$PWD/examples/spreadsheet",dst=/example,readonly \
+  --mount type=bind,src="$PWD/tests/fixtures/spreadsheet",dst=/example,readonly \
   --mount type=bind,src="$PWD/.evolution/business",dst=/workspace \
   sparkvolve-spreadsheet:local \
   python3 /example/research.py /workspace/validation-data validation
 
-node examples/spreadsheet/validation.mjs \
+node tests/fixtures/spreadsheet/validation.mjs \
   .evolution/business/search <digest> .evolution/business/validation-data \
   .evolution/business/validation-plan 2
 

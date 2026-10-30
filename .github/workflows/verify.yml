@@ -85,10 +85,10 @@ jobs:
         run: |
           set -euo pipefail
           docker build --build-arg HARNESS_IMAGE=sparkvolve:test \
-            -f examples/spreadsheet/Dockerfile -t sparkvolve-spreadsheet:test .
+            -f tests/fixtures/spreadsheet/Dockerfile -t sparkvolve-spreadsheet:test .
           npm run build
           node examples/isolation.mjs "$SPARKVOLVE_TEST_RUNTIME" "$SPARKVOLVE_EGRESS_POOL" "$SPARKVOLVE_TEST_DNS" > "$TMPDIR/spreadsheet-isolation.json"
-          node examples/spreadsheet/verify-image.mjs \
+          node tests/fixtures/spreadsheet/verify-image.mjs \
             "$(docker image inspect sparkvolve-spreadsheet:test --format '{{.Id}}')" \
             "$TMPDIR/spreadsheet-isolation.json" "$TMPDIR/spreadsheet-image"
       - name: Exercise declared runtime end to end

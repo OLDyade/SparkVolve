@@ -457,14 +457,14 @@ export async function main(args = process.argv.slice(2)) {
     assert.ok(skills.length >= 1);
     await save(path.join(inputs, 'native-authoring-sources.json'), { ...references, skills });
     await run('image-preflight', process.execPath, [
-      'examples/spreadsheet/verify-image.mjs',
+      'tests/fixtures/spreadsheet/verify-image.mjs',
       image,
       path.join(inputs, 'isolation.json'),
       path.join(root, 'image-preflight'),
     ]);
     await mkdir(path.join(inputs, 'generator'));
     for (const name of ['research.py', 'grade.py'])
-      await cp(path.join(repo, 'examples/spreadsheet', name), path.join(inputs, 'generator', name));
+      await cp(path.join(repo, 'tests/fixtures/spreadsheet', name), path.join(inputs, 'generator', name));
     await mkdir(path.join(inputs, 'datasets'));
     for (const split of ['development', 'validation']) {
       await run(`generate-${split}`, 'docker', [
@@ -485,7 +485,7 @@ export async function main(args = process.argv.slice(2)) {
         split,
       ]);
       await run(`prepare-${split}`, process.execPath, [
-        'examples/spreadsheet/prepare.mjs',
+        'tests/fixtures/spreadsheet/prepare.mjs',
         path.join(inputs, 'datasets', split),
         image,
         path.join(inputs, 'model.json'),
@@ -503,7 +503,7 @@ export async function main(args = process.argv.slice(2)) {
     await save(path.join(inputs, 'search.json'), contracts.search);
     await save(path.join(inputs, 'assessment.json'), contracts.assessment);
     const seed = path.join(inputs, 'seed');
-    await freeze(path.join(repo, 'examples/spreadsheet/seed'), seed, path.join(root, 'publications'));
+    await freeze(path.join(repo, 'tests/fixtures/spreadsheet/seed'), seed, path.join(root, 'publications'));
     // Validate install policy before any paid call, with the same exact schema used for delivery.
     installationConfig(
       { identity: {} },

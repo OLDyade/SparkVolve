@@ -38,7 +38,11 @@ test(
       mounts: [
         { source: path.join(root, 'work'), target: '/workspace', writable: true },
         { source: path.join(root, 'probe'), target: '/probe', writable: false },
-        { source: path.resolve('examples/spreadsheet/native-engine'), target: '/candidate', writable: false },
+        {
+          source: path.resolve('benchmarks/spreadsheetbench2/seed'),
+          target: '/candidate',
+          writable: false,
+        },
       ],
       command: [
         'node',

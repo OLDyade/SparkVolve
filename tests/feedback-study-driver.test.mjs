@@ -105,7 +105,7 @@ test('mutation comparison isolates editable source scope with identical G/H0 and
 test('all mutation arms start with the same native prompt section and packaged guidance', async () => {
   const parent = await mkdtemp(path.join(os.tmpdir(), 'mutation-seed-'));
   const target = path.join(parent, 'seed');
-  await prepareMutationSeed(new URL('../examples/spreadsheet/seed', import.meta.url), target);
+  await prepareMutationSeed(new URL('../tests/fixtures/spreadsheet/seed', import.meta.url), target);
   const source = await readFile(path.join(target, 'index.mjs'), 'utf8');
   assert.match(source, /systemPrompt.section/);
   assert.match(source, /guidance.md/);
@@ -114,7 +114,7 @@ test('all mutation arms start with the same native prompt section and packaged g
   );
   assert.equal(
     await readFile(path.join(target, 'workbook.py'), 'utf8'),
-    await readFile(new URL('../examples/spreadsheet/seed/workbook.py', import.meta.url), 'utf8'),
+    await readFile(new URL('../tests/fixtures/spreadsheet/seed/workbook.py', import.meta.url), 'utf8'),
   );
 });
 

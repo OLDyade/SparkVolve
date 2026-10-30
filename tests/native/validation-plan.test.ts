@@ -30,7 +30,7 @@ test('spreadsheet preparation and independent validation retain the same frozen 
   defaults.isolation.network.executor = 'controlled';
   await writeFile(path.join(root, 'isolation.json'), JSON.stringify(defaults.isolation));
   await execute(process.execPath, [
-    'examples/spreadsheet/prepare.mjs',
+    'tests/fixtures/spreadsheet/prepare.mjs',
     dataset,
     defaults.runtime.image,
     path.join(root, 'model.json'),
@@ -47,7 +47,7 @@ test('spreadsheet preparation and independent validation retain the same frozen 
   store.close();
   const plan = path.join(root, 'plan');
   await execute(process.execPath, [
-    'examples/spreadsheet/validation.mjs',
+    'tests/fixtures/spreadsheet/validation.mjs',
     search,
     selected,
     fresh,
@@ -72,7 +72,7 @@ test('spreadsheet preparation and independent validation retain the same frozen 
   await writeFile(path.join(dataset, spec.candidate.qa.directory, spec.candidate.qa.entry), 'changed');
   await assert.rejects(
     execute(process.execPath, [
-      'examples/spreadsheet/validation.mjs',
+      'tests/fixtures/spreadsheet/validation.mjs',
       search,
       selected,
       fresh,

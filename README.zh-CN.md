@@ -126,28 +126,32 @@ npm ci
 npm start -- --env-file /absolute/private/deepseek.env
 ```
 
-**一个入口：自主开发 → 独立验证 → 原包安装 → 新任务复用。** 默认官方 DeepSeek、结构化数据任务、每题 **600 秒**。凭证保存在仓库外；首次启动构建镜像，模型调用消耗供应商额度。
+**一个入口：自主开发 → 独立验证 → 原包安装 → 新任务复用。** 默认官方 DeepSeek、**SpreadsheetBench 2 的 36 题分组子集**、每题 **600 秒**。凭证保存在仓库外；首次启动构建镜像，模型调用消耗供应商额度。
 
 **带上你的领域：** 🗂 任务 + ⚙️ 运行环境 + 🧩 种子插件 + ⚖️ 评分器。
 
 ![不同任务领域通过输入、运行环境、种子插件和评分器接入同一个 SparkVolve 进化引擎](docs/assets/readme/bring-your-task.webp)
 
-通过 `--recipe` 选择任务配置，新领域需实现并验证适配器。[结构化数据](docs/structured-data.md)与 [Excel](examples/spreadsheet)都是示例。运行时原生接入 DSH / Cordis。
+通过 `--benchmark` 选择社区评测适配器。[SpreadsheetBench 2 专项](benchmarks/spreadsheetbench2/README.md)将官方任务与评分接入同一套 DSH / Cordis 进化引擎。
 
 [完整快速开始](docs/quick-start.md) · [接入新领域](docs/domain-adapters.md) · [安装能力包](docs/use-capability.md)
 
-## 📊 从自主改代码，到能力交付
+## 📊 真实任务、公平对照、原包交付
 
-一轮真实官方 DeepSeek 实验，为读写插件新增了 **`workbook_recalculate`**，接入 LibreOffice 计算；下一候选继续完善工具说明。
+**SpreadsheetBench 2 · 错误修复 + 财务建模 + 模板补全**
 
-| 自主开发搜索 | 独立验证 | 原包安装复用 |
+| 进化开发 | 独立验证 | 测试与复用 |
 |:---:|:---:|:---:|
-| **56.25% → 81.25% → 100%** | **81.25% → 100%** | **4 / 4 任务通过** |
-| H0 → H1 → H2 | 重新执行 H0 与 H2 | 原始归档，全新 Profile |
+| **12 题**，含固定 4 题初筛 | **10 题**，比较冻结候选 | **14 题**，直接安装原包 |
+| 任务反馈驱动自主变异 | 三组使用相同题目 | 按底层工作簿家族隔离 |
 
-**[查看真实源码差异 →](docs/experiments/anatomy-of-a-mutation.md)** · [在线查看各阶段](https://oldyade.github.io/SparkVolve/#experiment)
+`仅 Prompt` · `单插件代码` · `开放式插件进化`
 
-以上为合成任务实测。稳定收益、跨领域迁移及优化器优越性，仍是待验证的研究问题。
+同 H0、同模型、同题集、同预算。优化器自主选择继承、发现、复用、改造或新建，官方评分器保持原样，不规定必须出现哪些变异动作。
+
+**[运行社区评测 →](benchmarks/spreadsheetbench2/README.md)** · [固定任务清单](benchmarks/spreadsheetbench2/mixed36.json)
+
+社区评测将按完整分母报告成绩与失败。早期合成实验保留在账本中，作为工程机制证据。
 
 <details>
 <summary><strong>实验账本：成果、退步与剩余工作</strong></summary>

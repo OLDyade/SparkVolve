@@ -15,6 +15,7 @@ const edges: Record<RunPhase, readonly RunPhase[]> = {
   scoring_failed: ['scoring'],
   execution_failed: [],
   scored: [],
+  screened_out: [],
   cancelled: [],
 };
 
@@ -346,6 +347,57 @@ export class Store {
       this.db.prepare('UPDATE runs SET body=? WHERE id=?').run(canonical(next), id);
       this.event('run.transition', { id, from, to, extra });
       return next;
+    });
+  }
+  /** Resolve the preregistered screen once. Rejected remainder has no business score. */
+  screen(candidateId: string): boolean {
+    const policy = this.spec.hostSearchProtocol.screening;
+    const candidate = this.candidate(candidateId);
+    if (!policy || candidate.ordinal === 0) return true;
+    const previous = this.events().find(
+      (e) => e.type === 'candidate.screened' && (e.body as { candidate: string }).candidate === candidateId,
+    );
+    if (previous) return (previous.body as { passed: boolean }).passed;
+    return this.transaction(() => {
+      if (candidate.phase !== 'running') throw Error('Screen requires a running candidate');
+      const baseline = this.candidates()[0]!;
+      const select = (id: string) => this.runs(id).filter((r) => policy.tasks.includes(r.task));
+      const current = select(candidateId),
+        base = select(baseline.digest);
+      const count = policy.tasks.length * this.spec.repetitions;
+      for (const rows of [current, base]) {
+        if (
+          rows.length !== count ||
+          rows.some((r) => !['scored', 'execution_failed', 'cancelled'].includes(r.phase))
+        )
+          throw Error('Screen has incomplete or unscored observations');
+      }
+      const mean = (rows: TaskRun[]) =>
+        rows.reduce((sum, r) => sum + (r.grade?.score ?? this.spec.metric.failure), 0) / count;
+      const score = mean(current),
+        baselineScore = mean(base);
+      const delta = (score - baselineScore) * (this.spec.metric.direction === 'maximize' ? 1 : -1);
+      const passed = delta >= policy.minimumBaselineDelta;
+      if (!passed) {
+        const rest = this.runs(candidateId).filter((r) => !policy.tasks.includes(r.task));
+        if (rest.some((r) => r.phase !== 'queued')) throw Error('Remainder ran before screening');
+        for (const run of rest)
+          this.db
+            .prepare('UPDATE runs SET body=? WHERE id=?')
+            .run(canonical({ ...run, phase: 'screened_out' }), run.id);
+        this.updateCandidate({ ...candidate, phase: 'screened_out' });
+      }
+      this.event('candidate.screened', {
+        candidate: candidateId,
+        passed,
+        tasks: policy.tasks,
+        denominator: count,
+        score,
+        baselineScore,
+        delta,
+        minimumBaselineDelta: policy.minimumBaselineDelta,
+      });
+      return passed;
     });
   }
   decide(candidateId: string): { promoted: boolean; mean: number; failures: number } {

@@ -1,0 +1,1 @@
+Complete the requested workbook using the source evidence, explicit edits, and actual spreadsheet-engine results. Preserve the original input and deliver the requested file. The native tools and shell are available; choose the operations needed by the task.

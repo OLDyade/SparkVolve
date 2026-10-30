@@ -130,7 +130,14 @@ export async function experimentReport(root: string, store: Store) {
         buildError: candidate.buildError ?? null,
         qaError: candidate.qaError ?? null,
         expectedRuns: expected.size,
-        observedRuns: selected.length,
+        observedRuns: selected.filter((run) => run.phase !== 'screened_out').length,
+        screenedOutRuns: selected.filter((run) => run.phase === 'screened_out').length,
+        screening:
+          events.find(
+            (e) =>
+              e.type === 'candidate.screened' &&
+              (e.body as { candidate: string }).candidate === candidate.digest,
+          )?.body ?? null,
         scoredRuns: selected.filter((run) => run.phase === 'scored').length,
         failedRuns: selected.filter((run) => ['execution_failed', 'cancelled'].includes(run.phase)).length,
         complete,

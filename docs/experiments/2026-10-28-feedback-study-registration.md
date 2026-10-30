@@ -9,7 +9,7 @@ This is a limited descriptive study. It does not replace the [larger-scope E/B/R
 | Object            | Registration Definition                                                                                                 |
 | --------------- | -------------------------------------------------------------------------------------------------------- |
 | Optimizer G        | The same source code, lockfile, build artifacts, and native assembly of `optimizers/evidence-driven`; the two groups have identical prompt instructions and tools              |
-| Initial Harness H0 | The same frozen Bundle of `examples/spreadsheet/seed`; both groups and the independent baseline reuse the original build artifacts                              |
+| Initial Harness H0 | The same frozen Bundle of `tests/fixtures/spreadsheet/seed`; both groups and the independent baseline reuse the original build artifacts                              |
 | Model            | Venus `deepseek/deepseek-v4.1-flash-1017`, thinking off for both G/H, single maximum output 32768; the full contract records the model configuration |
 | Full arm         | Authorized task inputs, source code, build, assembly, execution traces, delivery, scoring; `seed-only + full`                                 |
 | Mechanical arm   | Authorized task inputs, source code, build, and native assembly; hidden task execution feedback and champion selection; `seed-only + mechanical`                 |
@@ -21,7 +21,7 @@ G's general instructions specify the two feedback protocols, the raw input entry
 
 ## Data, Repeats, and Execution Limits
 
-All four families of the published `examples/spreadsheet/research.py` are used: normalized profit, weighted combination, debt rollover, and scenario valuation. Search uses development, and independent evaluation uses validation. The generator, original scorer, and the digest of each input/scoring directory enter the contract.
+All four families of the published `tests/fixtures/spreadsheet/research.py` are used: normalized profit, weighted combination, debt rollover, and scenario valuation. Search uses development, and independent evaluation uses validation. The generator, original scorer, and the digest of each input/scoring directory enter the contract.
 
 These families have been used previously in this project; validation changes the values within the same families and does not represent unknown templates, cross-domain transfer, or official SpreadsheetBench results. Scoring materials are used only by the independent evaluation process; the optimizer does not receive validation inputs, deliveries, or scores.
 

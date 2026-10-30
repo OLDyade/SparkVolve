@@ -7,7 +7,7 @@ import path from 'node:path';
 import os from 'node:os';
 
 const execute = promisify(execFile);
-const example = path.resolve('examples/structured-data');
+const example = path.resolve('tests/fixtures/structured-data');
 type EventRecord = { event_id: string; entity: string; revision: number; action: string; value?: unknown };
 type RequestRecord = { method: string; path: string; status: number; latency_ms: number };
 type PackageRecord = { name: string; version: string };

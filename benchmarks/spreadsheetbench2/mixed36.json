@@ -1,0 +1,285 @@
+{
+  "name": "sb2-mixed36",
+  "seed": "SparkVolve-SB2-family-panel-2026-10-30",
+  "datasetRevision": "5a2215ed4121945ab09d8723df2995602090b042",
+  "archiveSha256": "52699c974c30aced7125f3d12cdaabbbcbba8db804373d7397a5d3bdf68e5b3e",
+  "evaluatorCommit": "a7bdc2d358e052d35a94768e1f487c0d9e9c0011",
+  "upstream": {
+    "Debugging": {
+      "tasks": 100,
+      "families": 10
+    },
+    "Financial_Model": {
+      "tasks": 100,
+      "families": 20
+    },
+    "Template": {
+      "tasks": 97,
+      "families": 97
+    }
+  },
+  "splits": {
+    "development": [
+      {
+        "id": "Debugging-01_07",
+        "category": "Debugging",
+        "upstreamId": "01_07",
+        "family": "72ffafc23a62d47c3ff648dd0f3d63efeb88eae44f399df5ca83159ba42575e9",
+        "inputSha256": "97f867b9624e3496dc8673842aafb951ccc5f45c285b70cc1284b99f38956789"
+      },
+      {
+        "id": "Debugging-03_05",
+        "category": "Debugging",
+        "upstreamId": "03_05",
+        "family": "50434e90dbff2577d4caa2b6ccf92cc36b1f126cf3731e4d2df379ce5105f8bd",
+        "inputSha256": "b154619a3e9d283c3f3f29388854ceedc07b005962c5709b0343519feb1c3aa7"
+      },
+      {
+        "id": "Debugging-01_02",
+        "category": "Debugging",
+        "upstreamId": "01_02",
+        "family": "72ffafc23a62d47c3ff648dd0f3d63efeb88eae44f399df5ca83159ba42575e9",
+        "inputSha256": "6da43f3b6d18b4cfdaf5aafd0bbb55b4537607c8d03a26a7a0eb4b68b68f5aeb"
+      },
+      {
+        "id": "Template-06_08",
+        "category": "Template",
+        "upstreamId": "06_08",
+        "family": "68920af565b6fc3bbf1afb96d89b542df78ea5fdcc4179ca8efc816b46e07176",
+        "inputSha256": "df35d4aa5498819bd8cc9792ad7ae3f5a9d04a21cf9120db889073a3049c785d"
+      },
+      {
+        "id": "Debugging-05_03",
+        "category": "Debugging",
+        "upstreamId": "05_03",
+        "family": "439acb609279df0c950320634adc28214a3db0a0f4ab3784788630ab6458c8b3",
+        "inputSha256": "5d4e004157f4b32649eec9982139fcb36d396829896f836d9cdb420966b4c96f"
+      },
+      {
+        "id": "Financial_Model-03_02",
+        "category": "Financial_Model",
+        "upstreamId": "03_02",
+        "family": "e820b8ba2d587349f6026933bbc73c5fc60bdafac8106d3715f799d6417eb0a2",
+        "inputSha256": "2b97543e8da5ac93c0f4052d010c7663733f943c134a897338f22789400b9a2d"
+      },
+      {
+        "id": "Template-06_13",
+        "category": "Template",
+        "upstreamId": "06_13",
+        "family": "ff8863ae35bed4beeab723b12cf2bec36e8aecb84d47b3b6227ef23d0897366e",
+        "inputSha256": "8bdb5d1c8534dbe94f769595f6cc00b4b3011f6dab486f210f87aa4489751947"
+      },
+      {
+        "id": "Debugging-05_04",
+        "category": "Debugging",
+        "upstreamId": "05_04",
+        "family": "439acb609279df0c950320634adc28214a3db0a0f4ab3784788630ab6458c8b3",
+        "inputSha256": "94673fa292da455ea57c67abf415a436bd5251e5b9c2173b32ae80c4c0608294"
+      },
+      {
+        "id": "Financial_Model-03_03",
+        "category": "Financial_Model",
+        "upstreamId": "03_03",
+        "family": "e820b8ba2d587349f6026933bbc73c5fc60bdafac8106d3715f799d6417eb0a2",
+        "inputSha256": "8b54f0bd5074a28523a236925f96ebc6f5393ae23a8cc39d5705baba2915a791"
+      },
+      {
+        "id": "Debugging-03_08",
+        "category": "Debugging",
+        "upstreamId": "03_08",
+        "family": "50434e90dbff2577d4caa2b6ccf92cc36b1f126cf3731e4d2df379ce5105f8bd",
+        "inputSha256": "63caa28b7b77459beaadb3bbfdbf3e49ebe75005a415ea6c1eaa5df66ab482ab"
+      },
+      {
+        "id": "Financial_Model-15_03",
+        "category": "Financial_Model",
+        "upstreamId": "15_03",
+        "family": "27dcfb17f5441d2ec4a0c0df87ac7836d22f1acc46b05cfe9ccda1b1351cf6dc",
+        "inputSha256": "318eed515474a4e8c0684d3895e49e4726728d1166c2f83ef71b936d32dbf3d7"
+      },
+      {
+        "id": "Financial_Model-15_05",
+        "category": "Financial_Model",
+        "upstreamId": "15_05",
+        "family": "27dcfb17f5441d2ec4a0c0df87ac7836d22f1acc46b05cfe9ccda1b1351cf6dc",
+        "inputSha256": "87f8a4bc2cde12e55bd32734c94a0a9b78c1a000c70026c0d70a8f2b8d1bb895"
+      }
+    ],
+    "validation": [
+      {
+        "id": "Financial_Model-11_04",
+        "category": "Financial_Model",
+        "upstreamId": "11_04",
+        "family": "bafd38b84a909dbbf62e86578362e6278036f5d8ce54699378a2d1fc90a2096f",
+        "inputSha256": "ebdab1146fed51bd38265117a4b323ba9970142b7b6ba6b3830e2e7641c4c8e8"
+      },
+      {
+        "id": "Financial_Model-08_01",
+        "category": "Financial_Model",
+        "upstreamId": "08_01",
+        "family": "10e99ee280ca444767e55efd4142d28be2acdc526b8dabeffb5be0d496fd5ed5",
+        "inputSha256": "6d742f67e84fcc3d92d1dec6b285417093b99dec1469686f1c6813aee9ad2a0a"
+      },
+      {
+        "id": "Debugging-10_03",
+        "category": "Debugging",
+        "upstreamId": "10_03",
+        "family": "76a80768379b691dd17f8b83708b035fd0f4eaed879c68d288d1d7ca1b0e8593",
+        "inputSha256": "98876c941a68149d80e3d6f3f556f47d7e0e5b4a061734ba52b3dbc267a31ffa"
+      },
+      {
+        "id": "Debugging-02_04",
+        "category": "Debugging",
+        "upstreamId": "02_04",
+        "family": "ed47d73d13e0a4fe9414a8032738ed5b0ba67aa58da82bd1f5e961459b4734f3",
+        "inputSha256": "9301e4caf7d8f0edd5d77a1f5690cec68d7137a7937c81cc813cf2a60d523904"
+      },
+      {
+        "id": "Debugging-10_04",
+        "category": "Debugging",
+        "upstreamId": "10_04",
+        "family": "76a80768379b691dd17f8b83708b035fd0f4eaed879c68d288d1d7ca1b0e8593",
+        "inputSha256": "e4edbd9397e3bff316960d8cc7c871d37fcbeeb7213f9a643d10b574c2480ec8"
+      },
+      {
+        "id": "Template-06_04",
+        "category": "Template",
+        "upstreamId": "06_04",
+        "family": "833c7ba8df6301c0462e7cfcd1bbb46df37dd95ff1d6dcb17c01a30e1dd679a8",
+        "inputSha256": "d0abee23fd9f0f27e4efb27194dcee5c1258bf63a9800cd64edf96f5b2629cb5"
+      },
+      {
+        "id": "Financial_Model-11_02",
+        "category": "Financial_Model",
+        "upstreamId": "11_02",
+        "family": "bafd38b84a909dbbf62e86578362e6278036f5d8ce54699378a2d1fc90a2096f",
+        "inputSha256": "2102c51421d746b2a090e83b46e37c927b6a839d82d3df75b39f8c5d058b2105"
+      },
+      {
+        "id": "Debugging-02_05",
+        "category": "Debugging",
+        "upstreamId": "02_05",
+        "family": "ed47d73d13e0a4fe9414a8032738ed5b0ba67aa58da82bd1f5e961459b4734f3",
+        "inputSha256": "23a52e0fbd9781d8916d38a5354f04c227762c94bc612774a5fa6d806cadd8fb"
+      },
+      {
+        "id": "Financial_Model-08_04",
+        "category": "Financial_Model",
+        "upstreamId": "08_04",
+        "family": "10e99ee280ca444767e55efd4142d28be2acdc526b8dabeffb5be0d496fd5ed5",
+        "inputSha256": "4201821791e065ce9b7e79a6938da5386c4d0b11f51cd018bec824ad02ee28d6"
+      },
+      {
+        "id": "Template-07_03",
+        "category": "Template",
+        "upstreamId": "07_03",
+        "family": "2a93fa5403bf816c5b2f43e7e9b8eda5332b32dab2068cb0bdf813298e312898",
+        "inputSha256": "ab0f393f2dea5908de9ee815a6584f7707f4da676fcdbfa6245843e13b7d664c"
+      }
+    ],
+    "test": [
+      {
+        "id": "Financial_Model-19_01",
+        "category": "Financial_Model",
+        "upstreamId": "19_01",
+        "family": "493ea7c99fd871e398033fab05feb1f67b856be983cf85e10bccf3a0d0dc2440",
+        "inputSha256": "9e0312053e3887bdcc8ea5c2053de96e988e97784af29788caa4f6c62727f153"
+      },
+      {
+        "id": "Financial_Model-19_05",
+        "category": "Financial_Model",
+        "upstreamId": "19_05",
+        "family": "493ea7c99fd871e398033fab05feb1f67b856be983cf85e10bccf3a0d0dc2440",
+        "inputSha256": "9585257343f755d8eba5fbdfe556e9ce4484b73349286a3ec03620bd041037bc"
+      },
+      {
+        "id": "Financial_Model-17_03",
+        "category": "Financial_Model",
+        "upstreamId": "17_03",
+        "family": "9c440dddb0e4a8a451c8c14251058bd5d2091392804780e66a1a815007f95a31",
+        "inputSha256": "42423e4490b408506e123f1954e76ed2bff6989c2621b739fa0d2a24afd02e34"
+      },
+      {
+        "id": "Template-06_21",
+        "category": "Template",
+        "upstreamId": "06_21",
+        "family": "4ce6e4049cd9f5d36ff603b346c45deeb73eb89634a4d69f4f56d1cb611f3590",
+        "inputSha256": "876ab2c4ad8abd6cdea2483f5efa881aafbefd503a7857460cc847b22a7fca3e"
+      },
+      {
+        "id": "Template-16_07",
+        "category": "Template",
+        "upstreamId": "16_07",
+        "family": "600d5244769ec354c3175ae8960dcfdde5d76669cd3f7179d2b8826ba1121f11",
+        "inputSha256": "d3a7de73ce86d28dccf1879795495172a906f0268188217b3e7d99f16da47d1c"
+      },
+      {
+        "id": "Template-03_02",
+        "category": "Template",
+        "upstreamId": "03_02",
+        "family": "f121210ae9bb2af6195ca2c09c9c1226db3367ed8016f2ee85d8c435221a07e9",
+        "inputSha256": "6eb9ea3e1d37e19c18766544164efd7fca3d1f39e8f0e1d73a78125346a5544f"
+      },
+      {
+        "id": "Debugging-08_09",
+        "category": "Debugging",
+        "upstreamId": "08_09",
+        "family": "f884e030bc0fb2f61965d997fa09b5cf86df277b36ba0c153028f1b50eb4a18a",
+        "inputSha256": "25c2d10b4b5fd177be174a6bbd38aa8da5d1e1a129b402634859d15c6c7902aa"
+      },
+      {
+        "id": "Template-10_01",
+        "category": "Template",
+        "upstreamId": "10_01",
+        "family": "ef8dfabcfa590377d49ee0ffb68b514276f21ff84f0971857d42ab03f196f861",
+        "inputSha256": "910f1f4d69f60d937ac058235e2fb9d2da0b8a5c7c6cf19d1fd4a3baec407153"
+      },
+      {
+        "id": "Debugging-07_09",
+        "category": "Debugging",
+        "upstreamId": "07_09",
+        "family": "079806c7c2a9d18c4e4dcba929e125ccf7371c75b222ff8e49eca9a69722a7de",
+        "inputSha256": "25b8f573c5634f265ab601bf96ea18c788649536aa94fb2057bdd5c86f7c97e6"
+      },
+      {
+        "id": "Debugging-04_07",
+        "category": "Debugging",
+        "upstreamId": "04_07",
+        "family": "643e646b8cedfb0d83c4a38d51a5a8c3a443102fadc51cacb8726666c631ba02",
+        "inputSha256": "d148f7eefd3b1578aaf1b39dc3f34dbf2628719a68e9f956d7b3ca49c245c886"
+      },
+      {
+        "id": "Debugging-07_08",
+        "category": "Debugging",
+        "upstreamId": "07_08",
+        "family": "079806c7c2a9d18c4e4dcba929e125ccf7371c75b222ff8e49eca9a69722a7de",
+        "inputSha256": "29654241c1ef12a3b3de4348b8d01b1eee314c23123c3fd6b54201eca04ce2aa"
+      },
+      {
+        "id": "Debugging-08_10",
+        "category": "Debugging",
+        "upstreamId": "08_10",
+        "family": "f884e030bc0fb2f61965d997fa09b5cf86df277b36ba0c153028f1b50eb4a18a",
+        "inputSha256": "fbd145ce47cd91b345cf904e6ea398077fcb8275e7e0be88b9da1728803480a0"
+      },
+      {
+        "id": "Debugging-04_06",
+        "category": "Debugging",
+        "upstreamId": "04_06",
+        "family": "643e646b8cedfb0d83c4a38d51a5a8c3a443102fadc51cacb8726666c631ba02",
+        "inputSha256": "5b44c960fb8a29619c1c5305cbf7c7a361f7b3582832a58307710d7e34083f99"
+      },
+      {
+        "id": "Financial_Model-17_01",
+        "category": "Financial_Model",
+        "upstreamId": "17_01",
+        "family": "9c440dddb0e4a8a451c8c14251058bd5d2091392804780e66a1a815007f95a31",
+        "inputSha256": "9866d30fe846fa57f6246123010b7799398f955a3d644c9189ef380c9c3e916a"
+      }
+    ]
+  },
+  "smoke": ["Debugging-01_07", "Debugging-03_05", "Financial_Model-03_02", "Template-06_08"],
+  "selection": "Fixed SHA-256 ranking of workbook-family path, then task ID. No scores or answer contents.",
+  "exposure": "Public benchmark previously used by project authors. Splits are isolated for this registered study; historical pristine held-out status is not claimed.",
+  "metric": "Official per-task Modif, full registered denominator. Official Accuracy and Regression reported separately."
+}

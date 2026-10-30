@@ -18,7 +18,7 @@ test('mutation guidance is literal native prompt text, including formula-templat
       new URL('../../scripts/verify-feedback-study.mjs', import.meta.url).href
     );
     const seed = path.join(parent, 'seed');
-    await prepareMutationSeed(path.join(root, 'examples/spreadsheet/seed'), seed);
+    await prepareMutationSeed(path.join(root, 'tests/fixtures/spreadsheet/seed'), seed);
     const literal = 'Templates use {{C}}, {{R+1}} and {{unknown_variable}} as ordinary examples.';
     await writeFile(path.join(seed, 'guidance.md'), literal);
     await ctx.plugin(SystemPrompt);

@@ -29,8 +29,8 @@ Repository evidence:
 [registration](../experiments/2026-10-29-closure-study-registration.md),
 [study driver](../../scripts/verify-feedback-study.mjs),
 [controller](../../src/controller.ts),
-[spreadsheet preparation](../../examples/spreadsheet/prepare.mjs),
-[structured-data preparation](../../examples/structured-data/prepare.mjs).
+[spreadsheet preparation](../../tests/fixtures/spreadsheet/prepare.mjs),
+[structured-data preparation](../../tests/fixtures/structured-data/prepare.mjs).
 
 ## One experiment, a complete evidence chain
 

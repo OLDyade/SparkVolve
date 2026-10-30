@@ -1,81 +1,82 @@
 # Launch a Real Evolution Run
 
-[Back to README](../README.md#quick-start) · [Bring your tasks](domain-adapters.md) · [Experiment protocols](optimizer-studies.md)
-
-The default setup uses the official DeepSeek API and three public synthetic structured-data tasks: event merging, request-log aggregation, and dependency-manifest matching. Replace the task adapter to use the same evolution controller in another domain.
-
-**Explore first:** the [online experiment tour](https://oldyade.github.io/SparkVolve/) shows real source changes, per-task results and original-package identity without installing anything or calling a model.
+[README](../README.md#quick-start) · [Benchmark protocol](../benchmarks/spreadsheetbench2/README.md) · [Add a domain](domain-adapters.md)
 
 ## Preparation
 
-Install Node.js 24.16.0 or later, npm, Python 3, and Docker. Start the Docker daemon. The host must support Unix directory file descriptor operations. The default runtime is Docker's runc; existing gVisor deployments can select `--runtime runsc`. See [runtime isolation](isolation.md).
+Use Node.js 24.16+, npm, Python 3.11+, Docker and an official DeepSeek API key. Store `DEEPSEEK_API_KEY` in a private environment file outside the repository, with permissions `0600`.
 
-1. Clone `https://github.com/OLDyade/SparkVolve.git` and enter the repository directory.
-2. Set `DEEPSEEK_API_KEY` in a private environment file outside the repository and set its permissions to `0600`. You can also set the variable directly in your shell environment.
-3. Set `SPARKVOLVE_EGRESS_POOL` to a reserved private IPv4 CIDR that does not overlap your host, LAN, or VPN networks. Each model execution uses two `/29` subnets. The default three executors plus one optimizer require at least a `/26` pool. See [network configuration](isolation.md).
+Set `SPARKVOLVE_EGRESS_POOL` to a reserved private IPv4 CIDR outside your host, LAN and VPN networks. Four executor slots plus G require ten /29 leases; three concurrent study arms share a larger pool. Use at least /24 for the comparison. See [isolation](isolation.md).
 
 ```bash
 npm ci
 npm start -- --env-file /absolute/private/deepseek.env
 ```
 
-The entry point uses `deepseek-flash` through the official Anthropic-compatible API. Only the trusted egress proxy receives credentials. See [DeepSeek configuration](../examples/deepseek/README.md). Real model calls consume your account quota.
+The default launches one open-plugin evolution chain on the registered **SpreadsheetBench 2 mixed36** panel. Add `--study` for the three mutation-space comparison. Both use the official DeepSeek Provider and 600 seconds per task. Model, image, task IDs, private grader identities, capability catalog and selection rules freeze before inference.
 
-### Time, resources and cost
-
-The first launch downloads dependencies and builds container images, then runs the optimizer and the task executions declared by the recipe. It can take substantially longer than one 600-second task budget. Keep Docker running with enough capacity for the recipe's declared concurrency; image size and peak memory depend on the domain adapter. Container-build logs, phase timing and model usage are retained in the run directory. API cost depends on your provider, task lengths and search budget; the online tour makes no API calls. No background evolution starts when you only install dependencies.
-
-## What the command does
+## What runs
 
 ```text
-Task recipe + model Provider
-       │
-       ▼
-Build runtime image → discover DNS / host addresses → freeze search / validation / reuse tasks
-       │
-       ▼
-Run H0 → discover frozen capabilities → resolve / adapt / author → native composition → independent scoring
-       │
-       ▼
-Freeze H* from search scores → independently assess H0 and H* on validation tasks
-       │
-       ▼
-Export the original Bundle → native install into fresh Profiles → execute and grade reuse tasks
+Pinned community data + official evaluator + competent H0
+                          |
+                Development: 12 tasks
+                          |
+        G chooses a parent and a capability change
+           Discover -> Reuse / Adapt / Author -> Compose
+                          |
+                 Build + native assembly QA
+                          |
+                   Fixed 4-task screen
+                 /                     \
+          below H0                    at least H0
+         retain evidence           run remaining 8 once
+                                         |
+                           select by full 12-task score
+                                         |
+                      independent 10-task validation
+                                         |
+                             freeze validation winner
+                                         |
+                  original archives -> clean DSH Profiles
+                                         |
+                       H0 vs winner on 14 test tasks
+                                         |
+                        Bundle + Lineage + Evidence
 ```
 
-Each task defaults to 600 seconds, adjustable explicitly with `--task-seconds`; the optimizer's total budget is computed from the full plan. Addresses and DNS are read from the actual Docker deployment, and `--dns` can explicitly specify a deployment-approved resolver. Runtime ports are allocated automatically and persisted.
+H0 runs all 12 development tasks. Three subsequent candidates are available per search. G chooses ancestry and mutation size; there is no required action checklist. An early stop must include a reason. A failed screen leaves eight tasks explicitly unobserved and cannot compete on a full-panel mean.
 
-Output is located in `.evolution/<recipe>-<time>/`:
+| Mode | Search | Validation | Original-package test | Maximum task executions |
+|---|---:|---:|---:|---:|
+| Default | 4 candidates × 12 | H0 + selection × 10 | H0 + winner × 14 | 96 |
+| `--study` | 3 arms × 4 × 12 | H0 + 3 selections × 10 | H0 + winner × 14 | 212 |
 
-| Artifact | Content |
+Screening and identical-package reuse reduce actual execution. Build, native QA, optimizer inference and optional behavioral probes are additional resources. Time and tokens are reported. The maximum is not a promise to spend every slot.
+
+The first launch builds an image with LibreOffice and downloads the pinned upstream archive. Workbooks and private scoring materials remain under the ignored run directory. No dataset files are committed or bundled. Model calls use your account quota. `--prepare-only` performs acquisition and registration without model inference.
+
+## Follow the evidence
+
+Each run has a new `.evolution/<benchmark>-<time>/` directory:
+
+| Path | Evidence |
 |---|---|
-| `startup.json` | Startup phase, configuration identity, and failure reasons |
-| `registration.json`, `*-data/spec.json` | All three frozen task splits, model and runtime identities, selection rule |
-| `search-data/dataset/capabilities/` | Frozen official, community, local and authorized research capability catalog |
-| `search/resolutions/` | Exact dependency acquisition, native installation logs and source provenance |
-| `search/` | Event ledger, candidates, actual assembly inventories, trajectories and per-task deliverables |
-| `report.json` | Actual scores, verdicts, and model usage |
-| `validation/comparison.json` | Fresh independent H0/H* scores and paired differences |
-| `installed/acceptance.json` | Original-package installation, per-task execution, grading, identity checks and usage |
-| `capability/bundle.tgz` | Raw build package of the selected candidate |
-| `command-logs/` | Per-phase logs, preserving original failures |
+| `registration.json` | Frozen sources, models, split identities, budget and selection rule |
+| `startup.json` | Current phase, original faults and delivery results |
+| `search/` or `study/jobs/` | Native G/H traces, candidate sources, actual ancestry and scores |
+| `study-report.json` | Three-arm results, failures and measured model usage |
+| `validation-selection.json` | Independent validation outcomes and the pre-test decision |
+| `delivery/<arm>/capability/` | Unchanged archive, source, lineage and capability card |
+| `delivery/<arm>/installed/acceptance.json` | Original-package installation and independently scored test |
+| `command-logs/` | Exact stage outcomes; failed attempts remain intact |
 
-Startup prints a command for watching events. Failures report an error and preserve the run directory; use the [native CLI](events.md) to inspect or recover the original controller. The entry point never resamples failed tasks. The selected candidate may still be H0: completing the loop does not establish a quality gain. Validation and reuse scores never change the selected version. Default synthetic splits vary inputs within the same task families; they do not establish cross-domain generalization. Task counts, concurrency and deadlines come from the recipe's contract. `SPARKVOLVE_EGRESS_POOL` supplies the network pool; `--pool` explicitly overrides it.
+Candidates are selected on full-development Modif. Validation chooses the final frozen package; H0 wins ties, followed by the registered arm order. Test scores never change that selection. Identical packages are tested once. No automatic task retry or score-driven replacement occurs.
 
-## Bring your tasks
+Family-separated splits prevent workbook variants crossing partitions in this study. This public benchmark has historical project exposure; pristine unseen-data claims are not made. One search per arm gives a pilot comparison, not a statistical superiority claim.
 
-Pass `--recipe path/to/recipe.json` to select another domain. Each split's generation command runs inside the image, with the recipe directory mounted read-only at `/recipe` and its own output directory at `/workspace/dataset`. The preparation script receives the dataset, image, model, contract output path, isolation settings, Provider directory, and per-task time budget. The launcher derives validation-only contracts for the two independent splits. Identical task input digests across splits or differences in frozen model, runtime, scoring or isolation settings are rejected before inference. These checks establish separation and identity, not statistical independence or hidden-data provenance.
+## Replace the benchmark
 
-| Recipe Field | Purpose |
-|---|---|
-| `name` | Run name |
-| `dockerfile` | Domain dependency image; `null` uses the generic runtime image |
-| `generate` | Explicit `search`, `validation`, `reuse` command argv; no shell concatenation |
-| `prepare` | Domain contract preparation script |
-| `seed` | Starting capability Bundle |
-| `preflight` | Optional domain runtime environment validation script |
-| `capabilities` | Catalog configuration path and acquisition budget; `null` disables external acquisition |
+Pass `--benchmark path/to/adapter.mjs`. The module exports a `benchmark` descriptor and `prepare(context)`, returning frozen development, validation and test contracts. The shared launcher has no spreadsheet-specific execution branch. See [the adapter contract](domain-adapters.md).
 
-Capability selection uses the [native discovery and resolution flow](capability-evolution.md). The example market is explicitly configured and snapshotted once; its packages are not preloaded into H0. All file paths are relative to the directory containing the recipe. See the [structured data recipe](../examples/structured-data/recipe.json) and the [spreadsheet recipe](../examples/spreadsheet/recipe.json). The Excel example only requires adding `--recipe examples/spreadsheet/recipe.json`, which automatically installs the required LibreOffice and Python dependencies. You can use `--image sha256:...` to specify an already-built corresponding domain image, or `--provider` to select another native Provider configuration; the model will not be switched automatically.
-
-Use the public examples to try autonomous plugin modification and artifact delivery. For formal research, supply your own task manifest, independent validation set, and repeated-search protocol. See [domain adapters](domain-adapters.md).
+Other options: `--root` selects a new evidence directory, `--image sha256:...` uses an exact matching runtime image, `--provider` changes the explicit Provider configuration, `--task-seconds` changes the task deadline, and `--runtime` / `--dns` configure your deployment. Model configuration never silently changes.

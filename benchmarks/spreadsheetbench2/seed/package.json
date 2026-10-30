@@ -1,0 +1,29 @@
+{
+  "name": "@sparkvolve/spreadsheet-native-engine",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "node --check index.mjs"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.4",
+    "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.4"
+  },
+  "files": [
+    "index.mjs",
+    "workbook.py",
+    "guidance.md",
+    "cordis.patch.yml",
+    "LICENSE",
+    "PROVENANCE.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "overrides": {
+    "zod": "4.6.7"
+  },
+  "license": "Apache-2.0"
+}

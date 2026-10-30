@@ -2,10 +2,10 @@ import { mkdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { Docker } from '../../dist/docker.js';
-import { Image, Isolation, Model } from '../../dist/contracts.js';
-import { atomicJSON, treeDigest } from '../../dist/artifacts.js';
-import { bundleLayers } from '../../dist/bundle-composition.js';
+import { Docker } from '../../../dist/docker.js';
+import { Image, Isolation, Model } from '../../../dist/contracts.js';
+import { atomicJSON, treeDigest } from '../../../dist/artifacts.js';
+import { bundleLayers } from '../../../dist/bundle-composition.js';
 
 const [image, isolationFile, modelFile, environmentDir, bundleDir, outputDir] = process.argv.slice(2);
 if (!image || !isolationFile || !modelFile || !environmentDir || !bundleDir || !outputDir)

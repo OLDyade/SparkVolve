@@ -83,7 +83,7 @@ const cli = (label, args) => node(label, ['dist/cli.js', ...args]);
 const image = values.image;
 const exampleMount = [
   '--mount',
-  `type=bind,src=${path.join(checkout, 'examples/spreadsheet')},dst=/example,readonly`,
+  `type=bind,src=${path.join(checkout, 'tests/fixtures/spreadsheet')},dst=/example,readonly`,
 ];
 const workspaceMount = ['--mount', `type=bind,src=${root},dst=/workspace`];
 const python = (label, script, ...args) =>
@@ -110,14 +110,14 @@ try {
   ]);
   await writeFile(path.join(root, 'isolation.json'), isolation, { flag: 'wx' });
   await node('image-check', [
-    'examples/spreadsheet/verify-image.mjs',
+    'tests/fixtures/spreadsheet/verify-image.mjs',
     image,
     path.join(root, 'isolation.json'),
     path.join(root, 'image-check'),
   ]);
   await python('public-inputs', 'generate.py', '/workspace/dataset');
   await node('contract', [
-    'examples/spreadsheet/prepare.mjs',
+    'tests/fixtures/spreadsheet/prepare.mjs',
     path.join(root, 'dataset'),
     image,
     'examples/venus/model.json',
@@ -150,7 +150,7 @@ try {
     '--dataset',
     path.join(root, 'dataset'),
     '--seed',
-    'examples/spreadsheet/seed',
+    'tests/fixtures/spreadsheet/seed',
   ]);
   await cli('evolve', [
     'evolve',
@@ -184,7 +184,7 @@ try {
     await python('validation-inputs', 'research.py', '/workspace/validation-inputs', 'validation');
     const plan = path.join(root, 'validation-plan');
     await node('validation-plan', [
-      'examples/spreadsheet/validation.mjs',
+      'tests/fixtures/spreadsheet/validation.mjs',
       search,
       selected.digest,
       path.join(root, 'validation-inputs'),

@@ -10,6 +10,9 @@ test('the tour exposes real phase results, complete diffs and downloadable prove
     if (new URL(request.url()).origin !== 'http://127.0.0.1:4198') externalRequests.push(request.url());
   });
   await page.goto('/');
+  await page
+    .getByText('Historical engineering acceptance · synthetic fixtures · October 2026', { exact: true })
+    .click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Evolve the Harness,\s*Not the Model\./);
   await expect(page.locator('tfoot')).toContainText('56.25%');
   await page.getByRole('radio', { name: 'Independent validation', exact: true }).check();
@@ -37,6 +40,9 @@ for (const width of [320, 390, 768, 1440]) {
   }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
+    await page
+      .getByText('Historical engineering acceptance · synthetic fixtures · October 2026', { exact: true })
+      .click();
     await page.locator('.source-diff summary').click();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const scan = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
@@ -49,6 +55,9 @@ for (const width of [320, 390, 768, 1440]) {
 test('narrow layouts accommodate wider system-font metrics', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto('/');
+  await page
+    .getByText('Historical engineering acceptance · synthetic fixtures · October 2026', { exact: true })
+    .click();
   await page.addStyleTag({ content: 'body { font-family: Verdana, sans-serif; }' });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
@@ -57,6 +66,9 @@ test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
   test('the recorded search results and evidence links remain readable', async ({ page }) => {
     await page.goto('/');
+    await page
+      .getByText('Historical engineering acceptance · synthetic fixtures · October 2026', { exact: true })
+      .click();
     await expect(page.locator('tfoot')).toContainText('56.25%');
     await expect(
       page.getByText(/Phase switching requires JavaScript\. All phases are available/),

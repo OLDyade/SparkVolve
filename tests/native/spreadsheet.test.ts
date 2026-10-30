@@ -12,7 +12,7 @@ test(
   async () => {
     // Native imports resolve through this repository, as packaged candidate imports do in the image.
     const directory = await mkdtemp(path.resolve('node_modules/.spreadsheet-composition-test-'));
-    const seed = path.resolve('examples/spreadsheet/seed/index.mjs');
+    const seed = path.resolve('tests/fixtures/spreadsheet/seed/index.mjs');
     const patch = path.join(directory, 'candidate.yml');
     const fixture = { id: 'fixture', name: path.resolve('tests/native/fixture-provider.mjs') };
     const run = async (label: string) =>

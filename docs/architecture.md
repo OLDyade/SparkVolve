@@ -93,7 +93,7 @@ The unit is the DSH adapter stream attempt; HTTP retries internal to the vendor 
 
 The input directory and scoring image form the task adaptation protocol: `/input` and `/delivery` are read-only, `/evaluation` is visible only to the scorer, and `/workspace/result.json` outputs a unified Grade. The scoring program may reuse a legitimately approved official Evaluator and cannot be modified by the optimizer.
 
-`examples/spreadsheet` provides real XLSX, native read/write tools, independent LibreOffice recomputation and public synthetic business acceptance. It is used for installation and closed-loop testing; it has not migrated in historical private task sets, official answers, Jev code or the old controller.
+`tests/fixtures/spreadsheet` provides real XLSX, native read/write tools, independent LibreOffice recomputation and public synthetic business acceptance. It is used for installation and closed-loop testing; it has not migrated in historical private task sets, official answers, Jev code or the old controller.
 
 ## The Optimizer and Artifacts Are Also Managed as Plugins
 

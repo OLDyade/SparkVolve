@@ -30,8 +30,30 @@ Scoring output:
 
 `feedback` is fed back to the optimizer; the adapter should specify the scope that may be made public and must not return unauthorized answers. `metrics` reports auxiliary metrics separately; only metrics explicitly declared in [constraints](constraints.md) before the experiment participate in constraint adjudication, and candidates that satisfy the constraints are still strictly ranked by the primary score. Missing constraint observations are not imputed. Abnormal exits are scoring faults and may be explicitly re-scored after delivery is preserved; silently converting service failures into valid business scores is prohibited.
 
-Both ready-made examples explicitly use `constraints: []`, following the default policy of ranking by primary correctness and reporting auxiliary metrics. Domain QA checks tool operational semantics, the scorer computes business results, and additional result constraints are chosen by the researcher before the experiment; the three bear responsibility separately. Semantics required by the task itself, such as deduplication, should be covered by the scorer and must not be penalized again to add a threshold. When there are genuinely inviolable domain requirements, declare the corresponding observations and constraints in a new contract; do not modify old experiments, and do not hard-code retention, latency, or cost thresholds in the framework.
+The community benchmark adapter explicitly use `constraints: []`, following the default policy of ranking by primary correctness and reporting auxiliary metrics. Domain QA checks tool operational semantics, the scorer computes business results, and additional result constraints are chosen by the researcher before the experiment; the three bear responsibility separately. Semantics required by the task itself, such as deduplication, should be covered by the scorer and must not be penalized again to add a threshold. When there are genuinely inviolable domain requirements, declare the corresponding observations and constraints in a new contract; do not modify old experiments, and do not hard-code retention, latency, or cost thresholds in the framework.
 
-Ready-made examples: [`examples/spreadsheet`](../examples/spreadsheet). `generate.py` provides a three-task product pipeline acceptance; `research.py` provides four categories of public business tasks and development / validation inputs with different values. Both are synthetic data from this project and cannot replace official benchmark results.
+## Community benchmark modules
 
-The second domain [`examples/structured-data`](../examples/structured-data) has completed real-model acceptance reusing the same controller, optimizer, contract, and build, covering event merging, log aggregation, and manifest correlation; it does not depend on Excel. The `data_read → data_write` call after native installation has also been verified. [Integration command](structured-data.md) · [Experiment results and negative results](acceptance-structured-data.md).
+The default adapter is [SpreadsheetBench 2](../benchmarks/spreadsheetbench2/README.md). Replace it with `npm start -- --benchmark path/to/index.mjs` without changing the controller.
+
+Export `benchmark` with a unique name, Dockerfile, seed source and registered mutation spaces, plus `async prepare({root, inputs, image, isolation, model, provider, method, run, taskSeconds})`. Return:
+
+```js
+{
+  splits: {
+    development: {specification, dataset: {directory, digest}},
+    validation: {specification, dataset: {directory, digest}},
+    test: {specification, dataset: {directory, digest}}
+  },
+  provenance,
+  boundary
+}
+```
+
+Paths are relative to the trusted `inputs` directory. Specifications share the frozen model, runtime, evaluator, primary metric and isolation contract. The loader verifies dataset digests and input separation before inference. Group related tasks by their underlying source family; record overlap with prior public experiments explicitly.
+
+Optional `hostSearchProtocol.screening` selects a fixed subset of development task IDs and a minimum mean-score delta against H0 on exactly those tasks. H0 runs the complete development set. A screened-out candidate has no full-panel score; a passing candidate executes only its remaining tasks. This screen requires full authorized development feedback, has no access to validation or test, and cannot change during a search.
+
+The startup driver pre-registers the mutation spaces, freezes selected candidates, selects against independent validation with H0 winning ties, then installs the original H0 and selected archives for fresh test execution. Test outcomes never select or mutate a candidate.
+
+Historical synthetic cases remain in `tests/fixtures` for deterministic regression testing. Their [archived observations](acceptance-structured-data.md) document engineering behavior; they are excluded from the community benchmark and the current Quick Start.

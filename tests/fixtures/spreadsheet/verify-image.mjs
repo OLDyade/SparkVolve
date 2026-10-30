@@ -1,8 +1,8 @@
 import { mkdir, cp, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { Docker } from '../../dist/docker.js';
-import { Isolation } from '../../dist/contracts.js';
+import { Docker } from '../../../dist/docker.js';
+import { Isolation } from '../../../dist/contracts.js';
 
 const [image, isolationFile, output] = process.argv.slice(2);
 if (!image || !isolationFile || !output)
