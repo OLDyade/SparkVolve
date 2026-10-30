@@ -146,8 +146,10 @@ export async function experimentReport(root: string, store: Store) {
           ? store.decision(candidate.digest)
           : null,
         executionElapsedMsReported: selected.reduce((sum, run) => sum + (run.executionElapsedMs ?? 0), 0),
-        missingExecutionDurations: selected.filter((run) => run.executionElapsedMs === null).length,
-        usage: sumUsage(selected.map((run) => run.usage)),
+        missingExecutionDurations: selected.filter(
+          (run) => run.phase !== 'screened_out' && run.executionElapsedMs === null,
+        ).length,
+        usage: sumUsage(selected.filter((run) => run.phase !== 'screened_out').map((run) => run.usage)),
         samples: selected,
       };
     }),
@@ -156,13 +158,17 @@ export async function experimentReport(root: string, store: Store) {
       accounting: optimizerAccounting,
       usage: sumUsage(optimizer.map((e) => e.usage)),
     },
-    totalUsage: sumUsage([...samples.map((run) => run.usage), ...optimizer.map((e) => e.usage)]),
+    totalUsage: sumUsage([
+      ...samples.filter((run) => run.phase !== 'screened_out').map((run) => run.usage),
+      ...optimizer.map((e) => e.usage),
+    ]),
     monetaryCost: null,
     lastEvent: events.at(-1)?.sequence ?? 0,
     boundary:
       'Full-denominator descriptive results. QA/build failures consume candidate budget but have no task score. ' +
       'Usage is recomputed from durable DSH adapter stream ledgers; hidden provider retries and prices are unknown. ' +
       'Missing ledgers and missing usage are explicit; reported totals are partial when complete=false. ' +
+      'Screened-out tasks were never launched and require no usage ledger; they have no task score. ' +
       'Request durations sum streams and are not wall time. Execution elapsed excludes grading; build/QA time is not token cost. ' +
       'Search selection is not independent validation or causal attribution. No inferred accuracy from optimizer narrative.',
   };

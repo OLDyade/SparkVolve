@@ -17,7 +17,11 @@ import {
 import { buildBundle } from '../dist/build.js';
 import { Docker } from '../dist/docker.js';
 import { validateFrozenArm } from '../dist/validation.js';
-import { FixedOptimizerComparison, studyAllocationCeiling } from '../dist/optimizer-study-contracts.js';
+import {
+  FixedOptimizerComparison,
+  studyAllocationCeiling,
+  studyArmIdentity,
+} from '../dist/optimizer-study-contracts.js';
 import { runLogged } from './verify-feedback-study.mjs';
 import { timeoutSeconds } from '../examples/timeouts.mjs';
 
@@ -81,6 +85,18 @@ export function mutationRegistration(adapter, method, seed, search, assessment) 
     repetitions: 1,
     budget: { concurrentSearches: adapter.mutationSpaces.length },
   });
+}
+
+export function completedComparisonJob(report, arm) {
+  const identity = studyArmIdentity(arm);
+  const matches = report.jobs.filter((job) => job.comparisonArm === identity);
+  assert.equal(matches.length, 1, 'Expected one registered job for comparison arm ' + arm.id);
+  const job = matches[0];
+  assert.ok(
+    job.phase === 'complete' && job.result && job.selectedHarness,
+    'Incomplete comparison arm ' + arm.id + '; original failure retained: ' + (job.error ?? job.phase),
+  );
+  return job;
 }
 
 export function selectValidation(baseline, selections, direction) {
@@ -376,12 +392,9 @@ export async function main(args = process.argv.slice(2)) {
       }
       const report = JSON.parse(await cli('study-report', ['study-report', '--root', studyRoot]));
       await atomicJSON(path.join(root, 'study-report.json'), report);
+      if (dispatchError) throw Error('Study dispatch failed; original report retained: ' + dispatchError);
       for (const arm of study.arms) {
-        const job = report.jobs.find((job) => job.comparisonArm === arm.id);
-        assert.ok(
-          job?.phase === 'complete' && job.result && job.selectedHarness,
-          'Incomplete comparison arm ' + arm.id + '; original failure retained. ' + (dispatchError ?? ''),
-        );
+        const job = completedComparisonJob(report, arm);
         selections.push({
           id: arm.id,
           complete: true,

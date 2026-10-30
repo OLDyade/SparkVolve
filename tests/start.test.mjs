@@ -9,8 +9,10 @@ import {
   registerSplits,
   selectValidation,
   installedComparison,
+  completedComparisonJob,
 } from '../scripts/start.mjs';
 import { treeDigest } from '../dist/artifacts.js';
+import { studyArmIdentity } from '../dist/optimizer-study-contracts.js';
 import { specification } from './fixtures.ts';
 
 test('community panel has fixed category quotas, family-separated splits and an embedded smoke set', async () => {
@@ -125,5 +127,46 @@ test('installed comparison preserves failures, auxiliary metrics and the fixed t
   assert.throws(
     () => installedComparison([baseline, { ...selected, result: { rows: [] } }], 'open-plugins', spec),
     /denominator/,
+  );
+});
+
+test('comparison completion resolves the frozen arm identity and preserves failed-arm causes', () => {
+  const hash = 'a'.repeat(64);
+  const arm = {
+    id: 'open-plugins',
+    method: {
+      source: { directory: 'g/source', digest: hash },
+      artifact: {
+        directory: 'g/artifact',
+        identity: {
+          artifactDigest: hash,
+          bundleDigest: hash,
+          lockDigest: hash,
+          tarballDigest: hash,
+          image: 'sha256:' + hash,
+        },
+      },
+      composition: 'plugins.yml',
+    },
+    hostSearchProtocol: specification().hostSearchProtocol,
+  };
+  const job = {
+    comparisonArm: studyArmIdentity(arm),
+    phase: 'complete',
+    result: { score: 0.7 },
+    selectedHarness: {},
+  };
+  assert.notEqual(job.comparisonArm, arm.id);
+  assert.equal(completedComparisonJob({ jobs: [job] }, arm), job);
+  assert.equal(completedComparisonJob({ jobs: [job] }, { ...arm, id: 'display-label' }), job);
+  assert.throws(
+    () => completedComparisonJob({ jobs: [{ ...job, comparisonArm: arm.id }] }, arm),
+    /one registered job/,
+  );
+  assert.throws(() => completedComparisonJob({ jobs: [job, job] }, arm), /one registered job/);
+  assert.throws(
+    () =>
+      completedComparisonJob({ jobs: [{ ...job, phase: 'failed', error: 'Provider quota exhausted' }] }, arm),
+    /Provider quota exhausted/,
   );
 });

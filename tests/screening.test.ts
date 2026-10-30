@@ -64,3 +64,43 @@ test('screening cannot leak into independent validation or name nonregistered ta
   spec.budget.candidates = 1;
   assert.throws(() => Experiment.parse(spec), /subset/);
 });
+
+test('unlaunched screened remainder has no score and needs no model usage ledger', async () => {
+  const { mkdtemp, mkdir, writeFile, rm } = await import('node:fs/promises');
+  const { default: os } = await import('node:os');
+  const { default: path } = await import('node:path');
+  const { experimentReport } = await import('../src/report.js');
+  const root = await mkdtemp(path.join(os.tmpdir(), 'he-screen-report-'));
+  const { store, child } = setup();
+  try {
+    scored(store, child.digest + '-0', 0.4);
+    store.screen(child.digest);
+    for (const run of store.runs().filter((r) => r.phase === 'scored')) {
+      const trace = path.join(root, 'runs', run.id, 'trace');
+      await mkdir(trace, { recursive: true });
+      await writeFile(
+        path.join(trace, 'requests.jsonl'),
+        [
+          { id: run.id, kind: 'started' },
+          { id: run.id, kind: 'result', durationMs: 5, usage: { inputTokens: 10, outputTokens: 2 } },
+        ]
+          .map((event) => JSON.stringify(event))
+          .join('\n'),
+      );
+    }
+    const report = await experimentReport(root, store);
+    const selected = report.candidates.find((c) => c.digest === child.digest)!;
+    assert.equal(selected.mean, null);
+    assert.equal(selected.complete, false);
+    assert.equal(selected.screenedOutRuns, 1);
+    assert.equal(selected.missingExecutionDurations, 1);
+    assert.equal(selected.usage.ledgers, 1);
+    assert.equal(selected.usage.complete, true);
+    assert.equal(report.totalUsage.ledgers, 3);
+    assert.equal(report.totalUsage.unavailableLedgers, 0);
+    assert.equal(report.totalUsage.complete, true);
+  } finally {
+    store.close();
+    await rm(root, { recursive: true, force: true });
+  }
+});

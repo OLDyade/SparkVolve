@@ -33,8 +33,9 @@ export async function allocateNetwork(
   persist: (subnet: string) => Promise<void>,
 ): Promise<void> {
   const operation = allocation.then(async () => {
+    const contested: string[] = [];
     for (let attempt = 0; attempt < poolCapacity(pool); attempt++) {
-      const subnet = availableSubnets(pool, await occupiedSubnets())[0];
+      const subnet = availableSubnets(pool, [...(await occupiedSubnets()), ...contested])[0];
       if (!subnet) throw Error(`Egress address pool exhausted: ${pool}`);
       await persist(subnet);
       try {
@@ -43,12 +44,11 @@ export async function allocateNetwork(
       } catch (error) {
         const names = (await command('docker', ['network', 'ls', '--format', '{{.Name}}'])).split('\n');
         if (names.includes(name)) return; // Lost acknowledgement: caller verifies the original identity.
-        // Retry only an observed IPAM collision before any task launch; all other errors propagate.
-        if (
-          !String(error).includes('Pool overlaps with other one on this address space') ||
-          availableSubnets(subnet, await occupiedSubnets()).length
-        )
-          throw error;
+        // IPAM reserves before Docker publishes the network. An explicit overlap is
+        // authoritative even while network ls/inspect cannot see the winning create.
+        // Try each available subnet at most once; unrelated daemon errors propagate.
+        if (!String(error).includes('Pool overlaps with other one on this address space')) throw error;
+        contested.push(subnet);
       }
     }
     throw Error(`Egress pool allocation contention exhausted: ${pool}`);
