@@ -103,7 +103,7 @@
     "pnpm": "12.15.0",
     "prettier": "3.9.10",
     "remark-parse": "11.0.0",
-    "tsx": "4.23.0",
+    "tsx": "4.23.15",
     "typescript": "7.0.2",
     "unified": "11.0.5",
     "unist-util-visit": "5.2.0"
