@@ -389,8 +389,32 @@ export async function main(args = process.argv.slice(2)) {
         ]);
       } catch (error) {
         dispatchError = String(error);
+        // The observer has exited. Reclaim its registered resources; never replay its tasks.
+        try {
+          await runLogged(
+            root,
+            'study-cancel',
+            process.execPath,
+            [path.join(repo, 'dist/cli.js'), 'study-cancel', '--root', studyRoot],
+            { cwd: repo, env, secrets },
+          );
+        } catch (cleanupError) {
+          throw new AggregateError(
+            [error, cleanupError],
+            'Study failed and resource reclamation is incomplete',
+          );
+        }
       }
-      const report = JSON.parse(await cli('study-report', ['study-report', '--root', studyRoot]));
+      // Reporting and cleanup remain available after the execution signal has been cancelled.
+      const report = JSON.parse(
+        await runLogged(
+          root,
+          'study-report',
+          process.execPath,
+          [path.join(repo, 'dist/cli.js'), 'study-report', '--root', studyRoot],
+          { cwd: repo, env, secrets },
+        ),
+      );
       await atomicJSON(path.join(root, 'study-report.json'), report);
       if (dispatchError) throw Error('Study dispatch failed; original report retained: ' + dispatchError);
       for (const arm of study.arms) {

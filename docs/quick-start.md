@@ -54,6 +54,8 @@ H0 runs all 12 development tasks. Three subsequent candidates are available per 
 
 Screening and identical-package reuse reduce actual execution. Build, native QA, optimizer inference and optional behavioral probes are additional resources. Time and tokens are reported. The maximum is not a promise to spend every slot.
 
+Keep the execution host awake for the full run. On macOS, `caffeinate -i npm start -- --env-file /absolute/private/deepseek.env --study` prevents idle sleep while the command runs; keep the laptop lid open. Host suspension can expire controller leases and interrupt live requests. An interrupted study retains its original attempts and reclaims its registered resources without replaying tasks.
+
 The first launch builds an image with LibreOffice and downloads the pinned upstream archive. Workbooks and private scoring materials remain under the ignored run directory. No dataset files are committed or bundled. Model calls use your account quota. `--prepare-only` performs acquisition and registration without model inference.
 
 ## Follow the evidence
