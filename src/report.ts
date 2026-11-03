@@ -85,6 +85,7 @@ export async function experimentReport(root: string, store: Store) {
             : null,
       auxiliary: run.grade?.metrics ?? null,
       error: run.error ?? null,
+      upstreamFailure: run.upstreamFailure ?? [],
       deliveryDigest: run.deliveryDigest ?? null,
       startedAt: run.startedAt ?? null,
       completedAt: run.completedAt ?? null,
@@ -159,6 +160,8 @@ export async function experimentReport(root: string, store: Store) {
         scoredRuns: selected.filter((run) => run.phase === 'scored').length,
         failedRuns: selected.filter((run) => ['execution_failed', 'cancelled'].includes(run.phase)).length,
         complete,
+        upstreamFailedRuns: selected.filter((run) => run.upstreamFailure.length > 0).length,
+        qualityComparisonValid: complete && selected.every((run) => run.upstreamFailure.length === 0),
         mean: complete ? selected.reduce((sum, run) => sum + run.score!, 0) / expected.size : null,
         decision: ['champion', 'rejected'].includes(candidate.phase)
           ? store.decision(candidate.digest)
@@ -183,7 +186,7 @@ export async function experimentReport(root: string, store: Store) {
     monetaryCost: null,
     lastEvent: events.at(-1)?.sequence ?? 0,
     boundary:
-      'Full-denominator descriptive results. QA/build failures consume candidate budget but have no task score. ' +
+      'Full-denominator descriptive results. Structured upstream failures invalidate quality comparison and interrupt search without candidate selection; their failure values remain in the descriptive denominator. QA/build failures consume candidate budget but have no task score. ' +
       'Usage is recomputed from durable DSH adapter stream ledgers; hidden provider retries and prices are unknown. ' +
       'Missing ledgers and missing usage are explicit; reported totals are partial when complete=false. ' +
       'DSH inputTokens counts uncached input only. Cache reads, writes and full-call totals retain adapter-reported values and per-field coverage; absent fields stay null. Monetary cost requires provider billing rates and is not inferred from token totals. ' +

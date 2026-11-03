@@ -412,3 +412,75 @@ for (const score of [0.25, 0.9]) {
     }
   });
 }
+
+test('upstream failure interrupts search without quality selection, new launches or resampling', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'he-upstream-controller-'));
+  const spec = specification();
+  spec.concurrency = 1;
+  for (const task of spec.tasks) {
+    for (const dir of [task.input, task.evaluation])
+      await mkdir(path.join(root, 'dataset', dir), { recursive: true });
+    task.inputDigest = await treeDigest(path.join(root, 'dataset', task.input));
+    task.evaluationDigest = await treeDigest(path.join(root, 'dataset', task.evaluation));
+  }
+  const seed = path.join(root, 'seed');
+  await mkdir(seed);
+  await writeFile(
+    path.join(seed, 'package.json'),
+    JSON.stringify({ name: 'fixture', dsh: { bundle: { patch: './cordis.patch.yml' } } }),
+  );
+  await writeFile(path.join(seed, 'cordis.patch.yml'), '[]');
+  await writeFile(path.join(seed, 'package-lock.json'), '{}');
+  class Unavailable extends LifecycleDriver {
+    override async create(contract: ContainerSpec) {
+      await super.create(contract);
+      if (contract.name.startsWith('he-build-')) return;
+      const trace = contract.mounts.find((m) => m.target === '/trace')!.source;
+      await writeFile(
+        path.join(trace, 'requests.jsonl'),
+        JSON.stringify({
+          id: 'request-1',
+          kind: 'failed',
+          failureCode: 'RATE_LIMIT',
+        }) + '\n',
+      );
+    }
+    override async collect(contract: ContainerSpec) {
+      if (contract.name.startsWith('he-build-')) return this.run(contract);
+      return { ...exited, ExitCode: 1 };
+    }
+  }
+  const driver = new Unavailable();
+  const store = new Store(path.join(root, 'state.sqlite'), spec);
+  const controller = new Controller(root, path.join(root, 'dataset'), spec, store, driver);
+  try {
+    await controller.start();
+    const h0 = await controller.seed(seed);
+    await assert.rejects(controller.pump(), { name: 'UpstreamUnavailable' });
+    assert.equal(driver.executions, 1);
+    assert.equal(driver.grades, 0);
+    assert.equal(store.runs().length, 2);
+    assert.deepEqual(
+      store
+        .runs()
+        .map((r) => r.phase)
+        .sort(),
+      ['cancelled', 'execution_failed'],
+    );
+    assert.deepEqual(store.runs().find((r) => r.phase === 'execution_failed')!.upstreamFailure, [
+      { requestId: 'request-1', code: 'RATE_LIMIT' },
+    ]);
+    assert.equal(store.getMeta('champion'), undefined);
+    assert.equal(
+      store.events().some((e) => e.type === 'candidate.decision'),
+      false,
+    );
+    await assert.rejects(controller.pump(), { name: 'UpstreamUnavailable' });
+    await assert.rejects(controller.submit(h0.proposal), { name: 'UpstreamUnavailable' });
+    assert.equal(driver.executions, 1);
+    assert.equal(store.candidates().length, 1);
+  } finally {
+    await controller.close();
+    store.close();
+  }
+});

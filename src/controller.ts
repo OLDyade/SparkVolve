@@ -17,6 +17,7 @@ import { createEgressSession, type EgressFactory, type EgressLifecycle } from '.
 import { prepareExecution, collectExecution, ReclamationError, settleExecutionFailure } from './execution.js';
 import { assertNotCancelled } from './cancellation-state.js';
 import { assertMutationScope } from './mutation-scope.js';
+import { upstreamFailures, UpstreamUnavailable } from './upstream-failure.js';
 
 import { bundlePatchFiles } from '@deepseek-ai/dsh-app-boot';
 import { catalogRoot, queueResolution, executeResolution, resolutions } from './capability-resolution.js';
@@ -86,6 +87,10 @@ export class Controller {
     assertNotCancelled(this.root);
     if (this.leaseError) throw this.leaseError;
     this.store.assertLease(this.owner);
+  }
+  private assertUpstreamAvailable(): void {
+    const failed = this.store.runs().find((run) => run.upstreamFailure?.length);
+    if (failed) throw new UpstreamUnavailable(failed.id, failed.upstreamFailure!);
   }
   status() {
     return {
@@ -179,6 +184,7 @@ export class Controller {
   }
   private async submitProposal(raw: unknown, initial: boolean): Promise<Candidate> {
     this.assertOwner();
+    this.assertUpstreamAvailable();
     const proposal = Proposal.parse(raw);
     if (!initial) this.assertParents(proposal.parents);
     const resolution = resolutions(this.store).find((item) => item.request.draft === proposal.draft);
@@ -346,6 +352,7 @@ export class Controller {
     }
   }
   private async advance(): Promise<void> {
+    this.assertUpstreamAvailable();
     for (const record of resolutions(this.store).filter((item) => item.phase === 'queued')) {
       this.assertOwner();
       await executeResolution(
@@ -625,6 +632,7 @@ export class Controller {
       this.assertOwner();
       this.store.transition(run.id, 'executing', 'execution_failed', {
         error: pendingFailure,
+        upstreamFailure: await upstreamFailures(runRoot),
         completedAt: new Date().toISOString(),
       });
       return;
@@ -649,6 +657,8 @@ export class Controller {
       await collectRequestMetrics(path.join(this.root, 'runs', run.id, 'trace'));
       this.assertOwner();
       this.store.event('run.exit', { id: run.id, ...result });
+      const providerFailures = await upstreamFailures(runRoot);
+      if (providerFailures.length) throw new UpstreamUnavailable(run.id, providerFailures);
       if (result.ExitCode !== 0) throw new Error(`Executor exited ${result.ExitCode}`);
       const delivery = path.join(this.root, 'runs', run.id, 'delivery');
       let deliveryDigest: string;
@@ -679,6 +689,7 @@ export class Controller {
       this.assertOwner();
       this.store.transition(run.id, 'executing', 'execution_failed', {
         error: failure!,
+        upstreamFailure: await upstreamFailures(runRoot),
         completedAt: new Date().toISOString(),
       });
     }
@@ -745,6 +756,12 @@ export class Controller {
         this.assertOwner();
         const run = queue.shift();
         if (!run) return;
+        if (run.phase === 'queued' && this.store.runs().some((r) => r.upstreamFailure?.length)) {
+          this.store.transition(run.id, 'queued', 'cancelled', {
+            error: 'Upstream model service unavailable; candidate comparison invalid',
+          });
+          continue;
+        }
         const failures = this.store
           .runs(candidate.digest)
           .filter((r) => r.phase === 'execution_failed').length;
@@ -759,6 +776,7 @@ export class Controller {
     };
     const runQueue = async () => {
       const results = await Promise.allSettled(Array.from({ length: this.spec.concurrency }, worker));
+      this.assertUpstreamAvailable();
       const errors = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
       if (errors.length)
         throw new AggregateError(

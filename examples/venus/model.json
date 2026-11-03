@@ -1,6 +1,6 @@
 {
   "provider": "venus",
-  "model": "deepseek/deepseek-v4.1-flash-1017",
+  "model": "deepseek/deepseek-v4-flash-0731",
   "reasoningEffort": "off",
   "maxTokens": 32768,
   "credentialEnv": ["VENUS_API_KEY"]

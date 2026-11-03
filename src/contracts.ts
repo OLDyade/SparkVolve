@@ -349,6 +349,7 @@ export interface TaskRun {
   startedAt?: string;
   completedAt?: string;
   error?: string;
+  upstreamFailure?: Array<{ requestId: string; code: string }>;
   grade?: GradeResult;
   deliveryDigest?: string;
   gradeAttempt: number;

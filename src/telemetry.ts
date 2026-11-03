@@ -2,7 +2,7 @@ import type { Context } from '@deepseek-ai/cordis';
 import { appendFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import Schema from '@deepseek-ai/schemastery';
-import { isAgentLoopRequest, type StreamChunk, type TokenUsage } from '@deepseek-ai/dsh-llm';
+import { isAgentLoopRequest, LlmError, type StreamChunk, type TokenUsage } from '@deepseek-ai/dsh-llm';
 import type { Agent } from '@deepseek-ai/dsh-agent';
 import type { ToolExecution, ToolExecutionToken } from '@deepseek-ai/dsh-tools';
 import '@deepseek-ai/dsh-system-prompt';
@@ -167,7 +167,7 @@ export function apply(ctx: Context, config: Config): void {
         }
         yield chunk;
       }
-      if (!finished) throw new Error('Model stream ended without a finish event');
+      if (!finished) throw new LlmError('Model stream ended without a finish event', 'TRANSPORT');
       record({
         id,
         kind: failure ? 'failed' : 'result',
@@ -190,6 +190,7 @@ export function apply(ctx: Context, config: Config): void {
         finishReason,
         providerResponse,
         error: String(error),
+        ...(error instanceof LlmError ? { failureCode: error.code } : {}),
       });
       throw error;
     } finally {
