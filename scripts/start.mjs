@@ -4,7 +4,7 @@ import { mkdir, readFile, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs, parseEnv } from 'node:util';
-import { Experiment, Image, Model } from '../dist/contracts.js';
+import { DEFAULT_TASK_TIMEOUT_SECONDS, Experiment, Image, Model } from '../dist/contracts.js';
 import {
   atomicJSON,
   digest,
@@ -163,7 +163,7 @@ export async function main(args = process.argv.slice(2)) {
       runtime: { type: 'string', default: 'runc' },
       image: { type: 'string' },
       dns: { type: 'string' },
-      'task-seconds': { type: 'string', default: '600' },
+      'task-seconds': { type: 'string', default: String(DEFAULT_TASK_TIMEOUT_SECONDS) },
       study: { type: 'boolean', default: false },
       'prepare-only': { type: 'boolean', default: false },
       help: { type: 'boolean' },
@@ -171,7 +171,7 @@ export async function main(args = process.argv.slice(2)) {
   });
   if (values.help) {
     console.log(
-      'npm start -- --env-file <private.env> --pool <reserved-private-CIDR> [--study] [--benchmark <adapter.mjs>] [--root <NEW directory>]\nDefault: official DeepSeek, SpreadsheetBench 2 family-separated mixed36, 600s/task. --study compares prompt / single-plugin / open-plugins. --prepare-only freezes contracts without inference. Downloaded workbooks stay local. No task retry.',
+      'npm start -- --env-file <private.env> --pool <reserved-private-CIDR> [--study] [--benchmark <adapter.mjs>] [--root <NEW directory>]\nDefault: official DeepSeek, SpreadsheetBench 2 family-separated mixed36, 900s/task. --study compares prompt / single-plugin / open-plugins. --prepare-only freezes contracts without inference. Downloaded workbooks stay local. No task retry.',
     );
     return;
   }

@@ -72,10 +72,10 @@ test(
             body: {
               kind: 'json',
               equals: { model: 'deepseek/deepseek-v4-flash-0731' },
-              maximum: { max_tokens: 32768 },
+              maximum: { max_tokens: 393216 },
             },
             maxRequestBytes: 8388608,
-            timeoutSeconds: 600,
+            timeoutSeconds: 900,
           },
         ],
       },
@@ -98,8 +98,8 @@ test(
       provider: 'venus',
       model: 'deepseek/deepseek-v4-flash-0731',
       reasoningEffort: ReasoningEffortId('off'),
-      maxTokens: 32768,
-      requestTimeoutMs: 600000,
+      maxTokens: 393216,
+      requestTimeoutMs: 900000,
       env: { ...process.env, VENUS_API_KEY: 'placeholder' },
     });
     try {
@@ -110,7 +110,7 @@ test(
         assert.equal(r.headers.authorization, 'Bearer broker-only-fixture');
         assert.equal(r.body.model, 'deepseek/deepseek-v4-flash-0731');
         assert.equal(r.body.enable_thinking, false);
-        assert.equal(r.body.max_tokens, 32768);
+        assert.equal(r.body.max_tokens, 393216);
         assert.equal(r.body.stream, true);
       }
       assert.ok(

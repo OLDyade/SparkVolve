@@ -6,7 +6,7 @@ import { controlPaths } from './control-routes.js';
 import { EgressPool, poolCapacity, ipv4Range } from './ip-pool.js';
 
 /** Default elapsed task budget; parsed contracts persist the effective value. */
-export const DEFAULT_TASK_TIMEOUT_SECONDS = 600;
+export const DEFAULT_TASK_TIMEOUT_SECONDS = 900;
 
 export const Digest = z.string().regex(/^[a-f0-9]{64}$/);
 export const Id = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,95}$/);

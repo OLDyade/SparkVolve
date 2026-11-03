@@ -83,7 +83,7 @@ npm ci
 npm start -- --env-file /absolute/private/deepseek.env
 ```
 
-**One entry: autonomous development → independent validation → original-package installation → fresh reuse.** Defaults: official DeepSeek, a **36-task SpreadsheetBench 2 panel**, **600 seconds per task**. Keep credentials outside the repository. First launch builds images; model calls use your provider quota.
+**One entry: autonomous development → independent validation → original-package installation → fresh reuse.** Defaults: official DeepSeek, a **36-task SpreadsheetBench 2 panel**, **900 seconds per task**. Keep credentials outside the repository. First launch builds images; model calls use your provider quota.
 
 **Bring your domain:** 🗂 Tasks + ⚙️ Runtime + 🧩 Seed plugins + ⚖️ Grader.
 

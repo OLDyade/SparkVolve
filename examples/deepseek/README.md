@@ -15,7 +15,7 @@ node tests/fixtures/spreadsheet/prepare.mjs <dataset> <immutable-image> \
   examples/deepseek/model.json <spec.json> <isolation.json> examples/deepseek
 ```
 
-The full native development acceptance includes 4 types of business tasks, at most 2 autonomous candidates, independent H0/selected-version validation, and installation of the original archive. Tasks, model HTTP, native QA, and probes default to 600 seconds, and the optimizer's total budget is derived from the planned waits:
+The full native development acceptance includes 4 types of business tasks, at most 2 autonomous candidates, independent H0/selected-version validation, and installation of the original archive. Tasks, model HTTP, native QA, and probes default to 900 seconds, and the optimizer's total budget is derived from the planned waits:
 
 ```bash
 node --env-file=/absolute/private/deepseek.env scripts/verify-native-authoring.mjs \

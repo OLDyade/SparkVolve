@@ -13,7 +13,7 @@ npm ci
 npm start -- --env-file /absolute/private/deepseek.env
 ```
 
-The default launches one open-plugin evolution chain on the registered **SpreadsheetBench 2 mixed36** panel. Add `--study` for the three mutation-space comparison. Both use the official DeepSeek Provider and 600 seconds per task. Model, image, task IDs, private grader identities, capability catalog and selection rules freeze before inference.
+The default launches one open-plugin evolution chain on the registered **SpreadsheetBench 2 mixed36** panel. Add `--study` for the three mutation-space comparison. Both use the official DeepSeek Provider and 900 seconds per task. Model, image, task IDs, private grader identities, capability catalog and selection rules freeze before inference.
 
 ## What runs
 

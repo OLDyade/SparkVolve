@@ -359,7 +359,7 @@ export async function main(args = process.argv.slice(2)) {
   });
   if (values.help) {
     console.log(
-      'node --env-file=<private-env> scripts/verify-native-authoring.mjs --root <NEW> --image <immutable> --model <JSON> --provider-directory <directory> --isolation <JSON> --controller-ip <IPv4> --install-policy <JSON> [--research-brief <development-evidence.md>] [--task-timeout-seconds <positive-integer>] [--check-contracts]\nAt most 20 real task executions; optional probes 3. Tasks, native QA, probes and individual model requests default to 600 seconds. Optimizer wall budget includes declared serial waits plus 1200 seconds for authoring. Check-contracts makes no model calls. Never resume or retry an existing root.',
+      'node --env-file=<private-env> scripts/verify-native-authoring.mjs --root <NEW> --image <immutable> --model <JSON> --provider-directory <directory> --isolation <JSON> --controller-ip <IPv4> --install-policy <JSON> [--research-brief <development-evidence.md>] [--task-timeout-seconds <positive-integer>] [--check-contracts]\nAt most 20 real task executions; optional probes 3. Tasks, native QA, probes and individual model requests default to 900 seconds. Optimizer wall budget includes declared serial waits plus 1200 seconds for authoring. Check-contracts makes no model calls. Never resume or retry an existing root.',
     );
     return;
   }

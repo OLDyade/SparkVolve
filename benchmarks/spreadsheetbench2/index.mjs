@@ -113,7 +113,7 @@ export async function prepare({ root, inputs, image, isolation, model, provider,
       timeoutSeconds: taskSeconds,
       failureLimit: Math.floor(tasks.length * 0.2),
       budget: { candidates: search ? 4 : 1, optimizerSeconds: search ? 1800 : 1 },
-      probes: search ? { limit: 3, timeoutSeconds: 600 } : null,
+      probes: search ? { limit: 3, timeoutSeconds: taskSeconds } : null,
       metric: {
         name: 'official_modification_accuracy',
         direction: 'maximize',

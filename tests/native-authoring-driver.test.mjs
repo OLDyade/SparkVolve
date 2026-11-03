@@ -22,14 +22,14 @@ function contract() {
 }
 test('native acceptance fixes 12 search + 8 independent validation tasks before inference', () => {
   const c = acceptanceContracts(contract(), contract());
-  assert.deepEqual(c.search.budget, { candidates: 3, optimizerSeconds: 7140 });
+  assert.deepEqual(c.search.budget, { candidates: 3, optimizerSeconds: 9240 });
   assert.equal(c.search.probes.limit, 3);
-  assert.equal(c.search.timeoutSeconds, 600);
-  assert.equal(c.assessment.timeoutSeconds, 600);
-  assert.equal(c.search.probes.timeoutSeconds, 600);
+  assert.equal(c.search.timeoutSeconds, 900);
+  assert.equal(c.assessment.timeoutSeconds, 900);
+  assert.equal(c.search.probes.timeoutSeconds, 900);
   assert.equal(c.allocation.optimizerBudget.authoringSeconds, 1200);
-  assert.equal(c.allocation.optimizerBudget.candidateWaitSeconds, 3240);
-  assert.equal(c.allocation.optimizerBudget.probeWaitSeconds, 2700);
+  assert.equal(c.allocation.optimizerBudget.candidateWaitSeconds, 4440);
+  assert.equal(c.allocation.optimizerBudget.probeWaitSeconds, 3600);
   assert.equal(c.assessment.purpose, 'validation');
   assert.equal(c.assessment.budget.candidates, 1);
   assert.equal(c.allocation.totalTaskExecutions, 20);
@@ -51,7 +51,7 @@ test('custom task deadlines propagate to task, native QA, probe and derived opti
   changedBuild.candidate.build.timeoutSeconds = 450;
   assert.equal(
     acceptanceContracts(changedBuild, structuredClone(changedBuild)).search.budget.optimizerSeconds,
-    7890,
+    9990,
   );
 });
 

@@ -1,6 +1,6 @@
 # Execution time budgets
 
-New example contracts default each model task and autonomous code probe to **600 seconds**.
+New example contracts default each model task and autonomous code probe to **900 seconds**.
 The shared default comes from `DEFAULT_TASK_TIMEOUT_SECONDS` in the framework contract.
 The task deadline covers its container's full lifetime, including SDK startup and inference.
 

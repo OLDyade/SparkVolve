@@ -73,7 +73,7 @@ for (const selected of [undefined, 900, 120]) {
     const model = JSON.parse(await readFile(path.join(root, 'model.json'), 'utf8'));
     const egress = await configureEgress(root, model, selected);
     const seconds = selected ?? DEFAULT_TASK_TIMEOUT_SECONDS;
-    assert.equal(seconds, selected ?? 600);
+    assert.equal(seconds, selected ?? 900);
     for (const route of [...egress.optimizer, ...egress.executor])
       assert.equal(route.timeoutSeconds, seconds);
     const provider = parse(await readFile(path.join(root, 'cordis.patch.yml'), 'utf8'))[0].config.providers
@@ -167,7 +167,7 @@ for (const example of ['spreadsheet', 'structured-data']) {
       ];
       await promisify(execFile)(process.execPath, args, { timeout: 30000 });
       const spec = JSON.parse(await readFile(path.join(root, 'experiment.json'), 'utf8'));
-      const seconds = Number(selected ?? 600);
+      const seconds = Number(selected ?? 900);
       assert.equal(spec.timeoutSeconds, seconds);
       assert.equal(spec.probes.timeoutSeconds, seconds);
       assert.equal(spec.egress.optimizer[0].timeoutSeconds, seconds);

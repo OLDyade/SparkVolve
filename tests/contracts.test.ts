@@ -3,12 +3,12 @@ import assert from 'node:assert/strict';
 import { DEFAULT_TASK_TIMEOUT_SECONDS, Experiment } from '../src/contracts.js';
 import { specification } from './fixtures.js';
 
-test('task budgets default to 600 seconds and preserve explicit experiment decisions', () => {
+test('task budgets default to 900 seconds and preserve explicit experiment decisions', () => {
   const { timeoutSeconds: _timeout, ...input } = specification();
   const resolved = Experiment.parse(input);
-  assert.equal(DEFAULT_TASK_TIMEOUT_SECONDS, 600);
-  assert.equal(resolved.timeoutSeconds, 600);
-  assert.equal(Experiment.parse(JSON.parse(JSON.stringify(resolved))).timeoutSeconds, 600);
+  assert.equal(DEFAULT_TASK_TIMEOUT_SECONDS, 900);
+  assert.equal(resolved.timeoutSeconds, 900);
+  assert.equal(Experiment.parse(JSON.parse(JSON.stringify(resolved))).timeoutSeconds, 900);
   for (const seconds of [300, 600, 3600])
     assert.equal(Experiment.parse({ ...input, timeoutSeconds: seconds }).timeoutSeconds, seconds);
   for (const seconds of [0, -1, 0.5, NaN, Infinity])
