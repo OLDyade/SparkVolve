@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { open } from 'node:fs/promises';
 import { z } from 'zod';
 import path from 'node:path';
 import { atomicJSON } from './artifacts.js';
@@ -19,10 +19,16 @@ const Record = z.object({
     .optional(),
 });
 export async function requestMetrics(file: string) {
-  const records = (await readFile(file, 'utf8'))
-    .split('\n')
-    .filter(Boolean)
-    .map((line) => Record.parse(JSON.parse(line)));
+  // Request payloads grow with the conversation; retain only accounting fields.
+  const records: z.infer<typeof Record>[] = [];
+  const handle = await open(file, 'r');
+  try {
+    for await (const line of handle.readLines()) {
+      if (line) records.push(Record.parse(JSON.parse(line)));
+    }
+  } finally {
+    await handle.close();
+  }
   const started = new Set(records.filter((r) => r.kind === 'started').map((r) => r.id));
   if (started.size !== records.filter((r) => r.kind === 'started').length)
     throw new Error('Duplicate request start');

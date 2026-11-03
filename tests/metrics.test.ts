@@ -77,3 +77,32 @@ test('request ledger distinguishes failure, unfinished calls and unavailable usa
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test('request accounting streams long payload lines and preserves incomplete and invalid records', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'he-stream-metrics-'));
+  const file = path.join(root, 'requests.jsonl');
+  try {
+    const payload = '📊'.repeat(100_000);
+    await writeFile(
+      file,
+      [
+        JSON.stringify({ id: 'a', kind: 'started', payload }),
+        '',
+        JSON.stringify({ id: 'a', kind: 'result', usage: { inputTokens: 9, outputTokens: 2 }, payload }),
+        JSON.stringify({ id: 'b', kind: 'started', payload }),
+        JSON.stringify({ id: 'b', kind: 'closed_incomplete' }),
+      ].join('\n'),
+    );
+    const result = await requestMetrics(file);
+    assert.equal(result.started, 2);
+    assert.equal(result.results, 1);
+    assert.equal(result.unfinished, 1);
+    assert.equal(result.inputTokensReported, 9);
+    await writeFile(file, '{"id":"truncated"');
+    await assert.rejects(requestMetrics(file), SyntaxError);
+    await rm(file);
+    await assert.rejects(requestMetrics(file), { code: 'ENOENT' });
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
