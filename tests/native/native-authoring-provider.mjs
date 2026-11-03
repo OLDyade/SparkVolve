@@ -136,7 +136,7 @@ export function apply(ctx) {
             },
           };
         }
-        yield { type: 'finish', reason: 'tool-calls' };
+        yield { type: 'finish', reason: { kind: 'tool-calls' } };
       } else {
         yield { type: 'block-start', index: 0, blockType: 'text' };
         yield {
@@ -144,7 +144,7 @@ export function apply(ctx) {
           index: 0,
           block: { type: 'text', text: ordinary ? 'ordinary-connected' : 'native-authoring-connected' },
         };
-        yield { type: 'finish', reason: 'stop' };
+        yield { type: 'finish', reason: { kind: 'stop' } };
       }
     }
   }

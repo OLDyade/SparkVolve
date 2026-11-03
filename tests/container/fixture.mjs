@@ -64,14 +64,14 @@ export function apply(ctx) {
           },
         };
         yield { type: 'usage', usage: { inputTokens: 10, outputTokens: 4 } };
-        yield { type: 'finish', reason: 'tool-calls' };
+        yield { type: 'finish', reason: { kind: 'tool-calls' } };
       } else {
         if (!JSON.stringify(options.messages).includes('fixture-delivered'))
           throw new Error('Native delivery tool failed');
         yield { type: 'block-start', index: 0, blockType: 'text' };
         yield { type: 'block-end', index: 0, block: { type: 'text', text: 'Container protocol completed' } };
         yield { type: 'usage', usage: { inputTokens: 15, outputTokens: 2 } };
-        yield { type: 'finish', reason: 'stop' };
+        yield { type: 'finish', reason: { kind: 'stop' } };
       }
     }
   }

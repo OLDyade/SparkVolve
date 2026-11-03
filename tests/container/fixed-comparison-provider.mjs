@@ -50,7 +50,7 @@ export function apply(ctx) {
           },
         };
         yield { type: 'usage', usage: { inputTokens: 11, outputTokens: 3 } };
-        yield { type: 'finish', reason: 'tool-calls' };
+        yield { type: 'finish', reason: { kind: 'tool-calls' } };
       } else {
         yield { type: 'block-start', index: 0, blockType: 'text' };
         yield {
@@ -59,7 +59,7 @@ export function apply(ctx) {
           block: { type: 'text', text: 'Fixed comparison fixture completed' },
         };
         yield { type: 'usage', usage: { inputTokens: 13, outputTokens: 2 } };
-        yield { type: 'finish', reason: 'stop' };
+        yield { type: 'finish', reason: { kind: 'stop' } };
       }
     }
   }

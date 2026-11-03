@@ -100,11 +100,11 @@ export function apply(ctx) {
             ),
           },
         };
-        yield { type: 'finish', reason: 'tool-calls' };
+        yield { type: 'finish', reason: { kind: 'tool-calls' } };
       } else {
         yield { type: 'block-start', index: 0, blockType: 'text' };
         yield { type: 'block-end', index: 0, block: { type: 'text', text: 'optimizer-preset-connected' } };
-        yield { type: 'finish', reason: 'stop' };
+        yield { type: 'finish', reason: { kind: 'stop' } };
       }
     }
   }
