@@ -170,6 +170,8 @@ export const Experiment = z
       image: Image,
       command: z.array(z.string()).min(1),
       timeoutSeconds: z.number().positive(),
+      memoryMiB: z.number().int().positive().optional(),
+      concurrency: z.number().int().positive().optional(),
     }),
     candidate: z.strictObject({
       patch: RelativePath,

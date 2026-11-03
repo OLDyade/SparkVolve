@@ -18,6 +18,7 @@ import {
 } from '../dist/artifacts.js';
 import { verifyArtifact } from '../dist/build.js';
 import { Docker } from '../dist/docker.js';
+import { evaluatorIsolation, evaluatorQueue } from '../dist/evaluator.js';
 import { EgressSession } from '../dist/egress-session.js';
 import { prepareExecution, collectExecution, settleExecutionFailure } from '../dist/execution.js';
 import { collectRequestMetrics } from '../dist/metrics.js';
@@ -173,7 +174,7 @@ export function gradingSpec({ root, task, spec, prefix }) {
       { source: path.join(directory, 'grade'), target: '/workspace', writable: true },
     ],
     env: {},
-    isolation: spec.isolation,
+    isolation: evaluatorIsolation(spec),
     network: 'none',
     timeoutSeconds: spec.evaluator.timeoutSeconds,
   };
@@ -212,6 +213,7 @@ export function summarize(rows, spec) {
 
 /** Each effect runs at most once per task; individual failures preserve the full registered denominator. */
 export async function runRegisteredTasks(spec, effects) {
+  const gradeQueue = evaluatorQueue(spec);
   const rows = spec.tasks.map((task) => ({
     task: task.id,
     phase: 'registered',
@@ -239,7 +241,7 @@ export async function runRegisteredTasks(spec, effects) {
       row.deliveryDigest = await effects.freezeDelivery(task);
       row.phase = 'grading';
       await effects.save(row);
-      row.grade = Grade.parse(await effects.grade(task));
+      row.grade = Grade.parse(await gradeQueue(() => effects.grade(task)));
       assert.ok(
         row.grade.score >= spec.metric.minimum && row.grade.score <= spec.metric.maximum,
         'Score outside registered metric range',

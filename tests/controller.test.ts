@@ -81,6 +81,8 @@ test('task batches wait for every grade before launching the next batch and neve
   const root = await mkdtemp(path.join(os.tmpdir(), 'he-batches-'));
   const spec = specification();
   spec.concurrency = 2;
+  spec.evaluator.memoryMiB = 16384;
+  spec.evaluator.concurrency = 1;
   spec.tasks = Array.from({ length: 5 }, (_, i) => ({
     ...spec.tasks[0]!,
     id: 'task-' + i,
@@ -103,12 +105,13 @@ test('task batches wait for every grade before launching the next batch and neve
   await writeFile(path.join(seed, 'package-lock.json'), '{}');
   const store = new Store(path.join(root, 'state.sqlite'), spec);
   const barrier = Promise.withResolvers<void>();
-  const secondGrading = Promise.withResolvers<void>();
+  const firstGrading = Promise.withResolvers<void>();
   class BatchDriver extends LifecycleDriver {
     active = 0;
     peak = 0;
     override async create(contract: ContainerSpec) {
       if (!contract.name.startsWith('he-build-')) {
+        assert.equal(contract.isolation.memoryMiB, spec.isolation.memoryMiB);
         this.peak = Math.max(this.peak, ++this.active);
         if (this.executions >= 2) assert.ok(store.runs().filter((run) => run.phase === 'scored').length >= 2);
       }
@@ -118,8 +121,11 @@ test('task batches wait for every grade before launching the next batch and neve
       const ordinal = this.grades + 1;
       const result = await super.run(contract);
       if (contract.name.startsWith('he-grade-')) {
-        if (ordinal === 1) await barrier.promise;
-        else if (ordinal === 2) secondGrading.resolve();
+        assert.equal(contract.isolation.memoryMiB, 16384);
+        if (ordinal === 1) {
+          firstGrading.resolve();
+          await barrier.promise;
+        }
         this.active--;
       }
       return result;
@@ -131,9 +137,10 @@ test('task batches wait for every grade before launching the next batch and neve
     await controller.start();
     await controller.seed(seed);
     const work = controller.pump();
-    await secondGrading.promise;
+    await firstGrading.promise;
     await new Promise((resolve) => setTimeout(resolve, 20));
     assert.equal(driver.executions, 2, 'a fast task must not refill an unfinished batch');
+    assert.equal(driver.grades, 1, 'registered grader limit must serialize grading');
     barrier.resolve();
     await work;
     assert.equal(driver.executions, 5);

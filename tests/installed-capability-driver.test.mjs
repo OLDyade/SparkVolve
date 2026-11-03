@@ -142,11 +142,14 @@ test('worker boots installed DSH home with no candidate/archive/evaluation mount
   assert.ok(result.mounts.some((mount) => mount.target === '/empty.yml' && !mount.writable));
 });
 test('independent grader has only delivery, input, private evaluation and its output', () => {
-  const s = spec(),
-    result = gradingSpec({ root: '/fresh', task: s.tasks[0], spec: s, prefix: 'test' });
+  const s = spec();
+  s.evaluator.memoryMiB = 16384;
+  const result = gradingSpec({ root: '/fresh', task: s.tasks[0], spec: s, prefix: 'test' });
   assert.equal(result.network, 'none');
   assert.deepEqual(result.env, {});
   assert.equal(result.image, s.evaluator.image);
+  assert.equal(result.isolation.memoryMiB, 16384);
+  assert.notEqual(s.isolation.memoryMiB, 16384);
   assert.deepEqual(
     result.mounts.map((mount) => [mount.target, mount.writable]),
     [
@@ -206,6 +209,27 @@ test('installation, execution, and grading failures keep full denominator and ne
   assert.ok(!fx.calls.includes('one:execute'));
   assert.ok(!fx.calls.includes('two:grade'));
   assert.ok(report.rows.slice(0, 3).every((row) => row.error.message.includes('[redacted]')));
+});
+test('installed tasks honor serial grading and release the slot after failure', async () => {
+  const s = spec();
+  s.evaluator.concurrency = 1;
+  let active = 0,
+    peak = 0;
+  const report = await runRegisteredTasks(
+    s,
+    effects({
+      grade: async (task) => {
+        peak = Math.max(peak, ++active);
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        active--;
+        if (task.id === 'one') throw Error('grading failed');
+        return { score: 0.5, metrics: {}, feedback: '' };
+      },
+    }),
+  );
+  assert.equal(peak, 1);
+  assert.equal(report.scored, 3);
+  assert.equal(report.registered, 4);
 });
 test('installed identity drift prevents scoring without repairing files', async () => {
   const fx = effects({

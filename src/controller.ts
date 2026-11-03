@@ -23,6 +23,7 @@ import { bundlePatchFiles } from '@deepseek-ai/dsh-app-boot';
 import { catalogRoot, queueResolution, executeResolution, resolutions } from './capability-resolution.js';
 import { searchCapabilities } from './capabilities.js';
 import { mutationEvidence } from './mutation-evidence.js';
+import { evaluatorIsolation, evaluatorQueue } from './evaluator.js';
 
 export class Controller {
   readonly owner = randomUUID();
@@ -31,6 +32,7 @@ export class Controller {
   private heartbeat?: ReturnType<typeof setInterval>;
   private leaseError?: Error;
   private readonly submitting = new Map<string, Promise<Candidate>>();
+  private readonly gradeQueue: ReturnType<typeof evaluatorQueue>;
   constructor(
     readonly root: string,
     readonly dataset: string,
@@ -38,7 +40,9 @@ export class Controller {
     readonly store: Store,
     readonly docker = new Docker(),
     readonly egress: EgressFactory = createEgressSession,
-  ) {}
+  ) {
+    this.gradeQueue = evaluatorQueue(spec);
+  }
   async start(): Promise<void> {
     assertNotCancelled(this.root);
     await fileReaderCapabilities();
@@ -694,7 +698,12 @@ export class Controller {
       });
     }
   }
-  private async score(run: TaskRun): Promise<void> {
+  private score(run: TaskRun): Promise<void> {
+    return this.gradeQueue(() => this.scoreNow(run));
+  }
+  private async scoreNow(run: TaskRun): Promise<void> {
+    this.activeSignal?.throwIfAborted();
+    this.assertOwner();
     const task = this.spec.tasks.find((t) => t.id === run.task);
     if (!task) throw new Error('Missing task');
     const root = path.join(this.root, 'runs', run.id);
@@ -716,7 +725,7 @@ export class Controller {
             { source: gradeDir, target: '/workspace', writable: true },
           ],
           env: {},
-          isolation: this.spec.isolation,
+          isolation: evaluatorIsolation(this.spec),
           network: this.spec.isolation.network.evaluator,
           timeoutSeconds: this.spec.evaluator.timeoutSeconds,
         },
