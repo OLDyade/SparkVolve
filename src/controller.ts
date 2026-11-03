@@ -751,38 +751,41 @@ export class Controller {
       throw new Error('Frozen candidate modified');
     let queue = this.store.runs(candidate.digest);
     if (!queue.length) throw new Error('Candidate has no registered runs; investigate interrupted admission');
-    const worker = async (): Promise<void> => {
-      for (;;) {
-        this.assertOwner();
-        const run = queue.shift();
-        if (!run) return;
-        if (run.phase === 'queued' && this.store.runs().some((r) => r.upstreamFailure?.length)) {
-          this.store.transition(run.id, 'queued', 'cancelled', {
-            error: 'Upstream model service unavailable; candidate comparison invalid',
-          });
-          continue;
-        }
-        const failures = this.store
-          .runs(candidate.digest)
-          .filter((r) => r.phase === 'execution_failed').length;
-        if (run.phase === 'queued' && failures > this.spec.failureLimit) {
-          this.store.transition(run.id, 'queued', 'cancelled', { error: 'Failure budget exhausted' });
-          continue;
-        }
-        if (run.phase === 'queued' || run.phase === 'executing') await this.execute(run);
-        const current = this.store.runs(candidate.digest).find((r) => r.id === run.id)!;
-        if (current.phase === 'delivered' || current.phase === 'scoring') await this.score(current);
+    const executeRun = async (run: (typeof queue)[number]): Promise<void> => {
+      this.assertOwner();
+      if (run.phase === 'queued' && this.store.runs().some((r) => r.upstreamFailure?.length)) {
+        this.store.transition(run.id, 'queued', 'cancelled', {
+          error: 'Upstream model service unavailable; candidate comparison invalid',
+        });
+        return;
       }
+      const failures = this.store.runs(candidate.digest).filter((r) => r.phase === 'execution_failed').length;
+      if (run.phase === 'queued' && failures > this.spec.failureLimit) {
+        this.store.transition(run.id, 'queued', 'cancelled', { error: 'Failure budget exhausted' });
+        return;
+      }
+      if (run.phase === 'queued' || run.phase === 'executing') await this.execute(run);
+      const current = this.store.runs(candidate.digest).find((r) => r.id === run.id)!;
+      if (current.phase === 'delivered' || current.phase === 'scoring') await this.score(current);
     };
     const runQueue = async () => {
-      const results = await Promise.allSettled(Array.from({ length: this.spec.concurrency }, worker));
-      this.assertUpstreamAvailable();
-      const errors = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
-      if (errors.length)
-        throw new AggregateError(
-          errors.map((e) => e.reason),
-          'Experiment worker failure',
-        );
+      while (queue.length) {
+        // A batch settles execution and independent grading before the next batch starts.
+        const results = await Promise.allSettled(queue.splice(0, this.spec.concurrency).map(executeRun));
+        if (this.store.runs().some((run) => run.upstreamFailure?.length))
+          for (const run of this.store.runs(candidate.digest))
+            if (run.phase === 'queued')
+              this.store.transition(run.id, 'queued', 'cancelled', {
+                error: 'Upstream model service unavailable; candidate comparison invalid',
+              });
+        this.assertUpstreamAvailable();
+        const errors = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+        if (errors.length)
+          throw new AggregateError(
+            errors.map((e) => e.reason),
+            'Experiment batch failure',
+          );
+      }
     };
     const screening = this.spec.hostSearchProtocol.screening;
     if (screening && candidate.ordinal !== 0) {

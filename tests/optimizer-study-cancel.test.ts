@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, realpath, rm } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { atomicJSON, digest } from '../src/artifacts.js';
@@ -9,10 +9,12 @@ import { prepareExecution } from '../src/execution.js';
 import { containerIdentity } from '../src/isolation.js';
 import {
   OptimizerStudy,
+  FixedOptimizerComparison,
+  studyArmIdentity,
   studyMethodIdentity,
   type FrozenStudyMethodRef,
 } from '../src/optimizer-study-contracts.js';
-import { OptimizerStudyStore } from '../src/optimizer-study-store.js';
+import { OptimizerStudyStore, type StudyJob } from '../src/optimizer-study-store.js';
 import { OptimizerStudyCoordinator } from '../src/optimizer-study.js';
 import { cancelOptimizerStudy } from '../src/optimizer-study-cancel.js';
 import { Store } from '../src/store.js';
@@ -103,7 +105,7 @@ function method(name: string): FrozenStudyMethodRef {
   };
 }
 async function fixture() {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'he-study-cancel-')),
+  const root = await realpath(await mkdtemp(path.join(os.tmpdir(), 'he-study-cancel-'))),
     base = specification();
   const item = (id: string) => ({
     id,
@@ -255,6 +257,115 @@ test('study recovers child, successful method and completed meta cleanup without
     await rm(f.root, { recursive: true, force: true });
   }
 });
+test('a failed study job reclaims its running optimizer before becoming terminal', async () => {
+  const f = await fixture();
+  class FailureCoordinator extends OptimizerStudyCoordinator {
+    invoke(job: StudyJob) {
+      return this.runJob(
+        job,
+        { host: '127.0.0.1', port: 0, endpoint: 'http://192.0.2.1:0' },
+        new AbortController().signal,
+      );
+    }
+  }
+  const coordinator = new FailureCoordinator(f.root, f.store, f.driver);
+  try {
+    const job = f.store.reserveJob(f.owner, {
+      comparisonArm: null,
+      stage: 'development',
+      method: studyMethodIdentity(f.spec.baseline),
+      caseId: 'development',
+      repetition: 0,
+    });
+    f.store.startJob(f.owner, job.id, digest(f.base));
+    const childRoot = path.join(f.root, job.childRoot);
+    await atomicJSON(path.join(childRoot, 'experiment.json'), f.base);
+    new Store(path.join(childRoot, 'experiment.sqlite'), f.base).close();
+    await register(childRoot, 'optimizer/0', f.driver);
+    await atomicJSON(path.join(childRoot, 'optimizer/0/intent.json'), { ordinal: 0 });
+    f.store.startAssessment(
+      f.owner,
+      job.id,
+      {
+        source: method('missing-selection').source,
+        artifact: method('missing-selection').artifact,
+      },
+      digest(f.base),
+    );
+    f.store.release(f.owner);
+    f.store.acquire(coordinator.owner, Date.now(), 60_000);
+    await coordinator.invoke(f.store.job(job.id));
+    assert.equal(f.store.job(job.id).phase, 'failed');
+    assert.equal(f.driver.stops, 1);
+    assert.equal(f.driver.containers.size, 0);
+    const cleanup = JSON.parse(
+      await readFile(path.join(f.root, 'job-reports', job.id + '.cleanup.json'), 'utf8'),
+    );
+    assert.equal(cleanup.search.state, 'cancelled');
+    assert.equal(cleanup.assessment.state, 'unstarted');
+    assert.equal(f.driver.creates, 1, 'cleanup cannot rerun the task or optimizer');
+  } finally {
+    f.store.release(coordinator.owner);
+    f.store.close();
+    await rm(f.root, { recursive: true, force: true });
+  }
+});
+
+test('terminal study reclamation preserves the completed conclusion and failure evidence', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'he-terminal-reclaim-'));
+  const base = specification();
+  const spec = FixedOptimizerComparison.parse({
+    kind: 'fixed-comparison',
+    name: 'terminal-cleanup',
+    objective: 'Test reclamation after terminal reporting',
+    baseline: 'a',
+    arms: ['a', 'b'].map((id) => ({ id, method: method(id), hostSearchProtocol: base.hostSearchProtocol })),
+    cases: [
+      {
+        id: 'case',
+        seed: { source: method('h').source, artifact: method('h').artifact },
+        search: { specification: base, dataset: { directory: 'search', digest: hash } },
+        assessment: {
+          specification: { ...base, purpose: 'validation', budget: { ...base.budget, candidates: 1 } },
+          dataset: { directory: 'sealed', digest: hash },
+        },
+      },
+    ],
+    repetitions: 1,
+    budget: { concurrentSearches: 1 },
+  });
+  await atomicJSON(path.join(root, 'registration.json'), spec);
+  const store = new OptimizerStudyStore(path.join(root, 'study.sqlite'), spec);
+  const owner = 'test-owner',
+    driver = new Driver();
+  try {
+    store.acquire(owner, Date.now(), 60_000);
+    for (const arm of spec.arms) {
+      const job = store.reserveJob(owner, {
+        stage: 'validation',
+        method: studyMethodIdentity(arm.method),
+        comparisonArm: studyArmIdentity(arm),
+        caseId: 'case',
+        repetition: 0,
+      });
+      store.failJob(owner, job.id, 'Preserved service failure');
+    }
+    const conclusion = store.finish(owner, 'Both attempts failed; no quality conclusion');
+    store.release(owner);
+    const receipt = await cancelOptimizerStudy(root, driver);
+    assert.deepEqual(store.state(), conclusion);
+    assert.ok(
+      store.jobs().every((job) => job.phase === 'failed' && job.error === 'Preserved service failure'),
+    );
+    assert.deepEqual(await cancelOptimizerStudy(root, driver), receipt);
+    assert.equal(driver.creates, 0);
+    assert.ok(await readFile(path.join(root, 'study-reclamation.json')));
+  } finally {
+    store.close();
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('orphaned child execution evidence cannot be relabelled as unstarted', async () => {
   const f = await fixture();
   try {

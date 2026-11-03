@@ -46,7 +46,16 @@ export async function registerSplits(splits, inputs) {
   for (const [name, split] of Object.entries(splits)) {
     const spec = Experiment.parse(split.specification);
     assert.equal(spec.purpose, name === 'development' ? 'search' : 'validation');
-    for (const key of ['runtime', 'executor', 'metric', 'evaluator', 'isolation', 'egress', 'timeoutSeconds'])
+    for (const key of [
+      'runtime',
+      'executor',
+      'metric',
+      'evaluator',
+      'isolation',
+      'egress',
+      'timeoutSeconds',
+      'concurrency',
+    ])
       assert.deepEqual(spec[key], search[key], 'Split changes frozen ' + key + ': ' + name);
     assert.equal(await treeDigest(confined(inputs, split.dataset.directory)), split.dataset.digest);
     for (const task of spec.tasks) {
@@ -83,7 +92,7 @@ export function mutationRegistration(adapter, method, seed, search, assessment) 
     })),
     cases: [{ id: adapter.name, seed, search, assessment }],
     repetitions: 1,
-    budget: { concurrentSearches: adapter.mutationSpaces.length },
+    budget: { concurrentSearches: 1 },
   });
 }
 
@@ -164,6 +173,7 @@ export async function main(args = process.argv.slice(2)) {
       image: { type: 'string' },
       dns: { type: 'string' },
       'task-seconds': { type: 'string', default: String(DEFAULT_TASK_TIMEOUT_SECONDS) },
+      'task-batch-size': { type: 'string', default: '10' },
       study: { type: 'boolean', default: false },
       'prepare-only': { type: 'boolean', default: false },
       help: { type: 'boolean' },
@@ -171,10 +181,15 @@ export async function main(args = process.argv.slice(2)) {
   });
   if (values.help) {
     console.log(
-      'npm start -- --env-file <private.env> --pool <reserved-private-CIDR> [--study] [--benchmark <adapter.mjs>] [--root <NEW directory>]\nDefault: official DeepSeek, SpreadsheetBench 2 family-separated mixed36, 900s/task. --study compares prompt / single-plugin / open-plugins. --prepare-only freezes contracts without inference. Downloaded workbooks stay local. No task retry.',
+      'npm start -- --env-file <private.env> --pool <reserved-private-CIDR> [--study] [--benchmark <adapter.mjs>] [--root <NEW directory>]\nDefault: official DeepSeek, SpreadsheetBench 2 family-separated mixed36, 900s/task, 10 tasks per batch (--task-batch-size). --study runs comparison arms sequentially and compares prompt / single-plugin / open-plugins. --prepare-only freezes contracts without inference. Downloaded workbooks stay local. No task retry.',
     );
     return;
   }
+  const taskBatchSize = Number(values['task-batch-size']);
+  assert.ok(
+    Number.isSafeInteger(taskBatchSize) && taskBatchSize > 0,
+    'task-batch-size must be a positive integer',
+  );
   assert.ok(values.pool, 'Provide --pool with a reserved private IPv4 CIDR outside your LAN/VPN');
   const repo = fileURLToPath(new URL('..', import.meta.url));
   const { benchmark: adapter, prepare } = await import(pathToFileURL(await realpath(values.benchmark)).href);
@@ -329,6 +344,7 @@ export async function main(args = process.argv.slice(2)) {
       method,
       run,
       taskSeconds: timeoutSeconds(values['task-seconds']),
+      taskBatchSize,
     });
     const { development: search, validation: assessment, test } = prepared.splits;
     const registeredSplits = await registerSplits(prepared.splits, inputs);
@@ -353,6 +369,13 @@ export async function main(args = process.argv.slice(2)) {
       method,
       seed,
       splits: registeredSplits,
+      scheduling: {
+        policy: 'batch-barrier',
+        maximumConcurrentTasks: taskBatchSize,
+        concurrentComparisonArms: 1,
+        order:
+          'Registered study dispatch order; each batch finishes execution and grading before the next. Validation and installed test arms are sequential. Report temporal ordering as a comparison limitation.',
+      },
       study,
       allocation,
       selection:

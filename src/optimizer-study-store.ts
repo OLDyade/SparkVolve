@@ -896,8 +896,8 @@ export class OptimizerStudyStore {
     )
       throw Error('Invalid study cleanup record');
     this.write(owner, () => {
-      if (!['cancelling', 'cancelled'].includes(this.state().phase))
-        throw Error('Study is not being cancelled');
+      if (!['cancelling', 'cancelled', 'complete'].includes(this.state().phase))
+        throw Error('Study must be cancelling or terminal before resource cleanup');
       const key = `cleanup:${record.kind}:${record.id}`,
         saved = this.meta(key);
       if (saved !== undefined) {

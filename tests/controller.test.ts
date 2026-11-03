@@ -77,6 +77,87 @@ class LifecycleDriver extends Docker {
   }
 }
 
+test('task batches wait for every grade before launching the next batch and never resample on resume', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'he-batches-'));
+  const spec = specification();
+  spec.concurrency = 2;
+  spec.tasks = Array.from({ length: 5 }, (_, i) => ({
+    ...spec.tasks[0]!,
+    id: 'task-' + i,
+    input: 'inputs/' + i,
+    evaluation: 'private/' + i,
+  }));
+  for (const task of spec.tasks) {
+    for (const dir of [task.input, task.evaluation])
+      await mkdir(path.join(root, 'dataset', dir), { recursive: true });
+    task.inputDigest = await treeDigest(path.join(root, 'dataset', task.input));
+    task.evaluationDigest = await treeDigest(path.join(root, 'dataset', task.evaluation));
+  }
+  const seed = path.join(root, 'seed');
+  await mkdir(seed);
+  await atomicJSON(path.join(seed, 'package.json'), {
+    name: 'fixture',
+    dsh: { bundle: { patch: './cordis.patch.yml' } },
+  });
+  await writeFile(path.join(seed, 'cordis.patch.yml'), '[]');
+  await writeFile(path.join(seed, 'package-lock.json'), '{}');
+  const store = new Store(path.join(root, 'state.sqlite'), spec);
+  const barrier = Promise.withResolvers<void>();
+  const secondGrading = Promise.withResolvers<void>();
+  class BatchDriver extends LifecycleDriver {
+    active = 0;
+    peak = 0;
+    override async create(contract: ContainerSpec) {
+      if (!contract.name.startsWith('he-build-')) {
+        this.peak = Math.max(this.peak, ++this.active);
+        if (this.executions >= 2) assert.ok(store.runs().filter((run) => run.phase === 'scored').length >= 2);
+      }
+      await super.create(contract);
+    }
+    override async run(contract: ContainerSpec) {
+      const ordinal = this.grades + 1;
+      const result = await super.run(contract);
+      if (contract.name.startsWith('he-grade-')) {
+        if (ordinal === 1) await barrier.promise;
+        else if (ordinal === 2) secondGrading.resolve();
+        this.active--;
+      }
+      return result;
+    }
+  }
+  const driver = new BatchDriver();
+  let controller = new Controller(root, path.join(root, 'dataset'), spec, store, driver);
+  try {
+    await controller.start();
+    await controller.seed(seed);
+    const work = controller.pump();
+    await secondGrading.promise;
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    assert.equal(driver.executions, 2, 'a fast task must not refill an unfinished batch');
+    barrier.resolve();
+    await work;
+    assert.equal(driver.executions, 5);
+    assert.equal(driver.peak, 2);
+    assert.equal(store.runs().filter((run) => run.phase === 'scored').length, 5);
+    await controller.close();
+    controller = new Controller(root, path.join(root, 'dataset'), spec, store, driver);
+    await controller.start();
+    await controller.pump();
+    assert.equal(driver.executions, 5);
+  } finally {
+    barrier.resolve();
+    await controller.close();
+    store.close();
+    async function writable(directory: string): Promise<void> {
+      await chmod(directory, 0o755);
+      for (const entry of await readdir(directory, { withFileTypes: true }))
+        if (entry.isDirectory()) await writable(path.join(directory, entry.name));
+    }
+    await writable(root);
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('restricted mutation admission rejects out-of-scope source before consuming candidate budget', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'he-controller-scope-'));
   const spec = specification();

@@ -54,7 +54,9 @@ export async function cancelOptimizerStudy(root: string, docker = new Docker()) 
         leaseError = error;
       }
     }, 5_000);
-    store.cancel(owner, 'Explicit cancellation of the parent optimizer study');
+    const completedStudy = store.state().phase === 'complete';
+    const operation = completedStudy ? 'reclamation' : 'cancellation';
+    if (!completedStudy) store.cancel(owner, 'Explicit cancellation of the parent optimizer study');
     const jobs = store.jobs(),
       methods = store.methods(),
       episodes = store.metaEpisodes();
@@ -73,7 +75,7 @@ export async function cancelOptimizerStudy(root: string, docker = new Docker()) 
       jobs: jobs.map((job) => ({ id: job.id, childRoot: job.childRoot, assessmentRoot: job.assessmentRoot })),
       registrations,
     };
-    const file = path.join(root, 'study-cancellation-plan.json'),
+    const file = path.join(root, `study-${operation}-plan.json`),
       saved = await optional(file);
     if (saved !== undefined && digest(saved) !== digest(plan)) throw Error('Study cancellation plan changed');
     if (saved === undefined) await atomicJSON(file, plan);
@@ -124,14 +126,14 @@ export async function cancelOptimizerStudy(root: string, docker = new Docker()) 
       children,
       resources,
     };
-    const receiptFile = path.join(root, 'study-cancellation.json'),
+    const receiptFile = path.join(root, `study-${operation}.json`),
       savedReceipt = await optional(receiptFile);
     if (savedReceipt !== undefined && digest(savedReceipt) !== digest(receipt))
       throw Error('Study cancellation receipt changed');
     if (savedReceipt === undefined) await atomicJSON(receiptFile, receipt);
     assertOwner();
     store.recordCleanup(owner, { kind: 'study', id: 'all', digest: digest(receipt) });
-    store.finishCancellation(owner, digest(receipt));
+    if (!completedStudy) store.finishCancellation(owner, digest(receipt));
     return receipt;
   } finally {
     if (renewal) clearInterval(renewal);

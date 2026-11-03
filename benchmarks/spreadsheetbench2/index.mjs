@@ -20,7 +20,18 @@ export const benchmark = {
 };
 
 /** Community assets remain private to the host; only each task's input reaches H or G. */
-export async function prepare({ root, inputs, image, isolation, model, provider, method, run, taskSeconds }) {
+export async function prepare({
+  root,
+  inputs,
+  image,
+  isolation,
+  model,
+  provider,
+  method,
+  run,
+  taskSeconds,
+  taskBatchSize,
+}) {
   const assets = path.join(root, 'upstream');
   await run('acquire-community-assets', 'python3', [path.join(directory, 'acquire.py'), assets]);
   const roster = JSON.parse(await readFile(path.join(directory, 'mixed36.json'), 'utf8'));
@@ -109,7 +120,7 @@ export async function prepare({ root, inputs, image, isolation, model, provider,
       evaluator: { image, command: ['python3', '/evaluation/grade.py'], timeoutSeconds: 600 },
       tasks,
       repetitions: 1,
-      concurrency: 4,
+      concurrency: taskBatchSize,
       timeoutSeconds: taskSeconds,
       failureLimit: Math.floor(tasks.length * 0.2),
       budget: { candidates: search ? 4 : 1, optimizerSeconds: search ? 1800 : 1 },

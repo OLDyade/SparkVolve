@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
   main,
+  mutationRegistration,
   assessmentContract,
   registerSplits,
   selectValidation,
@@ -74,6 +75,9 @@ test('split registration rejects reused inputs and changed models before inferen
     splits.test.specification.tasks[0].inputDigest = '3'.repeat(64);
     splits.test.specification.executor.model = 'different';
     await assert.rejects(registerSplits(splits, root), /changes frozen executor/);
+    splits.test.specification.executor.model = splits.development.specification.executor.model;
+    splits.test.specification.concurrency++;
+    await assert.rejects(registerSplits(splits, root), /changes frozen concurrency/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -96,6 +100,55 @@ test('validation selection does not select sampling gain from the same bundle or
   const lower = { ...first, mean: 0.2 };
   assert.equal(selectValidation(h0, [lower], 'minimize'), lower);
 });
+test('community task batch size rejects invalid values before any work', async () => {
+  for (const value of ['0', '-1', '1.5', 'Infinity', 'oops'])
+    await assert.rejects(main(['--task-batch-size=' + value]), /positive integer/);
+});
+
+test('all three mutation scopes share a serial comparison scheduler and identical task capacity', () => {
+  const spec = specification();
+  spec.concurrency = 10;
+  const hash = 'a'.repeat(64);
+  const method = {
+    source: { directory: 'g/source', digest: hash },
+    artifact: {
+      directory: 'g/artifact',
+      identity: {
+        artifactDigest: hash,
+        bundleDigest: hash,
+        lockDigest: hash,
+        tarballDigest: hash,
+        image: spec.runtime.image,
+      },
+    },
+    composition: 'plugins.yml',
+  };
+  const split = { specification: spec, dataset: { directory: 'dev', digest: hash } };
+  const adapter = {
+    name: 'mixed36',
+    mutationSpaces: [
+      { id: 'prompt', editableFiles: ['guidance.md'] },
+      { id: 'single-plugin', editableFiles: ['guidance.md', 'index.mjs'] },
+      { id: 'open-plugins' },
+    ],
+  };
+  const result = mutationRegistration(
+    adapter,
+    method,
+    { source: method.source, artifact: method.artifact },
+    split,
+    {
+      ...split,
+      specification: assessmentContract(spec, 'sealed'),
+      dataset: { directory: 'sealed', digest: hash },
+    },
+  );
+  assert.equal(result.arms.length, 3);
+  assert.equal(result.budget.concurrentSearches, 1);
+  assert.equal(result.cases[0].search.specification.concurrency, 10);
+  assert.equal(result.cases[0].assessment.specification.concurrency, 10);
+});
+
 test('startup refuses an absent deployment pool before commands or model calls', async () => {
   await assert.rejects(main(['--pool', '']), /reserved private IPv4 CIDR/);
 });

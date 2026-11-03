@@ -14,6 +14,7 @@ import { prepareExperiment, evolve } from './experiment.js';
 import { prepareOptimizer, type OptimizerPreparationSpec } from './optimizer-harness.js';
 import { collectExecution, prepareExecution, ReclamationError, settleExecutionFailure } from './execution.js';
 import { Store } from './store.js';
+import { cancelRegisteredChild } from './cancellation.js';
 import { validateFrozenArm } from './validation.js';
 import {
   RegisteredOptimizerStudy,
@@ -807,6 +808,29 @@ export class OptimizerStudyCoordinator {
     } catch (error) {
       signal.throwIfAborted();
       if (requiresReclamation(error)) throw error;
+      const failedJob = this.store.job(initial.id);
+      let cleanup;
+      try {
+        cleanup = {
+          search: await cancelRegisteredChild(
+            this.root,
+            failedJob.childRoot,
+            failedJob.childSpecDigest,
+            this.docker,
+          ),
+          assessment: await cancelRegisteredChild(
+            this.root,
+            failedJob.assessmentRoot,
+            failedJob.assessmentSpecDigest,
+            this.docker,
+          ),
+        };
+      } catch (cleanupError) {
+        throw new ReclamationError(
+          new AggregateError([error, cleanupError], 'Study job failure and cleanup failure'),
+        );
+      }
+      await atomicJSON(path.join(this.root, 'job-reports', `${initial.id}.cleanup.json`), cleanup);
       this.store.failJob(this.owner, initial.id, String(error));
       await atomicJSON(path.join(this.root, 'job-reports', `${initial.id}.json`), {
         job: initial.id,
