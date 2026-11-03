@@ -3,9 +3,9 @@
   config:
     baseURL: https://api.deepseek.com/anthropic
     apiKeyEnv: DEEPSEEK_API_KEY
-    maxTokens: 32768
+    maxTokens: 393216
     defaultContextWindow: 1048576
-    streamIdleTimeoutMs: 600000
+    streamIdleTimeoutMs: 900000
     retryPolicy:
       mode: normal
       maxRetries: 0

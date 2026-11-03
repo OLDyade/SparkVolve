@@ -2,6 +2,6 @@
   "provider": "deepseek-official",
   "model": "deepseek-flash",
   "reasoningEffort": "off",
-  "maxTokens": 32768,
+  "maxTokens": 393216,
   "credentialEnv": ["DEEPSEEK_API_KEY"]
 }

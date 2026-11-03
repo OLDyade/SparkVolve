@@ -77,7 +77,7 @@ test(
             upstream: `http://127.0.0.1:${address.port}/anthropic/v1/messages`,
             addresses: { kind: 'exact', values: ['127.0.0.1'] },
             credential: { env: 'FIXTURE_KEY', header: 'x-api-key', prefix: '' },
-            body: { kind: 'json', equals: { model: 'deepseek-flash' }, maximum: { max_tokens: 32768 } },
+            body: { kind: 'json', equals: { model: 'deepseek-flash' }, maximum: { max_tokens: 393216 } },
             maxRequestBytes: 8388608,
             timeoutSeconds: 600,
             forwardHeaders: ['anthropic-version', 'anthropic-beta', 'accept'],
@@ -103,7 +103,7 @@ test(
       cwd: root,
       provider: 'deepseek-official',
       model: 'deepseek-flash',
-      maxTokens: 32768,
+      maxTokens: 393216,
       requestTimeoutMs: 600000,
       env: { ...process.env, DEEPSEEK_API_KEY: 'client-placeholder' },
     });
@@ -116,6 +116,7 @@ test(
         assert.equal(request.headers['anthropic-version'], '2023-06-01');
         assert.equal(request.url, '/anthropic/v1/messages');
         assert.equal(request.body.model, 'deepseek-flash');
+        assert.equal(request.body.max_tokens, 393216);
         assert.equal(request.body.thinking.type, 'disabled');
       }
       const blocks = requests[1]!.body.messages.flatMap((message: any) => message.content);
