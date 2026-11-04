@@ -109,7 +109,9 @@ test(
       for (const r of requests) {
         assert.equal(r.headers.authorization, 'Bearer broker-only-fixture');
         assert.equal(r.body.model, 'deepseek/deepseek-v4-flash-0731');
-        assert.equal(r.body.enable_thinking, false);
+        assert.deepEqual(r.body.thinking, { type: 'disabled' });
+        assert.equal(Object.hasOwn(r.body, 'enable_thinking'), false);
+        assert.equal(Object.hasOwn(r.body, 'reasoning_effort'), false);
         assert.equal(r.body.max_tokens, 393216);
         assert.equal(r.body.stream, true);
       }

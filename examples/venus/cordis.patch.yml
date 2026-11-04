@@ -24,4 +24,4 @@
               supportsStore: false
               supportsUsageInStreaming: true
               supportsReasoningEffort: false
-              thinkingFormat: qwen
+              thinkingFormat: deepseek
