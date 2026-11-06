@@ -1,0 +1,27 @@
+{
+  "name": "@sparkvolve/bird-native-baseline",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "node --check index.mjs"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.4"
+  },
+  "files": [
+    "index.mjs",
+    "guidance.md",
+    "helpers.py",
+    "cordis.patch.yml",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "overrides": {
+    "zod": "4.6.7"
+  },
+  "license": "Apache-2.0"
+}

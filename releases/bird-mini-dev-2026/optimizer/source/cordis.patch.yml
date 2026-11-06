@@ -1,0 +1,14 @@
+- id: preset-evolution
+  config:
+    id: evolution
+    name: SparkVolve
+    plugins:
+      - id: evolution-native-authoring
+        name: '@sparkvolve/dsh-bundle/native-authoring'
+      - id: evolution-tools
+        name: '@sparkvolve/dsh-bundle'
+        config:
+          endpoint: !!js process.env.SPARKVOLVE_ENDPOINT
+          tokenEnv: SPARKVOLVE_TOKEN
+      - id: evolution-method
+        name: '@sparkvolve/optimizer-evidence-driven'

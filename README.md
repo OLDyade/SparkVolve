@@ -116,37 +116,16 @@ The official 500 tasks are split 300 development / 100 validation / 100 test. Sc
 
 > For reference, on the official fixed-prompt table (single generation, no database access) DeepSeek V4.1-Flash scores 61.0% and Claude Opus 5.5 90.0%. SparkVolve runs as an interactive agent with database access.
 
-**[BIRD track →](benchmarks/bird/README.md)** · Data: [`birdsql/bird_mini_dev`](https://huggingface.co/datasets/birdsql/bird_mini_dev) (CC BY-SA 4.0)
+**[Results and artifacts →](releases/bird-mini-dev-2026/README.md)** · Data: [`birdsql/bird_mini_dev`](https://huggingface.co/datasets/birdsql/bird_mini_dev) (CC BY-SA 4.0)
 
-<details>
-<summary><strong>More experiments: SpreadsheetBench 2 and the early research ledger</strong></summary>
+### 📦 Open artifacts
 
-
-**SpreadsheetBench 2 · Debugging + Financial Modeling + Templates**
-
-| Develop | Validate | Test & reuse |
-|:---:|:---:|:---:|
-| **12 tasks** · fixed 4-task screen | **10 tasks** · frozen candidates | **14 tasks** · original packages |
-| Task feedback drives evolution | Same tasks compare all three arms | Workbook families kept separate |
-
-`Prompt only` · `Single-plugin code` · `Open plugin evolution`
-
-Same H0, model, tasks and budget. The optimizer chooses its ancestry and whether to discover, reuse, adapt or author. The official evaluator stays unchanged. No required mutation checklist.
-
-**[Run the community benchmark →](benchmarks/spreadsheetbench2/README.md)** · [Registered task panel](benchmarks/spreadsheetbench2/mixed36.json)
-
-Community benchmark results will be reported with failures and full denominators. Earlier synthetic runs remain in the research ledger as engineering evidence.
-
-| Record | What it establishes |
+| | Contents |
 |:---|:---|
-| [Executor evolution](docs/experiments/2026-10-28-official-deepseek-results.md) | Real plugin implementation changes, independent validation and unchanged-archive reuse. This case did not change plugin topology. |
-| [Optimizer evolution](docs/experiments/2026-10-28-optimizer-study-results.md) | G1 was autonomously authored, built and run. It tied G0; G0 was retained. Added tools recorded zero native calls. |
-| [Mutation-space comparison](docs/experiments/2026-10-29-closure-study-results.md) | Three arms, six searches, twelve patches, 124 task scorings. Five searches retained H0; one candidate passed validation and reuse at 100%. No demonstrated method advantage. |
-| [One-command startup](docs/experiments/2026-10-29-official-closure-results.md) | Structured-data search, independent validation and original-package reuse completed; H0 was retained. |
+| **H49 executor plugin** | Evolved source, configuration, lock file and installable package |
+| **G optimizer plugin** | Source, strategy and configuration of the optimizer that produced H49 |
 
-Native dependency composition and real community-package adoption now have behavioral acceptance, including original-package reuse. Stronger autonomous structural-evolution and quality evidence remain open. [Capability integration](docs/experiments/2026-10-30-capability-evolution.md). [Implementation status](docs/completion.md) · [All experiments](docs/experiments/README.md) · [Research protocol](docs/research-protocol.md)
-
-</details>
+**[Download and install →](releases/bird-mini-dev-2026/README.md)**
 
 ## 🧭 Build on SparkVolve
 

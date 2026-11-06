@@ -159,37 +159,16 @@ npm start -- --env-file /absolute/private/deepseek.env
 
 > 参照：官方固定 prompt 榜单（单次生成、不可查库）上，DeepSeek V4.1-Flash 为 61.0%，Claude Opus 5.5 为 90.0%。SparkVolve 采用可查库的交互式 agent 设定。
 
-**[BIRD 赛道 →](benchmarks/bird/README.md)** · 数据来源 [`birdsql/bird_mini_dev`](https://huggingface.co/datasets/birdsql/bird_mini_dev)（CC BY-SA 4.0）
+**[结果与产物 →](releases/bird-mini-dev-2026/README.md)** · 数据来源 [`birdsql/bird_mini_dev`](https://huggingface.co/datasets/birdsql/bird_mini_dev)（CC BY-SA 4.0）
 
-<details>
-<summary><strong>更多实验：SpreadsheetBench 2 与早期研究账本</strong></summary>
+### 📦 开源产物
 
-
-**SpreadsheetBench 2 · 错误修复 + 财务建模 + 模板补全**
-
-| 进化开发 | 独立验证 | 测试与复用 |
-|:---:|:---:|:---:|
-| **12 题**，含固定 4 题初筛 | **10 题**，比较冻结候选 | **14 题**，直接安装原包 |
-| 任务反馈驱动自主变异 | 三组使用相同题目 | 按底层工作簿家族隔离 |
-
-`仅 Prompt` · `单插件代码` · `开放式插件进化`
-
-同 H0、同模型、同题集、同预算。优化器自主选择继承、发现、复用、改造或新建，官方评分器保持原样，不规定必须出现哪些变异动作。
-
-**[运行社区评测 →](benchmarks/spreadsheetbench2/README.md)** · [固定任务清单](benchmarks/spreadsheetbench2/mixed36.json)
-
-社区评测将按完整分母报告成绩与失败。早期合成实验保留在账本中，作为工程机制证据。
-
-| 实验 | 已有证据 |
+| | 内容 |
 |:---|:---|
-| [执行器进化](docs/experiments/2026-10-28-official-deepseek-results.md) | 真实插件实现变更、独立验证、原包复用；本例未改变插件拓扑。 |
-| [优化器进化](docs/experiments/2026-10-28-optimizer-study-results.md) | G1 已自主生成、构建并运行；与 G0 打平，保留 G0。新增工具的原生调用次数为零。 |
-| [插件变异方法对照](docs/experiments/2026-10-29-closure-study-results.md) | 三组、六次搜索、十二份改动、124 次任务评分。五次保留 H0，一份候选独立验证与复用均为 100%；尚未证明方法优势。 |
-| [单命令启动](docs/experiments/2026-10-29-official-closure-results.md) | 结构化数据搜索、独立验证与原包复用全部完成；保留 H0。 |
+| **H49 执行插件** | 进化后的源码、配置、锁文件和安装包，直接安装使用 |
+| **G 优化器插件** | 跑出 H49 的优化器源码、策略与配置，可继续探索 |
 
-原生依赖组合与真实社区包采用已完成行为验收，包括原包安装复用。自主结构进化与稳定提分仍需更充分的研究证据。[能力集成验收](docs/experiments/2026-10-30-capability-evolution.md)。[实现状态](docs/completion.md) · [全部实验](docs/experiments/README.md) · [研究协议](docs/research-protocol.md)
-
-</details>
+**[下载与安装 →](releases/bird-mini-dev-2026/README.md)**
 
 ## 🧭 在 SparkVolve 上继续创造
 

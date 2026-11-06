@@ -1,0 +1,26 @@
+{
+  "name": "@sparkvolve/optimizer-evidence-driven",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": "./index.mjs",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node --check index.mjs && node check-load.mjs && node gtest/regressions.mjs && node gtest/strategy-contract.mjs",
+    "test:native": "node gtest/native-load.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "check-load.mjs",
+    "gtest/regressions.mjs",
+    "gtest/native-load.mjs",
+    "gtest/strategy-contract.mjs",
+    "plugins.yml",
+    "cordis.patch.yml",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
