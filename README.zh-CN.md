@@ -10,6 +10,8 @@
 
 **让能力进化，让进化方法进化，让成果成为可安装的插件。**
 
+> 🏆 **BIRD Mini-Dev 2026 · 官方 500 题全量 · EX 91.0%（455/500）** — 同一个模型，零权重更新，Harness 自己进化。
+
 [![CI](https://github.com/OLDyade/SparkVolve/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/OLDyade/SparkVolve/actions/workflows/verify.yml) [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-202124?style=flat-square)](LICENSE) [![DSH](https://img.shields.io/badge/DSH-Native_plugins-DDEAF5?style=flat-square&labelColor=202124)](docs/components.md)
 
 [English](README.md) · [中文](README.zh-CN.md) · **[在线体验 ↗](https://oldyade.github.io/SparkVolve/)** · [快速开始](#quick-start) · [项目全景](11.md)
@@ -136,7 +138,32 @@ npm start -- --env-file /absolute/private/deepseek.env
 
 [完整快速开始](docs/quick-start.md) · [接入新领域](docs/domain-adapters.md) · [安装能力包](docs/use-capability.md)
 
-## 📊 真实任务、公平对照、原包交付
+## 📊 实测：BIRD Mini-Dev 2026
+
+**同一个模型，零权重更新，Harness 自己进化出来的 Text-to-SQL 能力。**
+
+| 版本 | 评测 | SQLite EX |
+|:---|:---|:---:|
+| 起点 H0 · 交互式 agent | 开发集 | 76.1% |
+| **进化冠军 H49** | **开发集 · 300 题** | **91.67%（275/300）** |
+| **进化冠军 H49** | **验证集 · 100 题（未参与进化）** | **89%（89/100）** |
+| **进化冠军 H49** | **测试集 · 100 题（未参与进化）** | **91%（91/100）** |
+| **进化冠军 H49** | **官方 500 题全量** | **91.0%（455/500）** |
+
+官方 500 题按 300 开发 / 100 验证 / 100 测试划分。三个集合成绩一致，未参与进化的 200 题同样保持 90% 水平。
+
+- 🧬 **58 代候选、9 次冠军跃迁**：每一代都保留真实 parent 谱系，退步版本同样公开。
+- 🔁 **优化器也在进化**：G 在搜索中改写自己 20 次，17 个版本通过原生加载并投入实际搜索。
+- 🔍 **改出来的能力人能读懂**：冠军进化出 23 条 SQL 推理纪律，例如先建群体再算比例、否定条件会吞掉 NULL、"最新"修饰的名词决定排序对象。没有任何题目特判。
+- ⚙️ 固定 DeepSeek V4 Flash，每题 300 秒，官方 `calculate_ex` 评分器原样执行。
+
+> 参照：官方固定 prompt 榜单（单次生成、不可查库）上，DeepSeek V4.1-Flash 为 61.0%，Claude Opus 5.5 为 90.0%。SparkVolve 采用可查库的交互式 agent 设定。
+
+**[BIRD 赛道 →](benchmarks/bird/README.md)** · 数据来源 [`birdsql/bird_mini_dev`](https://huggingface.co/datasets/birdsql/bird_mini_dev)（CC BY-SA 4.0）
+
+<details>
+<summary><strong>更多实验：SpreadsheetBench 2 与早期研究账本</strong></summary>
+
 
 **SpreadsheetBench 2 · 错误修复 + 财务建模 + 模板补全**
 
@@ -152,9 +179,6 @@ npm start -- --env-file /absolute/private/deepseek.env
 **[运行社区评测 →](benchmarks/spreadsheetbench2/README.md)** · [固定任务清单](benchmarks/spreadsheetbench2/mixed36.json)
 
 社区评测将按完整分母报告成绩与失败。早期合成实验保留在账本中，作为工程机制证据。
-
-<details>
-<summary><strong>实验账本：成果、退步与剩余工作</strong></summary>
 
 | 实验 | 已有证据 |
 |:---|:---|

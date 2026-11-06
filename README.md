@@ -10,6 +10,8 @@ Keep model weights fixed. Let the harness evolve through real tasks.
 
 **Evolve capabilities. Evolve the way they evolve. Ship both as plugins.**
 
+> 🏆 **BIRD Mini-Dev 2026 · all 500 official tasks · EX 91.0% (455/500)** — same model, zero weight updates, a self-evolved harness.
+
 [![CI](https://github.com/OLDyade/SparkVolve/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/OLDyade/SparkVolve/actions/workflows/verify.yml) [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-202124?style=flat-square)](LICENSE) [![DSH](https://img.shields.io/badge/DSH-Native_plugins-DDEAF5?style=flat-square&labelColor=202124)](docs/components.md)
 
 [English](README.md) · [中文](README.zh-CN.md) · **[Live tour ↗](https://oldyade.github.io/SparkVolve/)** · [Quick start](#quick-start) · [Blueprint](11.md)
@@ -93,7 +95,32 @@ Use `--benchmark` to select a community benchmark adapter. The [SpreadsheetBench
 
 [Full quick start](docs/quick-start.md) · [Add a domain](docs/domain-adapters.md) · [Install a capability](docs/use-capability.md)
 
-## 📊 Real tasks. Comparable searches. Installable results.
+## 📊 Results: BIRD Mini-Dev 2026
+
+**Same model, zero weight updates. Text-to-SQL capability evolved by the harness itself.**
+
+| Version | Evaluation | SQLite EX |
+|:---|:---|:---:|
+| Start H0 · interactive agent | Development | 76.1% |
+| **Evolved champion H49** | **Development · 300 tasks** | **91.67% (275/300)** |
+| **Evolved champion H49** | **Validation · 100 tasks (never used in evolution)** | **89% (89/100)** |
+| **Evolved champion H49** | **Test · 100 tasks (never used in evolution)** | **91% (91/100)** |
+| **Evolved champion H49** | **All 500 official tasks** | **91.0% (455/500)** |
+
+The official 500 tasks are split 300 development / 100 validation / 100 test. Scores agree across all three splits: the 200 tasks never used in evolution also hold at the 90% level.
+
+- 🧬 **58 candidates, 9 champion jumps** — real parent lineage for every generation; regressions published too.
+- 🔁 **The optimizer evolves as well** — G rewrote itself 20 times; 17 versions loaded natively and drove the search.
+- 🔍 **Readable gains** — the champion evolved 23 SQL reasoning rules (build the cohort before the ratio, negation silently drops NULLs, the noun "latest" binds to decides what gets ranked). No task-specific hacks.
+- ⚙️ Fixed DeepSeek V4 Flash, 300 s per task, the official `calculate_ex` grader executed unchanged.
+
+> For reference, on the official fixed-prompt table (single generation, no database access) DeepSeek V4.1-Flash scores 61.0% and Claude Opus 5.5 90.0%. SparkVolve runs as an interactive agent with database access.
+
+**[BIRD track →](benchmarks/bird/README.md)** · Data: [`birdsql/bird_mini_dev`](https://huggingface.co/datasets/birdsql/bird_mini_dev) (CC BY-SA 4.0)
+
+<details>
+<summary><strong>More experiments: SpreadsheetBench 2 and the early research ledger</strong></summary>
+
 
 **SpreadsheetBench 2 · Debugging + Financial Modeling + Templates**
 
@@ -109,9 +136,6 @@ Same H0, model, tasks and budget. The optimizer chooses its ancestry and whether
 **[Run the community benchmark →](benchmarks/spreadsheetbench2/README.md)** · [Registered task panel](benchmarks/spreadsheetbench2/mixed36.json)
 
 Community benchmark results will be reported with failures and full denominators. Earlier synthetic runs remain in the research ledger as engineering evidence.
-
-<details>
-<summary><strong>Research ledger — results, regressions and remaining work</strong></summary>
 
 | Record | What it establishes |
 |:---|:---|
